@@ -1,0 +1,25 @@
+<!-- php:$slider = phpok('mobile-picplayer') -->
+<!-- if $slider && $slider.rslist -->
+<div id="slider_{$slider.project.id}" class="carousel slide" data-ride="carousel">
+	<ol class="carousel-indicators">
+		<!-- loop from=$slider.rslist key=$key value=$value id=$tmpid -->
+		<li data-target="#slider_{$slider.project.id}" data-slide-to="{$tmpid.index}"{if !$tmpid.index} class="active"{/if}></li>
+		<!-- /loop -->
+	</ol>
+	<div class="carousel-inner">
+		<!-- loop from=$slider.rslist key=$key value=$value id=$tmpid -->
+		<div class="carousel-item animated fadeIn{if !$tmpid.index} active{/if}">
+			<a href="{$value.linkurl ? $value.linkurl : 'javascript:void(0);'}" title="{$value.title}" {if $value.linkurl} target="{$value.target}"{/if}><img src="{$value.mbanner.filename}" class="d-block w-100" alt="{$value.title}" /></a>
+		</div>
+		<!-- /loop -->
+	</div>
+	<a class="carousel-control-prev" href="#slider_{$slider.project.id}" role="button" data-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">下一张</span>
+	</a>
+	<a class="carousel-control-next" href="#slider_{$slider.project.id}" role="button" data-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">下一张</span>
+	</a>
+</div>
+<!-- /if -->

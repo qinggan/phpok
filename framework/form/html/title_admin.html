@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="optlist_id,is_multiple,form_price" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="optlist_id,is_multiple,form_price,only_preview" />
 <!-- php:$optlist_id = ($rs['optlist_id'] && is_array($rs['optlist_id'])) ? $rs['optlist_id'] : array() -->
 <div class="layui-form-item">
 	<label class="layui-form-label">
@@ -17,6 +17,15 @@
 	<div class="layui-input-inline default-auto">
 		<input type="radio" name="is_multiple" value="0"{if !$rs.is_multiple} checked{/if} title="{lang单选}" />
 		<input type="radio" name="is_multiple" value="1"{if $rs.is_multiple} checked{/if} title="{lang多选}" />
+	</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang只读：}
+	</label>
+	<div class="layui-input-inline default-auto">
+		<input type="radio" name="only_preview" value="0"{if !$rs.only_preview} checked{/if} title="{lang否}" />
+		<input type="radio" name="only_preview" value="1"{if $rs.only_preview} checked{/if} title="{lang是}" />
 	</div>
 </div>
 

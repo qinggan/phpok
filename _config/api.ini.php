@@ -8,7 +8,7 @@ gzip = false
 [token]
 ;用户 Token 标识，仅在 API 接口使用
 ;启用此项需要后台开始密钥
-id = token
+id = userToken
 
 ; Token 有效时间，单位为秒，默认为 7200 秒（即2小时）
 time = 7200

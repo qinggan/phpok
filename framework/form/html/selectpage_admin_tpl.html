@@ -1,0 +1,20 @@
+<input type="text" id="{$_rs.identifier}" name="{$_rs.identifier}" value="{$_rs.content}" data-init="{$_rs.content}" />
+<script type="text/javascript">
+//初始化插件
+$(document).ready(function(){
+	$('#{$_rs.identifier}').selectPage({
+		showField : "{$_rs.field_show ? $_rs.field_show : 'id'}",
+		keyField : "{$_rs.field_value ? $_rs.field_value : 'id'}",
+		multiple : {$_rs.is_multiple ? 'true' : 'false'},
+		pageSize:{$_rs.selectpage_psize},
+		data : '{url ctrl=form func=selectpage mid=$_rs.id/}',
+		eAjaxSuccess : function(d){
+			if(d && d.status && d.info){
+				return d.info;
+			}
+			$.dialog.tips(d.info);
+			return false;
+		}
+	});
+});
+</script>

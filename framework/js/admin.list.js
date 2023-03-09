@@ -10,6 +10,116 @@
 ;(function($){
 	var notice_obj;
 	$.phpok_list = {
+		add:function(pid,ptitle,type,width,height,mtype)
+		{
+			var m_func = mtype && mtype == 1 ? 'edit2' : 'edit';
+			var title = ptitle+"_"+p_lang('添加内容');
+			if(type && type == 1){
+				if(!width || width == 'undefined'){
+					width = '500px';
+				}
+				if(!height || height == 'undefined'){
+					height = '70%';
+				}
+				if(width.indexOf('px') < 0 && width.indexOf('%') < 0){
+					width += 'px';
+				}
+				var url = get_url('list',m_func,'pid='+pid+"&_isopen=1");
+				$.dialog.open(url,{
+					'title':title,
+					'width':width,
+					'height':height,
+					'ok':function(){
+						var iframe = this.iframe.contentWindow;
+						if (!iframe.document.body) {
+							alert('iframe还没加载完毕呢');
+							return false;
+						};
+						if(mtype && mtype == 1){
+							iframe.$.admin_list.single_open();
+							return false;
+						}
+						iframe.$.admin_list_edit.save_open();
+						return false;
+					},
+					'okVal': p_lang('保存'),
+					'cancel':true,
+					'lock':true
+				});
+				return true;
+			}
+			$.win(title,get_url('list',m_func,'pid='+pid));
+		},
+		edit:function(id,pid,ptitle,type,width,height)
+		{
+			var title = ptitle+"_"+p_lang('编辑')+'_#'+id;
+			if(type && type == 1){
+				if(!width || width == 'undefined'){
+					width = '500px';
+				}
+				if(!height || height == 'undefined'){
+					height = '70%';
+				}
+				if(width.indexOf('px') < 0 && width.indexOf('%') < 0){
+					width += 'px';
+				}
+				var url = get_url('list','edit','id='+id+'&pid='+pid+"&_isopen=1");
+				$.dialog.open(url,{
+					'title':title,
+					'width':width,
+					'height':height,
+					'ok':function(){
+						var iframe = this.iframe.contentWindow;
+						if (!iframe.document.body) {
+							alert('iframe还没加载完毕呢');
+							return false;
+						};
+						iframe.$.admin_list_edit.save_open();
+						return false;
+					},
+					'okVal': p_lang('保存'),
+					'cancel':true,
+					'lock':true
+				});
+				return true;
+			}
+			$.win(title,get_url('list','edit','id='+id+'&pid='+pid));
+		},
+		edit2:function(id,pid,ptitle,type,width,height)
+		{
+			var title = ptitle+"_"+p_lang('编辑')+'_#'+id;
+			if(type && type == 1){
+				if(!width || width == 'undefined'){
+					width = '500px';
+				}
+				if(!height || height == 'undefined'){
+					height = '70%';
+				}
+				if(width.indexOf('px') < 0 && width.indexOf('%') < 0){
+					width += 'px';
+				}
+				var url = get_url('list','edit2','id='+id+'&pid='+pid+"&_isopen=1");
+				$.dialog.open(url,{
+					'title':title,
+					'width':width,
+					'height':height,
+					'ok':function(){
+						var iframe = this.iframe.contentWindow;
+						if (!iframe.document.body) {
+							alert('iframe还没加载完毕呢');
+							return false;
+						};
+						iframe.$.admin_list.single_open();
+						return false;
+					},
+					'okVal': p_lang('保存'),
+					'cancel':true,
+					'lock':true
+				});
+				return true;
+			}
+			$.win(title,get_url('list','edit2','id='+id+'&pid='+pid));
+		},
 		set:function(id)
 		{
 			var url = get_url('list','set','id='+id);
@@ -83,10 +193,86 @@
 				$.dialog.alert(data.content);
 				return false;
 			})
+		},
+		plaction2:function(pid)
+		{
+			var ids = $.checkbox.join('.ids');
+			if(!ids){
+				$.dialog.alert(p_lang('未指定要操作的主题'));
+				return false;
+			}
+			var val = $("#list_action_val").val();
+			if(!val || val == ''){
+				$.dialog.alert(p_lang('未指定要操作的动作'),'','error');
+				return false;
+			}
+			if(val == 'delete'){
+				$.admin_list.single_delete(pid,ids);
+				return false;
+			}
+			var type = 'status';
+			var typeValue = ''
+			if(val == 'show' || val == 'hidden'){
+				type = 'hidden';
+				typeValue = val == 'show' ? '0' : '1';
+			}
+			if(val == 'status' || val == 'unstatus'){
+				type = 'status';
+				typeValue = val == 'unstatus' ? '0' : '1';
+			}
+			var tmp = val.split(':');
+			if(tmp[1] && tmp[0] == 'cate'){
+				type = 'move';
+				var url = get_url('list',"single_move_cate","pid="+pid+"&ids="+$.str.encode(ids)+"&cate_id="+tmp[1]+"&type="+type);
+			}else{
+				var url = get_url('list','single_action','pid='+pid+"&id="+ids+"&type="+type+"&val="+typeValue);
+			}
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.alert(rs.info);
+					return false;
+				}
+				$.dialog.tips('操作成功');
+				$.phpok.reload();
+				return true;
+			});
+			return false;
 		}
 	};
 
 	$.admin_list = {
+		single_open:function()
+		{
+			var opener = $.dialog.opener;
+			var loading_action;
+			$("#_listedit").ajaxSubmit({
+				'url':get_url('list','single_save'),
+				'type':'post',
+				'dataType':'json',
+				'beforeSubmit':function(){
+					loading_action = $.dialog.tips(p_lang('正在保存数据，请稍候…')).time(30).lock();
+				},
+				'success':function(rs){
+					loading_action.close();
+					if(!rs.status){
+						$.dialog.alert(rs.info);
+						return false;
+					}
+					var pid = $("#project_id").val();
+					var url = get_url('list','action','id='+pid);
+					var id = $("#id").val();
+					if(id){
+						$.dialog.tips(p_lang('内容信息修改成功')).lock();
+						opener.$.phpok.reload();
+						return false;
+					}
+					$.dialog.tips(p_lang('内容信息添加成功')).lock();
+					opener.$.phpok.reload();
+					return false;
+				}
+			});
+			return false;
+		},
 		single_save:function()
 		{
 			var loading_action;
@@ -109,10 +295,8 @@
 					var url = get_url('list','action','id='+pid);
 					var id = $("#id").val();
 					if(id){
-						$.dialog.alert(p_lang('内容信息修改成功'),function(){
-							$.admin.reload(url);
-							$.admin.close(url);
-						},'succeed');
+						$.dialog.tips(p_lang('内容信息修改成功')).lock();
+						$.admin.close(url);
 						return false;
 					}
 					$.dialog.through({
@@ -124,7 +308,6 @@
 						},
 						'okVal':p_lang('继续添加'),
 						'cancel':function(){
-							$.admin.reload(url);
 							$.admin.close(url);
 						},
 						'cancelVal':p_lang('返回列表'),
@@ -205,13 +388,9 @@
 		**/
 		reply_it:function(id)
 		{
-			$.dialog.open(get_url('list','comment','id='+id),{
-				'title':p_lang('评论#{id}',id),
-				'lock':true,
-				'width':'80%',
-				'height':'80%',
-				'cancel':true
-			});
+			var title = p_lang('评论_#{id}',id);
+			var url = get_url('reply','list','tid='+id);
+			$.win(title,url);
 		},
 
 		/**
@@ -249,7 +428,7 @@
 			});
 		},
 		//取用或禁用状态
-		status:function(id)
+		status:function(id,obj)
 		{
 			var url = get_url("list","content_status","id="+id);
 			$.phpok.json(url,function(data){
@@ -257,12 +436,24 @@
 					$.dialog.alert(data.info);
 					return false;
 				}
-				var old_value = $("#status_"+id).attr("value");
-				var new_value = old_value == '1' ? '0' : '1';
-				$("#status_"+id).removeClass('status'+old_value).addClass("status"+new_value).attr('value',new_value);
-				//更新Message
-				$.phpok.message('pendding');
-			})
+				var newClass = data.info == 1 ? "status1" : "status0";
+				var oldClass = data.info == 1 ? "status0" : "status1";
+				$(obj).removeClass(oldClass).addClass(newClass);
+			});
+		},
+		//取用或禁用状态，独立模块
+		status2:function(id,pid,obj)
+		{
+			var url = get_url("list","single_status","id="+id+"&pid="+pid);
+			$.phpok.json(url,function(data){
+				if(!data.status){
+					$.dialog.alert(data.info);
+					return false;
+				}
+				var newClass = data.info == 1 ? "status1" : "status0";
+				var oldClass = data.info == 1 ? "status0" : "status1";
+				$(obj).removeClass(oldClass).addClass(newClass);
+			});
 		},
 		cate:function(id)
 		{
@@ -288,7 +479,7 @@
 				$.phpok.json(url,function(rs){
 					if(rs.status == 'ok'){
 						$.dialog.tips(p_lang('主题删除成功'));
-						$("#list_"+id).remove();
+						$.phpok.reload();
 						return true;
 					}
 					$.dialog.alert(rs.content);
@@ -354,6 +545,21 @@
 					top:'100%',
 					padding:0,
 					content: '<div style="overflow:auto;height:'+h+'px;">'+rs.info+'</div>'
+				});
+			});
+		},
+		reset_it:function(id)
+		{
+			$.dialog.confirm('确定要恢复使用ID为：'+id+' 的信息吗？',function(){
+				var url = get_url('list','log_reset','id='+id);
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.tips(rs.info);
+						return false;
+					}
+					$.dialog.tips('恢复成功',function(){
+						$.phpok.reload();
+					}).lock();
 				});
 			});
 		}

@@ -1,0 +1,47 @@
+<!-- include tpl=header -->
+<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+	<h1 class="p-4 text-center">{$cate_rs ? $cate_rs.title : $page_rs.title}</h1>
+	<!-- php:$taglist = $cate_rs.tag ? $cate_rs.tag : $page_rs.tag -->
+	<!-- if $taglist -->
+	<div class="container">
+		<div class="text-center m-3">
+			<span class="p-2 bg-light-50 rounded-lg">
+			标签：
+			<!-- loop from=$taglist key=$k value=$v id=$idxx -->
+			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+			<!-- /loop -->
+			</span>
+		</div>
+	</div>
+	<!-- /if -->
+</section>
+<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
+<section class="container">
+	<div class="row mt-3">
+		<div class="col-sm-8 col-md-9">
+			<div class="row row-cols-2 row-cols-md-3 clearfix">
+				<!-- loop from=$rslist key=$key value=$value -->
+				<div class="col mb-3">
+					<div class="card">
+						<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="card-img-top" alt="{$value.title}" /></a>
+						<div class="card-body">
+							<h5 class="card-title crop-text-2 text-center" style="height:50px;">{$value.title}</h5>
+							<a href="{$value.url}" class="btn btn-primary d-block">查看更多</a>
+						</div>
+					</div>
+				</div>
+				<!-- /loop -->
+			</div>
+			<div class="mt-2">
+				<!-- include tpl=block/pagelist -->
+			</div>
+		</div>
+		<div class="col-sm-4 col-md-3">
+			<div class="mb-3"><!-- include tpl=block/catelist cid=$cate_rs.id pid=$page_rs.id title=$page_rs.title --></div>
+			<div class="mb-3"><!-- include tpl=block/contact --></div>
+			<div class="mb-3"><!-- include tpl=block/hot_products --></div>
+			<div class="mb-3"><!-- include tpl=block/taglist --></div>
+		</div>
+	</div>
+</section>
+<!-- include tpl=footer -->

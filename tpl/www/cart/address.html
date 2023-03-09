@@ -5,21 +5,19 @@ function save()
 {
 	var opener = $.dialog.opener;
 	var id = $("#id").val();
-	$("#setsubmit").ajaxSubmit({
-		'url':api_url('address','save'),
-		'type':'post',
-		'dataType':'json',
-		'success':function(rs){
-			if(rs.status){
-				var tip = id ? '{lang地址信息修改成功}' : '{lang地址信息添加成功}';
-				$.dialog.tips(tip,function(){
-					opener.$.phpok.reload();
-				}).lock();
-				return true;
-			}
-			$.dialog.alert(rs.info);
+	var url = api_url('address','save');
+	var obj = $.dialog.tips('正在保存数据，请稍候…',100).lock();
+	$.phpok.submit($("#setsubmit")[0],url,function(rs){
+		if(!rs.status){
+			obj.content(rs.info).time(1.5);
 			return false;
 		}
+		obj.setting('close',function(){
+			opener.$.phpok.reload();
+		});
+		var tip = id ? '{lang地址信息修改成功}' : '{lang地址信息添加成功}';
+		obj.content(tip).time(1.5);
+		return true;
 	});
 	return false;
 }
@@ -32,8 +30,9 @@ function save()
 		<div class="col col-12 col-sm-4"><input type="text" class="form-control" id="fullname" name="fullname" value="{$rs.fullname}" placeholder="填写收件人姓名" /></div>
 	</div>
 	<div class="row form-group address">
-		<label class="col col-12 col-sm-4 am-form-label text-sm-right" for="fullname">地址：</label>
+		<label class="col col-12 col-sm-4 am-form-label text-sm-right" for="fullname">收件地址</label>
 		<div class="col col-12 col-sm-4 pca">
+			<div>
 			<select name="country" id="country" class="form-control" onchange="$.address.glist()">
 				<!-- if $rs.country -->
 				<option value="{$rs.country}">{$rs.country}</option>
@@ -41,6 +40,8 @@ function save()
 				<option value="中国">中国</option>
 				<!-- /if -->
 			</select>
+			</div>
+			<div class="mt-1">
 			<select name="province" id="province" class="form-control mt-1" onchange="$.address.glist()">
 				<!-- if $rs.province -->
 				<option value="{$rs.province}">{$rs.province}</option>
@@ -48,6 +49,8 @@ function save()
 				<option value="">请选择…</option>
 				<!-- /if -->
 			</select>
+			</div>
+			<div class="mt-1">
 			<select name="city" id="city" class="form-control mt-1" onchange="$.address.glist()">
 				<!-- if $rs.city -->
 				<option value="{$rs.city}">{$rs.city}</option>
@@ -55,6 +58,8 @@ function save()
 				<option value="">请选择…</option>
 				<!-- /if -->
 			</select>
+			</div>
+			<div class="mt-1">
 			<select name="county" class="form-control mt-1" id="county">
 				<!-- if $rs.county -->
 				<option value="{$rs.county}">{$rs.county}</option>
@@ -62,6 +67,7 @@ function save()
 				<option value="">请选择…</option>
 				<!-- /if -->
 			</select>
+			</div>
 			<div class="mt-1">
 				<input type="text" name="address" id="address" value="{$rs.address}" class="form-control" />
 			</div>

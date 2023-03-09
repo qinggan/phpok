@@ -30,57 +30,12 @@ class list_model extends list_model_base
 		return $this->db->query($sql);
 	}
 
-	public function biz_attr_save($data)
-	{
-		return $this->db->insert_array($data,'list_attr');
-	}
-
-	public function biz_attr_update($data,$id)
-	{
-		$sql = "SELECT id,aid,vid FROM ".$this->db->prefix."list_attr WHERE tid='".$id."'";
-		$rslist = $this->db->get_all($sql,'id');
-		if($rslist){
-			$u_list = array();
-			foreach($data as $key=>$value){
-				foreach($rslist as $k=>$v){
-					if($v['aid'] == $value['aid'] && $v['vid'] == $value['vid']){
-						$data[$key]['id'] = $v['id'];
-						$u_list[] = $v['id'];
-					}
-				}
-			}
-			if($u_list){
-				$u_list = array_unique($u_list);
-				$all_ids = array_keys($rslist);
-				$diff = array_diff($all_ids,$u_list);
-			}else{
-				$diff = array_keys($rslist);
-			}
-			if($diff){
-				$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE id IN(".implode(",",$diff).")";
-				$this->db->query($sql);
-			}
-		}
-		foreach($data as $key=>$value){
-			if($value['id']){
-				$tmpid = $value['id'];
-				unset($value['id']);
-				$this->db->update_array($value,'list_attr',array('id'=>$tmpid));
-				unset($tmpid);
-			}else{
-				$value['tid'] = $id;
-				$this->db->insert_array($value,'list_attr');
-			}
-		}
-		return true;
-	}
-
+	/**
+	 * 删除属性（包括库存）
+	**/
 	public function biz_attr_delete($tid,$aid=0)
 	{
-		$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE tid='".$tid."'";
-		if($aid){
-			$sql .= " AND aid='".$aid."'";
-		}
+		$sql = "DELETE FROM ".$this->db->prefix."stock WHERE tid='".$tid."'";
 		return $this->db->query($sql);
 	}
 
@@ -160,13 +115,13 @@ class list_model extends list_model_base
 			$this->db->insert_array($tmp,'list_biz','replace');
 		}
 		//绑定属性
-		$sql = "SELECT * FROM ".$this->db->prefix."list_attr WHERE tid='".$id."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."stock WHERE tid='".$id."'";
 		$tmplist = $this->db->get_all($sql);
 		if($tmplist){
 			foreach($tmplist as $key=>$value){
 				$value['tid'] = $insert_id;
 				unset($value['id']);
-				$this->db->insert_array($value,'list_attr','replace');
+				$this->db->insert($value,'stock');
 			}
 		}
 		return $insert_id;
@@ -227,7 +182,7 @@ class list_model extends list_model_base
 	public function fields_all($mid=0,$id=0,$ext='')
 	{
 		$f1 = $this->db->list_fields('list');
-		$f2 = $this->db->list_fields('list_attr');
+		$f2 = $this->db->list_fields('stock');
 		$f3 = $this->db->list_fields('list_biz');
 		$f4 = $this->db->list_fields('list_cate');
 		$fields = array_merge($f1,$f2,$f3,$f4);

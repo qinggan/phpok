@@ -77,10 +77,8 @@
 		    		if(rs.status){
 			    		var id = $("#id").val();
 			    		var tipinfo = (id && id != 'undefined') ? p_lang('编辑成功') : p_lang('管理员添加成功');
-			    		$.admin.reload(get_url('admin'));
-			    		layer.msg(tipinfo,{time:1000},function(){
-				    		top.layui.admin.events.closeThisTabs();
-			    		});
+			    		$.dialog.tips(tipinfo).lock();
+			    		$.admin.close(get_url('admin'));
 		    			return false;
 		    		}
 		    		$.dialog.alert(rs.info);

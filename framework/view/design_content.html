@@ -1,19 +1,9 @@
-<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<!-- include tpl=head_lay nopadding=true -->
 <form method="post" class="layui-form" id="post_save" onsubmit="return false">
 <input type="hidden" name="id" id="id" value="{$id}" />
+<input type="hidden" id="type" value="{$type}" />
 <div class="layui-card">
 	<div class="layui-card-body">
-		<div class="layui-form-item" style="min-height:38px;">
-			<select name="type" id="type" lay-filter="type">
-				<option value="editor"{if $type == 'editor'} selected{/if}>内容编辑器</option>
-				<option value="code"{if $type == 'code'} selected{/if}>代码编辑器</option>
-				<option value="textarea"{if $type == 'textarea'} selected{/if}>文本区</option>
-				<option value="image"{if $type == 'image'} selected{/if}>图片附件</option>
-				<option value="video"{if $type == 'video'} selected{/if}>视频链接</option>
-				<option value="iframe"{if $type == 'iframe'} selected{/if}>Iframe 框架</option>
-				<option value="calldata"{if $type == 'calldata'} selected{/if}>数据调用</option>
-			</select>
-		</div>
 		<!-- if $type == 'editor' -->
 		<div class="layui-form-item">
 			{$content_html}
@@ -66,7 +56,7 @@
 		<!-- elseif $type == 'image' -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				规格
+				<i class="layui-icon layui-tips" lay-tips='设为0或留空表示默认，支持百分比和像素'>&#xe702;</i> 规格
 			</label>
 			<div class="layui-input-inline default-auto">
 				<select id="gdtype" name="gdtype">
@@ -78,9 +68,6 @@
 			</div>
 			<div class="layui-input-inline">
 				<input type="text" name="round" id="round" placeholder="圆角" class="layui-input" />
-			</div>
-			<div class="layui-form-mid">
-				<i class="layui-icon layui-tips" lay-tips='设为0或留空表示默认，支持百分比和像素，具体查看教程：https://www.phpok.com/css-box-radius.html'>&#xe702;</i>
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -240,46 +227,18 @@
 			<label class="layui-form-label">
 				自定义参数
 			</label>
-			<div class="layui-input-block gray" style="line-height:38px;">一行一个参数，参数写法如：keywords=关键字，或 ext[扩展字段]=值，具体请上官网论坛查询</div>
+			<div class="layui-input-block gray">一行一个参数，参数写法如：keywords=关键字，或 ext[扩展字段]=值，具体请上官网论坛查询</div>
 			<div class="layui-input-block">
-				<textarea name="param" id="param" class="layui-textarea" style="resize:none;"></textarea>
+				<textarea name="param" id="param" class="layui-textarea" style="resize:none;height:170px;"></textarea>
 			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				变量替换
 			</label>
-			<div class="layui-input-block gray" style="line-height:38px;">请写完整的变量替换，如 $value.thumb=$value.picture，一行一个</div>
+			<div class="layui-input-block gray">请写完整的变量替换，如 $value.thumb=$value.picture，一行一个</div>
 			<div class="layui-input-block">
-				<textarea name="param-replace" id="param-replace" class="layui-textarea" style="resize:none;"></textarea>
-			</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				模板风格
-			</label>
-			<div class="layui-input-block gray" style="line-height:38px;">官方默认模板放在 _data/design/ 下，用户自身模块放在 tpl/模板目录/design/ 下，<a href="javascript:$.win('模板维护','{url ctrl=design func=tpl/}')" title="">点此维护</a></div>
-			<div class="layui-input-block">
-				<select id="tplfile" name="tplfile" lay-filter="tplfile">
-					<option value="">请选择…</option>
-					<!-- loop from=$tplist key=$key value=$value id=$tmpid -->
-					<optgroup label="{$value.title}">
-						<!-- loop from=$value.rslist key=$k value=$v id=$idxx -->
-						<option value="{$k}">{$v.title}<!-- if $v.title != $k -->（{$k}）<!-- /if --></option>
-						<!-- /loop -->
-					</optgroup>
-					<!-- /loop -->
-				</select>
-			</div>
-			<div class="layui-input-block" style="min-height:160px">
-				<div class="layui-row layui-col-space10">
-					<div class="layui-col-xs4" id="preview">
-				    	
-					</div>
-					<div class="layui-col-xs8" id="note">
-						
-					</div>
-				</div>
+				<textarea name="param-replace" id="param-replace" class="layui-textarea" style="resize:none;height:165px;"></textarea>
 			</div>
 		</div>
 		<script type="text/javascript">
@@ -288,7 +247,6 @@
 		});
 		</script>
 		<!-- /if -->
-		
 	</div>
 </div>
 </form>

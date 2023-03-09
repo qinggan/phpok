@@ -130,23 +130,21 @@
 			}
 			//判断属性
 			if($("input[name=attr]").length>0){
-				var attr = '';
+				var attr = new Array();
 				var showalert = false;
 				$("input[name=attr]").each(function(i){
 					var val = $(this).val();
 					if(!val){
 						showalert = true;
 					}
-					if(attr){
-						attr += ",";
-					}
-					attr += val;
+					attr.push(val);
 				});
-				if(!attr || showalert){
+				if(!attr || attr.length<1 || showalert){
 					$.dialog.alert(p_lang('请选择商品属性'));
 					return false;
 				}
-				url += "&ext="+attr;
+				attr.sort();
+				url += "&ext="+attr.join(',');
 			}
 			//增加优惠方案
 			if($("select[data-name=apps]").length>0){
@@ -154,7 +152,7 @@
 					var val = $(this).val();
 					var name = $(this).attr("data-id");
 					if(val && val != 'undefined' && name){
-						url += "&"+name+"_id="+$.str.encode(val);
+						url += "&"+name+"_id="+val;
 					}
 				});
 			}

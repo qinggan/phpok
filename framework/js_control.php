@@ -125,7 +125,7 @@ class js_control extends phpok_control
 	public function ext_f()
 	{
 		ob_start();
-		header("Content-type: application/x-javascript; charset=UTF-8");
+		header("Content-type: application/x-javascript; charset=utf-8");
 		$js = $this->get("js");
 		if(!$js){
 			exit("\n");
@@ -138,7 +138,9 @@ class js_control extends phpok_control
 	**/
 	public function mini_f()
 	{
-		$this->js_base();
+		$exjquery = $this->get('exjquery','int');
+		$ex = $exjquery == 1 ? false : true;
+		$this->js_base($ex);
 		$ext = $this->get('ext');
 		if($ext){
 			$this->load_ext($ext,true);
@@ -252,7 +254,7 @@ class js_control extends phpok_control
 		if(!$default_list){
 			$default_list = array();
 		}
-		$langs = false;
+		$langs = array();
 		if($this->langid != 'default' && $this->langid != 'cn'){
 			$langfile = $this->dir_root."langs/".$this->langid."/LC_MESSAGES/".$this->app_id.".xml";
 			$langlist = $this->lib('xml')->read($langfile);

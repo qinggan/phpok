@@ -1,0 +1,56 @@
+<!-- include tpl=head_lay nopadding=true -->
+<script type="text/javascript">
+function save(val)
+{
+	var opener = $.dialog.opener;
+	opener.$("#{$input}").val(val);
+	$.dialog.close();
+}
+</script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		<div class="layui-btn-group fl">
+			<input type="button" value="目录：" class="layui-btn layui-btn-sm" />
+			<!-- loop from=$leadlist key=$key value=$value id=$tmpid -->
+			<input type="button" value="{$value.title} /" onclick="$.phpok.go('{$value.url}')" class="layui-btn layui-btn-sm layui-btn-normal" style="border-left:0;" />
+			<!-- /loop -->
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th width="40">&nbsp;</th>
+			<th>{lang名称}</th>
+			<th width="150px">{lang时间}</th>
+			<th width="70px"></th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- loop from=$dirlist key=$key value=$value -->
+		<tr id="{$value.id}">
+			
+			<td align="center"><a href="{$value.url}"><img src="images/filetype/dir.gif" border="0" alt="{lang文件夹}" /></a></td>
+			<td><a href="{$value.url}">{$value.title}</a></td>
+			<td>{$value.date}</td>
+			<td>
+				<input type="button" value="进入" onclick="$.phpok.go('{$value.url}')" class="layui-btn layui-btn-sm" />
+			</td>
+		</tr>
+		<!-- /loop -->
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr id="{$value.id}">
+			
+			<td align="center"><img src="images/filetype/{$value.type}.gif" border="0" alt="文件：{$value.title}"></td>
+			<td>{$value.title}</td>
+			<td>{$value.date}</td>
+			<td>
+				<input type="button" value="提交" onclick="save('{$folder}{$value.title}')" class="layui-btn layui-btn-sm" />
+			</td>
+		</tr>
+		<!-- /loop -->
+		</tbody>
+		</table>
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

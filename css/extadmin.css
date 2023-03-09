@@ -19,7 +19,7 @@ select{
 	appearance:none;
 	-moz-appearance:none;
 	-webkit-appearance:none;
-	background:#fff url("../images/arrow-select.png") no-repeat scroll right center transparent;
+	background:#fff url("../images/arrow-select.png") no-repeat right center;
 }
 select:focus{
 	outline:none;
@@ -64,6 +64,19 @@ img{
 }
 .layui-form-label{
 	overflow:hidden;
+	padding-top:0;
+	padding-left:0;
+	padding-right:0;
+	width:120px;
+}
+
+.layui-form-label + .layui-form-mid{
+	padding-top:0 !important;
+	padding-left:10px !important;
+}
+
+.layui-input-block{
+	margin-left:130px;
 }
 
 .layui-card-header.layuiadmin-card-header-auto{
@@ -80,6 +93,9 @@ img{
 .layui-card-header.auto{
 	height:auto;
 	padding-bottom:5px;
+}
+.layui-form-item .layui-input-inline{
+	margin-left:10px;
 }
 
 .layui-form .layui-form-item .long{
@@ -323,6 +339,10 @@ html .layui-laydate .layui-this {
 }
 .layui-btn-disabled, .layui-btn-disabled:hover, .layui-btn-disabled:active {
 	background-color: #FBFBFB;
+}
+
+.layui-form-radio{
+	margin-top:0;
 }
 
 /* 通过 layui.newphper.com 在线生成的代码 */
@@ -580,3 +600,10 @@ input.submit2:hover{
 .dropdown span.value { display:none; }
 .dropdown dd ul li{ padding:5px; display:block; }
 .dropdown dd ul li:hover { background-color:#d0c9af; }
+/* writeStyleStart */
+@media screen and (max-width: 844px){
+    .layui-form .layui-form-item select[multiple] {
+        height: unset;
+    }
+}
+/* writeStyleEnd */

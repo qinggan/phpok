@@ -25,13 +25,50 @@ class module_model_base extends phpok_model
 			$sql .= " WHERE status='".$status."' ";
 		}
 		$sql.= " ORDER BY taxis ASC,id DESC";
-		return $this->db->get_all($sql,$pri);
+		$rslist = $this->db->get_all($sql,$pri);
+		if(!$rslist){
+			return false;
+		}
+		return $rslist;
+	}
+
+	public function xml_all($rslist)
+	{
+		foreach($rslist as $key=>$value){
+			$rslist[$key] = $this->xml_one($value);
+		}
+		return $rslist;
+	}
+
+	public function xml_one($rs)
+	{
+		if(!$rs){
+			return false;
+		}
+		$file = $this->dir_data.'xml/fields_'.$rs['id'].'.xml';
+		if(!is_file($file)){
+			return $rs;
+		}
+		$tmp = $this->lib('xml')->read($file);
+		if(!$tmp){
+			return $rs;
+		}
+		foreach($tmp as $key=>$value){
+			if(!isset($rs[$key])){
+				$rs[$key] = $value;
+			}
+		}
+		return $rs;
 	}
 
 	public function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."module WHERE id='".$id."'";
-		return $this->db->get_one($sql);
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		return $rs;
 	}
 
 	//取得扩展字段的所有扩展信息
@@ -44,13 +81,12 @@ class module_model_base extends phpok_model
 		if(isset($this->_cache[$cache_id])){
 			return $this->_cache[$cache_id];
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ftype='".$module_id."' ORDER BY taxis ASC,id DESC";
-		$rslist = $this->db->get_all($sql,$pri_id);
-		if($rslist){
-			$this->_cache[$cache_id] = $rslist;
-			return $rslist;
+		$rslist = $this->model('fields')->flist($module_id,$pri_id);
+		if(!$rslist){
+			return false;
 		}
-		return false;
+		$this->_cache[$cache_id] = $rslist;
+		return $rslist;
 	}
 
 	public function f_all($condition='')
@@ -60,7 +96,12 @@ class module_model_base extends phpok_model
 			$sql .= " WHERE ".$condition." ";
 		}
 		$sql.= " ORDER BY taxis ASC,id DESC";
-		return $this->db->get_all($sql);
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		$rslist = $this->xml_all($rslist);
+		return $rslist;
 	}
 
 	//检查表是否存在
@@ -94,8 +135,7 @@ class module_model_base extends phpok_model
 	**/
 	public function field_one($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id='".$id."'";
-		return $this->db->get_one($sql);
+		return $this->model('fields')->one($id);
 	}
 
 	/**

@@ -13,6 +13,7 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class session_default extends session
 {
 	public $path_dir = '';
+	public $save_handler = 'files';
 	public function __construct($config)
 	{
 		parent::__construct($config);
@@ -27,5 +28,8 @@ class session_default extends session
 	{
 		parent::config($config);
 		$this->path_dir = $config['path'] ? $config['path'] : '';
+		if($config['save_handler'] == 'redis' || $config['save_handler'] == 'memcache'){
+			ini_set("session.save_handler", $config['save_handler']);
+		}
 	}
 }

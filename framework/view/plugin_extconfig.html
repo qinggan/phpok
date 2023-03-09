@@ -34,7 +34,7 @@ function save()
 				<select id="sys-pid" name="sys-pid">
 					<option value="">请选择…</option>
 					<!-- loop from=$plist key=$key value=$value id=$tmpid -->
-					<option value="{$value.id}" {if $rs.pid && $rs.pid==$value.id} selected{/if}>{$value.space}{$value.title}<!-- if !$value.status -->/已禁用<!-- /if --><!-- if !$value.module -->/未绑定模块<!-- /if --></option>
+					<option value="{$value.id}" {if $rs.pid && $rs.pid==$value.id} selected{/if}>{$value.space}{$value.title}<!-- if !$value.status --> / 已禁用<!-- /if --><!-- if !$value.module --> / 未绑定模块<!-- /if --><!-- if $value.hidden --> / 已隐藏<!-- /if --></option>
 					<!-- /loop -->
 				</select>
 			</div>
@@ -48,7 +48,7 @@ function save()
 			</label>
 			<div class="layui-input-block">
 				<!-- loop from=$plist key=$key value=$value id=$tmpid -->
-				<input type="checkbox" name="sys-pids[]" id="sys-pids-{$value.id}" value="{$value.id}" title="{$value.title}" {if $rs.pids && in_array($value.id,$rs.pids)} selected{/if} />
+				<input type="checkbox" name="sys-pids[]" id="sys-pids-{$value.id}" value="{$value.id}" title="{$value.title}" {if $rs.pids && in_array($value.id,$rs.pids)} checked{/if} />
 				<!-- /loop -->
 			</div>
 			<div class="layui-input-block mtop">数组模式，适用于多个项目，程序中可以直接使用 <kbd>$this->pids</kbd> </div>

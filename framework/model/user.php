@@ -83,7 +83,8 @@ class user_model_base extends phpok_model
 		$wealth = array();
 		foreach($wlist as $key=>$value){
 			$val = number_format(0,$value['dnum']);
-			$wealth[$value['identifier']] = array('id'=>$value['id'],'title'=>$value['title'],'val'=>$val,'unit'=>$value['unit'],'thumb'=>$value['thumb'],'iconfont'=>$value['iconfont']);
+			$value['val'] = $val;
+			$wealth[$value['identifier']] = $value;
 		}
 		$condition = "uid='".$uid."'";
 		$tlist = $this->model('wealth')->vals($condition);
@@ -96,14 +97,14 @@ class user_model_base extends phpok_model
 		}
 		if($wid){
 			if(is_numeric($wid)){
-				$tmp = false;
+				$tmp = array();
 				foreach($wealth as $key=>$value){
 					if($value['id'] == $wid){
 						$tmp = $value;
 						break;
 					}
 				}
-				if(!$tmp){
+				if(!$tmp && count($tmp)<1){
 					return false;
 				}
 				if($return == 'array'){

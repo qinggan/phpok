@@ -651,7 +651,7 @@ class order_model_base extends phpok_model
 		if(!$wealthlist){
 			return false;
 		}
-		$wlist = false;
+		$wlist = array();
 		foreach($wealthlist as $key=>$value){
 			if(!$value['ifcash']){
 				continue;
@@ -665,13 +665,20 @@ class order_model_base extends phpok_model
 			}
 			$tmp = $value;
 			$tmp['val'] = $val;
-			$tmp['price'] = round($val*$value['cash_ratio']/100,$value['dnum']);
-			if(!$wlist){
-				$wlist = array();
-			}
 			if($value['ifpay']){
+				$tmp['price'] = round($val*$value['cash_ratio']/100,$value['dnum']);
 				$wlist['balance'][$tmp['id']] = $tmp;
 			}else{
+				$tmpval = intval($val/100)*100;
+				$list = array();
+				$total = intval($tmpval/100);
+				for($i=0;$i<=$total;$i++){
+					$i_val = $i*100;
+					$tmptitle = $i>0 ? ($i_val.' '.$value['unit']) : P_Lang('不使用');
+					$list[] = array('val'=>$i_val,'title'=>$tmptitle);
+				}
+				$tmp['price'] = round($tmpval*$value['cash_ratio']/100,$value['dnum']);
+				$tmp['list'] = $list;
 				$wlist['integral'][$tmp['id']] = $tmp;
 			}
 		}
@@ -684,7 +691,7 @@ class order_model_base extends phpok_model
 	/**
 	 * 获取订单编号
 	**/
-	public function create_sn()
+	public function create_sn($user_id=0)
 	{
 		$sntype = $this->site['biz_sn'];
 		if(!$sntype){
@@ -735,7 +742,11 @@ class order_model_base extends phpok_model
 			}
 			//包含用户信息
 			if($value == 'user'){
-				$sn .= $this->session->val('user_id') ? 'U'.str_pad($this->session->val('user_id'),5,'0',STR_PAD_LEFT) : 'G';
+				if($user_id){
+					$sn .= 'U'.str_pad($user_id,5,'0',STR_PAD_LEFT);
+				}else{
+					$sn .= $this->session->val('user_id') ? 'U'.str_pad($this->session->val('user_id'),5,'0',STR_PAD_LEFT) : 'G';
+				}
 			}
 			if(substr($value,0,6) == 'prefix'){
 				$sn .= str_replace(array('prefix','[',']'),'',$value);

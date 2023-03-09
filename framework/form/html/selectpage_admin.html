@@ -1,0 +1,71 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list,is_multiple,field_show,field_value,selectpage_psize" />
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang数据来源：}
+	</label>
+	<div class="layui-input-inline default-auto">
+		<select name="option_list" id="option_list">
+			<option value="">{lang请选择…}</option>
+			<!-- if $title_list -->
+			<optgroup label="{lang主题}">
+				<!-- loop from=$title_list key=$key value=$value -->
+				<option value="title:{$value.id}"{if $rs.option_list == "title:".$value.id} selected{/if}>{$value.title}</option>
+				<!-- /loop -->
+			</optgroup>
+			<!-- /if -->
+			<!-- loop from=$ext_sitelist key=$key value=$value id=$tmpid -->
+			<!-- if $value.mlist -->
+			<optgroup label="{lang主题}_{lang站点ID：}{$value.id}_{$value.title}">
+				<!-- loop from=$value.mlist key=$k value=$v -->
+				<option value="title:{$v.id}"{if $rs.option_list == "title:".$v.id} selected{/if}>{$v.title}</option>
+				<!-- /loop -->
+			</optgroup>
+			<!-- /if -->
+			<!-- /loop -->
+		</select>
+	</div>
+	<div class="layui-form-mid">
+		{lang请选择数据来源}
+	</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang属性：}
+	</label>
+	<div class="layui-input-inline auto">
+		<input type="radio" name="is_multiple" value="0"{if !$rs.is_multiple} checked {/if} title="{lang单选}" />
+		<input type="radio" name="is_multiple" value="1"{if $rs.is_multiple} checked {/if} title="{lang多选}" /> 
+	</div>
+	<div class="layui-form-mid">
+		{lang设置下拉的类型}
+	</div>
+</div>
+
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang存储字段：}
+	</label>
+	<div class="layui-input-inline">
+		<input type="text" name="field_value" id="field_value" class="layui-input" value="{$rs.field_value}" />
+	</div>
+	<div class="layui-form-mid">用于存储的字段ID，不清楚请联系开发人员</div>
+</div>
+
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang显示字段：}
+	</label>
+	<div class="layui-input-inline">
+		<input type="text" name="field_show" id="field_show" class="layui-input" value="{$rs.field_show}" />
+	</div>
+	<div class="layui-form-mid">用于显示的字段ID，不清楚请联系开发人员</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang下拉数量：}
+	</label>
+	<div class="layui-input-inline">
+		<input type="text" name="selectpage_psize" id="selectpage_psize" class="layui-input" value="{$rs.selectpage_psize}" />
+	</div>
+	<div class="layui-form-mid">超出此数量将分页</div>
+</div>

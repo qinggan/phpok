@@ -30,6 +30,27 @@
 				'cancel':true
 			});
 		},
+		pl:function()
+		{
+			var url = get_url('tag', 'pl');
+			$.dialog.open(url, {
+				'title': p_lang('批量添加标签'),
+				'width': '560px',
+				'height': '400px',
+				'lock': true,
+				'okVal': p_lang('提交保存'),
+				'ok': function () {
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					iframe.save();
+					return false;
+				},
+				'cancel': true
+			});
+		},
 		edit:function(id)
 		{
 			var url = get_url('tag','set','id='+id);

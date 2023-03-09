@@ -1,31 +1,5 @@
 <!-- include tpl=header -->
-{$page_rs.content}
-<!-- 图片轮播 -->
-<!-- php:$slider = phpok('picplayer') -->
-<!-- if $slider && $slider.rslist -->
-<div id="slider_{$slider.project.id}" class="carousel slide" data-ride="carousel">
-	<ol class="carousel-indicators">
-		<!-- loop from=$slider.rslist key=$key value=$value id=$tmpid -->
-		<li data-target="#slider_{$slider.project.id}" data-slide-to="{$tmpid.index}"{if !$tmpid.index} class="active"{/if}></li>
-		<!-- /loop -->
-	</ol>
-	<div class="carousel-inner">
-		<!-- loop from=$slider.rslist key=$key value=$value id=$tmpid -->
-		<div class="carousel-item{if !$tmpid.index} active{/if}">
-			<a href="{$value.linkurl ? $value.linkurl : 'javascript:void(0);'}" title="{$value.title}" {if $value.linkurl} target="{$value.target}"{/if}><img src="{$value.banner.filename}" class="d-block w-100" alt="{$value.title}" /></a>
-		</div>
-		<!-- /loop -->
-	</div>
-	<a class="carousel-control-prev" href="#slider_{$slider.project.id}" role="button" data-slide="prev">
-		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">下一张</span>
-	</a>
-	<a class="carousel-control-next" href="#slider_{$slider.project.id}" role="button" data-slide="next">
-		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">下一张</span>
-	</a>
-</div>
-<!-- /if -->
+<!-- include tpl=block/picplayer -->
 <section class="index-search">
 	<div class="container">
 		<div class="row">
@@ -51,7 +25,7 @@
 		</div>
 	</div>
 </section>
-
+<!-- include tpl=block/stat info=$page_rs.statcount -->
 <!-- 产品展示 -->
 <!-- php:$products = phpok('new_products') -->
 <!-- if $products -->
@@ -115,7 +89,7 @@
 <!-- /if -->
 
 <!-- 新闻资讯，涉及到图片及文字，所以左边的新闻右边就不重复调用，直接引用PHP文件 -->
-<!-- include file=arc-index -->
+<!-- include file=arc-index js=js/jquery.countup.min.js -->
 <!-- if $arclist || $piclist -->
 <section class="container">
 	<div class="row p-4 mb-4">

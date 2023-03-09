@@ -29,94 +29,96 @@ function check_save()
             return false;
         }
     }
+    var t = $.dialog.tips('正在保存中，请稍候……',10).lock();
     $("#post_save").ajaxSubmit({
     	'url':get_url('email','setok'),
     	'type':'post',
     	'dataType':'json',
     	'success':function(rs){
     		if(rs.status){
-	    		$.dialog.tips(rs.info,function(){
+	    		t.config.close = function(){
 		    		$.admin.close();
-		    	}).lock().time(1);
+	    		};
+	    		t.content('操作成功').time(1);
     			return true;
     		}
-    		$.dialog.alert(rs.info);
+    		t.content(rs.info).time(1);
     		return false;
     	}
     });
     return false;
 }
 </script>
+<form method="post" id="post_save" class="layui-form" onsubmit="return check_save()">
 <div class="layui-card">
-	<form method="post" id="post_save" class="layui-form" onsubmit="return check_save()">
-		<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
-		<div class="layui-card-body">
-			<blockquote class="layui-elem-quote">
-				{lang短信模板以标识：}<b class="layui-bg-red">sms_</b> {lang开头}{lang，}{lang发送的内容不带样式}<br/>
-				{lang部分短信接口不支持内容，只允许使用变量参数，这时内容是一行一条格式是：变量名:模板变量}<br/>
-				允许自定义的短信内容都有自身规范，建议使用阿里提供的短信<br/>
-				短信长度不要超过<b class="layui-bg-red">50字</b>（请注意变量可能用到的长度）
-			</blockquote>
+	<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
+	<div class="layui-card-body">
+		<blockquote class="layui-elem-quote">
+			{lang短信模板以标识：}<b class="layui-bg-red">sms_</b> {lang开头}{lang，}{lang发送的内容不带样式}<br/>
+			{lang部分短信接口不支持内容，只允许使用变量参数，这时内容是一行一条格式是：变量名:模板变量}<br/>
+			允许自定义的短信内容都有自身规范，建议使用阿里提供的短信<br/>
+			短信长度不要超过<b class="layui-bg-red">50字</b>（请注意变量可能用到的长度）
+		</blockquote>
+		<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
 			<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
-				<div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 10px;">
-					
-				</div>
-			</div>
-			<!-- php:$identifier = $rs.identifier ? $rs.identifier : ($type == 'sms' ? 'sms_' : 'email_') -->
-			<div class="layui-form-item">
-				<label class="layui-form-label">{lang标识}</label>
-				<div class="layui-input-inline" style="width: 450px">
-					<input type="text" id="identifier" name="identifier" value="{$identifier}" required lay-verify="required" autocomplete="off" class="layui-input" />
-				</div>
-				<div class="layui-form-mid layui-word-aux">
-					{lang该标识用于调用}<!-- if $type == 'sms' -->{lang，}{lang短信模板请以：}<span class="red">sms_</span> {lang开头}<!-- else -->{lang禁止使用} sms_ {lang开头}<!-- /if -->
-				</div>
-			</div>
-			<!-- if $type == 'sms' -->
-			<div class="layui-form-item">
-				<label class="layui-form-label">{lang模板标签}</label>
-				<div class="layui-input-inline" style="width: 450px">
-					<input type="text" id="title" name="title" value="{$rs.title}" required lay-verify="required" autocomplete="off" class="layui-input" />
-				</div>
-				<div class="layui-form-mid layui-word-aux">
-					{lang适用于阿里云短信等需要使用标签的地方，使用标签后，内容将可能是无效的}
-				</div>
-			</div>
-			<!-- else -->
-			<div class="layui-form-item">
-				<label class="layui-form-label">{lang邮件标题}</label>
-				<div class="layui-input-inline" style="width: 450px">
-					<input type="text" id="title" name="title" value="{$rs.title}" required lay-verify="required" autocomplete="off" class="layui-input" />
-				</div>
-				<div class="layui-form-mid layui-word-aux">
-					{lang可以简单的使用PHPOK变量}
-				</div>
-			</div>
-			<!-- /if -->
-			<div class="layui-form-item">
-				<label class="layui-form-label">{lang备注}</label>
-				<div class="layui-input-inline" style="width: 450px">
-					<input type="text" name="note" id="note" value="{$rs.note}" autocomplete="off" class="layui-input" />
-				</div>
-				<div class="layui-form-mid layui-word-aux">
-					{lang对该模板内容的一些备注，建议使用您熟悉的语言}
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">{lang内容}</label>
-				<div class="layui-input-inline" style="width: 80%">
-					{$edit_content}
-				</div>
+				
 			</div>
 		</div>
-		<div class="layui-form-item layui-layout-admin">
-			<div class="layui-input-block">
-				<div class="layui-footer"  style="left: 0;z-index:10">
-					<button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
-					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
-				</div>
+		<!-- php:$identifier = $rs.identifier ? $rs.identifier : ($type == 'sms' ? 'sms_' : 'email_') -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang标识}</label>
+			<div class="layui-input-inline" style="width: 450px">
+				<input type="text" id="identifier" name="identifier" value="{$identifier}" required lay-verify="required" autocomplete="off" class="layui-input" />
+			</div>
+			<div class="layui-form-mid layui-word-aux">
+				{lang该标识用于调用}<!-- if $type == 'sms' -->{lang，}{lang短信模板请以：}<span class="red">sms_</span> {lang开头}<!-- else -->{lang禁止使用} sms_ {lang开头}<!-- /if -->
 			</div>
 		</div>
-	</form>
+		<!-- if $type == 'sms' -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang模板标签}</label>
+			<div class="layui-input-inline" style="width: 450px">
+				<input type="text" id="title" name="title" value="{$rs.title}" required lay-verify="required" autocomplete="off" class="layui-input" />
+			</div>
+			<div class="layui-form-mid layui-word-aux">
+				{lang适用于阿里云短信等需要使用标签的地方，使用标签后，内容将可能是无效的}
+			</div>
+		</div>
+		<!-- else -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang邮件标题}</label>
+			<div class="layui-input-inline" style="width: 450px">
+				<input type="text" id="title" name="title" value="{$rs.title}" required lay-verify="required" autocomplete="off" class="layui-input" />
+			</div>
+			<div class="layui-form-mid layui-word-aux">
+				{lang可以简单的使用PHPOK变量}
+			</div>
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang备注}</label>
+			<div class="layui-input-inline" style="width: 450px">
+				<input type="text" name="note" id="note" value="{$rs.note}" autocomplete="off" class="layui-input" />
+			</div>
+			<div class="layui-form-mid layui-word-aux">
+				{lang对该模板内容的一些备注，建议使用您熟悉的语言}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">{lang内容}</label>
+			<div class="layui-input-inline" style="width: 80%">
+				{$edit_content}
+			</div>
+		</div>
+	</div>
 </div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+</form>
+
 <!-- include tpl=foot_lay -->

@@ -31,7 +31,7 @@ class upload_control extends phpok_control
 			$this->json($tip);
 		}
 		unset($rs['status']);
-		$rs['uploadtime'] = date("Y-m-d H:i:s",$rs['addtime']); 
+		$rs['uploadtime'] = date("Y-m-d H:i:s",$rs['addtime']);
 		$this->json($rs,true);
 	}
 
@@ -183,7 +183,7 @@ class upload_control extends phpok_control
 			$this->json(P_Lang('请传递正确的附件ID'));
 		}
 		$rslist = $this->model("res")->get_list_from_id($id);
-		
+
 		if($rslist){
 			$tmplist = array();
 			foreach($rslist as $key=>$value){
@@ -243,6 +243,12 @@ class upload_control extends phpok_control
 			$this->assign('isvideo',true);
 		}
 		$this->assign('rs',$rs);
+		if(strpos($rs['filename'],'://') !== false || substr($rs['filename'],0,2) == '//'){
+			$full_links = $rs['filename'];
+		}else{
+			$full_links = $this->config['url'].$rs['filename'];
+		}
+		$this->assign('full_links',$full_links);
 		$this->view('res_openview');
 	}
 

@@ -11,8 +11,13 @@
 		</div>
 		<!-- if $session.admin_rs.if_system || $popedom.add -->
 		<div class="layui-btn-group fr">
-			<!-- if $session.admin_rs.if_system --><button class="layui-btn layui-btn-sm" onclick="$.admin_tag.config();void(0);">{lang配置标签}</button><!-- /if -->
-			<!-- if $popedom.add --><button class="layui-btn layui-btn-sm" onclick="$.admin_tag.add();void(0);">{lang添加标签}</button><!-- /if -->
+			<!-- if $session.admin_rs.if_system -->
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_tag.config();">{lang配置标签}</button>
+			<!-- /if -->
+			<!-- if $popedom.add -->
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_tag.add();">{lang添加标签}</button>
+			<button class="layui-btn layui-btn-sm" onclick="$.admin_tag.pl();">{lang批量添加}</button>
+			<!-- /if -->
 		</div>
 		<!-- /if -->
 	</div>
@@ -28,7 +33,7 @@
 			<th width="70" class="center">{lang替换次数}</th>
 			<th width="90" class="center">{lang主题数}</th>
 			<th width="90" class="center">{lang点击数}</th>
-			<th>{lang操作}</th>
+			<th width="140">{lang操作}</th>
 		</tr>
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value -->
@@ -47,9 +52,9 @@
 			<td class="center">{$value.hits ? $value.hits : 0}</td>
 			<td>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang编辑}" onclick="$.admin_tag.edit('{$value.id}')" class="layui-btn  layui-btn-sm" />
-					<input type="button" value="{lang节点管理器}" onclick="$.admin_tag.nodelist('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm" />
-					<input type="button" value="{lang删除}" onclick="$.admin_tag.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+					<input type="button" value="{lang编辑}" onclick="$.admin_tag.edit('{$value.id}')" class="layui-btn  layui-btn-xs" />
+					<input type="button" value="{lang节点管理器}" onclick="$.admin_tag.nodelist('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-xs" />
+					<input type="button" value="{lang删除}" onclick="$.admin_tag.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-xs layui-btn-danger" />
 				</div>
 			</td>
 		</tr>

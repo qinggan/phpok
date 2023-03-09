@@ -1,17 +1,28 @@
-<!-- include tpl=head_lay nopadding=true -->
-<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_reply.edit_ok()">
 <input type="hidden" name="id" value="{$id}" />
+<!-- if $title_rs -->
 <div class="layui-card">
+	<div class="layui-card-header">
+		<b>原文主题：</b>{$title_rs.title}
+		<span class="darkblue i fr">{lang发布时间} {func date 'Y-m-d H:i:s' $title_rs.dateline}</span>
+	</div>
 	<div class="layui-card-body">
-		<div class="help">
-			<div class="title red">
-				{$rs.title}
-				<!-- if $title_rs --><span class="darkblue i">{lang发布时间} {func date 'Y-m-d H:i:s' $title_rs.dateline}</span><!-- /if -->
-			</div>
-			<!-- if $title_rs && $title_rs.content -->
-			<div class="content">{func phpok_cut $title_rs.content 255 …}</div>
-			<!-- /if -->
+		<div class="content">{func phpok_cut $title_rs.content 255 …}</div>
+		<!-- if $rs.vtype == 'title' -->
+		<div align="center">
+			<a href="{$sys.url}{$sys.www_file}?id={$title_rs.id}" target="_blank" class="layui-btn layui-btn-sm">查看原文</a>
 		</div>
+		<!-- /if -->
+	</div>
+</div>
+<!-- /if -->
+
+<div class="layui-card">
+	<div class="layui-card-header">
+		{$rs.title}
+	</div>
+	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang评论星级}
@@ -49,7 +60,24 @@
 				<input type="radio" name="status" id="status_1" value="1"{if $rs.status} checked{/if} title="{lang已审核}" />
 			</div>
 		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang推荐}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="vouch" id="vouch_0" value="0"{if !$rs.vouch} checked{/if} title="{lang否}" />
+				<input type="radio" name="vouch" id="vouch_1" value="1"{if $rs.vouch} checked{/if} title="{lang是}" />
+			</div>
+		</div>
 	</div>
 </div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+
 </form>
 <!-- include tpl=foot_lay -->

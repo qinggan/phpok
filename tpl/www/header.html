@@ -15,10 +15,6 @@
 					<!-- if $session.user_id -->
 					<a class="p-1" href="{url ctrl=usercp/}">个人中心</a>
 					<span class="p-1">|</span>
-					<!-- if $pm -->
-					<a class="p-1" href="{url ctrl=pm/}">短消息<!-- if $pm.total --><sup class="text-danger">●</sup><!-- /if --></a>
-					<span class="p-1">|</span>
-					<!-- /if -->
 					<a class="p-1" href="javascript:$.user.logout('{$session.user_name}');void(0);">退出</a>
 					<!-- else -->
 						<!-- if $config.login_status -->
@@ -38,6 +34,10 @@
 					<!-- /loop -->
 					<!-- if $config.biz_status -->
 					<span class="p-1">|</span>
+					<a class="p-1" href="{url ctrl=cart func=quick/}">
+						快速订单
+					</a>
+					<span class="p-1">|</span>
 					<a class="p-1" href="{url ctrl=cart/}">
 						购物车 <i class="fa fa-shopping-cart"></i>
 						<span id="head_cart_num" class="badge text-light badge-danger" style="display:none;">0</span>
@@ -50,10 +50,10 @@
 	<section class="headnav">
 		<div class="container">
 			<div class="row">
-				<div class="col-9 col-lg-3 mt-3 mb-3">
+				<div class="col-9 col-lg-2 mt-3 mb-3">
 					<a href="{$sys.url}" title="{$config.title}" class="align-middle"><img src="{$config.logo}" alt="{$config.title}" class="logo" /></a>
 				</div>
-				<div class="col-lg-9 d-none d-lg-block mt-3">
+				<div class="col-lg-10 d-none d-lg-block mt-3">
 					<ul class="nav justify-content-end">
 						<!-- php:$list = menu("top") -->
 						<!-- loop from=$list key=$key value=$value id=$tmpid -->

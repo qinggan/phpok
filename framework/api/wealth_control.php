@@ -55,6 +55,10 @@ class wealth_control extends phpok_control
 		if(!$this->session->val('user_id')){
 			$this->error(P_Lang('非用户不能执行此操作'));
 		}
+		$me = $this->model('user')->get_one($this->session->val('user_id'));
+		if(!$me || !$me['status'] || $me['status'] == 2){
+			$this->error('用户信息不存在或未审核或已锁定');
+		}
 		$id = $this->get('id','int');
 		if(!$id){
 			$this->error(P_Lang('未指定财富规则'));
@@ -63,7 +67,9 @@ class wealth_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('财富信息不存在'));
 		}
+		$rs['val'] = $me['wealth'][$rs['identifier']]['val'];
 		$data = array('id'=>$id,'rs'=>$rs);
+		$data['val'] = $me['wealth'][$rs['identifier']]['val'];
 		$pageid = $this->get('pageid','int');
 		if(!$pageid){
 			$pageid = 1;
@@ -74,10 +80,17 @@ class wealth_control extends phpok_control
 		$total = $this->model('wealth')->log_total($condition);
 		if($total){
 			$rslist = $this->model('wealth')->log_list($condition,$offset,$psize);
+			if($rslist){
+				foreach($rslist as $key=>$value){
+					$value['dateline_format'] = date("Y-m-d H:i:s",$value['dateline']);
+					$rslist[$key] = $value;
+				}
+			}
 			$data['psize'] = $psize;
 			$data['offset'] = $offset;
 			$data['pageid'] = $pageid;
 			$data['rslist'] = $rslist;
+			$data['total'] = $total;
 		}
 		$this->success($data);
 	}

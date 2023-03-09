@@ -1,7 +1,10 @@
 <!-- include tpl=head_lay -->
 <div class="layui-card">
 	<div class="layui-card-header">
-		数据库管理
+		<div class="layui-btn-group">
+			<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_sql.backup_all()">{lang备份全部表}</button>
+			<input type="button" value="导出表结构" onclick="$.admin_sql.tbl_export('all')" class="layui-btn layui-btn-sm layui-btn-danger" />
+		</div>
 		<div class="fr">
 			<button type="button" class="layui-btn layui-btn-sm" onclick="$.win('{lang已备份列表}','{url ctrl=sql func=backlist/}')">{lang已备份列表}</button>
 		</div>
@@ -10,15 +13,15 @@
 		<table class="layui-table layui-form">
 				<thead>
 				<tr>
-					<th class="id">{lang选项}</th>
+					<th class="id" style="width:40px;"></th>
 					<th>{lang表名}</th>
 					<th>{lang引挈}</th>
 					<th>{lang字符集}</th>
-					<th class="lft">&nbsp;{lang记录数}</th>
-					<th class="lft">&nbsp;{lang大小}</th>
-					<th>{lang更新时间}</th>
-					<th class="lft">&nbsp;{lang碎片}</th>
-					<th>&nbsp;</th>
+					<th class="lft" style="width:40px;">&nbsp;{lang数据}</th>
+					<th class="lft" style="width:40px;">&nbsp;{lang大小}</th>
+					<th style="width:80px;">{lang更新时间}</th>
+					<th class="lft" style="width:40px;">&nbsp;{lang碎片}</th>
+					<th style="width:70px;">&nbsp;</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -26,7 +29,7 @@
 				<tr id="edit_{$value.id}">
 					<td align="center">
 						<input type="checkbox" id="tbl_{$value.Name}" name="tbl[]" {if $value.free} sign="free"{/if} value="{$value.Name}" lay-skin="primary"/></td>
-					<td>{$value.Name}<!-- if $value.Comment -->（{$value.Comment})<!-- /if --></td>
+					<td>{$value.Name}<!-- if $value.Comment --><div class="gray">{$value.Comment}</div><!-- /if --></td>
 					<td>{$value.Engine}</td>
 					<td>{$value.Collation}</td>
 					<td>{$value.Rows}</td>
@@ -35,9 +38,9 @@
 					<td{if $value.free} style="background:red;"{/if}>{$value.free}</td>
 					<td>
 						<div class="layui-btn-group">
-							<input type="button" value="{lang明细}" onclick="$.admin_sql.show('{$value.Name}')" class="layui-btn  layui-btn-sm" />
+							<input type="button" value="{lang明细}" onclick="$.admin_sql.show('{$value.Name}')" class="layui-btn  layui-btn-xs" />
 							<!-- if $value.delete -->
-							<input type="button" value="{lang删除}" onclick="$.admin_rewrite.del('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-sm" />
+							<input type="button" value="{lang删除}" onclick="$.admin_rewrite.del('{$value.id}','{$value.title}')" class="layui-btn  layui-btn-xs layui-btn-danger" />
 							<!-- /if -->
 						</div>
 					</td>
@@ -63,6 +66,7 @@
 				<!-- /if -->
 				<!-- if $popedom.create -->
 				<input type="button" value="{lang备份}" onclick="$.admin_sql.backup()" class="layui-btn  layui-btn-sm" />
+				<input type="button" value="{lang导出表结构图}" onclick="$.admin_sql.tbl_export()" class="layui-btn  layui-btn-sm" />
 				<!-- /if -->
 			</div>
 			<!-- /if -->

@@ -37,17 +37,12 @@ class login_control extends phpok_control
 		if(!$backurl){
 			$backurl = $this->config['url'];
 		}
+		if($this->session->val('user_id')){
+			$this->_location($backurl);
+		}
 		if(!$this->site['login_status']){
 			$tips = $this->site["login_close"] ? $this->site["login_close"] : P_Lang('网站关闭');
 			$this->error($tips);
-		}
-		$check_sms = $this->model('gateway')->get_default('sms');
-		if($this->site['login_type'] && $this->site['login_type'] == 'sms' && $check_sms){
-			$this->_location($this->url('login','sms'));
-		}
-		$check_email = $this->model('gateway')->get_default('email');
-		if($this->site['login_type'] && $this->site['login_type'] == 'email' && $check_email){
-			$this->_location($this->url('login','email'));
 		}
 		$tplfile = $this->model('site')->tpl_file('login','index');
 		if(!$tplfile){
@@ -55,8 +50,10 @@ class login_control extends phpok_control
 		}
 		$this->assign("_back",$backurl);
 		$this->assign('is_vcode',$this->model('site')->vcode('system','login'));
-		$this->assign('login_email',$check_email);
-		$this->assign('login_sms',$check_sms);
+		$check_sms = $this->model('gateway')->get_default('sms');
+		$this->assign('login_sms',($check_sms && $this->site['login_type_sms']) ? true : false);
+		$check_email = $this->model('gateway')->get_default('email');
+		$this->assign('login_email',($check_email && $this->site['login_type_email']) ? true : false);
 		$this->view($tplfile);
 	}
 
@@ -119,7 +116,6 @@ class login_control extends phpok_control
 		$this->assign('login_sms',$check_sms);
 		$this->view($tplfile);
 	}
-	
 
 	/**
 	 * 基于WEB的登录模式，有返回有跳转，适用于需要嵌入第三方HTML代码使用
@@ -183,6 +179,7 @@ class login_control extends phpok_control
 		$this->session->assign('user_id',$user_rs['id']);
 		$this->session->assign('user_gid',$user_rs['group_id']);
 		$this->session->assign('user_name',$user_rs['user']);
+		$this->session->assign('user_status',$user_rs['status']);
 		//接入财富
 		$this->model('wealth')->login($user_rs['id'],P_Lang('用户登录'));
 		$this->success(P_Lang('用户登录成功'),$_back);
@@ -232,15 +229,15 @@ class login_control extends phpok_control
 		if(!$server && !$sms_server){
 			$this->error(P_Lang('未配置好邮件/短信通知功能，请联系管理员'),$this->url);
 		}
-		if($server){
+		if($server && $this->site['login_type_email']){
 			$this->assign('check_email',true);
 		}
-		if($sms_server){
+		if($sms_server && $this->site['login_type_sms']){
 			$this->assign('check_sms',true);
 		}
 		$type_id = $this->get('type_id');
 		if(!$type_id || !in_array($type_id,array('email','sms'))){
-			$type_id = $server ? 'email' : 'sms';
+			$type_id = ($server && $this->site['login_type_email']) ? 'email' : 'sms';
 		}
 		$this->assign('type_id',$type_id);
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);

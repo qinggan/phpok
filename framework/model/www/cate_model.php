@@ -29,15 +29,11 @@ class cate_model extends cate_model_base
 	//格式化分类数组
 	private function _format(&$rslist,$tmplist,$parent_id=0,$layer=0)
 	{
-		foreach($tmplist AS $key=>$value)
-		{
-			if($value["parent_id"] == $parent_id)
-			{
+		foreach($tmplist as $key=>$value){
+			if($value["parent_id"] == $parent_id){
 				$is_end = true;
-				foreach($tmplist AS $k=>$v)
-				{
-					if($v["parent_id"] == $value["id"])
-					{
+				foreach($tmplist as $k=>$v){
+					if($v["parent_id"] == $value["id"]){
 						$is_end = false;
 						break;
 					}
@@ -74,18 +70,14 @@ class cate_model extends cate_model_base
 	//读取子类
 	public function sublist(&$catelist,$parent_id=0,$cate_all=0)
 	{
-		if(!$cate_all)
-		{
+		if(!$cate_all){
 			$cate_all = $this->cate_all();
 		}
-		if(!$cate_all || !is_array($cate_all))
-		{
+		if(!$cate_all || !is_array($cate_all)){
 			return false;
 		}
-		foreach($cate_all as $key=>$value)
-		{
-			if($value['parent_id'] == $parent_id)
-			{
+		foreach($cate_all as $key=>$value){
+			if($value['parent_id'] == $parent_id){
 				$catelist[] = $value;
 				$this->sublist($catelist,$value['id'],$cate_all);
 			}
@@ -97,15 +89,12 @@ class cate_model extends cate_model_base
 	{
 		if(!$list || !is_array($list)) return false;
 		$rslist = array();
-		foreach($list AS $key=>$value)
-		{
+		foreach($list as $key=>$value){
 			$value["_space"] = "";
-			for($i=0;$i<$value["_layer"];$i++)
-			{
+			for($i=0;$i<$value["_layer"];$i++){
 				$value["_space"] .= "&nbsp; &nbsp;│";
 			}
-			if($value["_is_end"] && $value["_layer"])
-			{
+			if($value["_is_end"] && $value["_layer"]){
 				$value["_space"] .= "&nbsp; &nbsp;├";
 			}
 			$rslist[$key] = $value;

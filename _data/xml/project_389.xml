@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<admin-post-style><![CDATA[0]]></admin-post-style>
+	<admin-post-width><![CDATA[500]]></admin-post-width>
+	<admin-post-height><![CDATA[70%]]></admin-post-height>
+	<layout><![CDATA[sort,sitename,linkurl,target,logo,tel]]></layout>
+</root>

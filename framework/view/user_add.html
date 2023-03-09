@@ -76,8 +76,21 @@
 				<input type="radio" name="status" id="status_0" value="0"{if !$rs.status} checked{/if} title="{lang未审核}" />
 				<input type="radio" name="status" id="status_1" value="1"{if $rs.status == 1} checked{/if} title="{lang正常}" />
 				<input type="radio" name="status" id="status_2" value="2"{if $rs.status == 2} checked{/if} title="{lang锁定}" />
+				<input type="radio" name="status" id="status_3" value="3"{if $rs.status == 3} checked{/if} title="{lang禁言}" />
 			</div>
 			<div class="layui-input-inline auto gray lh38">{lang设置用户状态，未审核及锁定用户不能登录}</div>
+		</div>
+		<div class="layui-form-item layui-form-text" id="user_lock" style="display:{if $rs.status == 2}block{else}none{/if}" />
+			<label class="layui-form-label">{lang锁定原因}</label>
+			<div class="layui-input-block">
+				<input type="text" id="lock_reason" name="lock_reason" placeholder="{lang请输入账号锁定的原因}" class="layui-input" value="{$rs.lock_reason ? $rs.lock_reason : '违反平台用户行为规则'}" />
+			</div>
+		</div>
+		<div class="layui-form-item layui-form-text" id="user_ban" style="display:{if $rs.status == 3}block{else}none{/if}" />
+			<label class="layui-form-label">{lang禁言原因}</label>
+			<div class="layui-input-block">
+				<input type="text" id="ban_reason" name="ban_reason" placeholder="{lang请输入账号禁言的原因}" class="layui-input" value="{$rs.ban_reason ? $rs.ban_reason : '违反平台内容发布规则'}" />
+			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -116,7 +129,7 @@
 			<label class="layui-form-label">
 				{$value.title}
 			</label>
-			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
+			<!-- if $value.note --><div class="layui-input-block gray">{$value.note}</div><!-- /if -->
 			<div class="layui-input-block">
 				{$value.html}
 			</div>

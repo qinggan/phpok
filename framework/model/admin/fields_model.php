@@ -83,4 +83,5 @@ class fields_model extends fields_model_base
 		$this->lib('xml')->save($data,$filename);
 		return true;
 	}
+
 }

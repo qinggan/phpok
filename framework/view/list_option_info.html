@@ -1,46 +1,50 @@
 <div class="list">
 <table class="layui-table" lay-size="sm">
 <thead>
-<tr>
-	<th class="center" style="min-width:120px;">{$rs.title}</th>
-	<th colspan="4" class="center">
-		<select id="attr_{$rs.id}_opt" lay-ignore style="width:90%" onchange="$.admin_list_edit.attr_option_quickadd('{$rs.id}',this.value)">
-			<option value="">{lang请选择…}</option>
-			<!-- loop from=$optlist key=$key value=$value id=$tmpid -->
-			<option value="{$value.id}">{$value.title}</option>
-			<!-- /loop -->
-		</select>
-	</th>
-	<th class="center" style="min-width:120px;">
-		<div class="layui-btn-group">
-			<input type="button" value="{lang添加}" onclick="$.admin_list_edit.attr_option_add('{$rs.id}')" class="layui-btn layui-btn-sm" />
-			<input type="button" value="{lang删除}" onclick="$.admin_list_edit.attr_remove('{$rs.id}')" class="layui-btn layui-btn-sm" />
-		</div>
-	</th>
-</tr>
 <tr name="attr_{$rs.id}_thead">
-	<th class="center">{lang属性名称}</th>
-	<th class="center">{lang重量加减} Kg</th>
-	<th class="center">{lang体积加减} M<sup>3</sup></th>
-	<th class="center">{lang价格加减}</th>
-	<th class="center">{lang排序}</th>
-	<th class="center">{lang操作}</th>
+	<!-- loop from=$glist key=$key value=$value id=$tmpid -->
+	<th>
+		<div>{$value.title}</div>
+		<ul class="layout">
+			<li>
+				<select id="attr_{$value.id}_opt" lay-ignore style="width:90%" onchange="$.admin_list_edit.attr_option_quickadd('{$value.id}',this.value)">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$value.optlist key=$k value=$v id=$idx -->
+					<option value="{$v.id}">{$v.title}</option>
+					<!-- /loop -->
+				</select>
+			</li>
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang添加}" onclick="$.admin_list_edit.attr_option_add('{$value.id}')" class="layui-btn layui-btn-xs" />
+					<input type="button" value="{lang删除}" onclick="$.admin_list_edit.attr_remove('{$value.id}')" class="layui-btn layui-btn-xs layui-btn-danger" />
+				</div>
+			</li>
+		</ul>
+	</th>
+	<!-- /loop -->
+	<th class="center">{lang进货价}</th>
+	<th class="center">{lang市场价}</th>
+	<th class="center">{lang销售价}<span style="color:red">*</span></th>
+	<th class="center">{lang库存}</th>
+	<th class="center" style="width:40px">{lang删除}</th>
 </tr>
 </thead>
 <tbody>
-<!-- loop from=$rslist key=$key value=$value id=$idx -->
-<tr name="attr_{$rs.id}" id="attr_{$rs.id}_{$value.vid}" data-name="{$value.title}">
-	<td class="center">
-		<input type="hidden" name="_attr_{$rs.id}[]" value="{$value.vid}" />
-		{$value.title}
-	</td>
-	<td class="center"><input type="text" name="_attr_weight_{$rs.id}[{$value.vid}]" value="{$value.weight}" class="layui-input" /></td>
-	<td class="center"><input type="text" name="_attr_volume_{$rs.id}[{$value.vid}]" value="{$value.volume}" class="layui-input" /></td>
-	<td class="center"><input type="text" name="_attr_price_{$rs.id}[{$value.vid}]" value="{func round $value.price 2}" class="layui-input" /></td>
-	<td class="center"><input type="text" name="_attr_taxis_{$rs.id}[{$value.vid}]" value="{$value.taxis}" class="layui-input" /></td>
-	<td class="center"><input type="button" value="{lang删除}" onclick="$.admin_list_edit.attr_option_delete('{$rs.id}','{$value.vid}')" class="layui-btn layui-btn-sm" /></td>
-</tr>
-<!-- /loop -->
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	<tr>
+		<!-- loop from=$glist key=$k value=$v id=$idx -->
+		<td>{$value.info[$k]}</td>
+		<!-- /loop -->
+		<td><input type="text" name="_cost_price[{$value.attr}]" value="{$value.cost ? $value.cost : '0'}" class="layui-input" /></td>
+		<td><input type="text" name="_market_price[{$value.attr}]" value="{$value.market ? $value.market : '0'}" class="layui-input" /></td>
+		<td><input type="text" name="_sell_price[{$value.attr}]" value="{$value.price ? $value.price : '0'}" class="layui-input" /></td>
+		<td><input type="text" name="_stock[{$value.attr}]" value="{$value.qty ? $value.qty : '0'}" class="layui-input" /></td>
+		<td><input type="button" value="删除" onclick="$.admin_list_edit.attr_delete(this)" class="layui-btn layui-btn-xs layui-btn-primary" /></td>
+		<input type="hidden" name="_attrlist[]" value="{$value.attr}" />
+	</tr>
+	<!-- /loop -->
 </tbody>
+
 </table>
 </div>

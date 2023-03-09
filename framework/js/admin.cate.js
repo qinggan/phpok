@@ -28,10 +28,8 @@
 						}else{
 							var tip = p_lang('分类信息添加成功');
 						}
-						$.dialog.tips(tip,function(){
-							$.admin.reload(get_url('cate'));
-							$.admin.close();
-						}).lock();
+						$.dialog.tips(tip).lock();
+						$.admin.close(get_url('cate'));
 						return true;
 					}
 					$.dialog.alert(rs.info);
@@ -49,10 +47,8 @@
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
-						$.dialog.tips(p_lang('分类信息添加成功'),function(){
-							$.admin.reload(get_url('cate'));
-							$.admin.close();
-						}).lock();
+						$.dialog.tips(p_lang('分类信息添加成功')).lock();
+						$.admin.close(get_url('cate'));
 						return true;
 					}
 					$.dialog.alert(rs.info);

@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_pid,form_field_used,form_show_editing,form_true_delete,form_is_single,form_maxcount,form_input_val,form_price" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_pid,form_field_used,form_show_editing,form_true_delete,form_is_single,form_maxcount,form_input_val,form_price,only_preview" />
 <div class="layui-form-item">
 	<label class="layui-form-label">
 		{lang项目：}
@@ -93,7 +93,15 @@ $(document).ready(function(){
 		{lang仅限单选及下拉，多个字段用英文逗号隔开}
 	</div>
 </div>
-
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang只读：}
+	</label>
+	<div class="layui-input-inline default-auto">
+		<input type="radio" name="only_preview" value="0"{if !$rs.only_preview} checked{/if} title="{lang否}" />
+		<input type="radio" name="only_preview" value="1"{if $rs.only_preview} checked{/if} title="{lang是}" />
+	</div>
+</div>
 <!-- if $site_popedom.order && $config.biz_status -->
 <div class="layui-form-item">
 	<label class="layui-form-label">

@@ -1,27 +1,32 @@
 <!-- include tpl=head_lay nopadding=true -->
+
 <div class="layui-card">
+	<div class="layui-card-header">
+		订单编号：{$rs.sn}
+		<input type="button" value="复制" data-clipboard-text="{$rs.sn}" class="layui-btn layui-btn-xs phpok-copy" />
+	</div>
 	<div class="layui-card-body">
 		<table class="layui-table">
 		<tr>
-			<td width="20%" align="right" height="25">订单编号：</td>
-			<td width="30%">{$rs.sn}</td>
-			<td width="20%" align="right">下单时间：</td>
+			<td width="10%" align="right" height="25">订单ID：</td>
+			<td>{$rs.id}</td>
+			<td width="10%" align="right">下单时间：</td>
 			<td>{func time_format $rs.addtime}</td>
+			<td width="10%" align="right" height="25">订单状态：</td>
+			<td class="darkblue">{$rs.status_title}</td>
 		</tr>
 		<tr>
 			<td align="right" height="25">总金额：</td>
 			<td class="red">{func price_format $rs.price $rs.currency_id $rs.currency_id}</td>
-			<td align="right">订单状态：</td>
-			<td class="darkblue">{$rs.status_title}</td>
-		</tr>
-		<tr>
-			<td align="right" height="25">已支付：</td>
+			<td align="right">已支付：</td>
 			<td class="darkblue">{func price_format $paid_price $rs.currency_id $rs.currency_id}</td>
 			<td align="right">未支付：</td>
 			<td class="red">{func price_format $unpaid_price $rs.currency_id $rs.currency_id}</td>
 		</tr>
 		<tr>
-			<td align="right" height="25">{lang邮箱：}</td>
+			<td align="right" height="25">联系人：</td>
+			<td class="darkblue">{$rs.fullname}</td>
+			<td align="right">{lang邮箱：}</td>
 			<td class="darkblue"><span>{$rs.email}</span></td>
 			<td align="right">{lang手机：}</td>
 			<td class="darkblue"><span>{$rs.mobile}</span></td>
@@ -30,8 +35,8 @@
 		<tr>
 			<!-- loop from=$rs.ext key=$key value=$value id=$tmpid -->
 			<td align="right" height="25">{$key}：</td>
-			<td{if $tmpid.total%2 != '' && $tmpid.num == $tmpid.total} colspan="3"{/if} style="line-height:25px;">{$value}</td>
-				<!-- if $tmpid.num%2 == '' && $tmpid.num != $tmpid.total -->
+			<td{if $tmpid.total%3 != '' && $tmpid.num == $tmpid.total} colspan="5"{/if} style="line-height:25px;">{$value}</td>
+				<!-- if $tmpid.num%3 == '' && $tmpid.num != $tmpid.total -->
 				</tr><tr>
 				<!-- /if -->
 			<!-- /loop -->
@@ -40,17 +45,18 @@
 		<!-- if $user -->
 		<tr>
 			<td class="darkblue" style="line-height:25px;text-align:right;">用户：</td>
-			<td class="darkblue" colspan="3" style="line-height:25px;">{$user.user}
+			<td class="darkblue" colspan="5" style="line-height:25px;">{$user.user}
 				<!-- if $user.mobile -->{lang，}{lang手机号：}{$user.mobile}<!-- /if -->
 				<!-- if $user.email -->{lang，}{lang邮箱：}{$user.email}<!-- /if -->
 				，注册时间：{func time_format $user.regtime}
+				<input type="button" value="查看" onclick="$.win('查看用户_#{$user.id}','{url ctrl=user func=show id=$user.id/}')" class="layui-btn layui-btn-xs" />
 			</td>
 		</tr>
 		<!-- /if -->
 		<!-- if $rs.note -->
 		<tr>
-			<td style="line-height:25px;text-align:right">备注：</td>
-			<td colspan="3">{$rs.note}</td>
+			<td align="right" height="25">备注：</td>
+			<td colspan="5">{$rs.note}</td>
 		</tr>
 		<!-- /if -->
 		</table>

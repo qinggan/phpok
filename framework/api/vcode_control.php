@@ -54,6 +54,13 @@ class vcode_control extends phpok_control
 		if(!$this->lib('common')->tel_check($mobile,'mobile')){
 			$this->error(P_Lang('手机号不符合格式要求'));
 		}
+		$chkfile = $this->dir_cache."".md5($mobile).".php";
+		if(file_exists($chkfile)){
+			$chktime = $this->lib('file')->cat($chkfile);
+			if(($chktime+60) > $this->time){
+				$this->error(P_Lang('验证码已发送，请等待一分钟后再获取'));
+			}
+		}
 		$tplid = $this->get('tplid','int');
 		$tpl_type = 'number';
 		if(!$tplid){
@@ -90,6 +97,7 @@ class vcode_control extends phpok_control
 		if(!$data){
 			$this->error($this->model('vcode')->error_info());
 		}
+		$this->session->assign('vcode2mobile',$mobile);
 		$this->gateway('type','sms');
 		$this->gateway('param',$rs['id']);
 		if(!$this->gateway('check')){
@@ -123,6 +131,7 @@ class vcode_control extends phpok_control
 		}
 		$title = $tpl['title'] ? $this->fetch($tpl['title'],'msg') : '';
 		$this->gateway('exec',array('mobile'=>$mobile,'content'=>$content,'title'=>$title,'identifier'=>$tpl['identifier']));
+		$this->lib('file')->vi($this->time,$chkfile);
 		$this->success();
 	}
 
@@ -140,6 +149,13 @@ class vcode_control extends phpok_control
 		}
 		if(!$this->lib('common')->email_check($email)){
 			$this->error(P_Lang('Email地址不符合要求'));
+		}
+		$chkfile = $this->dir_cache."".md5($email).".php";
+		if(file_exists($chkfile)){
+			$chktime = $this->lib('file')->cat($chkfile);
+			if(($chktime+60) > $this->time){
+				$this->error(P_Lang('验证码已发送，请等待一分钟后再获取'));
+			}
 		}
 		$tplid = $this->get('tplid','int');
 		$tpl_type = 'number';
@@ -195,6 +211,7 @@ class vcode_control extends phpok_control
 		if(!$data){
 			$this->error($this->model('vcode')->error_info());
 		}
+		$this->session->assign('vcode2email',$email);
 		$tpltitle = P_Lang('获取验证码');
 		$tplcontent = P_Lang('您的验证码是：').'{$code}';
 		if($tplid){
@@ -214,6 +231,7 @@ class vcode_control extends phpok_control
 		if(!$info){
 			$this->error(P_Lang('邮件发送失败，请检查'));
 		}
+		$this->lib('file')->vi($this->time,$chkfile);
 		$this->success();
 	}
 }

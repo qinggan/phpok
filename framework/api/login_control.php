@@ -70,7 +70,7 @@ class login_control extends phpok_control
 		if(!$array){
 			$this->error(P_Lang('登录失败'));
 		}
-		$array['token'] = $this->model('token')->create($rs);
+		$array['token'] = $this->control('token','api')->user_token($rs['id']);
 		$this->plugin('plugin-login-email',$user_rs['id']);
 		$this->model('vcode')->delete();
 		$this->success($array);
@@ -178,9 +178,6 @@ class login_control extends phpok_control
 	**/
 	public function save_f()
 	{
-		if($this->session->val('user_id')){
-			$this->error(P_Lang('您已是本站用户，不需要再次登录'));
-		}
 		if($this->model('site')->vcode('system','login')){
 			$code = $this->get('_chkcode');
 			if(!$code){
@@ -188,7 +185,7 @@ class login_control extends phpok_control
 			}
 			$code = md5(strtolower($code));
 			if($code != $this->session->val('vcode')){
-				$this->error(P_Lang('验证码填写不正确'));
+				$this->error(P_Lang('验证码不正确'));
 			}
 			$this->session->unassign('vcode');
 		}
@@ -229,8 +226,8 @@ class login_control extends phpok_control
 		if(!$_back){
 			$_back = $this->url('usercp','','www',true);
 		}
-		$array['token'] = $this->model('token')->create($user_rs);
 		$this->plugin('plugin-login-save',$user_rs['id']);
+		$array['token'] = $this->control('token','api')->user_token($user_rs['id']);
 		$this->success($array,$_back);
 	}
 
@@ -253,6 +250,18 @@ class login_control extends phpok_control
 		$rs = $this->model('user')->get_one($mobile,'mobile',false,false);
 		if(!$rs){
 			$this->error(P_Lang('手机号不存在'));
+		}
+		$user = $this->model('user')->get_one($mobile,'mobile');
+		if(!$user){
+			$this->error(P_Lang('您登录的账号信息不存在'));
+		}
+		if(!$user['status']){
+			$this->model('user')->logout();
+			$this->error(P_Lang('您的注册信息未审核通过，请与管理员联系'));
+		}
+		if($user['status'] == '2'){
+			$this->model('user')->logout();
+			$this->error(P_Lang('您的账号被锁定，请与管理员联系'));
 		}
 		if($this->model('site')->vcode('system','login')){
 			$code = $this->get('_chkcode');
@@ -283,7 +292,7 @@ class login_control extends phpok_control
 		if(!$array){
 			$this->error(P_Lang('用户登录失败'));
 		}
-		$array['token'] = $this->model('token')->create($rs);
+		$array['token'] = $this->control('token','api')->user_token($rs['id']);
 		$this->model('vcode')->delete();
 		$this->success($array);
 	}
@@ -296,7 +305,7 @@ class login_control extends phpok_control
 		if($this->session->val('user_id')){
 			$this->success();
 		}
-		$this->error();
+		$this->error(P_Lang('未登录'));
 	}
 
 	/**
@@ -311,6 +320,7 @@ class login_control extends phpok_control
 			$this->error(P_Lang('非会员不能执行'));
 		}
 		$data = $this->model('user')->login($this->session->val('user_id'),true);
+		$data['token'] = $this->control('token','api')->user_token($this->session->val('user_id'));
 		$this->success($data);
 	}
 }

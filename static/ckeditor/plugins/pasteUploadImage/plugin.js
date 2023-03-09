@@ -18,8 +18,14 @@
 				var oldUrl = event.data.dataValue;
 				var urls = uniq(oldUrl.match(/(?<=img.*?[\s]src=")[^"]+(?=")/gi));
 				if(urls && urls.length>0){
-					for(var i =0;i<urls.length;i++){
+					var tmplist = new Array();
+					for(var i=0;i<urls.length;i++){
 						var obj = parseUrl(urls[i]);
+						var tmp = (urls[i]).substr(0,11);
+						if(tmp == 'data:image/'){
+							tmplist.push(urls[i]);
+							continue;
+						}
 						if(obj.protocol != 'https' && obj.protocol != 'http'){
 							continue;
 						}
@@ -29,15 +35,34 @@
 						if(remoteDomain != '*' && remoteDomain.indexOf(obj.host) < 0){
 							continue;
 						}
-						modal(urls[i]);
-						uploadImageUrl(urls[i]);
+						tmplist.push(urls[i]);
+						continue;
+					}
+					if(tmplist && tmplist.length>0){
+						tips_start("检测到需要上传的文件数："+(tmplist.length).toString()+'，请稍候…');
+						start_loadData(tmplist,0);
 					}
 				}
 			});
 
-			function uploadImageUrl(oldUrl) {
+			function start_loadData(urls,i)
+			{
+				var obj = parseUrl(urls[i]);
+				var tmp = (urls[i]).substr(0,11);
+				var txt = ' 总文件数 '+(urls.length).toString()+'，当前第 '+(i+1)+' 条正在上传，请稍候…';
+				tips_update(txt);
+				if(tmp == 'data:image/'){
+					uploadImageBase64(urls,i);
+					return true;
+				}
+				uploadImageUrl(urls,i);
+				return true;
+			}
+
+			function uploadImageBase64(urls,i)
+			{
 				var formData = new FormData();
-				formData.append('url',oldUrl);
+				formData.append('data',urls[i]);
 				var option = {
 					url:imgUpload,
 					data:formData
@@ -45,15 +70,65 @@
 				ajaxPost(option).then(function(rs) {
 					image = null;
 					if(rs.status && rs.info){
-						updateEditorVal(oldUrl, rs.info);
-						updateModal(oldUrl,true);
+						updateEditorVal(urls[i], rs.info);
+						//上传图片成功
+						goto_next(urls,i,true);
 						return;
 					}
 				}).catch(function() {
-					updateModal(oldUrl, false);
+					//上传图片失败
+					goto_next(urls,i, false);
 				});
 			}
 
+			function getBase64Image(img) {
+				var canvas = document.createElement("canvas");
+				canvas.width = img.width;
+				canvas.height = img.height;
+				var ctx = canvas.getContext("2d");
+				ctx.drawImage(img, 0, 0, img.width, img.height);
+				var dataURL = canvas.toDataURL("image/png");
+				return dataURL
+				// return dataURL.replace("data:image/png;base64,", "");
+			}
+
+			function main() {
+				
+				  //此处自己替换本地图片的地址
+				img.crossOrigin= 'anonymous'
+				img.onload =function() {
+					var data = getBase64Image(img);
+					var img1 = document.createElement('img');
+					img1.src = data;
+					document.body.appendChild(img1);
+				}
+			}
+
+			//
+			function uploadImageUrl(urls,i) {
+				var formData = new FormData();
+				var img = document.createElement('img');
+				img.src = urls[i];
+				img.crossOrigin= 'anonymous';
+				img.onload = function(){
+					var data = getBase64Image(img);
+					formData.append('data',data);
+					var option = {
+						url:imgUpload,
+						data:formData
+					}
+					ajaxPost(option).then(function(rs) {
+						image = null;
+						if(rs.status && rs.info){
+							updateEditorVal(urls[i], rs.info);
+							goto_next(urls,i,true);
+							return;
+						}
+					}).catch(function() {
+						goto_next(urls,i, false);
+					});
+				}
+			}
 
 			function parseUrl(url) {
 				var urlObj = {
@@ -110,18 +185,24 @@
 				return Promise.race([p, t]);
 			}
 
-			function modal(filename) {
+			function tips_start(txt,color)
+			{
+				if(!txt || txt == 'undefined'){
+					txt = '正在执行操作，请稍候…';
+				}
+				if(!color || color == 'undefined'){
+					color = 'green';
+				}
 				var html =
-					'<div class="modal-editor-upload" filename="{{filename}}" style="margin-bottom: 5px;border-bottom: 1px solid #ddd;padding-bottom: 5px;">' +
-					'<img style="width:40px;height:40px;vertical-align: middle;" src="'+path + 'images/upload.png" />' +
-					'<label style="color:green;"> 上传中… </label>' +
+					'<div class="modal-editor-upload" style="margin-bottom: 5px;padding-bottom: 5px;">' +
+					'<img style="width:32px;height:32px;vertical-align: middle;" src="'+path + 'images/upload.png" />' +
+					'<label style="color:'+color+';"> '+txt+' </label>' +
 					'</div>';
-				html = html.replace(/\{\{(.+?)\}\}/g, filename);
 				var wrapper = document.querySelector('.modal-editor-upload-wrapper');
 				if (!wrapper) {
 					var wrapper = document.createElement('div');
 					wrapper.className = 'modal-editor-upload-wrapper';
-					wrapper.style.cssText = 'width:200px;background-color:#fdfdfd;position:absolute;right: 30px;top: 100px;'
+					wrapper.style.cssText = 'width:auto;background-color:#fdfdfd;position:fixed;right: 30px;top: 100px;'
 					wrapper.innerHTML = html;
 					var edi = document.getElementById('cke_' + editor.name);
 					edi.appendChild(wrapper);
@@ -131,27 +212,53 @@
 				}
 			}
 
-			function updateModal(filename, result) {
-				filename = filename.replace(/&amp;/g, '&');
-				var selector = 'div.modal-editor-upload[filename="' + filename + '"]';
+			function tips_update(txt,color)
+			{
+				if(!txt || txt == 'undefined'){
+					txt = '正在执行操作，请稍候…';
+				}
+				if(!color || color == 'undefined'){
+					color = 'green';
+				}
+				var selector = 'div.modal-editor-upload';
 				var content = document.querySelector(selector);
 				var label = content.querySelector('label');
+				label.innerHTML = txt;
+				label.style.color = color;
+			}
+
+			function goto_next(urls,i , result) {
+				var txt = '';
+				var color = ''
 				if (result === 'request time out') {
-					label.innerHTML = ' ' + result;
-					label.style.color = 'red';
+					txt = ' 总文件数 '+(urls.length).toString()+'，当前第 '+(i+1)+' 条上传超时，';
+					color = 'red';
+				} else if (result === 'notupload'){
+					txt = ' 总文件数 '+(urls.length).toString()+'，当前第 '+(i+1)+' 条上传忽略，';
+					color = 'darkgreen';
 				} else if (result === true) {
-					label.innerHTML = ' 上传成功 ';
-					label.style.color = 'green';
+					txt = ' 总文件数 '+(urls.length).toString()+'，当前第 '+(i+1)+' 条上传成功，';
+					color = 'green';
 				} else {
-					label.innerHTML = ' 上传失败 ';
-					label.style.color = 'red';
+					txt = ' 总文件数 '+(urls.length).toString()+'，当前第 '+(i+1)+' 条上传失败，';
+					color = 'red';
 				}
-				var time = result === true ? 3000 : 10000;
-				var t = setTimeout(function() {
-					var c = document.querySelector(selector);
+				var next_i = i+1;
+				if(urls[next_i] && urls[next_i] != 'undefined'){
+					txt += '即将上传下一条文件，请稍候…';
+					tips_update(txt,color);
+					setTimeout(function(){
+						start_loadData(urls,next_i);
+					}, 500);
+					return true;
+				}
+				txt += '文件已全部操作完成，请稍候…';
+				tips_update(txt,color);
+				//1秒后关闭提示框
+				setTimeout(function(){
+					var c = document.querySelector('div.modal-editor-upload');
 					document.querySelector('.modal-editor-upload-wrapper').removeChild(c);
-					clearTimeout(t);
-				}, time);
+				}, 1000);
 			}
 
 			// 更新

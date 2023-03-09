@@ -18,7 +18,6 @@ class search_control extends phpok_control
 
 	public function index_f()
 	{
-		//查询
 		$keywords = $this->get('keywords');
 		$id = $this->get('id');
 		$cateid = $this->get('cateid','int');
@@ -39,6 +38,7 @@ class search_control extends phpok_control
 		if($cateid){
 			$cate_rs = $this->model('cate')->get_one($cateid,'id',false);
 		}
+		$this->assign("keywords",$keywords);
 		if($keywords || $project || $cate_rs || $ext){
 			$this->load_search($keywords,$project,$cate_rs,$ext);
 		}
@@ -75,7 +75,6 @@ class search_control extends phpok_control
 				if($cate_rs['parent_id'] && $cate_rs['parent_id'] != $project['cate']){
 					$cate_parent_rs = $this->call->phpok('_cate',array('pid'=>$project['id'],'cateid'=>$cate_rs['parent_id']));
 					if(!$cate_parent_rs || !$cate_parent_rs['status']){
-						//$this->error(P_Lang('父级分类已停用，请联系管理员'));
 						$this->url('search');
 					}
 					$this->assign('cate_parent_rs',$cate_parent_rs);
@@ -198,7 +197,7 @@ class search_control extends phpok_control
 		$this->assign("total",$total);
 		$this->assign("pageid",$pageid);
 		$this->assign("psize",$psize);
-		$this->assign("keywords",$keywords);
+		$this->assign('total_page',ceil($total/$psize));
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,'list');
 		if(!$tplfile){
 			$tplfile = 'search_list';
@@ -206,6 +205,15 @@ class search_control extends phpok_control
 		//保留搜索的关键字
 		if(!$pageid || $pageid<2){
 			$this->model('search')->save($keywords);
+		}
+		$ajax = $this->get('ajax','int');
+		if($ajax && $pageid>1){
+			$tplfile_ajax = $tplfile.'-ajax';
+			if($this->tpl->check_exists($tplfile_ajax)){
+				$this->config('is_ajax',true);
+				$content = $this->fetch($tplfile_ajax);
+				$this->success($content);
+			}			
 		}
 		$this->plugin('ap-load-search');
 		$this->view($tplfile);

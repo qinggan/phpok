@@ -159,7 +159,7 @@ class all_control extends phpok_control
 		if(!$list){
 			$list = array();
 		}
-		$all = false;
+		$all = array();
 		foreach($list as $key=>$value){
 			$tmp = $this->get($key);
 			if($tmp){
@@ -232,10 +232,6 @@ class all_control extends phpok_control
 		$array["adm_logo180"] = $this->get("adm_logo180");
 		$array["lang"] = $this->get("lang");
 		$array['api'] = $this->get('api','int');
-		$array['api_code'] = $this->get("api_code");
-		$array['encode_type'] = $this->get('encode_type');
-		$array['public_key'] = $this->get('public_key');
-		$array['private_key'] = $this->get('private_key');
 		$array["seo_title"] = $this->get("seo_title");
 		$array["seo_keywords"] = $this->get("seo_keywords");
 		$array["seo_desc"] = $this->get("seo_desc");
@@ -585,7 +581,7 @@ class all_control extends phpok_control
 		$this->assign("ext_module",$ext_module);
 		$extlist = $this->model('ext')->ext_all($ext_module);
 		if($extlist){
-			$tmp = false;
+			$tmp = array();
 			foreach($extlist as $key=>$value){
 				if($value["ext"]){
 					$ext = unserialize($value["ext"]);
@@ -615,7 +611,6 @@ class all_control extends phpok_control
 			$this->error(P_Lang('全局配置不存在'));
 		}
 		ext_save("all-".$id);
-		$this->model('temp')->clean("all-".$id,$this->session->val('admin_id'));
 		$this->success(P_Lang('扩展全局内容设置成功'),$this->url("all"));
 	}
 
@@ -657,6 +652,8 @@ class all_control extends phpok_control
 		}else{
 			$rs['admin_homepage_setting'] = array();
 		}
+		$links = $rs['ok_links'] ? unserialize($rs['ok_links']) : array();
+		$this->assign('links',$links);
 		$this->assign('rs',$rs);
 		$this->view("all_system");
 	}
@@ -673,19 +670,33 @@ class all_control extends phpok_control
 		$data['api_code'] = $this->get('api_code','html');
 		$data['public_key'] = $this->get('public_key','html');
 		$data['private_key'] = $this->get('private_key','html');
-		$data['aliyun_account_id'] = $this->get('aliyun_account_id','html');
-		$data['aliyun_ak_id'] = $this->get('aliyun_ak_id','html');
-		$data['aliyun_ak_secret'] = $this->get('aliyun_ak_secret','html');
-		$data['tencent_appid'] = $this->get('tencent_appid','html');
-		$data['tencent_ak_id'] = $this->get('tencent_ak_id','html');
-		$data['tencent_ak_secret'] = $this->get('tencent_ak_secret','html');
+		$data['public_key2'] = $this->get('public_key2','html');
+		$data['private_key2'] = $this->get('private_key2','html');
+		$data['chktype'] = $this->get('chktype');
 		$tmp = $this->get("admin_homepage_setting");
 		if($tmp){
 			$data['admin_homepage_setting'] = implode(",",$tmp);
 		}else{
 			$data['admin_homepage_setting'] = '';
 		}
+		$data['ok_status'] = $this->get('ok_status','int');
+		$data['ok_appid'] = $this->get('ok_appid');
+		$data['ok_appkey'] = $this->get('ok_appkey');
+		$data['ok_links'] = $this->get('links');
+		if($data['ok_links']){
+			$data['ok_links'] = serialize($data['ok_links']);
+		}
 		$this->model('config')->save($data);
 		$this->success();
+	}
+
+	public function rsa_f()
+	{
+		$email = $this->lib('common')->str_rand(5,'number').'@'.$this->lib('common')->str_rand(8,'letter').'.cn';
+		$rs = $this->lib('token')->create($email);
+		if(!$rs){
+			$this->error('证书生成失败，请检查系统环境');
+		}
+		$this->success($rs);
 	}
 }

@@ -14,9 +14,9 @@ function phpok_form_password(id,len)
 	var list = new Array("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z");
 	if(!len || len == "undefined") len = 8;
 	var rand = "";
-	for(var i = 0;i<len;i++)
-	{
-		var num = Math.floor(Math.random()*36+0);
+	for(var i = 0;i<len;i++){
+		var tmp = Math.random()*36 + 0;
+		var num = Math.floor(tmp);
 		rand = rand + list[num];
 	}
 	var htm = "随机密码："+rand;
@@ -39,8 +39,8 @@ function phpok_btn_action(btn,id)
 		$.dialog.open(url,{
 			title: "图片管理器",
 			lock : true,
-			width: "80%",
-			height: "70%",
+			width: "90%",
+			height: "80%",
 			resize: false
 		});
 	}
@@ -122,6 +122,28 @@ function phpok_btn_editor_video(id)
 	var url = get_url("edit","video") + "&input="+id+"&nopic=1";
 	$.dialog.open(url,{
 		"title" : "添加影音",
+		"width" : "760px",
+		"height" : "80%",
+		"resize" : false,
+		"lock" : true
+	});
+}
+
+function phpok_btn_filename(input,type)
+{
+	var url = get_url("fields","filemanage") + "&input="+input;
+	if(type && type != 'undefined'){
+		url += "&type="+type;
+	}
+	var old = $("#"+input).val();
+	if(old){
+		var tmp = old.split('/');
+		tmp = tmp.slice(0,-1);
+		var folder = tmp.join('/');
+		url += "&folder="+$.str.encode(folder+'/');
+	}
+	$.dialog.open(url,{
+		"title" : "选择文件",
 		"width" : "760px",
 		"height" : "80%",
 		"resize" : false,
@@ -400,12 +422,14 @@ function go_to_page_action()
 			}
 			var content = $(fid).val();
 			if(!content || content == "undefined"){
+				$(fid+"_sort").hide();
 				return true;
 			}
 			//删除单个附件
 			if(content == id){
 				$(fid).val("");
 				$(fid+"_list").fadeOut().html('');
+				$(fid+"_sort").hide();
 				this.upload_remote_delete(identifier,id);
 				return true;
 			}
@@ -660,8 +684,8 @@ function go_to_page_action()
 			$.dialog.open(get_url("open","input","id="+id),{
 				title: p_lang('附件管理器'),
 				lock : true,
-				width: "700px",
-				height: "70%",
+				width: "90%",
+				height: "80%",
 				resize: false
 			});
 		},
@@ -691,8 +715,8 @@ function go_to_page_action()
 			$.dialog.open(get_url("open","input","id="+id+"&type=image"),{
 				title: p_lang('图片管理器'),
 				lock : true,
-				width: "700px",
-				height: "70%",
+				width: "90%",
+				height: "80%",
 				resize: false
 			});
 		},
@@ -714,8 +738,8 @@ function go_to_page_action()
 			$.dialog.open(url,{
 				title: p_lang('预览图片'),
 				lock: true,
-				width: '700px',
-				height: '70%',
+				width: '90%',
+				height: '80%',
 				resize: false,
 				ok: true
 			});
@@ -729,8 +753,8 @@ function go_to_page_action()
 			$.dialog.open(get_url("open","title","id="+id+"&pid="+pid+"&field="+field+"&showid="+showid),{
 				title: p_lang('主题选择器'),
 				lock : true,
-				width: "700px",
-				height: "70%",
+				width: "90%",
+				height: "80%",
 				resize: false
 			});
 		},
@@ -744,8 +768,8 @@ function go_to_page_action()
 			$.dialog.open(url,{
 				title: p_lang('视频管理器'),
 				lock : true,
-				width: "700px",
-				height: "70%"
+				width: "90%",
+				height: "80%"
 			});
 		},
 
@@ -766,8 +790,8 @@ function go_to_page_action()
 			$.dialog.open(url,{
 				title: p_lang('视频预览'),
 				lock: true,
-				width: '670px',
-				height: '510px',
+				width: '90%',
+				height: '80%',
 				ok:true
 			});
 		},
@@ -781,8 +805,8 @@ function go_to_page_action()
 			$.dialog.open(url,{
 				title: p_lang('网址管理器'),
 				lock : true,
-				width: "700px",
-				height: "70%"
+				width: "90%",
+				height: "80%"
 			});
 		},
 
@@ -811,8 +835,8 @@ function go_to_page_action()
 			$.dialog.open(url,{
 				title: p_lang('用户列表'),
 				lock : true,
-				width: "700px",
-				height: "70%",
+				width: "90%",
+				height: "80%",
 				resize: false
 			});
 		},
@@ -964,8 +988,8 @@ function go_to_page_action()
 			var url = get_url('form','quickadd','id='+fid);
 			$.dialog.open(url,{
 				'title':p_lang('添加'),
-				'width':'80%',
-				'height':'70%',
+				'width':'90%',
+				'height':'80%',
 				'ok':function(){
 					var iframe = this.iframe.contentWindow;
 					if (!iframe.document.body) {

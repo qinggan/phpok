@@ -1,0 +1,31 @@
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="ext_cssfile,ext_prefix" />
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{langCSS文件路径}
+	</label>
+	<div class="layui-input-inline default-auto">
+		<input type="text" name="ext_cssfile" id="ext_cssfile" value="{$rs.ext_cssfile}" class="layui-input" />
+	</div>
+	<div class="layui-input-inline auto gray lh38">
+		<div class="layui-btn-group">
+			<input type="button" value="{lang选择}" onclick="phpok_btn_filename('ext_cssfile','css')" class="layui-btn layui-btn-sm" />
+			<input type="button" value="{lang清空}" onclick="$('#ext_cssfile').val('')" class="layui-btn layui-btn-sm layui-btn-warm" />
+		</div>
+	</div>
+	<div class="layui-form-mid">
+		{lang请选择CSS文件来源}
+	</div>
+</div>
+
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang补全}
+	</label>
+	<div class="layui-input-inline default-auto">
+		<input type="text" name="ext_prefix" id="ext_prefix" value="{$rs.ext_prefix}" class="layui-input" />
+	</div>
+	<div class="layui-form-mid">
+		{lang请将样式涉及到的Class补全，如font-awesome，需要在前面加上fa}
+	</div>
+</div>
+

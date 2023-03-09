@@ -111,10 +111,8 @@
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
-						$.dialog.alert(rs.info,function(){
-							$.admin.reload(get_url('usergroup'));
-							$.admin.close(get_url('usergroup'));
-						},'succeed');
+						$.dialog.tips(rs.info).lock();
+						$.admin.close(get_url('usergroup'));
 						return true;
 					}
 					$.dialog.alert(rs.info);

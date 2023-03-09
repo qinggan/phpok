@@ -1,0 +1,146 @@
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_design.save(this)">
+<!-- if $id --><input type="hidden" name="id" value="{$id}" /><!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		<!-- if $id -->{lang编辑组件}_#{$id}<!-- else -->{lang添加组件}<!-- /if -->
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				编码
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" name="code" id="code" value="{$rs.code}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				此项为空系统将自动生成，用于定位组件代码，仅支持：<span class="red">字母，数及，下划线，中划线</span>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				名称
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="title" id="title" value="{$rs.title}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				用于后台管理，不超过40字
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				备注
+			</label>
+			<div class="layui-input-inline default-auto">
+				<textarea name="note" id="note" class="layui-textarea">{$rs.note}</textarea>
+			</div>
+			<div class="layui-form-mid">
+				用于后台管理，建议不超过300字
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				图片
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="img" id="img" value="{$rs.img}" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择图片}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_select('img')" />
+					<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_preview('img')" />
+					<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('img');" />
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				数据源
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select name="vtype" id="vtype" lay-filter="vtype">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$typelist key=$key value=$value id=$tmpid -->
+					<option value="{$key}"{if $rs.vtype == $key} selected{/if}>{$value}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item" data-name="vtype" data-id="calldata">
+			<label class="layui-form-label">
+				调用中心
+			</label>
+			<div class="layui-input-inline default-auto">
+				<select name="ext[calldata]">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$datalist key=$key value=$value id=$tmpid -->
+					<option value="{$value.identifier}"{if $rs.ext && $rs.ext.calldata && $rs.ext.calldata == $value.identifier} selected{/if}>{$value.title} / {$value.typename} / {$value.identifier}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item" data-name="vtype" data-id="image">
+			<label class="layui-form-label">
+				图片
+			</label>
+			<div class="layui-input-inline default-auto">
+				{$image_content_html}
+			</div>
+		</div>
+		<div class="layui-form-item" data-name="vtype" data-id="video">
+			<label class="layui-form-label">
+				视频
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="ext[video]" id="ext_video" class="layui-input"{if $rs && $rs.ext && $rs.ext.video} value="{$rs.ext.video}"{/if} />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择视频}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_video_select('ext_video')" />
+					<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_video_preview('ext_video')" />
+					<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('ext_video');" />
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item" data-name="vtype" data-id="iframe">
+			<label class="layui-form-label">
+				Iframe 链接
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="ext[iframe]" class="layui-input"{if $rs && $rs.ext && $rs.ext.iframe} value="{$rs.ext.iframe}"{/if} />
+			</div>
+		</div>
+		<div class="layui-form-item" data-name="vtype" data-id="width-height">
+			<label class="layui-form-label">宽高</label>
+			<div class="layui-input-inline" style="width: 100px;">
+				<input type="text" name="ext[width]" placeholder="宽度" autocomplete="off" class="layui-input"{if $rs && $rs.ext && $rs.ext.width} value="{$rs.ext.width}"{/if}>
+			</div>
+			<div class="layui-form-mid"> &#215; </div>
+			<div class="layui-input-inline" style="width: 100px;">
+				<input type="text" name="ext[height]" placeholder="高度" autocomplete="off" class="layui-input"{if $rs && $rs.ext && $rs.ext.height} value="{$rs.ext.height}"{/if}>
+			</div>
+			<div class="layui-form-mid">单位是像素或%，输入带上单位</div>
+		</div>
+		
+		
+		<div class="layui-form-item" data-type="template">
+			<label class="layui-form-label">
+				模板代码
+			</label>
+			<div class="layui-input-block">
+				{$content_html}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay -->

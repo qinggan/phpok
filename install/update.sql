@@ -398,3 +398,193 @@ ALTER TABLE `qinggan_project` ADD `filter_price_info` TEXT NOT NULL COMMENT '筛
 -- 2021年12月17日
 ALTER TABLE `qinggan_project` ADD `user_alias` VARCHAR( 100 ) NOT NULL COMMENT '用户别名';
 ALTER TABLE `qinggan_project` ADD `user_note` VARCHAR( 255 ) NOT NULL COMMENT '用户备注';
+
+-- 2022年1月10日
+ALTER TABLE `qinggan_wealth` ADD banner varchar(255) NOT NULL COMMENT '大图';
+ALTER TABLE `qinggan_wealth` ADD thumb varchar(255) NOT NULL COMMENT '小图';
+ALTER TABLE `qinggan_wealth` ADD iconfont varchar(255) NOT NULL COMMENT '字体图标';
+
+DROP TABLE IF EXISTS `qinggan_user_autologin`;
+
+ALTER TABLE `qinggan_site` DROP api_code;
+
+
+-- 2022年1月24日
+ALTER TABLE `qinggan_project` ADD `admin_group` VARCHAR( 255 ) NOT NULL COMMENT '后台分组';
+
+-- 2022年2月14日
+CREATE TABLE IF NOT EXISTS `qinggan_fulltext` (
+  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主键ID，关联 qinggan_list 里的ID',
+  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '站点ID',
+  `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `module_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '模块ID',
+  `cate_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '最后执行时间',
+  `content` text NOT NULL COMMENT '全文索引',
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`,`project_id`,`module_id`,`cate_id`),
+  FULLTEXT KEY `content` (`content`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='全文搜索，以此定位ID，独立模块不支持';
+
+-- 2022年2月18日
+CREATE TABLE IF NOT EXISTS `qinggan_stat` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `dateinfo` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '日期',
+  `pv` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '页面浏览数',
+  `uv` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户数',
+  `ip` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'IP数',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `dateinfo` (`dateinfo`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='统计' AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `qinggan_stat_info` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `stat_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '对应主表stat里的ID',
+  `e_year` varchar(5) NOT NULL COMMENT '年',
+  `e_month` varchar(5) NOT NULL COMMENT '月份',
+  `e_day` varchar(5) NOT NULL COMMENT '日',
+  `e_hour` varchar(5) NOT NULL COMMENT '时',
+  `e_browser` varchar(255) NOT NULL COMMENT '浏览器',
+  `e_version` varchar(10) NOT NULL COMMENT '版本号',
+  `e_country` varchar(255) NOT NULL COMMENT '国家',
+  `e_province` varchar(255) NOT NULL COMMENT '省份',
+  `e_city` varchar(255) NOT NULL COMMENT '城市',
+  `e_net` varchar(255) NOT NULL COMMENT '网络',
+  `e_device` varchar(255) NOT NULL COMMENT '设备',
+  `e_pixel` varchar(255) NOT NULL COMMENT '设备分辨率',
+  `pv` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '访问页面数',
+  `uv` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户数',
+  `ip` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'IP数',
+  PRIMARY KEY (`id`),
+  KEY `stat_id` (`stat_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='统计明细' AUTO_INCREMENT=1 ;
+
+-- 2022年3月3日 更新独立表的属性
+ALTER TABLE `qinggan_77` ADD `status` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态';
+ALTER TABLE `qinggan_77` ADD `hidden` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '隐藏';
+ALTER TABLE `qinggan_77` ADD `sort` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序';
+ALTER TABLE `qinggan_77` ADD `dateline` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '发布时间';
+ALTER TABLE `qinggan_77` ADD `hits` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '查看次数';
+
+-- 2022年6月7日
+ALTER TABLE `qinggan_fields` ADD `parent_id` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID（用于实现横排）';
+
+-- 2022年6月9日
+ALTER TABLE `qinggan_stat_info` ADD `firstlogin` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '首次进入时间';
+ALTER TABLE `qinggan_stat_info` ADD `lastlogin` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后进入时间'; 
+
+-- 2022年6月18日
+
+CREATE TABLE IF NOT EXISTS `qinggan_stock` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `attr` varchar(255) NOT NULL COMMENT '属性值，多个属性值用英文逗号隔开',
+  `qty` int(10) NOT NULL DEFAULT '0' COMMENT '库存数量，仅支持整数',
+  `cost` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '进货价',
+  `market` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '市场价',
+  `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '销售价',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `sku_id` (`tid`,`attr`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='库存表' AUTO_INCREMENT=1 ;
+
+-- 2022年6月18日
+ALTER TABLE `qinggan_list_biz` ADD `qty` INT UNSIGNED NOT NULL DEFAULT '0' COMMENT '数量';
+
+-- 2022年6月18日
+
+CREATE TABLE IF NOT EXISTS `qinggan_wholesale` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题',
+  `qty` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '数量',
+  `price` decimal(10,4) unsigned NOT NULL DEFAULT '0.0000' COMMENT '价格',
+  PRIMARY KEY (`id`),
+  KEY `tid` (`tid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='批发价格管理' AUTO_INCREMENT=1 ;
+
+-- 2022年6月20日
+ALTER TABLE `qinggan_order_product` ADD `price_total` DECIMAL( 10, 4 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '总价格';
+ALTER TABLE `qinggan_order_product` ADD `discount` DECIMAL( 10, 4 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '优惠价';
+ALTER TABLE `qinggan_order_product` ADD `discount_note` VARCHAR( 255 ) NOT NULL COMMENT '优惠说明';
+
+-- 2022年6月21日
+CREATE TABLE IF NOT EXISTS `qinggan_log_content` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `tbl` varchar(255) NOT NULL COMMENT '表名（不含前缀）',
+  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `vtype` varchar(255) NOT NULL DEFAULT '' COMMENT '类型',
+  `code` varchar(255) NOT NULL DEFAULT '' COMMENT '类型标识',
+  `content1` text NOT NULL COMMENT '变更前的数据',
+  `content2` text NOT NULL COMMENT '变更后的数据',
+  PRIMARY KEY (`id`),
+  KEY `tbl_tid` (`tbl`,`tid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='内容变更记录' AUTO_INCREMENT=6 ;
+
+-- 2022年6月26日
+ALTER TABLE `qinggan_list_biz` ADD `min_qty` INT UNSIGNED NOT NULL DEFAULT '1' COMMENT '最小购买数量';
+
+-- 2022年6月29日
+ALTER TABLE `qinggan_payment` ADD `admin_note` VARCHAR( 255 ) NOT NULL COMMENT '管理员备注';
+
+-- 2022年6月29日 格式化货币位数
+ALTER TABLE `qinggan_currency` ADD `dpl` INT UNSIGNED NOT NULL DEFAULT '2' COMMENT 'Decimal point length 简写，即小数点长度';
+
+
+-- 2022年7月16日
+ALTER TABLE `qinggan_order` ADD `fullname` VARCHAR(255) NOT NULL COMMENT '联系人';
+
+
+-- 2022年9月1日
+ALTER TABLE `qinggan_world_location` ADD note VARCHAR(255) NOT NULL COMMENT '备注';
+UPDATE `qinggan_world_location` SET pid=7 WHERE id IN(278,279,280);
+UPDATE `qinggan_world_location` SET name='台湾',name_en='Taiwan' WHERE id=278;
+UPDATE `qinggan_world_location` SET name='香港',name_en='HongKong' WHERE id=279;
+UPDATE `qinggan_world_location` SET name='澳门',name_en='Macao' WHERE id=280;
+
+ALTER TABLE `qinggan_list_biz` CHANGE `qty` `qty` INT(10) NOT NULL DEFAULT '0' COMMENT '数量';
+
+-- 2022年10月25日
+
+CREATE TABLE IF NOT EXISTS `qinggan_click` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `code` varchar(20) NOT NULL COMMENT '字段标识',
+  `tbl` varchar(30) NOT NULL COMMENT '用户表，不含前缀',
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID',
+  `session_id` varchar(100) NOT NULL COMMENT 'SessionID',
+  `ip` varchar(100) NOT NULL COMMENT '用户IP',
+  `val` int(11) NOT NULL DEFAULT '0' COMMENT '值，仅支持整数',
+  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '最后点击时间（游客3小时内重复操作会取消）',
+  PRIMARY KEY (`id`),
+  KEY `user` (`tid`,`user_id`,`code`,`tbl`),
+  KEY `guest` (`tid`,`session_id`,`code`,`ip`,`tbl`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='主题点击记录'
+
+-- 2023年1月29日，增加设计器组件
+CREATE TABLE IF NOT EXISTS `qinggan_design` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `title` varchar(120) NOT NULL COMMENT '名称',
+  `note` text NOT NULL COMMENT '摘要',
+  `img` varchar(255) NOT NULL COMMENT '图片',
+  `code` varchar(255) NOT NULL COMMENT '用于生成模板文件',
+  `vtype` varchar(50) NOT NULL COMMENT '组件类型',
+  `ext` text COMMENT '组件扩展参数',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='组件设计器' AUTO_INCREMENT=1 ;
+
+-- 2023年3月2日
+CREATE TABLE IF NOT EXISTS `qinggan_fields_ext` (
+  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
+  `fields_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '扩展字段ID',
+  `keyname` varchar(255) NOT NULL COMMENT '键名',
+  `keydata` text NOT NULL COMMENT '键值'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='字段扩展表';
+
+
+ALTER TABLE `qinggan_fields_ext`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fields_id` (`fields_id`);
+
+
+ALTER TABLE `qinggan_fields_ext`
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID';

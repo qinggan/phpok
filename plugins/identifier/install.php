@@ -29,6 +29,9 @@ class install_identifier extends phpok_plugin
 	{
 		$id = $this->_id();
 		$ext = array();
+		$ext['youdao_appid'] = $this->get('youdao_appid');
+		$ext['youdao_appkey'] = $this->get('youdao_appkey');
+		$ext['youdao_https'] = $this->get('youdao_https','int');
 		$ext['phpok_appid'] = $this->get('phpok_appid');
 		$ext['phpok_appkey'] = $this->get('phpok_appkey');		
 		$this->_save($ext,$id);

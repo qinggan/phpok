@@ -1,0 +1,59 @@
+<!-- include tpl=usercp/head title=更换手机号 -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return $.user.mobile(this)">
+<div class="layui-card">
+	<div class="layui-card-header">
+		更换手机号
+	</div>
+	<div class="layui-card-body">
+		<!-- if $me.mobile -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				原手机号
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" class="layui-input" disabled value="{$me.mobile}" />
+			</div>
+		</div>
+		<!-- /if -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				登录密码
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="password" name="pass" id="pass" placeholder="请输入登录密码" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				新手机号
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="mobile" id="mobile" placeholder="请输入新手机号码"  class="layui-input" />
+			</div>
+		</div>
+		<!-- if $sendsms -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				验证码
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="chkcode" id="chkcode" class="layui-input" placeholder="邮箱验证码" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				<button type="button" class="layui-btn" onclick="$.vcode.sms(this,'mobile','register')">获取验证码</button>
+			</div>
+		</div>
+		<!-- /if -->
+	</div>
+</div>
+
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div style="text-align:center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang返回}" class="layui-btn layui-btn-primary" onclick="$.phpok.go('{url ctrl=usercp/}')" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=usercp/foot -->

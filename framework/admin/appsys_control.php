@@ -381,7 +381,8 @@ class appsys_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('未找到配置信息'),$this->url('appsys'));
 		}
-		$zipfile = $this->dir_cache.$id.'-'.$this->time.'-'.rand(100,999).'.zip';
+		$rand_string = $this->lib('common')->str_rand(32);
+		$zipfile = $this->dir_cache.$id.'-'.$rand_string.'.zip';
 		if(is_file($zipfile)){
 			$this->lib('file')->rm($zipfile);
 		}

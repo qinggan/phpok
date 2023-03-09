@@ -15,19 +15,44 @@ class project_model extends project_model_base
 		parent::__construct();
 	}
 
-	//存储核心菜单
+	/**
+	 * 保存项目信息，超出系统的字段存到XML里，请注意敏感数据
+	**/
 	public function save($data,$id=0)
 	{
-		if(!$data || !is_array($data)) return false;
-		if(!$id)
-		{
-			return $this->db->insert_array($data,"project");
+		if(!$data || !is_array($data)){
+			return false;
 		}
-		else
-		{
-			$this->db->update_array($data,"project",array("id"=>$id));
-			return true;
+		//检查表字段
+		$fields = $this->db->list_fields('project');
+		$xmldata = false;
+		foreach($data as $key=>$value){
+			if(!in_array($key,$fields)){
+				if(!$xmldata){
+					$xmldata = array();
+				}
+				$xmldata[$key] = $value;
+				unset($data[$key]);
+			}
 		}
+		if(!$id){
+			$insert_id = $this->db->insert_array($data,"project");
+			if(!$insert_id){
+				return false;
+			}
+			if($xmldata){
+				$this->lib('xml')->save($xmldata,$this->dir_data.'xml/project_'.$insert_id.'.xml');
+			}
+			return $insert_id;
+		}
+		$status = $this->db->update_array($data,"project",array("id"=>$id));
+		if(!$status){
+			return false;
+		}
+		if($xmldata){
+			$this->lib('xml')->save($xmldata,$this->dir_data.'xml/project_'.$id.'.xml');
+		}
+		return true;
 	}
 
 	public function insert($data)
@@ -67,6 +92,41 @@ class project_model extends project_model_base
 		return $this->db->query($sql);
 	}
 
+	public function clear_project($id)
+	{
+		if(!$id || !intval($id)){
+			return false;
+		}
+		$id = intval($id);
+		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE id=".$id;
+		$rs = $this->db->get_one($sql);
+		if(!$rs || !$rs['module']){
+			return false;
+		}
+		$module = $this->model('module')->get_one($rs['module']);
+		if(!$module){
+			return false;
+		}
+		if($module['mtype']){
+			$tmp = $this->db->prefix.$rs['module'];
+			$sql = "DELETE FROM ".$tmp." WHERE project_id='".$id."'";
+			$this->db->query($sql);
+			return true;
+		}
+		$tmp = $this->db->prefix."list_".$rs['module'];
+		$sql = "DELETE FROM ".$tmp." WHERE project_id=".$id;
+		$this->db->query($sql);
+		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
+		$this->db->query($sql);
+		$sql = "DELETE FROM ".$this->db->prefix."list_biz WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
+		$this->db->query($sql);
+		$sql = "DELETE FROM ".$this->db->prefix."stock WHERE tid IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
+		$this->db->query($sql);
+		$sql = "DELETE FROM ".$this->db->prefix."list WHERE project_id=".$id;
+		$this->db->query($sql);
+		return true;
+	}
+
 	//删除项目操作
 	public function delete_project($id)
 	{
@@ -79,6 +139,7 @@ class project_model extends project_model_base
 		if(!$rs){
 			return false;
 		}
+		
 		if($rs['module']){
 			$table_list = $this->db->list_tables();
 			$module = $this->model('module')->get_one($rs['module']);
@@ -98,7 +159,7 @@ class project_model extends project_model_base
 				$this->db->query($sql);
 				$sql = "DELETE FROM ".$this->db->prefix."list_biz WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
 				$this->db->query($sql);
-				$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE tid IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
+				$sql = "DELETE FROM ".$this->db->prefix."stock WHERE tid IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
 				$this->db->query($sql);
 				$sql = "DELETE FROM ".$this->db->prefix."list WHERE project_id=".$id;
 				$this->db->query($sql);
@@ -125,6 +186,8 @@ class project_model extends project_model_base
 			}
 			$this->db->query("DELETE FROM ".$this->db->prefix."popedom WHERE pid='".$id."'");
 		}
+		//删除XML文件
+		$this->lib('file')->rm($this->dir_data.'xml/project_'.$id.'.xml');
 		return true;
 	}
 

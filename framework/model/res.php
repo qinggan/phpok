@@ -90,6 +90,9 @@ class res_model_base extends phpok_model
 	**/
 	public function is_local($file)
 	{
+		if(!$file){
+			return false;
+		}
 		$file = trim(strtolower($file));
 		if(strpos($file,'?') !== false){
 			return false;
@@ -144,6 +147,14 @@ class res_model_base extends phpok_model
 						if($v['editor'] && $tmp[$v['identifier']]){
 							$list[$value['id']]['_editor'] = $tmp[$v['identifier']];
 							$rslist[$key]['_editor'] = $tmp[$v['identifier']];
+						}
+					}
+				}else{
+					foreach($this->gdlist as $k=>$v){
+						$list[$value['id']][$v['identifier']] = $value['filename'];
+						if($v['editor']){
+							$list[$value['id']]['_editor'] = $value['filename'];
+							$rslist[$key]['_editor'] = $value['filename'];
 						}
 					}
 				}

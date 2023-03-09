@@ -1,12 +1,10 @@
 <?php
 /**
- * 数据调用新版专用
- * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
- * @主页 http://www.phpok.com
- * @版本 5.x
- * @许可 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @时间 2018年11月02日
+ * 数据调用
+ * @作者 苏相锟 <admin@phpok.com>
+ * @版本 6.x
+ * @授权 GNU Lesser General Public License (LGPL)
+ * @时间 2023年1月29日
 **/
 
 /**
@@ -100,58 +98,71 @@ class call_control extends phpok_control
 	**/
 	public function admin_preview_f()
 	{
-		if(!$this->session->val('admin_id')){
-			$this->error('仅限后台管理员使用');
-		}
 		$id = $this->get('id');
 		if(!$id){
 			$this->error('未指定ID');
 		}
-		$code = $this->get('code');
+		$code = $this->get('code','system');
 		if(!$code){
 			$this->error('未指定调用');
 		}
+		$rs = $this->model('design')->get_one($code,'code');
 		$param = $this->get('param','html');
 		if($param){
 			$param = $this->_param($param);
 		}
 		$tplfile = $this->get('tplfile');
-		$ext = substr($tplfile,-5);
-		$ext = strtolower($ext);
-		if($ext != '.html'){
-			$tplfile .= '.html';
-		}
-		if(!file_exists($this->dir_root.$tplfile)){
-			$this->error('模板文件不存在');
-		}
-		$list = phpok($code,$param);
-		$this->assign('info',$list);
-		$replace = $this->get('param_replace','html');
-		if($replace){
-			$tpl_content = $this->lib('file')->cat($this->dir_root.$tplfile);
-			$tmplist = explode("\n",$replace);
-			foreach($tmplist as $key=>$value){
-				$value = trim($value);
-				if(!$value){
-					continue;
-				}
-				$tmp = explode("=",$value);
-				if(!$tmp[0] || !$tmp[1]){
-					continue;
-				}
-				$tmp[0] = trim($tmp[0]);
-				$tmp[1] = trim($tmp[1]);
-				if(!$tmp[0] || !$tmp[1]){
-					continue;
-				}
-				$tpl_content = str_replace($tmp[0],$tmp[1],$tpl_content);
+		if($tplfile){
+			$ext = substr($tplfile,-5);
+			$ext = strtolower($ext);
+			if($ext != '.html'){
+				$tplfile .= '.html';
 			}
-			$content = $this->fetch($tpl_content,'content');
+			if(!file_exists($this->dir_root.$tplfile)){
+				$this->error('模板文件不存在');
+			}
 		}else{
-			$content = $this->fetch($tplfile,'abs-file');
+			$tplfile = $this->dir_data.'design/'.$rs['code'].'.html';
+			if(!file_exists($tplfile)){
+				$this->error('模板文件不存在');
+			}
+		}
+		$calldata = $this->get('calldata');
+		if(!$calldata){
+			if($rs['ext'] && $rs['ext']['calldata']){
+				$calldata = $rs['ext']['calldata'];
+			}
+		}
+		if($calldata){
+			$list = phpok($calldata,$param);
+			$this->assign('info',$list);
+			$replace = $this->get('param_replace','html');
+			if($replace){
+				$tpl_content = $this->lib('file')->cat($this->dir_root.$tplfile);
+				$tmplist = explode("\n",$replace);
+				foreach($tmplist as $key=>$value){
+					$value = trim($value);
+					if(!$value){
+						continue;
+					}
+					$tmp = explode("=",$value);
+					if(!$tmp[0] || !$tmp[1]){
+						continue;
+					}
+					$tmp[0] = trim($tmp[0]);
+					$tmp[1] = trim($tmp[1]);
+					if(!$tmp[0] || !$tmp[1]){
+						continue;
+					}
+					$tpl_content = str_replace($tmp[0],$tmp[1],$tpl_content);
+				}
+				$content = $this->fetch($tpl_content,'content');
+			}else{
+				$content = $this->fetch($tplfile,'abs-file');
+			}
 		}
 		$tmp = explode("/",$tplfile);
-		$preview_file = $tmp[0] == '_data' ? $this->dir_data.'design/preview.html' : $this->dir_root.'tpl/'.$tmp[1].'/design/preview.html';
+		$preview_file = $this->dir_data.'design/preview.html';
 		$tplcontent = $this->lib('file')->cat($preview_file);
 		$tplcontent = str_replace('{content}',$content,$tplcontent);
 		$tplcontent = str_replace('{iframe_id}',$id,$tplcontent);

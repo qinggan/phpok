@@ -212,7 +212,7 @@ class update_control extends phpok_control
 			if(!$dlist){
 				$dlist = array();
 			}
-			foreach($dlist AS $key=>$value){
+			foreach($dlist as $key=>$value){
 				if(!$value && !trim($value)){
 					continue;
 				}

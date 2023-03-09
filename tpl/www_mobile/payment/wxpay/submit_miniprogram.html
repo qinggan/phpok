@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta name="renderer" content="webkit" />
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<title>在线支付</title>
+	<meta name="toTop" content="true" />
+	<base href="{$sys.url}" />
+	<!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
+	<script type="text/javascript" src="{url ctrl=js ext=jquery.artdialog/}" charset="utf-8"></script>
+	<script type="text/javascript" src="//res.wx.qq.com/open/{#js#}/jweixin-1.6.0.js"></script>
+	<script type="text/javascript" src="js/uni.webview.js"></script>
+</head>
+<body>
+<input type="hidden" name="logid" id="logid" value="{$order.id}" />
+<input type="hidden" name="sn" id="sn" value="{$rs.sn}" />
+<div style="margin-top:45vh;font-size:18px;width:100vw;text-align:center;">正在支付，请稍候…</div>
+<script type="text/javascript">
+function pending()
+{
+	var url = api_url('payment','query','sn='+$("#sn").val());
+	$.phpok.json("{$ajaxurl}",function(data){
+		if(data.status == 'ok'){
+			url = get_url('payment','show','id='+$("#logid").val());
+			$.phpok.go(url);
+			return true;
+		}else{
+			window.setTimeout("pending()", 3000);
+		}
+	});
+}
+
+function callpay()
+{
+	var appId = '{$wxconfig.appId}';
+    var timestamp = '{$wxconfig.timeStamp}';
+    var nonceStr = '{$wxconfig.nonceStr}';
+    var signature = '{$wxconfig.paySign}';
+    var logId = '{$order.id}';
+	var url = '/pages/wxpay/index?appId='+appId+"&timeStamp="+timestamp+"&nonceStr="+nonceStr+"&prepay_id={$info.prepay_id}&id="+logId+"&sign="+signature+"&order_id={$order.order_id}";
+    uni.navigateTo({
+		"url":url
+	});
+}
+
+$(document).ready(function(){
+
+	window.setTimeout("pending()", 5000);
+	document.addEventListener('UniAppJSBridgeReady', function() {  
+		console.log('成功加载UniAPP')
+		uni.getEnv(function(res) {
+			console.log('当前环境：' + JSON.stringify(res))
+		});
+		callpay();
+	});
+});
+</script>
+</body>
+</html>

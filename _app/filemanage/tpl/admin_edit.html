@@ -17,7 +17,7 @@ $(document).ready(function(){
 	});
 	$("#post_save").submit(function(){
 		if(is_edit != '1'){
-			$.dialog.alert(p_lang('不支持在线保存'));
+			$.dialog.tips(p_lang('不支持在线保存'));
 			return false;
 		}
 		code_editor.save();
@@ -30,7 +30,7 @@ $(document).ready(function(){
 					$.dialog.tips(p_lang('代码保存成功')).lock();
 					return true;
 				}
-				$.dialog.alert(rs.info);
+				$.dialog.tips(rs.info);
 				return false;
 			}
 		});
@@ -45,7 +45,18 @@ $(document).ready(function(){
 .layui-btn .layui-icon{
 	margin-right:0;
 }
+.CodeMirror {
+    border: 1px solid #ccc;
+    height: auto !important;
+}
+
+.CodeMirror-scroll {
+    height: auto !important;
+    min-height: 100px;
+}
+
 </style>
+
 <form method="post" id="post_save">
 <input type="hidden" name="folder" value="{$folder}" />
 <input type="hidden" name="title" value="{$title}" />

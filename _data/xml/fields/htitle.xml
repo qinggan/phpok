@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<title><![CDATA[标题]]></title>
+	<identifier><![CDATA[htitle]]></identifier>
+	<field_type><![CDATA[longtext]]></field_type>
+	<note><![CDATA[支持HTML代码]]></note>
+	<form_type><![CDATA[code_editor]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[html_js]]></format>
+	<content><![CDATA[]]></content>
+	<group_id><![CDATA[main]]></group_id>
+	<ext>
+		<width><![CDATA[500]]></width>
+		<height><![CDATA[34]]></height>
+		<mode>
+			<css><![CDATA[on]]></css>
+			<htmlembedded><![CDATA[on]]></htmlembedded>
+			<htmlmixed><![CDATA[on]]></htmlmixed>
+		</mode>
+		<theme><![CDATA[default]]></theme>
+	</ext>
+</root>

@@ -21,10 +21,8 @@ $(document).ready(function(){
 			'success':function(rs){
 				if(rs.status){
 					var tip = $("#id").val() ? p_lang('附件分类编辑成功') : p_lang('附件分类添加成功');
-					$.dialog.tips(tip,function(){
-						$.admin.reload(get_url('rescate'));
-						$.admin.close(get_url('rescate'));
-					}).lock();
+					$.dialog.tips(tip).lock();
+					$.admin.close(get_url('rescate'));
 					return true;
 				}
 				$.dialog.alert(rs.info);

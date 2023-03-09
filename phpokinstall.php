@@ -9,7 +9,7 @@
  * @时间 2020年9月2日
 **/
 
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
 define('PHPOK_SET',true);
 define("ROOT",str_replace("\\","/",dirname(__FILE__))."/");
 define('DIR_CONFIG',ROOT.'_config/');
@@ -120,7 +120,7 @@ function format_sql($sql)
 	}
 }
 
-function checkdir_rw($dir='',&$status)
+function checkdir_rw(&$status,$dir='')
 {
 	if(substr($dir,-1) != '/'){
 		$dir .= "/";
@@ -196,7 +196,7 @@ class install
 		}
 		echo '<table width="980" border="0" cellspacing="0" cellpadding="0" class="tablebox">';
 		echo '<tr class="head_bg"><td>&nbsp;</td><td>PHPOK最低要求</td><td>PHPOK最佳配置</td><td>当前环境检测</td></tr>';
-		echo '<tr><td class="lft">PHP版本</td><td>5.5.x</td><td>7.1.x</td><td>'.PHP_VERSION.'</td></tr>';
+		echo '<tr><td class="lft">PHP版本</td><td>5.6.x</td><td>7.1.x</td><td>'.PHP_VERSION.'</td></tr>';
 		echo '<tr><td class="lft">附件上传</td><td>2M+</td><td>10M+</td><td>'.get_cfg_var('upload_max_filesize').'</td></tr>';
 		echo '<tr><td class="lft">MYSQL支持</td><td>5.1.x</td><td>5.5.x</td><td>'.$mysql_status.'</td></tr>';
 		$curl = $this->func_check('curl_close');
@@ -283,20 +283,20 @@ class install
 			$status = false;
 		}
 		echo '<tr><td class="lft">文件：_config/db.ini.php</td><td>写入</td><td>'.$info.'</td></tr>';
-		checkdir_rw(ROOT.'_cache/',$status);
-		checkdir_rw(DIR_DATA,$status);
-		checkdir_rw(DIR_DATA.'crontab/',$status);
-		checkdir_rw(DIR_DATA.'design/',$status);
-		checkdir_rw(DIR_DATA.'json/',$status);
-		checkdir_rw(DIR_DATA.'log/',$status);
-		checkdir_rw(DIR_DATA.'session/',$status);
-		checkdir_rw(DIR_DATA.'tpl_admin/',$status);
-		checkdir_rw(DIR_DATA.'tpl_www/',$status);
-		checkdir_rw(DIR_DATA.'update/',$status);
-		checkdir_rw(DIR_DATA.'xml/',$status);
-		checkdir_rw(DIR_DATA.'xml/fields/',$status);
-		checkdir_rw(DIR_DATA.'zip/',$status);
-		checkdir_rw(ROOT.'res/',$status);
+		checkdir_rw($status,ROOT.'_cache/');
+		checkdir_rw($status, DIR_DATA);
+		checkdir_rw($status, DIR_DATA.'crontab/');
+		checkdir_rw($status, DIR_DATA.'design/');
+		checkdir_rw($status, DIR_DATA.'json/');
+		checkdir_rw($status, DIR_DATA.'log/');
+		checkdir_rw($status, DIR_DATA.'session/');
+		checkdir_rw($status, DIR_DATA.'tpl_admin/');
+		checkdir_rw($status, DIR_DATA.'tpl_www/');
+		checkdir_rw($status, DIR_DATA.'update/');
+		checkdir_rw($status, DIR_DATA.'xml/');
+		checkdir_rw($status, DIR_DATA.'xml/fields/');
+		checkdir_rw($status, DIR_DATA.'zip/');
+		checkdir_rw($status, ROOT.'res/');
 		echo '</table>';
 		if($status){
 			echo '<div class="btn_wrap">';
@@ -862,7 +862,7 @@ if($step == 'checkdb'){
 	$array = array('status'=>false,'info'=>'正在执行中');
 	$file = $install->get('file',false);
 	if(!$file){
-		$file = 'mysql';
+		$file = 'mysqli';
 	}
 	$host = $install->get('host',false);
 	if(!$host){
@@ -888,7 +888,19 @@ if($step == 'checkdb'){
 		}
 	}
 	$config = array('host'=>$host,'user'=>$user,'pass'=>$pass,'port'=>$port,'data'=>$data);
-	include(ROOT.'framework/engine/db/'.$file.'.php');
+	$is_include = false;
+	if($file == 'mysql' || $file == 'mysqli'){
+		$is_include = true;
+		include(ROOT.'framework/engine/db/mysqli.php');
+	}elseif($file == 'pdo_mysql'){
+		$is_include = true;
+		include(ROOT.'framework/engine/db/pdo_mysql.php');
+	}
+	if(!$is_include){
+		$array['info'] = '引用数据库链接失败';
+		exit(json_encode($array));
+	}
+	
 	$dbname = 'db_'.$file;
 	$config['debug'] = true;
 	$db = new $dbname($config);
@@ -909,9 +921,19 @@ if($step == 'checkdb'){
 if($step == 'save'){
 	$file = $install->get("file",false);
 	if(!$file){
-		$file = "mysql";
+		$file = "mysqli";
 	}
-	include(ROOT.'framework/engine/db/'.$file.'.php');
+	$is_include = false;
+	if($file == 'mysql' || $file == 'mysqli'){
+		$is_include = true;
+		include(ROOT.'framework/engine/db/mysqli.php');
+	}elseif($file == 'pdo_mysql'){
+		$is_include = true;
+		include(ROOT.'framework/engine/db/pdo_mysql.php');
+	}
+	if(!$is_include){
+		error('引用数据库链接失败');
+	}
 	$dbconfig = array("file"=>$file);
 	$dbconfig['host'] = $install->get("host",false);
 	$dbconfig['port'] = $install->get("port",false);
@@ -999,7 +1021,8 @@ if($step == 'ajax_initdata'){
 	//更新站点信息
 	$sql = "UPDATE ".$db->prefix."site_domain SET domain='".$adminer['domain']."'";
 	$db->query($sql);
-	$sql = "UPDATE ".$db->prefix."site SET dir='".$adminer['dir']."',api_code=''";
+	//更新站点路径
+	$sql = "UPDATE ".$db->prefix."site SET dir='".$adminer['dir']."'";
 	$db->query($sql);
 
 	if(!$adminer['demo']){
@@ -1038,8 +1061,6 @@ if($step == 'ajax_initdata'){
 				$install->lib('file')->rm($value,'folder');
 			}
 		}
-	}else{
-		touch(DIR_DATA."first.lock");
 	}
 	exit('ok');
 }

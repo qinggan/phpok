@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<title><![CDATA[联系地址]]></title>
+	<title><![CDATA[地址]]></title>
 	<identifier><![CDATA[address]]></identifier>
 	<field_type><![CDATA[varchar]]></field_type>
 	<note><![CDATA[]]></note>

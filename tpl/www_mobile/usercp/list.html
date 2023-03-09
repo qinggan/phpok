@@ -1,0 +1,120 @@
+<!-- include tpl=usercp/head title=$page_rs.title -->
+<script type="text/javascript">
+function post_del(id)
+{
+	$.dialog.confirm('确定要删除 #'+id+' 的{$page_rs.alias_title ? $page_rs.alias_title : "主题"}吗？删除后是不能恢复的！',function(){
+		var url = api_url('post','del','id='+id);
+		$.phpok.json(url,function(rs){
+			if(!rs.status){
+				$.dialog.alert(rs.info);
+				return false;
+			}
+			$.dialog.tips('删除成功');
+			$("#list_"+id).remove();
+			return false;
+		});
+	});
+}
+</script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{$page_rs.title}
+		<!-- if $page_rs.post_status && $popedom.add -->
+		<div class="float-right">
+			<input type="button" value="添加" onclick="$.phpok.go('{url ctrl=post id=$page_rs.identifier/}')" class="layui-btn layui-btn-sm" />
+		</div>
+		<!-- /if -->
+	</div>
+	<div class="layui-card-body">
+		
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<table class="layui-table">
+		<tr>
+			<th colspan="2">#ID：{$value.id}</th>
+		</tr>
+		<tr>
+			<td>{$page_rs.alias_title ? $page_rs.alias_title : P_Lang('主题')}</td>
+			<td class="text-right">
+				{$value.title}
+			</td>
+		</tr>
+		<!-- if $page_rs.cate -->
+		<tr>
+			<td>{lang分类}</td>
+			<td class="text-right">
+				{$value.cate.title}
+			</td>
+		</tr>
+		<!-- /if -->
+		<!-- if $page_rs.is_biz -->
+		<tr>
+			<td>{lang价格}</td>
+			<td class="text-right">
+				<!-- if $value.price -->{func price_format $value.price $value.currency_id}<!-- else -->-<!-- /if -->
+			</td>
+		</tr>
+		<!-- /if -->
+		<!-- loop from=$layout key=$k value=$v id=$idx -->
+		<tr>
+			<td>{$v.title}</td>
+			<td class="text-right">
+				<!-- if $k == "dateline" -->
+				{func date "Y-m-d H:i" $value.dateline}
+				<!-- elseif $k == "hits" -->
+				{$value.hits}
+				<!-- elseif $k == 'sort' -->
+				{$value.sort}
+				<!-- elseif $k == "user_id" -->
+				{$value._user ? $value._user : '-'}
+				<!-- else -->
+					<!-- if is_array($value[$k]) && $value[$k]['type'] -->
+						<!-- if $value[$k]['title'] && is_array($value[$k]['title']) -->
+						{echo implode(' / ',$value[$k]['title'])}			
+						<!-- else -->
+						{$value[$k]['title']}
+						<!-- /if -->
+					<!-- else -->
+						<!-- if is_array($value[$k]) && $value[$k][0] -->
+						<!-- loop from=$value[$k] key=$kk value=$vv id=$idxx -->
+						{$vv._show}
+						<!-- /loop -->
+						<!-- elseif is_array($value[$k]) && $value[$k]['_show'] -->
+						{$value[$k]['_show']}
+						<!-- else -->
+						{$value[$k] ? $value[$k] : '-'}
+						<!-- /if -->
+					<!-- /if -->
+				<!-- /if -->
+			</td>
+		</tr>
+		<!-- /loop -->
+		<tr>
+			<td>状态</td>
+			<td class="text-right">
+				<!-- if $value.status -->正常<!-- else --><span class="red">审核</span><!-- /if -->
+			</td>
+		</tr>
+		<!-- if $page_rs.is_front || $popedom.edit || $popedom.delete -->
+		<tr>
+			<td colspan="2">
+				<div class="layui-btn-group" name="list-content-btns" id="btn_{$value.id}" data-id="{$value.id}">
+					<!-- if $page_rs.is_front -->
+					<input type="button" value="{lang查看}" onclick="$.phpok.go('{url id=$value.id/}')" class="layui-btn layui-btn-xs layui-btn-normal" />
+					<!-- /if -->
+					<!-- if $popedom.edit -->
+					<input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=post func=edit id=$value.id/}')" class="layui-btn layui-btn-xs" />
+					<!-- /if -->
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" onclick="post_del('{$value.id}')" class="layui-btn layui-btn-xs layui-btn-danger" />
+					<!-- /if -->
+				</div>
+			</td>
+		</tr>
+		<!-- /if -->
+		</table>
+		<!-- /loop -->
+
+		<!-- include tpl=usercp/pagelist -->
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

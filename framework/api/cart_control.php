@@ -111,8 +111,8 @@ class cart_control extends phpok_control
 		if(!$qty || $qty<0){
 			$qty = 1;
 		}
-		$arc = phpok("_arc",'title_id='.$id);
-		$array = $id ? $this->product_from_tid($id) : $this->product_from_title();
+		$arc = phpok("_arc","title_id=".$id);
+		$array = $id ? $this->product_from_tid($arc,$qty) : $this->product_from_title($qty);
 		$rslist = $this->model('cart')->get_all($this->cart_id);
 		$updateid = $total = 0;
 		if(!$rslist){
@@ -205,7 +205,7 @@ class cart_control extends phpok_control
 		$tmp['qty'] = 1;
 		$tmp['is_virtual'] = 1;
 		$this->model('order')->save_product($tmp);
-		
+
 		$pricelist = $this->model('site')->price_status_all(true);
 		if($pricelist){
 			foreach($pricelist as $key=>$value){
@@ -327,7 +327,7 @@ class cart_control extends phpok_control
 		$array['dateline'] = $this->time;
 		$array['user_id'] = $user['id'];
 		$array['status'] = 1;
-		$this->model('payment')->log_create($array);	
+		$this->model('payment')->log_create($array);
 		$this->model('order')->update_order_status($rs['id'],'paid',P_Lang('订单已付款'));
 		$this->success();
 	}
@@ -367,7 +367,7 @@ class cart_control extends phpok_control
 		}
 	}
 
-	private function product_from_title()
+	private function product_from_title($qty)
 	{
 		$title = $this->get('title');
 		if(!$title){
@@ -386,6 +386,31 @@ class cart_control extends phpok_control
 		return $array;
 	}
 
+	private function _thumb($thumb_id,$gd_id,$rs)
+	{
+		$thumb = '';
+		$tmp = explode(",",$thumb_id);
+		foreach($tmp as $key=>$value){
+			$value = trim($value);
+			if(!$value || !$rs[$value]){
+				continue;
+			}
+			if(is_string($rs[$value])){
+				$thumb = $rs[$value];
+				break;
+			}
+			if(is_array($rs[$value])){
+				if($gd_id && $rs[$value]['gd'] && $rs[$value]['gd'][$gd_id]){
+					$thumb = $rs[$value]['gd'][$gd_id];
+				}else{
+					$thumb = $rs[$value]['filename'];
+				}
+				break;
+			}
+		}
+		return $thumb;
+	}
+
 	/**
 	 * 产品数据从id传过来的值生成
 	 * @参数 $id 产品ID
@@ -394,32 +419,22 @@ class cart_control extends phpok_control
 	**/
 	private function product_from_tid($id,$qty=0,$bundle=false)
 	{
-		$array = array('tid'=>$id,'cart_id'=>$this->cart_id);
-		$rs = $this->call->phpok('_arc',array('site'=>$this->site['id'],'title_id'=>$id));		
+		if(!$id){
+			return false;
+		}
+		if(is_numeric($id)){
+			$rs = phpok("_arc","title_id=".$id);
+		}else{
+			$rs = $id;
+			$id = $rs['id'];
+		}
 		if(!$rs){
 			$this->error(P_Lang('产品信息不存在或未启用'));
 		}
 		$thumb_id = $this->config['cart']['thumb_id'] ? $this->config['cart']['thumb_id'] : 'thumb';
 		$gd_id = $this->config['cart']['gd_id'];
-		$tmp = explode(",",$thumb_id);
-		foreach($tmp as $key=>$value){
-			$value = trim($value);
-			if(!$value || !$rs[$value]){
-				continue;
-			}
-			if(is_string($rs[$value])){
-				$array['thumb'] = $rs[$value];
-				break;
-			}
-			if(is_array($rs[$value])){
-				if($gd_id && $rs[$value]['gd'] && $rs[$value]['gd'][$gd_id]){
-					$array['thumb'] = $rs[$value]['gd'][$gd_id];
-				}else{
-					$array['thumb'] = $rs[$value]['filename'];
-				}
-				break;
-			}
-		}
+		$array = array('tid'=>$id,'cart_id'=>$this->cart_id);
+		$array['thumb'] = $this->_thumb($thumb_id,$gd_id,$rs);
 		$array['title'] = $rs['title'];
 		$array['is_virtual'] = $rs['is_virtual'];
 		$array['unit'] = $rs['unit'];
@@ -439,65 +454,24 @@ class cart_control extends phpok_control
 				}
 				$ext[$key] = $value;
 			}
+			$price_info = $this->model('content')->price($rs,implode(",",$ext),$qty);
+			$price = $price_info['price'];
+		}else{
+			$price_info = $this->model('content')->price($rs,'',$qty);
+			$price = $price_info['price'];
 		}
-		$price = $rs['price'];
-		//基于Apps扩展的
-		if($rs['apps']){
-			$tmp_apps = array();
-			foreach($rs['apps'] as $key=>$value){
-				if(!$value['list']){
-					continue;
-				}
-				$tmp_id = $this->get($key.'_id','int');
-				if(!$tmp_id){
-					$tmp_id = $value['rs']['id'];
-				}
-				foreach($value['list'] as $k=>$v){
-					if($tmp_id != $v['id'] || !$v['price']){
-						continue;
-					}
-					if($v['price']){
-						$price = $v['price'];
-						$tmp_apps[$key] = $tmp_id;
-						break;
-					}
-				}
-			}
-			if($tmp_apps){
-				$tmp = array();
-				foreach($tmp_apps as $key=>$value){
-					$tmp[] = $key.':'.$value;
-				}
-				$array['apps'] = implode(",",$tmp);
-				unset($tmp_apps,$tmp);
-			}
-		}
-		$price = price_format_val($price,$rs['currency_id'],$this->site['currency_id']);
-		$weight = $rs['weight'];
-		$volume = $rs['volume'];
-		if($ext && $rs['attrlist'] && $int){
-			foreach($rs['attrlist'] as $key=>$value){
-				foreach($value['rslist'] as $k=>$v){
-					if(in_array($v['id'],$ext)){
-						$price = floatval($price) + price_format_val($v['price'],$rs['currency_id'],$this->site['currency_id']);
-						$weight = floatval($weight) + floatval($v['weight']);
-						$volume = floatval($volume) + floatval($v['volume']);
-					}
-				}
-			}
-		}
+		$this->data('rs',$rs);
+		$this->data('cart_rs',$array);
+		$this->node('system_cart_product_id');
+		$currency_id = $rs['currency_id'] ? $rs['currency_id'] : $this->site['currency_id'];
+		$price = price_format_val($price,$currency_id,$this->site['currency_id']);
+		$array = $this->data('cart_rs');
 		$array['ext'] = $ext;
 		$array['price'] = $price;
-		$array['weight'] = $weight;
-		$array['volume'] = $volume;
-		$this->data('product_rs',$rs);
-		$this->data('cart_rs',$array);
-		$t = $this->node('system_cart_product_id');
-		if($t){
-			$array = $this->data('cart_rs');
-			$this->undata('cart_rs');
-			$this->undata('product_rs');
-		}
+		$array['weight'] = $rs['weight'];
+		$array['volume'] = $rs['volume'];
+		$this->undata('cart_rs');
+		$this->undata('rs');
 		return $array;
 	}
 
@@ -520,8 +494,8 @@ class cart_control extends phpok_control
 	 * 更新购物车里的产品数量
 	 * @参数 id 购物车里的产品ID，即表（cart_product）的主键id，不是产品ID
 	 * @参数 qty 更新购物车数量，不能小于1
-	 * @返回 
-	 * @更新时间 
+	 * @返回
+	 * @更新时间
 	**/
 	public function qty_f()
 	{
@@ -685,7 +659,7 @@ class cart_control extends phpok_control
 				}
 			}
 		}
-		$rslist = $this->model('cart')->get_all($this->cart_id,$id);	
+		$rslist = $this->model('cart')->get_all($this->cart_id,$id);
 		if(!$rslist){
 			$this->error(P_Lang('未找到产品信息'));
 		}
@@ -713,7 +687,7 @@ class cart_control extends phpok_control
 		$totalprice = 0;
 		$tmp = array('number'=>0,'weight'=>0,'volume'=>0,'price'=>0);
 		foreach($rslist as $key=>$value){
-			$totalprice += price_format_val($value['price'] * $value['qty']);
+			$totalprice += price_format_val($value['price'] * $value['qty'],$this->site['currency_id']);
 			if(!$value['is_virtual']){
 				$is_virtual = false;
 				$tmp['number'] += intval($value['qty']);
@@ -736,8 +710,9 @@ class cart_control extends phpok_control
 			}
 			$value['price_val'] = '0.00';
 			if($value['default']){
-				$value['price'] = price_format($value['default'],$this->site['currency_id']);
-				$value['price_val'] = $value['default'];
+				$currency_id = $value['currency_id'] ? $value['currency_id'] : $this->site['currency_id'];
+				$value['price'] = price_format($value['default'],$currency_id,$this->site['currency_id']);
+				$value['price_val'] = price_format_val($value['default'],$currency_id,$this->site['currency_id']);
 			}
 			if($value['identifier'] == 'product'){
 				$value['price'] = price_format($totalprice,$this->site['currency_id']);
@@ -774,9 +749,15 @@ class cart_control extends phpok_control
 			}
 			$pricelist[$key] = $value;
 		}
+		foreach($pricelist as $key=>$value){
+			if($value['hidden'] && $value['price_val'] == '0.00'){
+				unset($pricelist[$key]);
+				continue;
+			}
+		}
 		$this->success($pricelist);
 	}
-	
+
 	public function checkout_f()
 	{
 		$r = array();
@@ -808,30 +789,12 @@ class cart_control extends phpok_control
 		}
 		$totalprice = 0;
 		foreach($rslist as $key=>$value){
-			//比较系统默认价格，看是否有优惠
-			if($value['apps']){
-				$tmp = explode(",",$value['apps']);
-				$tmplist = array();
-				foreach($tmp as $k=>$v){
-					$t = explode(':',$v);
-					if(!$t[0] || !$t[1]){
-						continue;
-					}
-					if(!$this->model($t[0],true)){
-						continue;
-					}
-					$m = $this->model($t[0])->get_one($t[1]);
-					$tmplist[] = $m;
-				}
-				$value['apps'] = $tmplist;
-			}
 			$rslist[$key] = $value;
-			$totalprice += price_format_val($value['price'] * $value['qty']);
+			$totalprice += $value['price_total'];
 		}
-		
 		$r['product_price'] = price_format_val($totalprice,$this->site['currency_id']);
 		$r['rslist'] = $rslist;
-	
+
 		//检测购物车是否需要使用地址，及计算运费
 		$is_virtual = true;
 		foreach($rslist as $key=>$value){
@@ -842,7 +805,7 @@ class cart_control extends phpok_control
 		}
 		$r['is_virtual'] = $is_virtual;
 
-		
+
 		if($is_virtual && $user_rs){
 			$address = array('mobile'=>$user_rs['mobile'],'email'=>$user_rs['email']);
 			$r['address'] = $address;
@@ -871,7 +834,7 @@ class cart_control extends phpok_control
 			}
 		}
 		$r['shipping'] = $freight_price;
-		
+
 		$pricelist = $this->model('site')->price_status_all(true);
 		$discount = $tax = 0;
 		if($pricelist){
@@ -935,8 +898,48 @@ class cart_control extends phpok_control
 		$this->assign('price',$price);
 		$this->assign('price_val',$price_val);
 		//支付方式
-		$paylist = $this->model('payment')->get_all($this->site['id'],1,($this->is_mobile ? 1 : 0));
-		$this->assign("paylist",$paylist);
+		$user_agent = $_SERVER['HTTP_USER_AGENT'];
+		$weixin_client = false;
+		$miniprogram_client = false;
+		if($user_agent && strpos(strtolower($user_agent),'micromessenger') !== false){
+			$weixin_client = true;
+		}
+		if($user_agent && strpos(strtolower($user_agent),'miniprogram') !== false){
+			$miniprogram_client = true;
+		}
+		$is_mobile = ($this->is_mobile() || $weixin_client || $miniprogram_client) ? true : false;
+		$paylist = $this->model('payment')->get_all($this->site['id'],1,$is_mobile);
+		if($paylist){
+			foreach($paylist as $key=>$value){
+				if(!$value['paylist']){
+					unset($paylist[$key]);
+					continue;
+				}
+				if($weixin_client || $miniprogram_client){
+					foreach($value['paylist'] as $k=>$v){
+						if($v['code'] != 'wxpay'){
+							unset($value['paylist'][$k]);
+							continue;
+						}
+						$t = array();
+						if($v['param'] && is_string($v['param'])){
+							$t = unserialize($v['param']);
+						}
+						if($miniprogram_client && $t['trade_type'] != 'miniprogram'){
+							unset($value['paylist'][$k]);
+							continue;
+						}
+						if(!$miniprogram_client && $t['trade_type'] == 'miniprogram'){
+							unset($value['paylist'][$k]);
+							continue;
+						}
+					}
+					$paylist[$key] = $value;
+				}
+			}
+			$this->assign('paylist',$paylist);
+			$r['paylist'] = $paylist;
+		}
 		if($this->session->val('user_id')){
 			$wlist = $this->model('order')->balance($this->session->val('user_id'));
 			if($wlist){
@@ -1015,7 +1018,7 @@ class cart_control extends phpok_control
 		$price = $this->model('cart')->freight_price($tmp,$province,$city);
 		$this->success($price);
 	}
-	
+
 
 	private function _address($address_id=0)
 	{

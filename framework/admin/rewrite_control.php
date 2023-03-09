@@ -87,9 +87,6 @@ class rewrite_control extends phpok_control
 			$this->json(P_Lang('目标网址不能为空'));
 		}
 		$data['format'] = $this->get('format');
-		if(!$data['format']){
-			$this->json(P_Lang('格式化方法不能为空'));
-		}
 		$data['ctrl'] = $this->get('ctrl');
 		if(!$data['ctrl']){
 			$this->json(P_Lang('控制器不能为空'));

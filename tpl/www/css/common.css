@@ -46,6 +46,7 @@ a{
 .logo{
 	max-width:100%;
 }
+
 .btn-primary{
 	background-color:var(--blue);
 	border:0;
@@ -104,6 +105,10 @@ a{
 	font-size:1rem;
 	float:right;
 }
+.width_16{
+	width:16px;
+	height:16px;
+}
 
 .hand{
 	cursor:pointer;
@@ -153,13 +158,25 @@ select + input{
 
 
 /* 任意页返回头部 */
-.toTop{background:url('../images/to-top.png') center center no-repeat;width:48px;height:48px;border:0;}
+.toTop{
+	border:4px solid var(--blue);
+	border-radius:100%;
+	line-height:34px;
+	text-align:center;
+	color:var(--blue);
+	background:#fff;
+	cursor: pointer;
+}
 
 
 
 .content{ line-height:170%;font-size:1em;font-weight:500;}
 .content p{ margin-bottom:1em;}
-.content table {border: 1px solid #ddd;border-collapse: collapse;display: table;}
+.content img{
+	max-width:100% !important;
+	height:auto;
+}
+.content table {border: 1px solid #ddd;border-collapse: collapse;display: table;margin:auto;}
 .content table td {border: 1px solid #ddd;padding: 5px 10px;}
 .content table th {border: 1px solid #ddd;background-color: #f7f7f7;padding: 5px 10px;}
 .content blockquote{
@@ -170,11 +187,14 @@ select + input{
 fieldset.admin-reply{
 	border:1px solid #ccc;
 	padding:0.5em;
+	background:#fff;
+	box-shadow:2px 2px #ddd;
 }
 fieldset.admin-reply legend{
 	width:auto;
-	padding:0 0.5em;
-	font-size:1em;
+	padding:0 1em;
+	font-size:0.8em;
+	margin-left:2em;
 }
 
 fieldset.admin-reply + fieldset.admin-reply{
@@ -215,6 +235,8 @@ header .menu a{
 	background:relative;
 	width:100%;
 	margin:0 auto;
+	z-index:99999;
+	box-shadow:2px 2px 3px rgba(0, 0, 0, 0.5);
 }
 
 .index-search{
@@ -241,3 +263,83 @@ header .menu a{
 	max-width:100%;
 	height:auto !important;
 }
+
+.bg-default{
+	background-image:url('../images/banner-bg.svg');
+	background-size:cover;
+	background-repeat:no-repeat;
+	background-position: center center;
+}
+
+.avatar{
+	width:50px;
+	height:50px;
+	border-radius:50%;
+	background-color: #fff;
+	border: 1px solid #dee2e6;
+}
+
+.avatar-small{
+	width:26px;
+	height:26px;
+	border-radius:50%;
+	background-color: #fff;
+	border: 1px solid #dee2e6;
+}
+
+
+/* 在线客服 */
+.kfonline{
+	position: fixed;
+	bottom: 60px;
+	right: 0;
+	z-index: 999999;
+	width:180px;
+	display: none;
+}
+.kfonline .card-header{
+	cursor: pointer;
+}
+
+.kfonline-icon{
+	position: fixed;
+	bottom: 60px;
+	right: 15px;
+	z-index: 999999;
+	width:40px;
+	height:40px;
+	cursor: pointer;
+	color:var(--blue);
+	border:4px solid var(--blue);
+	border-radius:100%;
+	line-height:36px;
+	text-align:center;
+	background:#fff;
+}
+
+
+/* 计数器 开始 */
+.numbers{
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+.numbers li{
+	position: relative;
+	color:#1B1B1B;
+	text-align:center;
+}
+.numbers li .count{
+	font-size:60px;
+	font-weight:400;
+}
+.numbers li sup{
+	vertical-align: top;
+	font-size:30px;
+	top:0.5em;
+}
+.numbers li .title{
+	color:#525252;
+	font-size:20px;
+}
+/* 计数器 结束 */

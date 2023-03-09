@@ -77,8 +77,8 @@
 			cls.beforeSend = function(request){
 				request.setRequestHeader("request_type","ajax");
 				request.setRequestHeader("phpok_ajax",1);
-				if(session_name && session_name != 'undefined'){
-					request.setRequestHeader(session_name,$.cookie.get(session_name));
+				if(client_token && client_token != 'undefined'){
+					request.setRequestHeader('AUTHORIZATION',client_token);
 				}
 			};
 			if(!obj || obj == 'undefined'){
@@ -111,8 +111,8 @@
 				if(!postData || postData == 'undefined'){
 					request.setRequestHeader("content-type","application/json");
 				}
-				if(session_name && session_name != 'undefined'){
-					request.setRequestHeader(session_name,$.cookie.get(session_name));
+				if(client_token && client_token != 'undefined'){
+					request.setRequestHeader('AUTHORIZATION',client_token);
 				}
 			};
 			if(!obj || obj == 'undefined'){
@@ -122,7 +122,7 @@
 			}
 			if(typeof obj == 'boolean'){
 				cls.success = function(rs){
-					return true;
+					return rs;
 				}
 			}else{
 				cls.success = function(rs){
@@ -130,6 +130,34 @@
 				};
 			}
 			$.ajax(cls);
+		},
+		submit:function(obj,url,success,error){
+			var header_options = {
+				'request_type':'ajax',
+				'phpok_ajax':1
+			}
+			if(client_token && client_token != 'undefined'){
+				header_options['AUTHORIZATION'] = client_token;
+			}
+			var options = {
+				'url':url,
+				'type':'post',
+				'dataType':'json',
+				'headers':header_options,
+				'success':function(rs){
+					if(success && typeof success == 'function'){
+						(success)(rs);
+					}
+					return false;
+				},
+				'error':function(e) {
+                    if(error && typeof error == 'function'){
+						(error)(e);
+					}
+                }
+			}
+			$(obj).ajaxSubmit(options);
+			return false;
 		},
 
 		/**
@@ -197,7 +225,6 @@
 		{
 			try{
 				if(url && url != 'undefined'){
-
 					$("iframe").each(function(i){
 						var src = $(this).attr('src');
 						if(typeof url == 'boolean'){
@@ -455,7 +482,10 @@
 		 * 网址常规编码
 		 * @参数 str 要编码的字符串
 		**/
-		encode: function(str){
+		encode: function(str,isfull){
+			if(isfull && isfull != 'undefined'){
+				return encodeURI(str);
+			}
 			return encodeURIComponent(str);
 		}
 	};

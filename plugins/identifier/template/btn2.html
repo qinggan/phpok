@@ -55,15 +55,19 @@ function py_btn()
 
 $(document).ready(function(){
 	$("#identifier").css("width","200px");
-	$("div[data-id=identifier]").html($("#{$pinfo.id}_hidden").html());
+	$("#identifier").parent().parent().find("li").eq(1).html($("#{$pinfo.id}_hidden").html());
 });
 </script>
 <div id="{$pinfo.id}_hidden" style="display:none;">
-	<div class="layui-btn-group">
-		<input type="button" value="{lang随机码}" onclick="$.admin.rand()" class="layui-btn layui-btn-sm" />
-		<input type="button" value="{lang有道翻译}" onclick="youdao_translate()" class="layui-btn layui-btn-sm" />
-		<input type="button" value="{lang全拼音}" onclick="pingyin_btn()" class="layui-btn layui-btn-sm" />
-		<input type="button" value="{lang简拼}" onclick="py_btn()" class="layui-btn layui-btn-sm" />
-		<input type="button" value="{lang清空}" onclick="$('#identifier').val('')" class="layui-btn layui-btn-sm" />
+	<div class="button-group">
+		<input type="button" value="{lang随机码}" onclick="$.admin.rand()" class="layui-btn" />
+		<!-- if $is_youdao -->
+		<input type="button" value="{lang有道翻译}" onclick="youdao_translate()" class="layui-btn" />
+		<!-- /if -->
+		<!-- if $is_kunwu -->
+		<input type="button" value="{lang全拼音}" onclick="pingyin_btn()" class="layui-btn" />
+		<input type="button" value="{lang简拼}" onclick="py_btn()" class="layui-btn" />
+		<!-- /if -->
+		<input type="button" value="{lang清空}" onclick="$('#identifier').val('')" class="layui-btn" />
 	</div>
 </div>

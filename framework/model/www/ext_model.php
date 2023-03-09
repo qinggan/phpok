@@ -35,7 +35,7 @@ class ext_model extends ext_model_base
 			$rslist[$key] = $value;
 		}
 		$rslist = $this->_format($rslist);
-		$tmplist = false;
+		$tmplist = array();
 		foreach($rslist as $key=>$value){
 			if($value['form_type'] == 'url' && $value['content']){
 				$tmplist['_url'] = $value['content'];
@@ -55,35 +55,27 @@ class ext_model extends ext_model_base
 		{
 			return false;
 		}
-		$list = false;
-		foreach($rslist as $key=>$value)
-		{
+		$list = array();
+		foreach($rslist as $key=>$value){
 			$value['ext'] = $value['ext'] ? unserialize($value['ext']) : array();
-			if($value['form_type'] == 'upload' && $value['content'] && trim($value['content']))
-			{
+			if($value['form_type'] == 'upload' && $value['content'] && trim($value['content'])){
 				$tmp = explode(",",trim($value['content']));
-				foreach($tmp as $k=>$v)
-				{
-					if($v && trim($v))
-					{
+				foreach($tmp as $k=>$v){
+					if($v && trim($v)){
 						$list['res'][] = $v;
 					}
 				}
 			}
-			if($value['form_type'] == 'title' && $value['content'] && trim($value['content']))
-			{
+			if($value['form_type'] == 'title' && $value['content'] && trim($value['content'])){
 				$tmp = explode(",",trim($value['content']));
-				foreach($tmp as $k=>$v)
-				{
-					if($v && trim($v))
-					{
+				foreach($tmp as $k=>$v){
+					if($v && trim($v)){
 						$list['title'][] = $v;
 					}
 				}
 			}
 			//格式化URL
-			if($value['form_type'] == 'url' && $value['content'] && trim($value['content']))
-			{
+			if($value['form_type'] == 'url' && $value['content'] && trim($value['content'])){
 				$tmp = unserialize($value['content']);
 				$rslist[$key]['content'] = $this->site['url_type'] == 'rewrite' ? $tmp['rewrite'] : $tmp['default'];
 			}
@@ -101,50 +93,35 @@ class ext_model extends ext_model_base
 			$sql = "SELECT * FROM ".$this->db->prefix."list WHERE id IN(".$ids.") AND status=1";
 			$list['title'] = $this->db->get_all($sql,'id');
 		}
-		foreach($rslist as $key=>$value)
-		{
-			if($value['form_type'] == 'upload' && $value['content'])
-			{
-				if($value['ext']['is_multiple'])
-				{
+		foreach($rslist as $key=>$value){
+			if($value['form_type'] == 'upload' && $value['content']){
+				if($value['ext']['is_multiple']){
 					$tmp = explode(',',trim($value['content']));
-					$tmplist = false;
-					foreach($tmp as $k=>$v)
-					{
-						if($v && trim($v) && $list['res'][$v])
-						{
+					$tmplist = array();
+					foreach($tmp as $k=>$v){
+						if($v && trim($v) && $list['res'][$v]){
 							$tmplist[] = $list['res'][$v];
 						}
 					}
 					$value['content'] = $tmplist;
-				}
-				else
-				{
-					if($list['res'][$value['content']])
-					{
+				}else{
+					if($list['res'][$value['content']]){
 						$value['content'] = $list['res'][$value['content']];
 					}
 				}
 			}
-			if($value['form_type'] == 'title')
-			{
-				if($value['ext']['is_multiple'])
-				{
+			if($value['form_type'] == 'title'){
+				if($value['ext']['is_multiple']){
 					$tmp = explode(',',trim($value['content']));
-					$tmplist = false;
-					foreach($tmp as $k=>$v)
-					{
-						if($v && trim($v) && $list['title'][$v])
-						{
+					$tmplist = array();
+					foreach($tmp as $k=>$v){
+						if($v && trim($v) && $list['title'][$v]){
 							$tmplist[] = $list['title'][$v];
 						}
 					}
 					$value['content'] = $tmplist;
-				}
-				else
-				{
-					if($list['res'][$value['content']])
-					{
+				}else{
+					if($list['res'][$value['content']]){
 						$value['content'] = $list['title'][$value['content']];
 					}
 				}
@@ -154,5 +131,3 @@ class ext_model extends ext_model_base
 		return $rslist;
 	}
 }
-
-?>

@@ -1,0 +1,47 @@
+<footer class="pt-1 bg-light">
+	<!-- if $config.copyright && $config.copyright.content -->
+	<div class="container">
+		<div class="row">
+			<div class="col">
+				{$config.copyright.content}
+			</div>
+		</div>
+	</div>
+	<!-- /if -->
+</footer>
+<div style="height:65px"></div>
+<section class="fixed-bottom border-top bg-light" style="height:65px;overflow:hidden">
+	<div class="row justify-content-around text-center pt-2">
+		<a href="{$sys.url}" class="col">
+			<div><i class="fa fa-home"></i></div>
+			<small>首页</small>
+		</a>
+		<a href="{url id=product/}" class="col">
+			<div><i class="fa fa-cubes"></i></div>
+			<small>产品</small>
+		</a>
+		<a href="{url ctrl=cart/}" class="col">
+			<div><i class="fa fa-shopping-cart"> <small id="head_cart_num" class="badge text-light badge-danger" style="display:none;">0</small></i></div>
+			<small>购物车</small>
+		</a>
+		<!-- php:$contactus = phpok('contactus') -->
+		<!-- if $contactus.tel -->
+		<a href="tel:{$contactus.tel}" class="col">
+			<div><i class="fa fa-phone"></i></div>
+			<small>电话</small>
+		</a>
+		<!-- /if -->
+		<!-- if $session.user_id -->
+		<a href="{url ctrl=usercp/}" class="col">
+			<div><i class="fa fa-user-circle-o"></i></div>
+			<small>我的</small>
+		</a>
+		<!-- else -->
+		<a href="{url ctrl=login/}" class="col">
+			<div><i class="fa fa-user-circle-o"></i></div>
+			<small>登录</small>
+		</a>
+		<!-- /if -->
+	</div>
+</section>
+<!-- include tpl=foot -->

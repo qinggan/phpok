@@ -91,21 +91,18 @@ function phpok_taxis(obj,url)
 **/
 function phpok_status(id,url)
 {
-	if(!url || url == "undefined" || !id) return false;
+	if(!url || url == "undefined" || !id){
+		return false;
+	}
 	url += "&id="+$.str.encode(id);
 	$.phpok.json(url,function(rs){
 		if(rs.status && rs.status != 'error'){
 			var info = (rs.info && rs.info != 'undefined') ? rs.info : (rs.content ? rs.content : '0');
 			if(info == 1){
-                var status_css="";
-                var old_cls = "layui-btn-danger";
-                $("#status_"+id).val("启用");
+                $("#status_"+id).val("启用").removeClass("layui-btn-danger");
             }else{
-                var status_css="layui-btn-danger";
-                var old_cls = "";
-                $("#status_"+id).val("停用");
+                $("#status_"+id).val("停用").addClass("layui-btn-danger");
             }
-			$("#status_"+id).removeClass(old_cls).addClass(status_css);
 			return true;
 		}
 		var info = (rs.info && rs.info != 'undefined') ? rs.info : (rs.content ? rs.content : 'Error');
@@ -377,18 +374,19 @@ function ext_edit(id,module)
 		**/
 		reload:function(url)
 		{
+			if(!url || url == 'undefined'){
+				return false;
+			}
+			url = url.replace(/\&\_noCache=[0-9\.]+/g,'');
+			url = url.replace(webroot,'');
 			top.$("#LAY_app_tabsheader li").each(function(i){
 				if(!$(this).hasClass('layui-this')){
 					var layid = $(this).attr('lay-id');
 					if(layid){
 						layid = layid.replace(/\&\_noCache=[0-9\.]+/g,'');
-					}
-					if(layid){
-						layid = layid.replace(webroot,'');
-					}
-					var chk = webroot+layid;
-					if(chk.indexOf(url) != -1){
-						top.$('.layadmin-iframe').eq(i)[0].contentWindow.location.reload(true);
+						if(layid.indexOf(url) != -1 || url.indexOf(layid) != -1){
+							top.$('.layadmin-iframe').eq(i)[0].contentWindow.location.reload(true);
+						}
 					}
 				}
 			});
@@ -400,52 +398,74 @@ function ext_edit(id,module)
 		**/
 		goto_tab:function(url)
 		{
-			var li_num = 0;
+			if(!url || url == 'undefined'){
+				return false;
+			}
+			url = url.replace(/\&\_noCache=[0-9\.]+/g,'');
+			url = url.replace(webroot,'');
 			top.$("#LAY_app_tabsheader li").each(function(i){
-				if(!$(this).hasClass('layui-this')){
-					var layid = $(this).attr('lay-id');
-					if(layid){
-						layid = layid.replace(/\&\_noCache=[0-9\.]+/g,'');
-					}
-					var chk = layid;
-					if(chk.indexOf(url) != -1 && li_num<1){
-						li_num = i;
+				var layid = $(this).attr('lay-id');
+				if(layid){
+					layid = layid.replace(/\&\_noCache=[0-9\.]+/g,'');
+					if(layid.indexOf(url) != -1){
+						$(this).click();
 					}
 				}
 			});
-			if(li_num>0){
-				top.$("#LAY_app_tabsheader li").eq(li_num).click();
-			}
 		},
 
 		/**
 		 * 关闭当前窗口
 		**/
-		close(url)
+		close:function(url)
 		{
-			var self = this;
-			window.setTimeout(function(){
-				top.layui.admin.events.closeThisTabs();
-				if(url && url != 'undefined'){
-					self.goto_tab(url);
+			if(url && url != 'undefined'){
+				this.reload(url);
+				url = url.replace(/\&\_noCache=[0-9\.]+/g,'');
+				url = url.replace(webroot,'');
+			}
+			var obj,obj_goto,obj_status = false,obj_goto_status = false;
+			top.$("#LAY_app_tabsheader li").each(function(i){
+				var layid = $(this).attr('lay-id');
+				if($(this).hasClass('layui-this')){
+					obj = $(this);
+					obj_status = true;
+				}else{
+					if(layid){
+						layid = layid.replace(/\&\_noCache=[0-9\.]+/g,'');
+						if(url && url != 'undefined' && (layid.indexOf(url) != -1 || url.indexOf(layid) != -1)){
+							obj_goto = $(this);
+							obj_goto_status = true;
+						}
+					}
 				}
-			},500);
+			});
+			setTimeout(function(){
+				if(obj_goto_status){
+					obj_goto.click();
+				}
+				if(obj_status){
+					obj.find(".layui-tab-close").click();
+				}
+			}, 500);
 		},
-
 		title:function(title,url)
 		{
+			if(url && url != 'undefined'){
+				url = url.replace(/\&\_noCache=[0-9\.]+/g,'');
+			}
 			var s = '';
 			top.$("#LAY_app_tabsheader li").each(function(i){
 				if(url && url != 'undefined'){
 					var layid = $(this).attr('lay-id');
 					if(layid){
 						layid = layid.replace(/\&\_noCache=[0-9\.]+/g,'');
-					}
-					var chk = webroot+layid;
-					if(chk.indexOf(url) != -1){
-						s = $(this).find("span").html();
-						if(title && title != 'undefined'){
-							$(this).find("span").html(title);
+						layid = layid.replace(webroot,'');
+						if(url.indexOf(layid) != -1){
+							s = $(this).find("span").html();
+							if(title && title != 'undefined'){
+								$(this).find("span").html(title);
+							}
 						}
 					}
 				}else{
@@ -526,9 +546,9 @@ $(document).ready(function(){
 			$.phpok.reload();
 		}
 	}],[{
-		'text':p_lang('清空缓存'),
+		'text':p_lang('批处理'),
 		'func': function() {
-			top.$.win(p_lang('清空缓存'),get_url('index','cache'));
+			top.$.win(p_lang('批处理'),get_url('index','cache'));
 		}
 	},{
 		'text':p_lang('修正渲染'),

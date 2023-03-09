@@ -17,14 +17,14 @@
 		            <th>{lang运行模式}</th>
 		            <th>{lang项目或分类}</th>
 		            <th>{lang排序}</th>
-		            <th><div class="layui-table-cell laytable-cell-1-status" align="center"><span>操作</span></div></th>
+		            <th width="280"><div class="layui-table-cell laytable-cell-1-status" align="center"><span>操作</span></div></th>
 		        </tr>
 	        </thead>
 	        <!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 	        <tr>
 	            <td>{$value.id}</td>
 	            <td class="center"><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="$.admin_module.status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
-	            <td><label for="tid_{$value.id}">{$value.title}<!-- if $value.note --><span class="gray i">（{$value.note}）</span><!-- /if --></label></td>
+	            <td><label for="tid_{$value.id}">{$value.title}<!-- if $value.note --><div class="gray small">{$value.note}</div><!-- /if --></label></td>
 	            <td>
 		            <!-- if $value.mtype -->
 		            {lang独立}

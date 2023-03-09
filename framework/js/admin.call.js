@@ -13,12 +13,10 @@
 		{
 			$("div[ext=param]").hide();
 			if(!val || val == 'undefined'){
-				val = $("input[name=type_id]:checked").val();
-				if(!val){
-					return false;
-				}
+				return true;
 			}
-			var showid = $("input[name=type_id][value="+val+"]").attr('showid');
+			var obj = $("select[name=type_id]").find("option[value="+val+"]");
+			var showid = obj.attr("data-showid");
 			if(!showid || showid == 'undefined'){
 				return false;
 			}
@@ -26,10 +24,26 @@
 			for(var i in lst){
 				$("div[name=ext_"+lst[i]+"]").show();
 			}
-			//动态执行Ajax
-			var chk_ajax = $("input[name=type_id][value="+val+"]").attr('ajax');
+			var chk_ajax = obj.attr("data-ajax");
 			if(chk_ajax && chk_ajax != 'undefined'){
-				eval(chk_ajax+'()');
+				if(chk_ajax == 'load_catelist'){
+					load_catelist();
+				}
+				if(chk_ajax == 'load_catelist2'){
+					load_catelist2();
+				}
+				if(chk_ajax == 'load_project'){
+					load_project();
+				}
+				if(chk_ajax == 'load_project4'){
+					load_project4();
+				}
+				if(chk_ajax == 'load_project3'){
+					load_project3();
+				}
+				if(chk_ajax == 'load_project2'){
+					load_project2();
+				}
 			}
 			return true;
 		},
@@ -43,7 +57,7 @@
 					url += "&id="+id;
 				}
 			}
-			var typeid = $("input[name=type_id]:checked").val();
+			var typeid = $("select[name=type_id]").val();
 			if(typeid != 'arclist' && typeid != 'total' && typeid != 'cate' && typeid != 'catelist' && typeid != 'subcate'){
 				return true;
 			}
@@ -77,7 +91,7 @@
 					$("div[name=ext_cateid]").hide();
 				}
 				//更新
-				if($("input[name=type_id]:checked").val() == 'arclist'){
+				if(typeid == 'arclist'){
 					$.admin_call.end_param();
 				}
 			},true);
@@ -140,10 +154,8 @@
 				'success':function(rs){
 					if(rs.status){
 						var tip = $("#id").length > 0 ? p_lang('调用信息编辑成功') : p_lang('调用信息添加成功');
-						$.dialog.tips(tip,function(){
-							$.admin.reload(get_url('call'));
-							$.admin.close();
-						}).lock();
+						$.dialog.tips(tip).lock();
+						$.admin.close(get_url('call'));
 						return true;
 					}
 					$.dialog.alert(rs.info);
@@ -310,7 +322,7 @@ function random_string(len) {
 }
 
 $(document).ready(function(){
-	chktype = $("input[name=type_id]:checked").val();
+	chktype = $("select[name=type_id]").val();
 	if(chktype){
 		$.admin_call.type_id(chktype);
 	}

@@ -73,9 +73,10 @@
 					if(rs.status){
 						var info = $("#id").val() ? p_lang('方案编辑成功') : p_lang('方案添加成功');
 						$.dialog.tips(info);
+						$.admin.close(get_url('gd'));
 						return true;
 					}
-					$.dialog.alert(rs.info);
+					$.dialog.tips(rs.info);
 					return false;
 				}
 			});

@@ -18,8 +18,8 @@ function cart_checkout()
 		<tr>
 			<th colspan="2">图片</th>
 			<th>名称</th>
-			<th width="80px">数量</th>
-			<th>售价</th>
+			<th width="120px">数量</th>
+			<th width="120px">售价</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -45,9 +45,17 @@ function cart_checkout()
 				<div>单价：{func price_format $value.price $value.currency_id}</div>
 			</td>
 			<td>
-				<div><input type="number" class="form-control qty" min="1" name="qty_{$value.id}" id="qty_{$value.id}" value="{$value.qty}" onchange="$.cart.update('{$value.id}')" /></div>
+				<input type="number" class="form-control qty" min="1" name="qty_{$value.id}" id="qty_{$value.id}" value="{$value.qty}" onchange="$.cart.update('{$value.id}')" />
 			</td>
-			<td class="text-danger">{func price_format $value.price*$value.qty $value.currency_id}</td>
+			<td>
+				<!-- if $value.discount -->
+				<div class="text-muted"><del>{func price_format $value.price*$value.qty $value.currency_id}</del></div>
+				<!-- /if -->
+				<div class="text-danger">{func price_format $value.price_total $value.currency_id}</div>
+				<!-- loop from=$value.appslist key=$k value=$v id=$idxx -->
+				<div class="text-muted"><small>{$v.title}</small></div>
+				<!-- /loop -->
+			</td>
 		</tr>
 		<!-- /loop -->
 	</tbody>

@@ -18,13 +18,13 @@ class usercp_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非用户不能执行此操作'));
+		}
 	}
 	
 	public function index_f()
 	{
-		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非用户不能执行此操作'));
-		}
 		$user = $this->model('user')->get_one($this->session->val('user_id'));
 		if(!$user){
 			$this->error(P_Lang('用户信息不存在'));
@@ -35,8 +35,28 @@ class usercp_control extends phpok_control
 		if($user['status'] == 2){
 			$this->error(P_Lang('用户已被禁用，请联系管理员'));
 		}
+		$user['_pass'] = false;
 		if(isset($user['pass'])){
+			if($user['pass']){
+				$user['_pass'] = true;
+			}
 			unset($user['pass']);
+		}
+		$chksms = $this->get('chksms','int');
+		if($chksms){
+			$user['_sms'] = false;
+			$server = $this->model('gateway')->get_default('sms');
+			if($server){
+				$user['_sms'] = true;
+			}
+		}
+		$chkemail = $this->get('chkemail','int');
+		if($chkemail){
+			$user['_email'] = false;
+			$server = $this->model('gateway')->get_default('email');
+			if($server){
+				$user['_email'] = true;
+			}
 		}
 		$this->success($user);
 	}
@@ -46,9 +66,6 @@ class usercp_control extends phpok_control
 	**/
 	public function info_f()
 	{
-		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非用户不能执行此操作'));
-		}
 		$group_rs = $this->model('usergroup')->group_rs($this->session->val('user_id'));
 		if(!$group_rs){
 			$this->error(P_Lang('用户组不存在'));
@@ -300,11 +317,11 @@ class usercp_control extends phpok_control
 			$val = $this->get($value);
 			$array[$value] = $val;
 		}
-		if($array && count($array)>0){
-			$this->model("user")->update_ext($array,$this->session->val('user_id'));
-			$this->success();
+		if(!$array || count($array)<1){
+			$this->error(P_Lang('没有可用参数及值'));
 		}
-		$this->error(P_Lang('没有接收到参数及值'));
+		$this->model("user")->update_ext($array,$this->session->val('user_id'));
+		$this->success();
 	}
 	
 	//获取推荐人信息

@@ -1,7 +1,6 @@
 <?php
 /**
  * 下拉菜单管理器，支持无限级别下拉菜单
- * @package phpok\admin
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -309,7 +308,27 @@ class opt_control extends phpok_control
 			$this->error(P_Lang('没有文件'));
 		}
 		$file = current($flist);
-		if(strtolower(substr($file,-4)) != '.xml'){
+		$ext = strtolower(substr($file,-4));
+		if($ext == '.csv' && $id){
+			//内容读取
+			$data = $this->lib('csv')->read($file);
+			if(!$data){
+				$this->error('没有数据，导入失败');
+			}
+			foreach($data as $key=>$value){
+				if($key<1){
+					continue;
+				}
+				$tmp = array('val'=>$value[0]);
+				$tmp['title'] = $value[1];
+				$tmp['taxis'] = $value[2] ? $value[2] : ($key+1)*5;
+				$tmp['parent_id'] = $pid;
+				$tmp['group_id'] = $id;
+				$insert_id = $this->model('opt')->opt_save($tmp);
+			}
+			$this->success();
+		}
+		if($ext != '.xml'){
 			$this->error(P_Lang('压缩包有异常，不是XML文件'));
 		}
 		$data = $this->lib('xml')->read($file);
@@ -330,7 +349,7 @@ class opt_control extends phpok_control
 	{
 		if($data['info']['val']){
 			$tmplist = array();
-			$tmp = false;
+			$tmp = array();
 			foreach($data['info'] as $key=>$value){
 				if(is_numeric($key)){
 					$tmplist[$key] = $value;
@@ -362,6 +381,7 @@ class opt_control extends phpok_control
 	**/
 	public function export_f()
 	{
+		set_time_limit(0);
 		$id = $this->get('id','int');
 		if(!$id){
 			$this->error(P_Lang('项目组ID未指定'),$this->url('opt'));
@@ -371,6 +391,10 @@ class opt_control extends phpok_control
 		$rs = $this->model('opt')->group_one($id);
 		if(!$rs){
 			$this->error(P_Lang('组信息不存在'),$this->url('opt'));
+		}
+		if(!$pid && $sub){
+			$this->export_all($id,$rs['title']);
+			exit;
 		}
 		$rslist = $this->model('opt')->opt_all("group_id=".$id." AND parent_id=".$pid);
 		if(!$rslist){
@@ -398,6 +422,100 @@ class opt_control extends phpok_control
 		}
 		$this->lib('file')->rm($this->dir_cache.$tmpfile);
 		$this->lib('file')->download($zipfile,$title);
+	}
+
+	/**
+	 * 导出数据CSV
+	**/
+	public function csv_f()
+	{
+		set_time_limit(0);
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('项目组ID未指定'),$this->url('opt'));
+		}
+		$pid = $this->get('pid','int');
+		$rs = $this->model('opt')->group_one($id);
+		if(!$rs){
+			$this->error(P_Lang('组信息不存在'),$this->url('opt'));
+		}
+		$rslist = $this->model('opt')->opt_all("group_id=".$id." AND parent_id=".$pid);
+		if(!$rslist){
+			$this->error(P_Lang('没有选项内容数据'),$this->url('opt'));
+		}
+		$tmpfile = 'opt_'.$this->session->val('admin_id').'_'.$id.'.csv';
+		$tmp = array('值','显示','排序');
+		$data = array();
+		$data[] = $tmp;
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				$tmp_title = $value['title'] ? $value['title'] : ($value['val'] ? $value['val'] : '0');
+				$tmp_val = $value['val'] ? $value['val'] : '0';
+				$tmp_taxis = $value['taxis'] ? $value['taxis'] : 255;
+				$tmp = array($tmp_val,$tmp_title,$tmp_taxis);
+				$data[] = $tmp;
+			}
+		}
+		$this->lib('csv')->write($data);
+	}
+
+
+	private function export_all($id,$title='')
+	{
+		$rslist = $this->model('opt')->opt_all("group_id=".$id);
+		if(!$rslist){
+			$this->error(P_Lang('没有选项内容数据'),$this->url('opt'));
+		}
+		$tmpfile = $this->dir_data.'opt-'.$this->session->val('admin_id').'-'.$id.'.xml';
+		$data  = '<root>'."\n";
+		$data .= "\t".'<title><![CDATA['.$title.']]></title>'."\n";
+		$data .= "\t".'<data>'."\n";
+		$this->lib('file')->vi($data,$tmpfile,'wb');
+		$this->_export_all($rslist,0,$tmpfile,"\t\t");
+		$data  = "\t".'</data>'."\n";
+		$data .= '</root>';
+		$this->lib('file')->vi($data,$tmpfile,'','ab');
+		$zipfile = $this->dir_cache.md5($tmpfile).'.zip';
+		$this->lib('phpzip')->set_root($this->dir_data);
+		$this->lib('phpzip')->zip($tmpfile,$zipfile);
+		$this->lib('file')->rm($tmpfile);
+		$this->lib('file')->download($zipfile,$title);
+	}
+
+	private function _export_all($rslist,$parent_id,$file,$space='')
+	{
+		foreach($rslist as $key=>$value){
+			if($parent_id == $value['parent_id']){
+				$title = $value['title'] ? $value['title'] : ($value['val'] ? $value['val'] : '0');
+				$val = $value['val'] ? $value['val'] : '0';
+				$taxis = $value['taxis'] ? $value['taxis'] : 255;
+				$data  = $space.'<info>'."\n";
+				$data .= $space."\t".'<title><![CDATA['.$value['title'].']]></title>'."\n";
+				$data .= $space."\t".'<val><![CDATA['.$value['val'].']]></val>'."\n";
+				$data .= $space."\t".'<taxis><![CDATA['.$value['taxis'].']]></taxis>'."\n";
+				$this->lib('file')->vi($data,$file,'','ab');
+				$chk = $this->_chkparent($rslist,$value['id']);
+				if($chk){
+					unset($rslist[$key]);//注销当前父级信息
+					$this->lib('file')->vi($space."\t".'<sublist>'."\n",$file,'','ab');
+					$this->_export_all($rslist,$value['id'],$file,$space."\t\t");//
+					$this->lib('file')->vi($space."\t".'</sublist>'."\n",$file,'','ab');
+				}
+				$this->lib('file')->vi($space.'</info>'."\n",$file,'','ab');
+			}
+		}
+	}
+
+	private function _chkparent($rslist,$pid)
+	{
+		$p = false;
+		foreach($rslist as $key=>$value){
+			if($value['parent_id'] == $pid){
+				$p = true;
+				break;
+			}
+		}
+		return $p;
 	}
 
 	private function _export(&$data,$rslist,$gid,$space='',$readsublist=true)

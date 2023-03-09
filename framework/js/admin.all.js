@@ -80,6 +80,36 @@
 			var info = $.phpok.rand(16,'all');
 			$("#api_code").val(info);
 		},
+		rsa_create:function()
+		{
+			$.dialog.confirm('确定要生成新的证书吗？生成后请修改其他使用到通迅证书的参数',function(){
+				var obj = $.dialog.tips('生成中，请稍候…').lock();
+				$.phpok.json(get_url('all','rsa'),function(rs){
+					obj.close();
+					if(!rs.status){
+						$.dialog.alert(rs.info);
+						return false;
+					}
+					$("#public_key").val(rs.info.public_key);
+					$("#private_key").val(rs.info.private_key);
+				});
+			});
+		},
+		rsa_create2:function()
+		{
+			$.dialog.confirm('确定要生成新的证书吗？生成后请修改其他使用到通迅证书的参数',function(){
+				var obj = $.dialog.tips('生成中，请稍候…').lock();
+				$.phpok.json(get_url('all','rsa'),function(rs){
+					obj.close();
+					if(!rs.status){
+						$.dialog.alert(rs.info);
+						return false;
+					}
+					$("#public_key2").val(rs.info.public_key);
+					$("#private_key2").val(rs.info.private_key);
+				});
+			});
+		},
 		ext_save:function()
 		{
 			$("#post_save").ajaxSubmit({
@@ -188,7 +218,7 @@
 						});
 						return true;
 					}
-					$.dialog.alert(data.info);
+					$.dialog.tips(data.info);
 					return false;
 				})
 			});

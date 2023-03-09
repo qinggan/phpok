@@ -30,17 +30,6 @@ class content_control extends phpok_control
 	 */
 	public function index_f()
 	{
-		if(!$this->site['api_code']){
-			$this->error(P_Lang('未启用API接口'));
-		}
-		$this->model('apisafe')->code($this->site['api_code']);
-		if(!$this->model('apisafe')->check()){
-			$errInfo = $this->model('apisafe')->error_info();
-			if(!$errInfo){
-				$errInfo = P_Lang('未通过安全接口拼接');
-			}
-			$this->error($errInfo);
-		}
 		$data_info = array();
 		$id = $this->get("id");
 		if(!$id){
@@ -97,7 +86,7 @@ class content_control extends phpok_control
 			}
 		}
 		$data_info['page_rs'] = $project;
-		
+
 		if($rs['cate_id'] && $project['cate']){
 			$cate_root_rs = $this->call->phpok('_cate',array('pid'=>$project['id'],'cateid'=>$project['cate']));
 			if(!$cate_root_rs || !$cate_root_rs['status']){
@@ -136,6 +125,59 @@ class content_control extends phpok_control
 		$this->success($data_info);
 	}
 
+	public function price_f()
+	{
+		$id = $this->get('id','int');
+		$attr = $this->get('attr','int');
+		$qty = $this->get('qty','int');
+		if(!$qty){
+			$qty = 1;
+		}
+		if(!$id){
+			$this->error('产品ID不能为空');
+		}
+		$t = $this->model('content')->price($id,$attr,$qty);
+		if(!$t){
+			$state = $this->model('content')->error_info();
+			if(is_bool($state)){
+				$this->tip();
+			}
+			$this->error($state);
+		}
+		$this->success($t);
+	}
+
+	public function click_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定主题ID'));
+		}
+		$code = $this->get('code');
+		if(!$code){
+			$this->error(P_Lang('未指定动作标识'));
+		}
+		$chk = $this->model('click')->events($code);
+		if(!$chk){
+			$this->error(P_Lang('动作标识不正确'));
+		}
+		$t = $this->model('click')->save_list($id,$code,$this->session->val('user_id'));
+		if(!$t){
+			$this->error(P_Lang('动作执行失败，请检查'));
+		}
+		$data = $chk;
+		if(is_bool($t)){
+			$data['tip'] = P_Lang('取消 [title] 操作成功',array('title'=>$chk['title']));
+			$data['action'] = 'delete';
+			$data['total'] = $this->model('click')->get_one($id,$code,'list');
+			$this->success($data);
+		}
+		$data['tip'] = P_Lang('[title] 操作成功',array('title'=>$chk['title']));
+		$data['action'] = 'add';
+		$data['total'] = $this->model('click')->get_one($id,$code,'list');
+		$this->success($data);
+	}
+
 	private function content_format($rs,&$data_info)
 	{
 		$flist = $this->model('module')->fields_all($rs['module_id']);
@@ -172,4 +214,6 @@ class content_control extends phpok_control
 		}
 		return $rs;
 	}
+
+
 }

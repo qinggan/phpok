@@ -124,15 +124,14 @@ select[multiple=true]{
 .sub_box .maintain{ padding:0 5px; height:38px; line-height:38px; border-bottom:3px solid #e16700; color:#e16700; font-size:20px;display:inline-block;}
 .sub_box .management{ padding:0 5px; height:38px; line-height:38px; border-bottom:3px solid #1e5696; color:#1e5696; font-size:20px;display:inline-block;}
 .sub_box .box_item{ overflow:hidden;}
-.sub_box .box_item li{ width:100px; height:100px; float:left; margin:0px 5px 10px;position:relative;border:1px solid #fff;}
+.sub_box .box_item li{ width:100px; height:100px; float:left; margin:0px 5px 10px;position:relative;border:1px solid #fff;border-radius:6px}
 .sub_box .box_item li .qlink_edit_btn{position: absolute;right:0;top:0;display:none;}
 .sub_box .box_item li:hover{ border:1px solid #CACACA;background-color:#f9f9f9;}
 .sub_box .box_item li:hover .qlink_edit_btn{display: block;}
 .sub_box .box_item li .top_img{ width:48px; height:48px; padding:15px 26px 8px; display:block;}
+.sub_box .box_item li .top_img2{ width:72px; height:55px; padding:20px 14px 2px; display:block;}
 .sub_box .box_item li .name{ width:98px; font-size:14px; color:#333px; display:block; text-align:center;}
 .sub_box .box_item li a:hover{ text-decoration:none;}
-.sub_box .box_item .plus{ width:98px; height:98px; border:1px dashed #cacaca; background: url(../images/plus.png) center center no-repeat; cursor:pointer;}
-.sub_box .box_item .plus:hover{ background: url(../images/plus.png) center center no-repeat #f9f9f9 !important;}
 .sub_box .box_item a em{position:absolute;right:5px;top:5px;}
 
 .sub_box .refresh{ background:url(../images/refresh.jpg) no-repeat left center; padding-left:20px; font-size:14px; color:#555; line-height:20px; display:block; float:right; margin:12px 5px 0 0;}

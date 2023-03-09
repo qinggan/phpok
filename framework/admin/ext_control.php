@@ -57,20 +57,20 @@ class ext_control extends phpok_control
 		$array['format'] = $this->get("format");
 		$array['taxis'] = $this->get("taxis","int");
 		$ext_form_id = $this->get("ext_form_id");
-		$ext = false;
+		$ext = array();
 		if($ext_form_id){
 			$list = explode(",",$ext_form_id);
-			foreach($list AS $key=>$value){
+			foreach($list as $key=>$value){
 				$val = explode(':',$value);
 				if($val[1] && $val[1] == "checkbox"){
 					$value = $val[0];
 					$ext[$value] = $this->get($value,"checkbox");
 				}else{
 					$value = $val[0];
-					$ext[$value] = $this->get($value);
+					$ext[$value] = $this->get($value,'html_js');
 				}
 			}
-			$array['ext'] = ($ext && is_array($ext)) ? serialize($ext) : '';
+			$array['ext'] = $ext;
 		}
 		$tid = $this->get('tid','int');
 		if($tid || !in_array('add',$info)){
@@ -85,7 +85,14 @@ class ext_control extends phpok_control
 				$array['identifier'] = $identifier;
 			}
 			$array['module'] = $id;
-			$this->model('ext')->save($array,$tid);
+			if($tid){
+				$this->model('ext')->save($array,$tid);
+			}else{
+				$tid = $this->model('ext')->save($array);
+				if(!$tid){
+					$this->error(P_Lang('保存数据失败，请联系管理员'));
+				}
+			}
 			$this->success();
 		}
 		$tmpid = $this->get('tmpid');
@@ -238,7 +245,7 @@ class ext_control extends phpok_control
 		$list = array();
 		$words = $this->get("words");
 		$idlist = $words ? explode(",",$words) : array("id","identifier");
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			$idlist[] = strtolower($value["identifier"]);
 			$list[] = $this->lib('form')->format($value);
 		}

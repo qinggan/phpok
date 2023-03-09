@@ -1,0 +1,25 @@
+<!-- if $serverlist -->
+<style type="text/css">
+.server_left{text-align:right;height:30px;}
+.server_right{overflow:hidden;text-overflow:ellipsis;height:30px;white-space:nowrap}
+</style>
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang主机环境}
+		<div class="fr">
+			<input type="button" value="查看更多" onclick="$.win('{lang主机信息}','{url ctrl=index func=info/}')" class="layui-btn layui-btn-sm layui-btn-normal" />
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-row layui-col-space15">
+			<!-- loop from=$serverlist key=$key value=$value id=$tmpid -->
+			<div class="layui-col-sm6 layui-col-md3 server_left">
+				<!-- if $value[3] --><i class="layui-icon layui-tips" lay-tips="{$value[3]}">&#xe702;</i><!-- /if -->
+				{$value[0]}
+			</div>
+			<div class="layui-col-sm6 layui-col-md3 server_right" {if $value[2]} style="{$value[2]}" {/if}> {$value[1]} </div>
+			 <!-- /loop -->
+		</div>
+	</div>
+</div>
+<!-- /if -->

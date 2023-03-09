@@ -29,6 +29,24 @@ class usercp_control extends phpok_control
 		}
 	}
 
+	public function homepage_f()
+	{
+		$link = $this->get('link');
+		if($link){
+			$this->assign('link',$link);
+			$iframe_title = $this->get('title');
+			if(!$iframe_title){
+				$iframe_title = '###';
+			}
+			$this->assign('iframe_title',$iframe_title);
+		}
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp/homepage';
+		}
+		$this->view($tplfile);
+	}
+
 	//收货地址管理
 	public function address_f()
 	{
@@ -106,6 +124,80 @@ class usercp_control extends phpok_control
 		$this->json(true);
 	}
 
+	public function comments_f()
+	{
+		$uid = $this->session->val('user_id');
+		//读取留言管理的模板
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'usercp-comments';
+		}
+		$condition = "r.admin_id=0 AND r.uid=".$uid;
+		$parent_id = $this->get('parent_id','int');
+		if($parent_id){
+			$condition .= " AND r.parent_id='".$parent_id."'";
+			$pageurl .= "&parent_id=".$parent_id; 
+			$this->assign("parent_id",$parent_id);
+			$rs = $this->model('reply')->get_one($parent_id);
+			$this->assign('rs',$rs);
+			$this->assign('title',P_Lang('我的评论_#{id}',array('id'=>$parent_id)));
+		}else{
+			$this->assign('title',P_Lang('我的评论'));
+		}
+		$pageurl = $this->url("usercp","comments");
+		$status = $this->get("status","int");
+		if($status){
+			$n_status = $status == 1 ? "1" : "0";
+			$condition .= "AND status=".$n_status." ";
+			$pageurl .= "&status=".$status; 
+			$this->assign("status",$status);
+		}
+		//关键字
+		$keywords = $this->get("keywords");
+		if($keywords){
+			$condition .= "AND (title LIKE '%".$keywords."%' OR content LIKE '%".$keywords."%') ";
+			$pageurl .= "&keywords=".rawurlencode($keywords);
+			$this->assign("keywords",$keywords);
+		}
+		$pageid = $this->get($this->config["pageid"],"int");
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config["psize"] ? $this->config["psize"] : 30;
+		$total = $this->model('reply')->get_total($condition);
+		if(!$total){
+			$this->view($tplfile);
+		}
+		$this->assign("total",$total);
+		$offset = ($pageid-1) * $psize;
+		$rslist = $this->model('reply')->get_all($condition,$offset,$psize);
+		if(!isset($rslist)){
+			$this->view($tplfile);
+		}
+		$ids = array_keys($rslist);
+		$condition_ext = " r.admin_id=0 AND (r.status=1 OR (r.status=0 AND r.uid=".$uid."))";
+		$sub_total = $this->model('reply')->group_parent_total($ids,$condition_ext,false);
+		$clicklist = $this->model('click')->get_all($ids,'reply');
+		if(isset($sub_total) || isset($clicklist)){
+			foreach($rslist as $key=>$value){
+				$value['reply_total'] = 0;
+				$value['click_list'] = array();
+				if(isset($sub_total[$value['id']])){
+					$value['reply_total'] = $sub_total[$value['id']];
+				}
+				if(isset($clicklist[$value['id']])){
+					$value['click_list'] = $clicklist[$value['id']];
+				}
+				$rslist[$key] = $value;
+			}
+		}
+		$this->assign("rslist",$rslist);
+		$this->assign("pageid",$pageid);
+		$this->assign("psize",$psize);
+		$this->assign("pageurl",$pageurl);
+		$this->view($tplfile);
+	}
+
 	//用户注销页
 	public function destory_f()
 	{
@@ -140,27 +232,49 @@ class usercp_control extends phpok_control
 	//用户个人中心
 	public function index_f()
 	{
+		$backurl = $this->get('_back');
+		if(!$backurl){
+			$backurl = $this->config['url'];
+		}
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('非用户不能执行此操作'),$backurl);
+		}
 		$user = $this->model('user')->get_one($this->session->val('user_id'));
+		if(!$user){
+			$this->error(P_Lang('您登录的账号信息不存在'),$backurl);
+		}
+		if(!$user['status']){
+			$this->model('user')->logout();
+			$this->error(P_Lang('您的注册信息未审核通过，请与管理员联系'),$backurl);
+		}
+		if($user['status'] == 2){
+			$this->model('user')->logout();
+			$this->error(P_Lang('您的账号被锁定，请与管理员联系'),$backurl);
+		}
 		$this->assign('rs',$user);
 		$this->assign('user',$user);
+		$condition = "user_id='".$this->session->val('user_id')."'";
 
 		//读取最新下单信息
-		$condition = "user_id='".$this->session->val('user_id')."'";
 		$rslist = $this->model('order')->get_list($condition,0,10);
 		$this->assign('rslist',$rslist);
 		//读取用户上传的最新附件
 		$reslist = $this->model('res')->get_list($condition,0,10);
 		$this->assign('reslist',$reslist);
-		//粉丝数
-		$fans = $this->model('user')->fans_count($this->session->val('user_id'));
-		$this->assign('fans',$fans);
-		//关注数
-		$idol = $this->model('user')->idol_count($this->session->val('user_id'));
-		$this->assign('idol',$idol);
-
+		$comment = $this->model('reply')->get_total($this->session->val('user_id'));
+		$this->assign('comment',$comment);
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
 			$tplfile = 'usercp';
+		}
+		$link = $this->get('link');
+		if($link){
+			$this->assign('link',$link);
+			$iframe_title = $this->get('title');
+			if(!$iframe_title){
+				$iframe_title = '###';
+			}
+			$this->assign('iframe_title',$iframe_title);
 		}
 		$this->view($tplfile);
 	}
@@ -299,15 +413,56 @@ class usercp_control extends phpok_control
 		if(!$project_rs || !$project_rs['status']){
 			$this->error(P_Lang('项目不存在或未启用'),$this->url('usercp'));
 		}
-		$tplfile = 'usercp_'.$id;
-		$tplfile.= $project_rs['module'] ? '_list' : '_page';
+		$tplfile = 'usercp/'.$id;
+		$tplfile.= $project_rs['module'] ? '-list' : '-page';
 		//非列表项目直接指定
 		$this->assign("page_rs",$project_rs);
 		if(!$project_rs['module']){
 			$this->view($tplfile);
 			exit;
 		}
-		$dt = array('pid'=>$project_rs['id'],'user_id'=>$_SESSION['user_id']);
+		$m_rs = $this->model('module')->get_one($project_rs['module']);
+		$m_list = $this->model('module')->fields_all($project_rs['module'],"identifier");
+		if($m_rs["layout"]){
+			$layout = explode(",",$m_rs["layout"]);
+		}
+		if($project_rs['layout']){
+			$layout = explode(",",$project_rs["layout"]);
+		}
+		$this->assign("m_rs",$m_rs);
+		$layout_list = array();
+		foreach($layout as $key=>$value){
+			if($value == 'user_id' || $value == 'sort'){
+				continue;
+			}
+			if($m_list[$value] && !$m_list[$value]['is_front']){
+				continue;
+			}
+			if($value == "hits"){
+				$layout_list[$value] = array('title'=>P_Lang('次数'),'width'=>80,'edit'=>'false','align'=>'center','sort'=>'true');
+			}elseif($value == "dateline"){
+				$layout_list[$value] = array('title'=>P_Lang('日期'),'width'=>150,'edit'=>'false','align'=>'center','sort'=>'true');
+			}else{
+				$layout_tmparray = array();
+				$layout_tmparray['title'] = $m_list[$value]["title"];
+				$layout_tmparray['width'] = $m_list[$value]['admin-list-width'] ? $m_list[$value]['admin-list-width'] : 80;
+				$layout_tmparray['edit'] = 'false';
+				$layout_tmparray['sort'] = $m_list[$value]['admin-list-sort'] ? 'true' : 'false';
+				$layout_tmparray['align'] = 'left';
+				$layout_tmparray['form_type'] = $m_list[$value]['form_type'];
+				$layout_list[$value] = $layout_tmparray;
+			}
+		}
+		$this->assign("ext_list",$m_list);
+		$this->assign("layout",$layout_list);
+		unset($layout_list);
+		//用于判断前台是否有发布及删除权限
+		$popedom = array();
+		$popedom['add'] = $popedom['edit'] = $this->model('popedom')->check($project_rs['id'],$this->group_rs['id'],'post');
+		$popedom['delete'] = $this->model('popedom')->check($project_rs['id'],$this->group_rs['id'],'post1');
+		$this->assign('popedom',$popedom);
+
+		$dt = array('pid'=>$project_rs['id'],'user_id'=>$this->session->val('user_id'));
 		if($project_rs['cate']){
 			$cate = $this->get('cate');
 			$cateid = $this->get('cateid','int');
@@ -363,10 +518,11 @@ class usercp_control extends phpok_control
 			$this->assign('ext',$ext);
 		}
 		$list = $this->call->phpok('_arclist',$dt);
+		//
+		$this->assign("pageid",$pageid);
+		$this->assign("psize",$psize);
+		$this->assign("pageurl",$pageurl);
 		if($list['total']){
-			$this->assign("pageid",$pageid);
-			$this->assign("psize",$psize);
-			$this->assign("pageurl",$pageurl);
 			$this->assign("total",$list['total']);
 			$this->assign("rslist",$list['rslist']);
 		}
@@ -444,7 +600,7 @@ class usercp_control extends phpok_control
 		if(!$tplfile){
 			$tplfile = 'usercp_media_add';
 		}
-		$btn = form_edit('picture','','upload','ext[cate_id]='.$type);
+		$btn = form_edit('picture','','upload','ext[cate_id]='.$type.'&is_multiple=1');
 		$this->assign('button',$btn);
 		$this->view($tplfile);
 	}

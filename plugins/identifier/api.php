@@ -13,8 +13,10 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class api_identifier extends phpok_plugin
 {
 	private $me;
-	private $trans_url = 'https://www.phpok.com/apix-31806';
-	private $pingyin_url = "https://www.phpok.com/apix-24918";
+	private $youdao_url = 'http://openapi.youdao.com/api';
+	private $youdao_appid = '';
+	private $youdao_appkey = '';
+	private $kunwu_url = "https://www.phpok.com/apix-24918";
 	private $kunwu_appid = '';
 	private $kunwu_appkey = '';
 	public function __construct()
@@ -22,6 +24,15 @@ class api_identifier extends phpok_plugin
 		parent::plugin();
 		$this->me = $this->_info();
 		if($this->me && $this->me['param']){
+			if($this->me['param']['youdao_https']){
+				$this->youdao_url = 'https://openapi.youdao.com/api';
+			}
+			if($this->me['param']['youdao_appid']){
+				$this->youdao_appid = $this->me['param']['youdao_appid'];
+			}
+			if($this->me['param']['youdao_appkey']){
+				$this->youdao_appkey = $this->me['param']['youdao_appkey'];
+			}
 			if($this->me['param']['phpok_appid']){
 				$this->kunwu_appid = $this->me['param']['phpok_appid'];
 			}
@@ -31,14 +42,44 @@ class api_identifier extends phpok_plugin
 		}
 	}
 
+	private function err_code($id=0)
+	{
+		if(!$id){
+			return false;
+		}
+		$data = $this->lib('xml')->read($this->me['path'].'err.xml');
+		if($data['info'.$id]){
+			return $data['info'.$id];
+		}
+		return false;
+	}
+
 	public function fanyi()
 	{
+		$rs = $this->plugin_info();
 		$q = $this->get("q");
 		if(!$q){
 			$this->error("没有指定翻译内容");
 		}
-		$info = $this->trans_share($q);
-		$this->success($info);
+		$post = array('q'=>$q,'from'=>'auto','to'=>'EN','appKey'=>$this->youdao_appid);
+		$post['salt'] = $this->lib('common')->str_rand(3,'number');
+		$post['sign'] = strtoupper(md5($this->youdao_appid.$q.$post['salt'].$this->youdao_appkey));
+		$this->lib('curl')->is_post(true);
+		foreach($post as $key=>$value){
+			$this->lib('curl')->post_data($key,$value);
+		}
+		$data = $this->lib('curl')->get_json($this->youdao_url);
+		if($data['errorCode']){
+			$tip = $this->err_code($data['errorCode']);
+			if(!$tip){
+				$tip = '异常错误，请检查';
+			}
+			$this->error($tip);
+		}
+		$info = current($data['translation']);
+		$info = strtolower($info);
+		$info = $this->return_safe($info);
+		$this->success(strtolower($info));
 	}
 
 	private function return_safe($content)
@@ -87,42 +128,62 @@ class api_identifier extends phpok_plugin
 		$this->success($content);
 	}
 
+	public function pyfirst()
+	{
+		if(!$this->session->val('admin_id')){
+			$this->error('仅限管理员使用');
+		}
+		$ids = $this->get('ids','int');
+		if(!$ids){
+			$this->error('未指定ID');
+		}
+		$sql = "SELECT id,title,module_id FROM ".$this->db->prefix."list WHERE id IN(".$ids.")";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			$this->error('主题不存在');
+		}
+		$list = array();
+		$title = array();
+		foreach($tmplist as $key=>$value){
+			$t = mb_substr($value['title'],0,1);
+			if(is_numeric($t)){
+				$sql = "UPDATE ".$this->db->prefix."list_".$value['module_id']." SET firstletter='#' WHERE id='".$value['id']."'";
+				$this->db->query($sql);
+			}else{
+				$list[$value['id']] = array('name'=>$t,'module_id'=>$value['module_id']);
+				$title[] = $t;
+			}
+		}
+		$info = $this->py_share(implode("",$title),false);
+		$tlist = explode("-",$info);
+		$tm = array();
+		foreach($title as $key=>$value){
+			if($tlist[$key]){
+				$tm[$value] = substr($tlist[$key],0,1);
+			}
+		}
+		foreach($list as $key=>$value){
+			$letter = $tm[$value['name']];
+			if($letter){
+				$letter = strtoupper($letter);
+				$sql = "UPDATE ".$this->db->prefix."list_".$value['module_id']." SET firstletter='".$letter."' WHERE id='".$key."'";
+				$this->db->query($sql);
+			}
+		}
+		$this->success();
+	}
+
 	private function py_share($title,$is_first=false)
 	{
 		if(!$title){
 			$this->error('未指定要翻译的信息');
 		}
-		$url = $this->pingyin_url.'?_appid='.$this->kunwu_appid;
+		$url = $this->kunwu_url.'?_appid='.$this->kunwu_appid;
 		$data = array("keywords"=>$title);
 		$data['first'] = $is_first ? 1 : 0;
 		$sign = $this->create_sign($data);
 		$url .= "&_sign=".rawurlencode($sign);
 		$url .= "&params[keywords]=".rawurlencode($title)."&params[first]=".$data['first'];
-		$this->lib('curl')->user_agent($this->lib('server')->agent());
-		$info = $this->lib('curl')->get_json($url);
-		if(!$info){
-			$this->error('获取内容失败');
-		}
-		if(!$info['status']){
-			$tip = $info['error'] ? $info['error'] : $info['info'];
-			$this->error($tip);
-		}
-		$info = $info['info'];
-		$info = strtolower($info);
-		$info = $this->return_safe($info);
-		return $info;
-	}
-
-	private function trans_share($title)
-	{
-		if(!$title){
-			$this->error('未指定要翻译的信息');
-		}
-		$url = $this->trans_url.'?_appid='.$this->kunwu_appid;
-		$data = array("keywords"=>$title);
-		$sign = $this->create_sign($data);
-		$url .= "&_sign=".rawurlencode($sign);
-		$url .= "&params[keywords]=".rawurlencode($title);
 		$this->lib('curl')->user_agent($this->lib('server')->agent());
 		$info = $this->lib('curl')->get_json($url);
 		if(!$info){

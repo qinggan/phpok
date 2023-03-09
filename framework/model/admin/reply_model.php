@@ -64,8 +64,8 @@ class reply_model extends reply_model_base
 		if(!$rslist){
 			return false;
 		}
-		$rslist = $this->_res($rslist);
-		$rslist = $this->_reply($rslist);
+		$rslist = parent::_res($rslist);
+		$rslist = parent::_admin_reply($rslist);
 		return $rslist;
 	}
 

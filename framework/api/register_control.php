@@ -139,8 +139,6 @@ class register_control extends phpok_control
 				$this->error(P_Lang('手机号已注册'));
 			}
 		}
-		
-		
 		$newpass = $this->get('newpass');
 		if(!$newpass){
 			$this->error(P_Lang('密码不能为空'));
@@ -171,6 +169,18 @@ class register_control extends phpok_control
 		if(in_array($group_rs['register_status'],array('mobile','email'))){
 			if(!$code){
 				$this->error(P_Lang('验证码不能为空'));
+			}
+			if($group_rs['register_status'] == 'email' && $email){
+				$chkemail = $this->session->val('vcode2email');
+				if(!$chkemail || $chkemail != $email){
+					$this->error(P_Lang('邮箱与验证码邮箱不一致'));
+				}
+			}
+			if($group_rs['register_status'] == 'mobile' && $mobile){
+				$chkmobile = $this->session->val('vcode2mobile');
+				if(!$chkmobile || $chkmobile != $mobile){
+					$this->error(P_Lang('手机号与验证码手机号不一致'));
+				}
 			}
 			$tmp = $this->model('vcode')->check($code);
 			if(!$tmp){
@@ -243,9 +253,11 @@ class register_control extends phpok_control
 		//用户自动登录
 		$autologin = $this->get('_login','int');
 		if($autologin){
-			$this->session->assign('user_id',$uid);
-			$this->session->assign('user_gid',$group_id);
-			$this->session->assign('user_name',$array["user"]);
+			$array = $this->model('user')->login($uid,false);
+			if($array){
+				$array['token'] = $this->model('token')->create($uid);
+			}
+			$this->success($array);
 		}
 		$this->success($uid);
 	}

@@ -22,8 +22,12 @@ class workflow_control extends phpok_control
 			$this->error(P_Lang('未指定ID'));
 		}
 		$idlist = explode(',',$id);
-		$endlist = $rslist = false;
+		$endlist = $rslist = array();
 		foreach($idlist as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				continue;
+			}
 			$tmp = $this->model('workflow')->get_tid($value);
 			if($tmp){
 				if(!$endlist){

@@ -56,19 +56,26 @@ class payment_control extends phpok_control
 			if(!$wealthlist){
 				$this->error(P_Lang('没有可以充值的财富方案'),$back);
 			}
-			$wlist = false;
+			$wlist = array();
 			foreach($wealthlist as $key=>$value){
 				if(!$value['ifpay']){
 					continue;
-				}
-				if(!$wlist){
-					$wlist = array();
 				}
 				$wlist[$value['identifier']] = $value;
 			}
 			$this->assign('rslist',$wlist);
 		}
-		$paylist = $this->model('payment')->get_all($this->site['id'],1,($this->is_mobile ? 1 : 0));
+		$user_agent = $_SERVER['HTTP_USER_AGENT'];
+		$weixin_client = false;
+		$miniprogram_client = false;
+		if($user_agent && strpos(strtolower($user_agent),'micromessenger') !== false){
+			$weixin_client = true;
+		}
+		if($user_agent && strpos(strtolower($user_agent),'miniprogram') !== false){
+			$miniprogram_client = true;
+		}
+		$is_mobile = ($this->is_mobile() || $weixin_client || $miniprogram_client) ? true : false;
+		$paylist = $this->model('payment')->get_all($this->site['id'],1,$is_mobile);
 		$this->assign("paylist",$paylist);
 		$price = $this->get('price','float');
 		if($price){
@@ -686,7 +693,9 @@ class payment_control extends phpok_control
 				$url = $this->url('order','info','id='.$order['id']);
 				$this->_location($url);
 			}else{
-				$this->success(P_Lang('订单{sn}支付完成',array('sn'=>$rs['sn'])),$this->url);
+				$order = $this->model('order')->get_one_from_sn($rs['sn']);
+				$url = $this->url('order','info','sn='.$order['sn'].'&passwd='.$order['passwd']);
+				$this->success(P_Lang('订单{sn}支付完成',array('sn'=>$rs['sn'])),$url);
 			}
 		}
 		if($this->session->val('user_id')){

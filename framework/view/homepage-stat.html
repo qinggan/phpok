@@ -1,0 +1,19 @@
+<!-- if $all_status -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang内容统计}
+	</div>
+	<div class="layui-card-body">
+		<ul class="layui-row layui-col-space10 layadmin-backlog">
+			<!-- loop from=$all_status key=$key value=$value id=$tmpid -->
+			<li class="layui-col-xs6 layui-col-sm4 layui-col-md2">
+				<a href="javascript:$.win('{$value.title}','{url ctrl=list func=action id=$value.id/}');void(0)" class="layadmin-backlog-body">
+					<h3>{$value.title}</h3>
+					<p><cite>{$value.total}</cite></p>
+				</a>
+			</li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<!-- /if -->

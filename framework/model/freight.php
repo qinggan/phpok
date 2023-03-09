@@ -159,7 +159,7 @@ class freight_model_base extends phpok_model
 			$city = current($clist);
 			$province_id = $province['id'];
 			$city_id = $city['id'];
-			$rs = false;
+			$rs = array();
 			foreach($tmplist as $key=>$value){
 				if(!$value['area']){
 					continue;

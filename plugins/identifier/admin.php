@@ -22,7 +22,17 @@ class admin_identifier extends phpok_plugin
 	private function create_btn()
 	{
 		$pinfo = $this->_info();
+		if($pinfo && $pinfo['param']){
+			if($pinfo['param']['youdao_appid'] && $pinfo['param']['youdao_appkey']){
+				$this->youdao = true;
+			}
+			if($pinfo['param']['phpok_appid'] && $pinfo['param']['phpok_appkey']){
+				$this->kunwu = true;
+			}
+		}
 		$this->assign("pinfo",$pinfo);
+		$this->assign('is_youdao',$this->youdao);
+		$this->assign('is_kunwu',$this->kunwu);
 		$this->_show('btn.html');
 	}
 
@@ -56,17 +66,25 @@ class admin_identifier extends phpok_plugin
 		$this->create_btn();
 	}
 
+	public function html_list_action_foot()
+	{
+		$this->_show('btn3.html');
+	}
+
 	public function html_module_field_create_body()
 	{
 		$pinfo = $this->_info();
+		if($pinfo && $pinfo['param']){
+			if($pinfo['param']['youdao_appid'] && $pinfo['param']['youdao_appkey']){
+				$this->youdao = true;
+			}
+			if($pinfo['param']['phpok_appid'] && $pinfo['param']['phpok_appkey']){
+				$this->kunwu = true;
+			}
+		}
 		$this->assign("pinfo",$pinfo);
-		$this->_show('btn2.html');
-	}
-
-	public function html_fields_set_body()
-	{
-		$pinfo = $this->_info();
-		$this->assign("pinfo",$pinfo);
+		$this->assign('is_youdao',$this->youdao);
+		$this->assign('is_kunwu',$this->kunwu);
 		$this->_show('btn2.html');
 	}
 }

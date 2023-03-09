@@ -331,7 +331,7 @@ class nodes_phpok extends \_init_auto
 		//计算运费，消费税，关税，产品价格
 		$shipping = $excise = $tariff = $price = 0;
 		foreach($rslist as $key=>$value){
-			$price += $value['price'] * $value['qty'];
+			$price += $value['price_total'];
 			if(!$value['tid']){
 				continue;
 			}

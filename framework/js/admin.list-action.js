@@ -23,15 +23,54 @@
 			$.dialog.alert(p_lang('未指定动作'));
 			return false;
 		});
-		window.addEventListener("message",function(e){
-			if(e.origin != window.location.origin){
+		//渲染表头
+		var total = $("#tablelist").attr("data-total");
+		var psize = $("#tablelist").attr("data-psize");
+		var totalRow = $("#tablelist").attr("data-totalRow");
+		var ftype = $("#tablelist").attr("data-ftype");
+		var opt = {'limit':psize};
+		if(totalRow == 1){
+			opt['totalRow'] = true;
+		}
+		opt['setWidth'] = function(e){
+			var url = get_url('fields','width','mid='+ftype+"&width="+e.setWidth+"&field="+e.field);
+			$.phpok.json(url,function(rs){
+				if(rs.status){
+					return true;
+				}
+				$.dialog.tips(rs.info);
 				return false;
+			})
+		}
+		layui.table.init("tablelist",opt);
+		//注：edit是固定事件名，tablelist是table原始容器的属性 lay-filter="对应的值"
+		layui.table.on('edit(tablelist)', function(obj){
+			var pid = $("#pid").val();
+			var url = get_url('list','quickedit','id='+obj.data.id+"&field="+obj.field+"&val="+obj.value+"&pid="+pid);
+			$.phpok.json(url,function(data){
+				if(data.status){
+					$.dialog.tips(p_lang('操作成功'));
+					return true;
+				}
+				$.dialog.alert(data.info,function(){
+					$.phpok.reload();
+				});
+				return false;
+			});
+			return true;
+
+		});
+		layui.table.on('checkbox(tablelist)', function(obj){
+			if(obj.type == 'all'){
+				if(obj.checked){
+					$.checkbox.all();
+				}else{
+					$.checkbox.none();
+				}
+			}else{
+				var id = obj.data.id;
+				$("#id_"+id).prop("checked",obj.checked);
 			}
-			if(e.data == 'badge'){
-				$.admin.badge();
-				return true;
-			}
-		}, false);
-		$.admin.badge();
+		});
 	});
 })(jQuery);

@@ -684,6 +684,7 @@ class order_control extends phpok_control
 		$main['note'] = $this->get('note');
 		$main['email'] = $this->get('email');
 		$main['mobile'] = $this->get('mobile');
+		$main['fullname'] = $this->get('fullname');
 		if(!$id){
 			$main['sn'] = $sn;
 			$main['addtime'] = $this->time;
@@ -692,7 +693,7 @@ class order_control extends phpok_control
 		$extkey = $this->get('extkey');
 		$extval = $this->get('extval');
 		if($extkey && $extval){
-			$tmp_main_ext = false;
+			$tmp_main_ext = array();
 			foreach($extkey as $key=>$value){
 				if($extval[$key] && $value){
 					if(!$tmp_main_ext){
@@ -701,7 +702,7 @@ class order_control extends phpok_control
 					$tmp_main_ext[$value] = $extval[$key];
 				}
 			}
-			if($tmp_main_ext){
+			if($tmp_main_ext && count($tmp_main_ext)>0){
 				$main['ext'] = serialize($tmp_main_ext);
 			}
 		}
@@ -1006,6 +1007,10 @@ class order_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('用户不存在'));
 		}
+		if($type == 'fullname'){
+			$fullname = $rs['fullname'] ? $rs['fullname'] : $rs['user'];
+			$this->success($fullname);
+		}
 		if(!$rs[$type]){
 			$this->error(P_Lang('用户信息无此字段不存在'));
 		}
@@ -1165,7 +1170,8 @@ class order_control extends phpok_control
 			$data['id'] = $id;
 			$tmplist[] = $data;
 		}else{
-			$data['id'] = 'a-'.$this->time.'-'.rand(1000,9999);
+			$rand_string = $this->lib('common')->str_rand(5);
+			$data['id'] = 'a-'.$this->time.'-'.$rand_string;
 			$tmplist[] = $data;
 		}
 		$this->session->assign('admin_order_productlist',$tmplist);
@@ -1270,11 +1276,12 @@ class order_control extends phpok_control
 			$backtype = '_default';
 		}
 		//登记退款
+		$rand_string = $this->lib('common')->str_rand(4,'number');
 		$data = array();
 		$data['order_id'] = $pinfo['order_id'];
 		$data['order_payment_id'] = $pinfo['id'];
 		$data['backtype'] = $backtype;
-		$data['sn'] = date("YmdHis",$this->time).''.$pinfo['order_id'].''.str_pad(rand(1,9999),4,'0',STR_PAD_LEFT);
+		$data['sn'] = date("YmdHis",$this->time).''.$pinfo['order_id'].''.$rand_string;
 		$data['price'] = $price;
 		$data['currency_id'] = $pinfo['currency_id'];
 		$data['currency_rate'] = $pinfo['currency_rate'];

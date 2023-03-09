@@ -1,4 +1,4 @@
-<!-- include tpl=head -->
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
 <script type="text/javascript">
 var obj_upload = {};
 var obj = art.dialog.opener;
@@ -57,17 +57,25 @@ function cancel()
 	return obj_upload.uploader.stop();
 }
 </script>
-
-<div class="table">
-	<div class="title">
-		{lang单个文件上传不能超过：}
-		<span class="red">{func get_cfg_var upload_max_filesize}</span>，仅支持ZIP上传
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				文件上传
+			</label>
+			<div class="layui-input-block gray">
+				{lang单个文件上传不能超过：}<span class="red">{func get_cfg_var upload_max_filesize}</span>，仅支持ZIP上传
+			</div>
+			<div class="layui-input-block">
+				<div id="upload_picker" class=""></div>
+				
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="content" id="upload_progress"></div>
+			<br /><br /><br /><br />
+		</div>
 	</div>
-	<div class="content"><div id="upload_picker" class=""></div></div>
 </div>
 
-<div class="table">
-	<div class="content" id="upload_progress"></div>
-</div>
-
-<!-- include tpl=foot_open -->
+<!-- include tpl=foot_lay is_open=true -->

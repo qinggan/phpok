@@ -131,11 +131,11 @@ class tpl_model_base extends phpok_model
 		if(!$list){
 			return false;
 		}
-		$tmplist = false;
+		$tmplist = array();
 		if(file_exists($this->dir_data.'xml/tpl_'.$rs['id'].'.xml')){
 			$tmplist = $this->lib('xml')->read($this->dir_data.'xml/tpl_'.$rs['id'].'.xml');
 		}
-		$rslist = false;
+		$rslist = array();
 		foreach($list as $key=>$value){
 			$bname = $this->lib('string')->to_utf8(basename($value));
 			if(is_dir($value) || substr($bname,-$ext_length) != $rs["ext"] || substr($bname,0,6) == 'block_'){

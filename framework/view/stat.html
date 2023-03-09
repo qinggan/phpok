@@ -1,0 +1,138 @@
+<!-- include tpl=head_lay -->
+
+<div class="layui-row layui-col-space10">
+	<div class="layui-col-xs12 layui-col-lg6">
+		<div class="layui-card">
+			<div class="layui-card-header">
+				本月报表（{$month}）
+			</div>
+			<div class="layui-card-body">
+				<div id="chart_main1" class="layui-carousel" data-anim="fade" lay-filter="LAY-index-normcol" lay-anim="fade" style="width: 100%; height:400px;"></div>
+				<table class="layui-table" id="table_main1">
+				<thead>
+				<tr>
+					<th>日期</th>
+					<th class="center" name="y_title">访问量</th>
+					<th class="center" name="y_title">用户数</th>
+					<th class="center" name="y_title">用户IP</th>
+				</tr>
+				</thead>
+				<tbody>
+				<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+				<tr name="chart">
+					<td>{$value.dateinfo}</td>
+					<td class="center">{$value.pv}</td>
+					<td class="center">{$value.uv}</td>
+					<td class="center">{$value.ip}</td>
+				</tr>
+				<!-- /loop -->
+				<tr>
+					<th>小计</th>
+					<th class="center">{$totals.pv}</th>
+					<th class="center">{$totals.uv}</th>
+					<th class="center">{$totals.ip}</th>
+				</tr>
+				</tbody>
+				</table>
+			</div>
+		</div>
+    	
+	</div>
+	<div class="layui-col-xs12 layui-col-lg6">
+		<div class="layui-card">
+			<div class="layui-card-header">
+				上月报表（{$prev_month}）
+			</div>
+			<div class="layui-card-body">
+				<div id="chart_main2" class="layui-carousel" data-anim="fade" lay-filter="LAY-index-normcol" lay-anim="fade" style="width: 100%; height:400px;"></div>
+				<table class="layui-table" id="table_main2">
+				<thead>
+				<tr>
+					<th>日期</th>
+					<th class="center" name="y_title">访问量</th>
+					<th class="center" name="y_title">用户数</th>
+					<th class="center" name="y_title">用户IP</th>
+				</tr>
+				</thead>
+				<tbody>
+				<!-- loop from=$prev_rslist key=$key value=$value id=$tmpid -->
+				<tr name="chart">
+					<td>{$value.dateinfo}</td>
+					<td class="center">{$value.pv}</td>
+					<td class="center">{$value.uv}</td>
+					<td class="center">{$value.ip}</td>
+				</tr>
+				<!-- /loop -->
+				<tr>
+					<th>小计</th>
+					<th class="center">{$prev_totals.pv}</th>
+					<th class="center">{$prev_totals.uv}</th>
+					<th class="center">{$prev_totals.ip}</th>
+				</tr>
+				</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	//本月数据
+	var myChart = echarts.init(document.getElementById('chart_main1'));
+	var data_x = new Array();
+	var data_y = new Array();
+	var y_title = new Array();
+	var series_data = new Array();
+	$("#table_main1 th[name=y_title]").each(function(i){
+		y_title[i] = $(this).text();
+		var tmp = {'name':y_title[i],'type':'line'};
+		var tmp_data = new Array();
+		$("tr[name=chart]").each(function(m){
+			var m_i = i+1;
+			tmp_data[m] = $(this).find('td:eq('+m_i+')').text();
+		});
+		tmp.data = tmp_data;
+		series_data[i] = tmp;
+	});
+	$("#table_main1 tr[name=chart]").each(function(i){
+		data_x[i] = $(this).find('td:eq(0)').text();
+	});
+	var option = {
+		legend: {data:y_title},
+		xAxis: {data: data_x},
+		yAxis: {},
+		series: series_data
+	};
+	myChart.setOption(option);
+	//上月数据
+	var myChart_prev = echarts.init(document.getElementById('chart_main2'));
+	var data_x_prev = new Array();
+	var data_y_prev = new Array();
+	var y_title_prev = new Array();
+	var series_data_prev = new Array();
+	$("#table_main2 th[name=y_title]").each(function(i){
+		y_title_prev[i] = $(this).text();
+		var tmp = {'name':y_title_prev[i],'type':'line'};
+		var tmp_data = new Array();
+		$("tr[name=chart]").each(function(m){
+			var m_i = i+1;
+			tmp_data[m] = $(this).find('td:eq('+m_i+')').text();
+		});
+		tmp.data = tmp_data;
+		series_data_prev[i] = tmp;
+	});
+	$("#table_main2 tr[name=chart]").each(function(i){
+		data_x_prev[i] = $(this).find('td:eq(0)').text();
+	});
+	var option_prev = {
+		legend: {data:y_title_prev},
+		xAxis: {data: data_x_prev},
+		yAxis: {},
+		series: series_data_prev
+	};
+	myChart_prev.setOption(option_prev);
+});
+</script>
+
+
+<!-- include tpl=foot_lay -->

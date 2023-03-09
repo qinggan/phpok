@@ -46,7 +46,7 @@ function menu($id)
 	global $app;
 	$ctrl = $app->config['ctrl'];
 	$func = $app->config['func'];
-	$project = $project_parent = $cate = $cate_parent = $rs = false;
+	$project = $project_parent = $cate = $cate_parent = $rs = array();
 	if($ctrl == 'project' || $ctrl == 'content'){
 		$project = $app->tpl->val('page_rs');
 		$project_parent = $app->tpl->val('parent_rs');
@@ -318,13 +318,13 @@ function phpok_url($rs)
 	if($rs["ctrl"]){
 		$ctrl = $rs["ctrl"];
 	}
-	if($rs["func"]){
+	if(isset($rs["func"])){
 		$func = $rs["func"];
 	}
-	if($rs["id"]){
+	if(isset($rs["id"])){
 		$id = $rs["id"];
 	}
-	if($rs['appid']){
+	if(isset($rs['appid'])){
 		$appid = $rs['appid'];
 	}
 	if(!$ctrl && !$id){
@@ -436,7 +436,7 @@ if(!function_exists('admin_plugin_url')){
 function project_groups()
 {
 	global $app;
-	$uid = $app->session->val('user_id');
+	$uid = $app->session()->val('user_id');
 	if(!$uid){
 		return false;
 	}
@@ -489,12 +489,9 @@ function usercp_project()
 		return false;
 	}
 	$popedom = explode(",",$popedom[$site_id]);
-	$plist = false;
+	$plist = array();
 	foreach($popedom as $key=>$value){
 		if(substr($value,0,5) == 'post:'){
-			if(!$plist){
-				$plist = array();
-			}
 			$plist[] = str_replace('post:','',trim($value));
 		}
 	}
@@ -568,6 +565,7 @@ function time_format($timestamp)
     return $output;
 }
 
+//简化日期
 function time_ago($time='')
 {
 	if(!$time){
@@ -593,6 +591,7 @@ function time_ago($time='')
 	}
 }
 
+//简化点击数
 function hits_format($hits='')
 {
     if($hits >= 100000){
@@ -603,6 +602,66 @@ function hits_format($hits='')
         $hits = round($hits / 1000, 1) . 'k+';
     }
     return $hits;
+}
+
+//星号隐藏手机号码
+function mobile_format($mobile='')
+{
+	if(!$mobile){
+		return false;
+	}
+    $newMobile = substr_replace($mobile,'****',3,4);
+    return $newMobile;
+}
+
+function safecode($data,$apikey='')
+{
+    if(!$data || !$apikey){
+        return false;
+    }
+    if(!is_array($data)){
+        $data = explode(",",$data);
+    }
+    sort($data);
+    $isok = true;
+    foreach($data as $key=>$value){
+        if(!preg_match("/^[a-z0-9A-Z\_\-]+$/u",$value)){
+            $isok = false;
+            break;
+        }
+    }
+    if(!$isok){
+        return false;
+    }
+    $code = md5($apikey.",".implode(",",$list));
+    return $code;
+}
+
+//base64编码图片数据
+function image_format($image='')
+{
+	if(!$image){
+		return false;
+	}
+    $info = getimagesize($image);
+    $src = "data:{$info['mime']};base64," . base64_encode(file_get_contents($image));
+    return $src;
+}
+
+//生成指定长度的随机字符串(包含大写英文字母, 小写英文字母, 数字)
+// @param int $length 需要生成的字符串的长度
+// @return string 包含 大小写英文字母 和 数字 的随机字符串
+function random_str($length='')
+{
+    $arr = array_merge(range(0, 9),range('a', 'z'),range('A', 'Z'));
+    $str = '';
+    $arr_len = count($arr);
+    for($i=0;$i<$length;$i++)
+    {
+        $rand = mt_rand(0,$arr_len-1);
+        $str.=$arr[$rand];
+    }
+    return $str;
 }
 
 //前台取得地址表单
@@ -672,24 +731,26 @@ function phpok_txt($file,$pageid=0,$type='txt')
 **/
 function phpok_token($data='')
 {
-	if(!$GLOBALS['app']->site['api_code']){
+	global $app;
+	$api_code = $app->model('config')->get_one('api_code',$app->site['id']);
+	if(!$api_code){
 		return false;
 	}
-	$GLOBALS['app']->lib('token')->keyid($GLOBALS['app']->site['api_code']);
+	$app->lib('token')->keyid($api_code);
 	if($data){
-		$info = $GLOBALS['app']->lib('token')->encode($data);
+		$info = $app->lib('token')->encode($data);
 		$GLOBALS['app']->assign('token',$info);
 		return $info;
 	}
-	$getid = $GLOBALS['app']->config['token_id'] ? $GLOBALS['app']->config['token_id'] : 'token';
+	$getid = $app->config['token_id'] ? $app->config['token_id'] : 'token';
 	if(!$getid){
 		$getid = 'token';
 	}
-	$token = $GLOBALS['app']->get($getid);
+	$token = $app->get($getid);
 	if(!$token){
 		return false;
 	}
-	return $GLOBALS['app']->lib('token')->decode($token);	
+	return $app->lib('token')->decode($token);	
 }
 
 /**
@@ -698,6 +759,10 @@ function phpok_token($data='')
 **/
 function phpok_sign($string='')
 {
-	$GLOBALS['app']->model('apisafe')->code($this->site['api_code']);
+	$api_code = $GLOBALS['app']->model('config')->get_one('api_code',$this->site['id']);
+	if(!$api_code){
+		return false;
+	}
+	$GLOBALS['app']->model('apisafe')->code($api_code);
 	return $GLOBALS['app']->model('apisafe')->create($string);
 }

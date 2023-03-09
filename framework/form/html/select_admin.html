@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list,is_multiple,ext_select,empty_val,is_cate_group" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="option_list,is_multiple,ext_select,empty_val,is_cate_group,field_show,field_value" />
 <div class="layui-form-item">
 	<label class="layui-form-label">
 		{lang数据来源：}
@@ -61,6 +61,7 @@
 			<!-- /loop -->
 			<optgroup label="{lang用户相关}">
 				<option value="user:grouplist"{if $rs.option_list == "user:grouplist"} selected{/if}>{lang用户组}</option>
+				<option value="gateway:express"{if $rs.option_list == "gateway:express"} selected{/if}>{lang物流快递}</option>
 			</optgroup>
 		</select>
 	</div>
@@ -113,3 +114,22 @@
 	</div>
 </div>
 
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang存储字段：}
+	</label>
+	<div class="layui-input-inline">
+		<input type="text" name="field_value" id="field_value" class="layui-input" value="{$rs.field_value}" />
+	</div>
+	<div class="layui-form-mid">留空使用主键 id</div>
+</div>
+
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang显示字段：}
+	</label>
+	<div class="layui-input-inline">
+		<input type="text" name="field_show" id="field_show" class="layui-input" value="{$rs.field_show}" />
+	</div>
+	<div class="layui-form-mid">用于显示的字段ID，留空使用 title，注意独立表缺少 title 字段会造成错误</div>
+</div>

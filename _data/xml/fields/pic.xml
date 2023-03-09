@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<title><![CDATA[图片]]></title>
+	<identifier><![CDATA[pic]]></identifier>
+	<field_type><![CDATA[int]]></field_type>
+	<note><![CDATA[]]></note>
+	<form_type><![CDATA[upload]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[int]]></format>
+	<content><![CDATA[]]></content>
+	<group_id><![CDATA[main]]></group_id>
+	<ext>
+		<cate_id><![CDATA[1]]></cate_id>
+		<is_multiple><![CDATA[0]]></is_multiple>
+	</ext>
+</root>

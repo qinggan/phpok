@@ -48,11 +48,12 @@ function save()
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{$value.title}
+				<small style="color:gray;display:block">{$value.identifier}</small>
 			</label>
+			<!-- if $value.note --><div class="layui-input-block gray">{$value.note}</div><!-- /if -->
 			<div class="layui-input-block">
 				{$value.html}
 			</div>
-			<!-- if $value.note --><div class="layui-input-block mtop">{$value.note}</div><!-- /if -->
 		</div>
 		<!-- /loop -->
 		<!-- if $rs.is_seo -->

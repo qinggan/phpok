@@ -16,7 +16,6 @@ class content_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
-		$this->model('popedom')->siteid($this->site['id']);
 		$groupid = $this->model('usergroup')->group_id($this->session->val('user_id'));
 		if(!$groupid){
 			$this->error(P_Lang('无法获取前端用户组信息'));
@@ -127,7 +126,6 @@ class content_control extends phpok_control
 		}
 		$rs['tag'] = $this->model('tag')->tag_list($rs['id'],'list');
 		$rs = $this->content_format($rs);
-		$taglist = array('tag'=>$rs['tag'],'list'=>array('title'=>$rs['title']));
 		//如果未绑定网址
 		if(!$rs['url']){
 			$url_id = $rs['identifier'] ? $rs['identifier'] : $rs['id'];
@@ -190,11 +188,22 @@ class content_control extends phpok_control
 				break;
 			}
 		}
+		$tplfile = $this->get('tplfile');
+		if($tplfile && $this->tpl->check_exists($tplfile)){
+			$tpl = $tplfile;
+		}
 		if(!$tpl){
 			$this->error(P_Lang('未配置相应的模板'));
 		}
 		$this->model('list')->add_hits($rs["id"]);
 		$rs['hits'] = $this->model('list')->get_hits($rs['id']);
+		//针对点击事件的
+		if($project['quick-comment-status']){
+			$clicklist = $this->model('click')->get_all($rs['id'],'list',$this->session->val('user_id'));
+			if($clicklist && isset($clicklist[$rs['id']])){
+				$rs['click_list'] = $clicklist[$rs['id']];
+			}
+		}
 		$this->data('arc',$rs);
 		$this->node('PHPOK_arc');
 		$rs = $this->data('arc');
@@ -245,12 +254,168 @@ class content_control extends phpok_control
 				if($value['ext'] && $rs['tag']){
 					$ext = unserialize($value['ext']);
 					if($ext['inc_tag']){
-						$taglist['list'][$value['identifier']] = $rs[$value['identifier']];
 						$rs[$value['identifier']] = $this->model('tag')->tag_format($rs['tag'],$rs[$value['identifier']]);
 					}
 				}
 			}
 		}
 		return $rs;
+	}
+
+	public function comment_f()
+	{
+		$id = $this->get('id','int');
+		$parent_id = $this->get('parent_id','int');
+		if(!$id && !$parent_id){
+			$this->error(P_Lang('参数不完整'));
+		}
+		if($parent_id){
+			$comment = $this->model("reply")->get_one($parent_id);
+			if(!$comment){
+				$this->error(P_Lang('评论不存在'));
+			}
+			if(!$comment['status']){
+				$this->error(P_Lang('评论未审核，不能查看'));
+			}
+			$id = $comment['tid'];
+
+			//---统计点击情况
+			$clicklist = $this->model('click')->get_all(array($comment['id']),'reply',$this->session->val('user_id'),$this->session->sessid());
+			if($clicklist){
+				$comment['click_list'] = $clicklist[$comment['id']];
+			}
+			$this->assign('comment',$comment);
+		}
+		//针对文章的权限
+		$rs = $this->model('content')->get_one($id);
+		if(!$rs || !$rs['status']){
+			$this->error_404('内容未发布');
+		}
+		if(!$rs['project_id']){
+			$this->error_404(P_Lang('未绑定项目'));
+		}
+		if(!$rs['module_id']){
+			$this->error_404(P_Lang('未绑定相应的模块'));
+		}
+		$project = phpok("_project",array('pid'=>$rs['project_id']));
+		if(!$project || !$project['status']){
+			$this->error_404(P_Lang('项目不存在或未启用'));
+		}
+		if(!$project['comment_status']){
+			$this->error(P_Lang('项目未开启评论功能，不支持查看'));
+		}
+		if(!$this->model('popedom')->check($project['id'],$this->user_groupid,'read')){
+			$this->error_404(P_Lang('您没有阅读此文章权限'));
+		}
+		$vcode = $this->model('site')->vcode($project['id'],'comment');
+		$this->assign('is_vcode',$vcode);
+		//如果未绑定网址
+		if(!isset($rs['url'])){
+			$url_id = $rs['identifier'] ? $rs['identifier'] : $rs['id'];
+			$tmpext = 'project='.$project['identifier'];
+			if($project['cate'] && $rs['cate_id']){
+				$tmpext.= '&cateid='.$rs['cate_id'];
+			}
+			$rs['url'] = $this->url($url_id,'',$tmpext,'www');
+		}
+		$this->assign('page_rs',$project);
+		$this->assign('rs',$rs);
+		//读评论列表
+		$pageid = $this->get('pageid','int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$page_url = $this->url('content','comment','id='.$id);
+		
+		$psize = $project['psize'] ? $project['psize'] : $this->config['psize'];
+		$ext = array();
+		$ext['tid'] = $id;
+		if($parent_id){
+			$page_url .= '&parent_id='.$parent_id;
+			$ext['parent_id'] = $parent_id;
+			$this->assign('parent_id',$parent_id);
+		}
+		$vouch = $this->get('vouch','int');
+		if($vouch){
+			$page_url .= "&vouch=".$vouch;
+			$ext['vouch'] = $vouch;
+			$this->assign('vouch',$vouch);
+		}
+		$sublist = $this->get('sublist','int');
+		if($sublist){
+			$page_url .= "&sublist=".$sublist;
+			$ext['sublist'] = $sublist;
+			$this->assign('sublist',$sublist);
+		}
+		$ext['pageid'] = $pageid;
+		$ext['psize'] = $psize;
+		$data = phpok("_comment",$ext);
+		if(!$data){
+			$this->error_404(P_Lang('数据异常，请检查'));
+		}
+		if($data['rslist']){
+			$this->assign('rslist',$data['rslist']);
+		}
+		$this->assign('total',$data['total']);
+		$this->assign("pageid",$pageid);
+		$this->assign("psize",$psize);
+		$this->assign("pageurl",$page_url);
+		if($comment && $comment['title']){
+			$this->assign('title',$comment['title']);
+		}else{
+			$this->assign('title',$rs['title']);
+		}
+		$this->view('comment');
+	}
+
+	public function wholist_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定主题ID'));
+		}
+		$tid = $this->get('tid','int');
+		if(!$tid){
+			$this->error(P_Lang('未指定评论ID'));
+		}
+		$type = $this->get('type');
+		$chk = array('list','reply');
+		if(!isset($type) || !in_array($type,$chk)){
+			$type = 'reply';
+		}
+		$uid = $this->get('uid','int');
+		$this->assign('id',$id);
+		$this->assign('uid',$uid);
+		$this->assign('tid',$tid);
+		$rs = phpok("_arc","title_id=".$id);
+		if(!$rs){
+			$this->error(P_Lang('内容不存在'));
+		}
+		$this->assign('rs',$rs);
+		$comment = $this->model('reply')->get_one($tid);
+		$total = $this->model('click')->users_total($tid,$type);
+		if(!isset($total)){
+			$this->error(P_Lang('没有评论信息'));
+		}
+		$total_user = $this->model('click')->users_total($tid,$type,true);
+		if(!isset($total_user)){
+			$this->error(P_Lang('没有会员评论'));
+		}
+		$this->assign('total',$total_user);
+		$this->assign('total_guest',intval($total-$total_user));
+		$pageurl = $this->url('content','wholist','id='.$id.'&uid='.$uid.'&tid='.$tid.'&type='.$type);
+		$pageid = $this->get($this->config['pageid'],'int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
+		$offset = ($pageid - 1) * $psize;
+		$rslist = $this->model('click')->users($tid,$type,$offset,$psize);
+		if(!$rslist){
+			$this->error(P_Lang('没有会员列表信息'));
+		}
+		$this->assign('rslist',$rslist);
+		$this->assign('pageurl',$pageurl);
+		$this->view('comment-wholist');
 	}
 }

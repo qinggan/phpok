@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<info101><![CDATA[缺少必填的参数，出现这个情况还可能是et的值和实际加密方式不对应]]></info101>
+	<info102><![CDATA[不支持的语言类型]]></info102>
+	<info103><![CDATA[翻译文本过长]]></info103>
+	<info104><![CDATA[不支持的API类型]]></info104>
+	<info105><![CDATA[不支持的签名类型]]></info105>
+	<info106><![CDATA[不支持的响应类型]]></info106>
+	<info107><![CDATA[不支持的传输加密类型]]></info107>
+	<info108><![CDATA[appKey无效，注册账号， 登录后台创建应用和实例并完成绑定， 可获得应用ID和密钥等信息，其中应用ID就是appKey（ 注意不是应用密钥）]]></info108>
+	<info109><![CDATA[batchLog格式不正确]]></info109>
+	<info110><![CDATA[无相关服务的有效实例]]></info110>
+	<info111><![CDATA[开发者账号无效，可能是账号为欠费状态]]></info111>
+	<info201><![CDATA[解密失败，可能为DES,BASE64,URLDecode的错误]]></info201>
+	<info202><![CDATA[签名检验失败]]></info202>
+	<info203><![CDATA[访问IP地址不在可访问IP列表]]></info203>
+	<info301><![CDATA[辞典查询失败]]></info301>
+	<info302><![CDATA[翻译查询失败]]></info302>
+	<info303><![CDATA[服务端的其它异常]]></info303>
+	<info401><![CDATA[账户已经欠费停]]></info401>
+</root>

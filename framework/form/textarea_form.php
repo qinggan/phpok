@@ -25,20 +25,16 @@ class textarea_form extends _init_auto
 		if($appid == 'admin'){
 			$width = '100%';
 			$height = ($rs['height'] && intval($rs['height']) == $rs['height']) ? intval($rs['height']).'px' : ($rs['height'] ? $rs['height'] : '100px');
-			$html .= '<textarea name="'.$rs["identifier"].'" id="'.$rs["identifier"].'" phpok_id="textarea" class="layui-textarea" ';
-			$html .= 'style="'.$rs["form_style"].';width:'.$width.' !important;height:'.$height.';resize:'.($rs['resize'] ? $rs['resize'] : 'both').';"';
-			$html .= '>'.$rs["content"].'</textarea>';
-			return $html;
-		}else{
-			$height = ($rs['height'] && intval($rs['height']) == $rs['height']) ? intval($rs['height']).'px' : ($rs['height'] ? $rs['height'] : '100px');
-			$width = ($rs['width'] && intval($rs['width']) == $rs['width']) ? intval($rs['width']).'px' : ($rs['width'] ? $rs['width'] : '99%');
-			$html  = '<table style="border:0;margin:0;padding:0" cellpadding="0" cellspacing="0"><tr><td>';
-			$html .= '<textarea name="'.$rs["identifier"].'" id="'.$rs["identifier"].'" phpok_id="textarea" class="layui-textarea" ';
-			$html .= 'style="'.$rs["form_style"].';width:'.$width.';height:'.$height.';resize:'.($rs['resize'] ? $rs['resize'] : 'both').';"';
-			$html .= ' placeholder="'.$rs['note'].'">'.$rs["content"].'</textarea>';
-			$html .= "</td></tr></table>";
-			return $html;
+			$rs['height'] = $height;
+			$this->assign('_rs',$rs);
+			return $this->fetch($this->dir_phpok."form/html/textarea_admin_tpl.html",'abs-file');
 		}
+		$height = ($rs['height'] && intval($rs['height']) == $rs['height']) ? intval($rs['height']).'px' : ($rs['height'] ? $rs['height'] : '100px');
+		$width = ($rs['width'] && intval($rs['width']) == $rs['width']) ? intval($rs['width']).'px' : ($rs['width'] ? $rs['width'] : '99%');
+		$rs['width'] = $width;
+		$rs['height'] = $height;
+		$this->assign('_rs',$rs);
+		return $this->fetch($this->dir_phpok."form/html/textarea_www_tpl.html",'abs-file');
 	}
 
 	public function phpok_get($rs,$appid="admin")

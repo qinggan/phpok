@@ -32,7 +32,7 @@
 		</thead>
 		<!-- loop from=$value.paylist key=$k value=$v -->
 		<tr>
-			<td>{$v.title}</td>
+			<td>{$v.title}<!-- if $v.admin_note --><small class="gray">（{$v.admin_note}）</small><!-- /if --></td>
 			<td><!-- if $v.status -->{lang启用}<!-- else --><span class="gray i">{lang停用}</span><!-- /if --></td>
 			<td><!-- if $v.wap --><span class="red">{lang手机端}</span><!-- else -->{langPC端}<!-- /if --></td>
 			<td>{$v.code}</td>

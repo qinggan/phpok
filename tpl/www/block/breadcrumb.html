@@ -1,5 +1,5 @@
 <nav aria-label="breadcrumb">
-	<ol class="breadcrumb">	
+	<ol class="breadcrumb rounded-0">	
 		<li class="breadcrumb-item">您现在的位置：<a href="{$sys.url}" title="{$config.title}" class="am-icon-home">首页</a></li>
 		<!-- if $parent_rs -->
 		<li class="breadcrumb-item"><a href="{$parent_rs.url}">{$parent_rs.title}</a></li>
@@ -14,7 +14,12 @@
 		<li class="breadcrumb-item{if !$rs} active{/if}"><a href="{$cate_rs.url}">{$cate_rs.title}</a></li>
 		<!-- /if -->
 		<!-- if $rs && $sys.ctrl == 'content' -->
-		<li class="breadcrumb-item active"><a href="{$rs.url}" title="{$rs.title}">{$rs.title}</a></li>
+			<!-- if $sys.func == 'comment' -->
+			<li class="breadcrumb-item"><a href="{$rs.url}" title="{$rs.title}">{$rs.title}</a></li>
+			<li class="breadcrumb-item active">评论</li>
+			<!-- else -->
+			<li class="breadcrumb-item active"><a href="{$rs.url}" title="{$rs.title}">{$rs.title}</a></li>
+			<!-- /if -->
 		<!-- /if -->
 		<!-- if $sys.ctrl == 'cart' -->
 			<li class="breadcrumb-item{if $sys.func == 'index'} active{/if}"><a href="{url ctrl=cart/}" title="购物车">购物车</a></li>

@@ -83,7 +83,7 @@ class tag_model_base extends phpok_model
 				}
 			}
 		}elseif($type == 'cate'){
-			$rslist = false;
+			$rslist = array();
 			$this->get_tag_from_cate($rslist,$id);
 		}elseif($type == 'project'){
 			$rslist = $this->get_record_from_stat('p'.$id);
@@ -330,12 +330,12 @@ class tag_model_base extends phpok_model
 		if(!$taglist || !$taglist['list'] || !$taglist['tag']){
 			return false;
 		}
-		$tag = $tag_keys = false;
+		$tag = $tag_keys = array();
 		foreach($taglist['tag'] as $key=>$value){
 			$tag[$value['title']] = $value;
 			$tag_keys[] = $value['title'];
 		}
-		$list = false;
+		$list = array();
 		foreach($taglist['list'] as $key=>$value){
 			foreach($tag_keys as $k=>$v){
 				if(stripos($value,$v) !== false){

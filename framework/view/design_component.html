@@ -1,0 +1,29 @@
+<!-- include tpl=head_lay nopadding=true -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<input type="hidden" name="id" id="id" value="{$id}" />
+<div class="layui-card">
+	<div class="layui-card-body">
+		<!-- if $rslist -->
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th style="width:30%;">组件名称</th>
+			<th>介绍</th>
+			<th style="width:50px;">效果图</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td><input type="radio" name="code" data-vtype="{$value.vtype}" title="{$value.title}" id="code_{$value.id}" {if $value.code == $val} checked{/if} value="{$value.code}"{loop from=$value.ext key=$k value=$v}{if $v} data-ext-{$k}={$v}{/if}{/loop} /></td>
+			<td class="gray"><small><!-- if $value.note -->{func nl2br $value.note}<!-- /if --></small></td>
+			<td><img{if $value.img} class="hand" onclick="$.phpok.open('{$value.img}')"{/if} src="{$value.img ? $value.img : 'images/picture_default.png'}" width="100%" /></td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- else -->
+		<div style="padding:30px;text-align:center;color:gray;">暂无组件信息</div>
+		<!-- /if -->
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay -->

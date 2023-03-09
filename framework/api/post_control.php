@@ -65,9 +65,6 @@ class post_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('主题信息不存在'));
 		}
-		if($rs['status']){
-			$this->error(P_Lang('已审核的信息不允许删除'));
-		}
 		if($rs['user_id'] != $this->session->val('user_id')){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
@@ -84,9 +81,6 @@ class post_control extends phpok_control
 		$rs = $this->model('list')->get_one($id,false);
 		if(!$rs){
 			$this->json(P_Lang('主题信息不存在'));
-		}
-		if($rs['status']){
-			$this->json(P_Lang('已审核的信息不允许删除'));
 		}
 		if($rs['user_id'] != $this->session->val('user_id')){
 			$this->json(P_Lang('您没有权限执行此操作'));
@@ -151,16 +145,31 @@ class post_control extends phpok_control
 			}
 			$vcode_act = 'edit';
 		}
-		if($this->model('site')->vcode($project_rs['id'],$vcode_act)){
-			$code = $this->get('_chkcode');
-			if(!$code){
-				return $this->_e(P_Lang('验证码不能为空'));
+		$safecode = $this->get("_safecode");
+		$api_code = $this->model('config')->get_one('api_code',$this->site['id']);
+		//基于接口，可以忽略验证码
+		if($safecode && ($api_code || $this->site['api_code'])){
+			$acode = $this->site['api_code'] ? $this->site['api_code'] : $api_code;
+			$this->model('apisafe')->code($acode);
+			if(!$this->model('apisafe')->check()){
+				$errInfo = $this->model('apisafe')->error_info();
+				if(!$errInfo){
+					$errInfo = P_Lang('未通过安全接口拼接');
+				}
+				return $this->_e($errInfo);
 			}
-			$code = md5(strtolower($code));
-			if($code != $this->session->val('vcode')){
-				return $this->_e(P_Lang('验证码填写不正确'));
+		}else{
+			if($this->model('site')->vcode($project_rs['id'],$vcode_act)){
+				$code = $this->get('_chkcode');
+				if(!$code){
+					return $this->_e(P_Lang('验证码不能为空'));
+				}
+				$code = md5(strtolower($code));
+				if($code != $this->session->val('vcode')){
+					return $this->_e(P_Lang('验证码填写不正确'));
+				}
+				$this->session->unassign('vcode');
 			}
-			$this->session->unassign('vcode');
 		}
 		if($this->session->val('user_id')){
 			$user = $this->model('user')->get_one($this->session->val('user_id'),'id',false,false);
@@ -175,7 +184,9 @@ class post_control extends phpok_control
 			}
 		}
 		//----结束
-		$array["status"] = $this->model('popedom')->val($project_rs['id'],$groupid,'post1');
+		if(!$tid){
+			$array["status"] = $this->model('popedom')->val($project_rs['id'],$groupid,'post1');
+		}
 		$array["hidden"] = 0;
 		$array["module_id"] = $project_rs["module"];
 		$array["project_id"] = $project_rs["id"];
@@ -218,6 +229,7 @@ class post_control extends phpok_control
 			}else{
 				$array["dateline"] = $this->time;
 			}
+			$array['hidden'] = $this->get('hidden','int');
 			$insert_id = $this->model('list')->save($array);
 			if(!$insert_id){
 				return $this->_e(P_Lang('添加失败，请联系管理'));

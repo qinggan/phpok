@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<zan>
+		<title>赞</title>
+		<value>1</value>
+		<icon1>images/zan.png</icon1>
+		<icon2>images/zan-noclick.png</icon2>
+	</zan>
+</root>

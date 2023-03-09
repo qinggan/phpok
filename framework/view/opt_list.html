@@ -43,9 +43,12 @@ var optconfig = {
 					<input type="button" value="{lang子项}" onclick="$.win('{lang子项}_{$value.title}','{url ctrl=opt func=list pid=$value.id/}');" class="layui-btn  layui-btn-sm" />
 					<!-- if $popedom.set -->
 					<input type="button" value="{lang导入}"  onclick="$.admin_opt.opt_import('{$group_id}','{$value.id}')" class="layui-btn  layui-btn-sm" />
-					<!-- if $value._export --><input type="button" value="{lang导出}" onclick="$.admin_opt.opt_export('{$group_id}','{$value.id}',true)" class="layui-btn  layui-btn-sm" /><!-- /if -->
+					<!-- if $value._export -->
+					<input type="button" value="{lang导出}" onclick="$.admin_opt.opt_export('{$group_id}','{$value.id}',true)" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang导出CSV}" onclick="$.admin_opt.opt_export_csv('{$group_id}','{$value.id}')" class="layui-btn  layui-btn-sm" />
+					<!-- /if -->
 					<input type="button" value="{lang编辑}" onclick="$.phpok_opt(optconfig).edit({$value.id},{'okVal':'{lang修改}'})" class="layui-btn  layui-btn-sm" />
-					<input type="button" value="{lang删除}" onclick="$.admin_opt.opt_delete({$value.id},'{$value.title}')" class="layui-btn  layui-btn-sm" />
+					<input type="button" value="{lang删除}" onclick="$.admin_opt.opt_delete({$value.id},'{$value.title}')" class="layui-btn  layui-btn-sm layui-btn-danger" />
 					<!-- /if -->
 				</div>
 			</td>

@@ -1,10 +1,9 @@
-<!-- include tpl=header menutitle=$page_rs.title -->
-<section class="bg-light p-5"{if $page_rs.banner} style="background:url('{$page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+<!-- include tpl=header -->
+<section class="bg-light p-5 bg-default"{if $page_rs.banner} style="background:url('{$page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
 	<div class="p-4">
 		<h1 class="text-center">{$rs.title}</h1>
 	</div>
 	<div class="container">
-		<!-- include tpl=block/breadcrumb -->
 		<!-- if $rs.tag -->
 		<div class="text-center m-3">
 			<span class="p-2 bg-light-50 rounded-lg">
@@ -17,21 +16,12 @@
 		<!-- /if -->
 	</div>
 </section>
+<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
 <div class="container">
 	<div class="row">
 		<div class="col-sm-3 mt-3">
-			<div class="card mb-3">
-				<div class="card-header">
-					{$page_rs.title}
-				</div>
-				<ul class="list-group list-group-flush">
-					<!-- arclist pid=$page_rs.id psize=100 fields=id -->
-					<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
-					<li class="list-group-item{if $rs.id == $value.id} active{/if}"><a href="{$value.url}" title="{$value.title}"><i class='am-icon-angle-right'></i> {$value.title}</a></li>
-					<!-- /loop -->
-				</ul>
-			</div>
-			<!-- include tpl=block/contact -->
+			<div class="mb-3"><!-- include tpl=block/about --></div>
+			<div class="mb-3"><!-- include tpl=block/contact --></div>
 		</div>
 		<div class="col-sm-9 mt-3">
 			<div class="content">{$rs.content}</div>

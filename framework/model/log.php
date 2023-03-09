@@ -21,7 +21,7 @@ class log_model_base extends phpok_model
 	 * @参数 $note 日志说明
 	 * @参数 $mask 是否手动标记，为true时表示手动标志
 	**/
-	public function save($note='',$mask=false)
+	public function save($note='',$mask=false,$file='')
 	{
 		if(!$note){
 			$tmpfile = $this->app_id.'/'.$this->ctrl.'_control.php';
@@ -63,10 +63,10 @@ class log_model_base extends phpok_model
 		$data['url'] = $this->format($url);
 		$data['referer'] = $this->format($referer);
 		$data['session_id'] = $this->session->sessid();
-		return $this->_save($data);
+		return $this->_save($data,$file);
 	}
 
-	private function _save($data)
+	private function _save($data,$file='')
 	{
 		if(!$data){
 			return false;
@@ -88,7 +88,9 @@ class log_model_base extends phpok_model
 			$html .= "内容：\n".$data['note']."\n-----END\n";
 		}
 		$html .= "<?php exit('--------- END ---------');?>\n";
-		$file = $this->dir_data."log/".date("Ymd",$this->time).'.php';
+		if(!$file){
+			$file = $this->dir_data."log/".date("Ymd",$this->time).'.php';
+		}
 		$handle = fopen($file,'ab');
 		flock($handle,LOCK_EX | LOCK_NB);
 		fwrite($handle,$html);
@@ -249,4 +251,171 @@ class log_model_base extends phpok_model
 		return $this->db->count($sql);
 	}
 
+	/**
+	 * 标题日志
+	**/
+	public function title_save($id,$title='')
+	{
+		if(!$id || !$title){
+			return false;
+		}
+		$rs = $this->model('list')->call_one($id);
+		if(!$rs){
+			return false;
+		}
+		if($rs['title'] == $title){
+			return true;
+		}
+		$p_rs = $this->model('project')->get_one($tmp['project_id'],false);
+		$tmp = array();
+ 		$tmp['tbl'] = 'list';
+ 		$tmp['dateline'] = $this->time;
+ 		$tmp['tid'] = $id;
+ 		$tmp['vtype'] = $p_rs['alias_title'] ? $p_rs['alias_title'] : P_Lang('主题');
+ 		$tmp['code'] = 'title';
+ 		$tmp['content1'] = $rs['title'];
+ 		$tmp['content2'] = $title;
+ 		return $this->db->insert_array($tmp,'log_content');
+	}
+
+	/**
+	 * 电商价格保存
+	**/
+	public function biz_save($id,$price='')
+	{
+		if(!$id || $price ==''){
+			return false;
+		}
+		$rs = $this->model('list')->biz_info($id);
+		if(!$rs){
+			return false;
+		}
+		if($rs['price'] == $price){
+			return true;
+		}
+		$tmp = array();
+ 		$tmp['tbl'] = 'list_biz';
+ 		$tmp['dateline'] = $this->time;
+ 		$tmp['tid'] = $id;
+ 		$tmp['vtype'] = P_Lang('价格');
+ 		$tmp['code'] = 'price';
+ 		$tmp['content1'] = $rs['price'];
+ 		$tmp['content2'] = $price;
+ 		return $this->db->insert_array($tmp,'log_content');
+	}
+
+	public function ext_save($id,$mid,$extdata)
+	{
+		if(!$id || !$mid || !$extdata){
+			return false;
+		}
+		$elist = $this->model('module')->fields_all($mid);
+		if(!$elist){
+			return false;
+		}
+		$rs = $this->model('list')->get_one($id,false);
+		foreach($elist as $key=>$value){
+			//未开启日志，则忽略
+			if(!$value['admin-history']){
+				continue;
+			}
+			if(!isset($extdata[$value['identifier']])){
+				continue;
+			}
+			if(!$rs[$value['identifier']]){
+				continue;
+			}
+			$tmp1 = stripslashes($extdata[$value['identifier']]);
+			if($extdata[$value['identifier']] == $rs[$value['identifier']] || $tmp1 == $rs[$value['identifier']]){
+				continue;
+			}
+			$tmp = array();
+	 		$tmp['tbl'] = 'list_'.$mid;
+	 		$tmp['dateline'] = $this->time;
+	 		$tmp['tid'] = $id;
+	 		$tmp['vtype'] = $value['title'];
+	 		$tmp['code'] = $value['identifier'];
+	 		$tmp['content1'] = $rs[$value['identifier']];
+	 		$tmp['content2'] = $extdata[$value['identifier']];
+	 		$this->db->insert_array($tmp,'log_content');
+		}
+		return true;
+	}
+
+	public function single_save($id,$mid,$extdata)
+	{
+		if(!$id || !$mid || !$extdata){
+			return false;
+		}
+		$elist = $this->model('module')->fields_all($mid);
+		if(!$elist){
+			return false;
+		}
+		$rs = $this->model('list')->single_one($id,$mid);
+		foreach($elist as $key=>$value){
+			if(!isset($extdata[$value['identifier']])){
+				continue;
+			}
+			if($extdata[$value['identifier']] == $rs[$value['identifier']]){
+				continue;
+			}
+			$tmp = array();
+	 		$tmp['tbl'] = $mid;
+	 		$tmp['dateline'] = $this->time;
+	 		$tmp['tid'] = $id;
+	 		$tmp['vtype'] = $value['title'];
+	 		$tmp['code'] = $value['identifier'];
+	 		$tmp['content1'] = $rs[$value['identifier']];
+	 		$tmp['content2'] = $extdata[$value['identifier']];
+	 		$this->db->insert_array($tmp,'log_content');
+		}
+		return true;
+	}
+
+	/**
+	 * 更新内容日志，仅存不一样的数据
+	**/
+	public function content_delete($tid,$tbl='')
+	{
+		$sql = "DELETE FROM ".$this->db->prefix."log_content WHERE tid='".$tid."' AND tbl='".$tbl."'";
+		return $this->db->query($sql);
+	}
+
+	public function list_log($tid,$mid='')
+	{
+		if(strpos($mid,'list') !== false){
+			$sql = "SELECT * FROM ".$this->db->prefix."log_content WHERE tid='".$tid."' AND tbl LIKE 'list%' ORDER BY dateline DESC LIMIT 999";
+			return $this->db->get_all($sql);
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."log_content WHERE tid='".$tid."' AND tbl='".$mid."' ORDER BY dateline DESC LIMIT 999";
+		return $this->db->get_all($sql);
+	}
+
+	public function get_one($id)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."log_content WHERE id='".$id."'";
+		$info = $this->db->get_one($sql);
+		if(!$info){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix.$info['tbl']." WHERE id='".$info['id']."'";
+		$tmp = $this->db->get_one($sql);
+		if($tmp){
+			$info['rs'] = $tmp;
+		}
+		return $info;
+	}
+
+	public function update_reset($id)
+	{
+		$info = $this->get_one($id);
+		if(!$info || !$info['rs']){
+			return false;
+		}
+		$sql = "UPDATE ".$this->db->prefix."".$info['tbl']." SET ".$info['code']."='".$info['content1']."' WHERE id='".$info['tid']."'";
+		$this->db->query($sql);
+		$sql = "DELETE FROM ".$this->db->prefix."log_content WHERE id='".$id."'";
+		$this->db->query($sql);
+		return true;
+	}
 }

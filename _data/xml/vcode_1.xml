@@ -5,15 +5,15 @@
 		<list>
 			<login>
 				<title><![CDATA[登录]]></title>
-				<status><![CDATA[1]]></status>
+				<status><![CDATA[]]></status>
 			</login>
 			<register>
 				<title><![CDATA[注册]]></title>
-				<status><![CDATA[1]]></status>
+				<status><![CDATA[]]></status>
 			</register>
 			<getpass>
 				<title><![CDATA[忘记密码]]></title>
-				<status><![CDATA[1]]></status>
+				<status><![CDATA[]]></status>
 			</getpass>
 		</list>
 	</system>

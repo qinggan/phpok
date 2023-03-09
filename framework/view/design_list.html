@@ -1,0 +1,44 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang模板组件管理}
+		<div class="fr">
+			<button class="layui-btn layui-btn-sm" onclick="$.win('{lang添加组件}','{url ctrl=design func=set/}')">
+				<i class="layui-icon">&#xe608;</i> {lang添加组件}
+			</button>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<!-- if $rslist -->
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>编码</th>
+			<th style="width:80px;">图片</th>
+			<th>名称</th>
+			<th>操作</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.id}</td>
+			<td>{$value.code ? $value.code : $value.id}</td>
+			<td><img{if $value.img} class="hand" onclick="$.dialog.open('{$value.img}',{'title':'预览',lock:true})"{/if} src="{$value.img ? $value.img : 'images/picture_default.png'}" width="100%" /></td>
+			<td>{$value.title}<!-- if $value.note --><div class="gray"><small>{func nl2br $value.note}</small></div><!-- /if --></td>
+			
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="编辑" onclick="$.win('{lang编辑组件}_#{$value.id}','{url ctrl=design func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="删除" onclick="$.admin_design.delete('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- else -->
+		<div style="padding:30px;text-align:center;color:gray;">暂无组件信息</div>
+		<!-- /if -->
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

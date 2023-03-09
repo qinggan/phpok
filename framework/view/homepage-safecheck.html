@@ -1,0 +1,47 @@
+<!-- if $safecheck -->
+<div id="folderlist" style="display:none"></div>
+<script id="art-tpl" type="text/html">
+<% for(var i in rslist){ %>
+<tr id="id-<%= rslist[i].hash %>" data-ext="<%= rslist[i].ext %>">
+	<td><%= rslist[i].filename %></td>
+	<td><%= rslist[i].size %></td>
+	<td><%= rslist[i].mdate_format %></td>
+	<td><%= rslist[i].error %></td>
+	<td>
+		<div class="layui-btn-group">
+		<input type="button" value="查看" onclick="$.win('文件管理','{url ctrl=filemanage/}&folder=<%= rslist[i].folder %>')" class="layui-btn layui-btn-sm" />
+		<input type="button" value="标记" onclick="$.admin_index.ignore('<%= rslist[i].hash %>')" class="layui-btn layui-btn-sm layui-btn-danger" />
+		</div>
+	</td>
+</tr>
+<% } %>
+</script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		安全检测 <span id="total_html" style="display:none">检测文件（夹）数量：<span id="total" class="layui-text-danger"></span></span>
+		<div class="fr">
+			<div class="layui-btn-group">
+				<input type="button" value="开始检测" id="buttonAction" class="layui-btn layui-btn-sm" onclick="$.admin_index.checking()" />
+				<input type="button" value="下载码表" id="buttonAction" class="layui-btn layui-btn-sm" onclick="$.admin_index.download_table()" />
+				<input type="button" value="清空标记" id="buttonAction" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin_index.clear_ignore()" />
+			</div>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>文件</th>
+			<th>大小</th>
+			<th>修改时间</th>
+			<th>建议</th>
+			<th>操作</th>
+		</tr>
+		</thead>
+		<tbody id="rslist">
+		</tbody>
+		</table>
+		<div id="loading"></div>
+	</div>
+</div>
+<!-- /if -->

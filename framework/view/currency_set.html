@@ -2,9 +2,6 @@
 <div class="layui-card">
 	<div class="layui-card-header">
 		<!-- if $id -->{lang编辑货币信息}<!-- else -->{lang添加货币信息}<!-- /if -->
-		<div class="fr">
-			<button type="button" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.phpok.go('{url ctrl=currency/}')">{lang返回}</button>
-		</div>
 	</div>
 	<div class="layui-card-body">
 		<form method="post" class="layui-form" action="{url ctrl=currency func=setok/}" onsubmit="return check_save()">
@@ -65,6 +62,17 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
+				{lang位数}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" id="dpl" name="dpl" value="{$rs.dpl != '' ? $rs.dpl : 2}" autocomplete="off" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">
+				{lang格式化小数点保留长度，如涉及到产品批发建议设为4，普通商品建议设为2}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
 				{lang状态}
 			</label>
 			<div class="layui-input-inline auto">
@@ -95,7 +103,7 @@
 			<label class="layui-form-label"></label>
 			<div class="layui-input-inline auto">
 				<button class="layui-btn" type="submit">立即提交</button>
-				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				<button type="button" class="layui-btn layui-btn-danger" onclick="$.phpok.go('{url ctrl=currency/}')">{lang返回}</button>
 			</div>
 		</div>
 		</form>

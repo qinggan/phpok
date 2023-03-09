@@ -18,6 +18,7 @@ if(!defined("PHPOK_SET")){
 }
 
 include_once "phar://".dirname(__FILE__).'/aliyun.phar/aliyun-php-sdk-core/Config.php';
+include_once "phar://".dirname(__FILE__).'/aliyun.phar/aliyun-oss-php-sdk/autoload.php';
 
 /**
  * 邮件推送
@@ -43,6 +44,11 @@ use live\Request\V20161101 as live;
  * CDN 应用
 **/
 use Cdn\Request\V20180510 as cdn;
+
+use Sts\Request\V20150401 as sts;
+
+use OSS\OssClient;
+use OSS\Core\OssException;
 
 class aliyun_lib
 {
@@ -87,6 +93,9 @@ class aliyun_lib
 	private $dm_name = '锟铻科技';
 
 	private $client;
+
+	private $oss_client;
+	private $oss_bucket;
 
 	/**
 	 * 构造函数
@@ -305,9 +314,6 @@ class aliyun_lib
 		if(!$this->access_secret){
 			return $this->error(P_Lang('未指定Access Key Secret'));
 		}
-		if(!$this->signature){
-			return $this->error(P_Lang('未配置标签'));
-		}
 		$iClientProfile = DefaultProfile::getProfile($this->regoin_id, $this->access_key,$this->access_secret);
 		$this->client = new DefaultAcsClient($iClientProfile);
 		return $this->client;
@@ -316,38 +322,22 @@ class aliyun_lib
 	/**
 	 * 上传视频文件
 	 * @参数 $filename 文件名
-	 * @参数 $title 标题
-	 * @参数 $thumb 缩略图
-	 * @参数 $note 摘要
-	 * @参数 $tag 标签
 	**/
-	public function create_upload_video($filename,$title='',$thumb='',$note='',$tag='')
+	public function create_upload_video($filename)
 	{
 		if(!$filename){
 			return false;
 		}
-		if(!$title){
-			$tmp = explode(".",$filename);
-			$title = $tmp[0];
-			if(!$title){
-				$title = $filename;
-			}
-		}
+		$tmp = explode(".",$filename);
+		$total = count($tmp);
+		$ext = $tmp[($total-1)];
+		$title = str_replace('.'.$ext,'',$filename);
 		$request = new vod\CreateUploadVideoRequest();
 		$request->setAcceptFormat('JSON');
 		$request->setRegionId($this->regoin_id);
 		$request->setTitle($title);
 		$request->setFileName($filename);
 		$request->setFileSize(0);
-		if($note){
-			$request->setDescription($note);
-		}
-		if($thumb){
-			$request->setCoverURL($thumb);
-		}
-		if($tag){
-			$request->setTags($tag);
-		}
 		$request->setCateId(0);
 		try {
 			$response = $this->client->getAcsResponse($request);
@@ -489,6 +479,28 @@ class aliyun_lib
 		}
 	}
 
+	public function video_mezzanine($videoid,$type = 'cdn')
+	{
+		if(!$videoid){
+			return false;
+		}
+		$request = new vod\GetMezzanineInfoRequest();
+		$request->setAcceptFormat('JSON');
+		$request->setAuthTimeout(3600*24);
+		$request->setVideoId($videoid);
+		$request->setOutputType($type);
+		try {
+			$response = $this->client->getAcsResponse($request);
+			return $this->success($response);
+		}
+		catch (ClientException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+		catch (ServerException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+	}
+
 	/**
 	 * 取得视频信息
 	 * @参数 $videoid 视频ID
@@ -515,6 +527,34 @@ class aliyun_lib
 	}
 
 	/**
+	 * 取得多个视频信息
+	 * @参数 $videoid 视频ID
+	**/
+	public function video_infos($vids)
+	{
+		if(!$vids){
+			return false;
+		}
+		if(is_array($vids)){
+			$vids = implode(",",$vids);
+		}
+		$request = new vod\GetVideoInfosRequest();
+		$request->setAcceptFormat('JSON');
+		$request->setRegionId($this->regoin_id);
+		$request->setVideoIds($vids);
+		try {
+			$response = $this->client->getAcsResponse($request);
+			return $this->success($response);
+		}
+		catch (ClientException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+		catch (ServerException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+	}
+
+	/**
 	 * 获取源片信息
 	**/
 	public function video_base($videoid)
@@ -524,7 +564,7 @@ class aliyun_lib
 		}
 		$request = new vod\GetMezzanineInfoRequest();
 		$request->setAcceptFormat('JSON');
-		$request->setAuthTimeout(3600*10);
+		$request->setAuthTimeout(3600*24);
 		$request->setVideoId($videoid);
 		try {
 			$response = $this->client->getAcsResponse($request);
@@ -595,18 +635,16 @@ class aliyun_lib
 		}
 	}
 
-	public function play_url($videoid)
+	public function play_url($videoid,$type='cdn')
 	{
 		if(!$videoid){
 			return false;
 		}
-		//$client = initVodClient($this->access_key, $this->access_secret);
-		//$playInfo = getPlayInfo($client, 'videoId');
-    	//print_r($playInfo->PlayInfoList->PlayInfo);
 		$request = new vod\GetPlayInfoRequest();
 		$request->setAcceptFormat('JSON');
 		$request->setAuthTimeout(3600*24);
 		$request->setVideoId($videoid);
+		$request->setOutputType($type);
 		try {
 			$response = $this->client->getAcsResponse($request);
 			return $this->success($response);
@@ -618,6 +656,108 @@ class aliyun_lib
 			return $this->error($e->getErrorMessage(),$e->getErrorCode());
 		}
 	}
+
+	public function sts($role,$session_name='default',$expiretime=3600)
+	{
+		try{
+			$request = new sts\AssumeRoleRequest();
+			$request->setRoleSessionName($session_name);
+			$request->setRoleArn($role);
+			$request->setDurationSeconds($expiretime);
+			$response = $this->client->getAcsResponse($request);
+		}catch (ClientException  $e) {
+			return $this->error($e->getErrorMessage(),$e->getErrorCode());
+		}
+        $rows = array();
+        $rows['access_id'] = $response->Credentials->AccessKeyId;
+        $rows['access_secret'] = $response->Credentials->AccessKeySecret;
+        $rows['expiration'] = $response->Credentials->Expiration;
+        $rows['token'] = $response->Credentials->SecurityToken;
+        return $this->success($rows);
+	}
+	
+	public function oss_client($access_key='',$access_secret='',$end_point='')
+	{
+		if($access_key){
+			$this->access_key($access_key);
+		}
+		if($access_secret){
+			$this->access_secret($access_secret);
+		}
+		if($end_point){
+			$this->end_point($end_point);
+		}
+		try {
+			$ossClient = new OssClient($this->access_key, $this->access_secret, $this->end_point, false);
+		} catch (OssException $e) {
+			return $this->error($e->getMessage());
+		}
+		$ossClient->setUseSSL(false);
+		$this->oss_client = $ossClient;
+		return $this->success();
+	}
+
+	public function oss_bucket($name='')
+	{
+		if($name){
+			$this->oss_bucket = $name;
+		}
+		return $this->oss_bucket;
+	}
+
+	public function oss_delete($object)
+	{
+		if(!$this->oss_client){
+			$this->oss_client();
+		}
+		try {
+			$this->oss_client->deleteObject($this->oss_bucket, $object);
+		} catch (OssException $e) {
+			return $this->error($e->getMessage());
+		}
+		return $this->success();
+	}
+
+	public function oss_ico($object,$id,$ext)
+	{
+		if(!$this->oss_client){
+			$this->oss_client();
+		}
+		$style = "image/resize,m_fill,w_200,h_200";
+		$save_object = "res/_cache/".date("Ym/d/")."_".$id.".".$ext;
+		$process = $style.'|sys/saveas,o_'.$this->oss_encode($save_object).',b_'.$this->oss_encode($this->oss_bucket);
+		try {
+			$info = $this->oss_client->processObject($this->oss_bucket, $object, $process);
+		} catch (OssException $e) {
+			return $this->error($e->getMessage());
+		}
+		return $this->success($save_object);
+	}
+
+	/**
+	 * 对象文件数据编码
+	**/
+	public function oss_encode($data)
+	{
+		return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+	}
+
+	/**
+	 * 检测对象文件是否存在
+	**/
+	public function oss_chk($object)
+	{
+		if(!$this->oss_client){
+			$this->oss_client();
+		}
+		try {
+			$exist = $this->oss_client->doesObjectExist($this->oss_bucket, $object);
+		} catch (OssException $e) {
+			return $this->error($e->getMessage());
+		}
+		return true;
+	}
+
 
 	/**
 	 * 错误返回

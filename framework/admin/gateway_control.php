@@ -155,7 +155,7 @@ class gateway_control extends phpok_control
 		if($is_default){
 			$this->model('gateway')->update_default($id);
 		}
-		error($tip,$this->url('gateway'),'ok');
+		$this->success($tip);
 	}
 
 	public function sort_f()

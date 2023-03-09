@@ -1,7 +1,6 @@
 <?php
 /**
  * 字段增删查改
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -13,30 +12,35 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class fields_model_base extends phpok_model
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::model();
 	}
 
-	
 	/**
-	 * 读取 qigngan_fields 表下的一条字段配置信息，返回的 ext 信息已经自动转成数组
-	 * @参数 $id 主键ID
+	 * 删除字段
 	**/
-	public function one($id)
+	public function del($id=0)
 	{
-		if(!$id || !intval($id)){
+		if(!$id){
 			return false;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id=".intval($id);
-		$rs = $this->db->get_one($sql);
-		if(!$rs){
-			return false;
+		if(is_numeric($id)){
+			$rs = $this->one($id);
+			if(!$rs){
+				return false;
+			}
+		}else{
+			$rs = $id;
 		}
-		if($rs['ext']){
-			$rs['ext'] = unserialize($rs['ext']);
+		$this->del_module_fields($rs);
+		//删除扩展存储器里的字段
+		if(!is_numeric($rs['ftype']) && $rs['ftype'] != 'default'){
+			$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$rs['id']."'";
+			$this->db->query($sql);
 		}
-		return $rs;
+		$this->fields_ext_delete($rs['id']);
+		return true;
 	}
 
 	/**
@@ -57,10 +61,75 @@ class fields_model_base extends phpok_model
 		foreach($rslist as $key=>$value){
 			if($value['ext']){
 				$value['ext'] = unserialize($value['ext']);
-				$rslist[$key] = $value;
 			}
+			$ext = $this->fields_ext_all($value['id']);
+			if($ext){
+				$value = array_merge($ext,$value);
+			}
+			$rslist[$key] = $value;
 		}
 		return $rslist;
+	}
+
+	public function fields_count($words,$type="")
+	{
+		if(!$words) $words = "id,identifier";
+		$sql = "SELECT count(id) FROM ".$this->db->prefix."fields ";
+		$list = explode(",",$words);
+		$list = array_unique($list);
+		$words = implode("','",$list);
+		$sql .= " WHERE identifier NOT IN ('".$words."') ";
+		if($type)
+		{
+			$sql .= " AND area LIKE '%".$type."%'";
+		}
+		return $this->db->count($sql);
+	}
+
+	public function fields_ext_save($data,$fields_id=0)
+	{
+		if(!$fields_id){
+			return false;
+		}
+		$this->fields_ext_delete($fields_id);
+		foreach($data as $key=>$value){
+			if($value && is_array($value)){
+				$value = serialize($value);
+			}
+			$array = array('fields_id'=>$fields_id,'keyname'=>$key,'keydata'=>$value);
+			$this->db->insert($array,'fields_ext');
+		}
+		return true;
+	}
+
+	public function fields_ext_delete($fields_id=0)
+	{
+		if(!$fields_id){
+			return false;
+		}
+		$sql = "DELETE FROM ".$this->db->prefix."fields_ext WHERE fields_id='".$fields_id."'";
+		return $this->db->query($sql);
+	}
+
+	public function fields_ext_all($fields_id=0)
+	{
+		if(!$fields_id){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."fields_ext WHERE fields_id='".$fields_id."'";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		$rs = array();
+		foreach($rslist as $key=>$value){
+			$tmp = $value['keydata'];
+			if(strpos($tmp,'{') !== false && strpos($tmp,':') !== false && substr($tmp,-1) == '}'){
+				$tmp = unserialize($tmp);
+			}
+			$rs[$value['keyname']] = $tmp;
+		}
+		return $rs;
 	}
 
 	/**
@@ -89,41 +158,55 @@ class fields_model_base extends phpok_model
 		return $rslist;
 	}
 
-	private function _all()
+	public function get_all($condition='',$offset=0,$psize=30,$pri='')
 	{
-		$flist = $this->lib('file')->ls($this->dir_data.'xml/fields/');
-		if(!$flist){
-			return false;
+		$sql = "SELECT * FROM ".$this->db->prefix."fields ";
+		if($condition){
+			$sql .= " WHERE ".$condition;
 		}
-		$rslist = array();
-		foreach($flist as $key=>$value){
-			$rs = $this->lib('xml')->read($value);
-			$rslist[$rs['identifier']] = $rs;
+		$sql.= " ORDER BY taxis ASC,id DESC ";
+		if($psize && intval($psize)){
+			$offset = intval($offset);
+			$sql .= " LIMIT ".$offset.",".intval($psize);
 		}
-		ksort($rslist);
-		return $rslist;
+		return $this->db->get_all($sql,$pri);
 	}
 
-	public function fields_count($words,$type="")
+	public function get_from_identifier($identifier,$module)
 	{
-		if(!$words) $words = "id,identifier";
-		$sql = "SELECT count(id) FROM ".$this->db->prefix."fields ";
-		$list = explode(",",$words);
-		$list = array_unique($list);
-		$words = implode("','",$list);
-		$sql .= " WHERE identifier NOT IN ('".$words."') ";
-		if($type)
-		{
-			$sql .= " AND area LIKE '%".$type."%'";
+		$sql = "SELECT id FROM ".$this->db->prefix."fields WHERE identifier='".$identifier."' AND ftype='".$module."'";
+		$info = $this->db->get_one($sql);
+		if(!$info){
+			return false;
 		}
-		return $this->db->count($sql);
+		return $this->one($info['id']);
 	}
 
 	public function get_list($id)
 	{
-		if(!$id) return false;
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id IN(".$id.") ORDER BY taxis ASC,id DESC";
-		return $this->db->get_all($sql);
+		if(!$id){
+			return false;
+		}
+		$list = $this->_ids($id,true);
+		if(!$list){
+			return false;
+		}
+		$rslist = array();
+		foreach($list as $key=>$value){
+			$tmp = $this->one($value);
+			if($tmp){
+				$rslist[] = $tmp;
+			}
+		}
+		return $rslist;
+	}
+
+	public function groups()
+	{
+		if(file_exists($this->dir_data.'xml/fields-group.xml')){
+			return $this->lib('xml')->read($this->dir_data.'xml/fields-group.xml',true);
+		}
+		return array('main'=>'主层','ext'=>'扩展层');
 	}
 
 	//判断字段是否被使用了
@@ -151,9 +234,135 @@ class fields_model_base extends phpok_model
 		return false;
 	}
 
+	public function list_fields()
+	{
+		return $this->db->list_fields('list');
+	}
+
+	public function next_taxis($module)
+	{
+		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."fields WHERE ftype='".$module."' AND taxis<255";
+		$rs = $this->db->get_one($sql);
+		return $this->return_next_taxis($rs);
+	}
+
+	/**
+	 * 读取 qigngan_fields 表下的一条字段配置信息，返回的 ext 信息已经自动转成数组
+	 * @参数 $id 主键ID
+	**/
+	public function one($id)
+	{
+		if(!$id || !intval($id)){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id=".intval($id);
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		if($rs['ext']){
+			$rs['ext'] = unserialize($rs['ext']);
+		}
+		//检测扩展
+		$ext = $this->fields_ext_all($rs['id']);
+		if($ext){
+			$rs = array_merge($ext,$rs);
+		}
+		//检测扩展文件是否存在
+		return $rs;
+	}
+
+	/**
+	 * 保存字段
+	**/
+	public function save($data,$id=0)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		if($data['module_id'] && !isset($data['ftype'])){
+			$data['ftype'] = $data['module_id'];
+		}
+		if(isset($data['module_id'])){
+			unset($data['module_id']);
+		}
+		$ext = array();
+		if($data['ext']){
+			if(is_string($data['ext'])){
+				$data['ext'] = serialize($data['ext']);
+			}
+			$ext = $data['ext'];
+			$data['ext'] = '';
+		}
+		$fields = $this->db->list_fields('fields');
+		$xmldata = array();
+		foreach($data as $key=>$value){
+			if(!in_array($key,$fields)){
+				if(!$xmldata){
+					$xmldata = array();
+				}
+				$xmldata[$key] = $value;
+				unset($data[$key]);
+			}
+		}
+		foreach($ext as $key=>$value){
+			$xmldata[$key] = $value;
+		}
+		if($id){
+			if($data && count($data)>0){
+				$status = $this->db->update_array($data,"fields",array("id"=>$id));
+				if(!$status){
+					return false;
+				}
+			}
+			if($xmldata && count($xmldata)>0){
+				$this->fields_ext_save($xmldata,$id);
+			}
+			return $id;
+		}
+		$insert_id = $this->db->insert_array($data,"fields");
+		if(!$insert_id){
+			return false;
+		}
+		if($xmldata && count($xmldata)>0){
+			$this->fields_ext_save($xmldata,$insert_id);
+		}
+		return $insert_id;
+	}
+
 	public function tbl_fields($tbl)
 	{
 		return $this->_rslist($tbl);
+	}
+
+	//取得数据表字段设置的字段类型
+	public function type_all()
+	{
+		$array = array(
+			"varchar"=>"字符串",
+			"int"=>"整型",
+			"float"=>"浮点型",
+			"date"=>"日期",
+			"datetime"=>"日期时间",
+			"longtext"=>"长文本",
+			"longblob"=>"二进制信息"
+		);
+		return $array;
+	}
+
+	private function _all()
+	{
+		$flist = $this->lib('file')->ls($this->dir_data.'xml/fields/');
+		if(!$flist){
+			return false;
+		}
+		$rslist = array();
+		foreach($flist as $key=>$value){
+			$rs = $this->lib('xml')->read($value);
+			$rslist[$rs['identifier']] = $rs;
+		}
+		ksort($rslist);
+		return $rslist;
 	}
 
 	private function _rslist($tbl,$idlist=array())
@@ -171,46 +380,30 @@ class fields_model_base extends phpok_model
 		}
 	}
 
-
-	//取得数据表字段设置的字段类型
-	function type_all()
+	protected function del_module_fields($rs)
 	{
-		$array = array(
-			"varchar"=>"字符串",
-			"int"=>"整型",
-			"float"=>"浮点型",
-			"date"=>"日期",
-			"datetime"=>"日期时间",
-			"longtext"=>"长文本",
-			"longblob"=>"二进制信息"
-		);
-		return $array;
-	}
-
-	public function list_fields()
-	{
-		return $this->db->list_fields('list');
-	}
-
-	public function get_all($condition='',$offset=0,$psize=30,$pri='')
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."fields ";
-		if($condition){
-			$sql .= " WHERE ".$condition;
+		if(!is_numeric($rs['ftype'])){
+			return false;
 		}
-		$sql.= " ORDER BY taxis ASC,id DESC ";
-		if($psize && intval($psize)){
-			$offset = intval($offset);
-			$sql .= " LIMIT ".$offset.",".intval($psize);
+		$module = $this->model('module')->get_one($rs['ftype']);
+		if(!$module){
+			return false;
 		}
-		return $this->db->get_all($sql,$pri);
+			//检查表
+		$table = $this->db->prefix.$module['tbl'].'_'.$module['id'];
+		if($module['mtype']){
+			$table = $this->db->prefix.$module['id'];
+		}
+		$tblist = $this->db->list_tables();
+		if(!in_array($table,$tblist)){
+			return false;
+		}
+		$fields = $this->db->list_fields($table);
+		if(!in_array($rs['identifier'],$fields)){
+			return false;
+		}
+		//删除字段信息
+		$this->db->delete_table_fields($table,$rs['identifier']);
 	}
 
-	public function groups()
-	{
-		if(file_exists($this->dir_data.'xml/fields-group.xml')){
-			return $this->lib('xml')->read($this->dir_data.'xml/fields-group.xml',true);
-		}
-		return array('main'=>'主层','ext'=>'扩展层');
-	}
 }

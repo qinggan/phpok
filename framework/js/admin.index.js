@@ -327,6 +327,19 @@
 				}
 			})
 		},
+		download_table:function(){
+			$.dialog.confirm('确定要从远程中更新码表信息吗？',function(){
+				var url = get_url('index','download_table');
+				var t = $.dialog.tips('正在下载中，请稍候…',100000).lock();
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						t.content(rs.info).time(2);
+						return false;
+					}
+					t.content('下载成功，请重新检测').time(2);
+				});
+			});
+		},
 		checking:function()
 		{
 			var self = this;
@@ -340,11 +353,11 @@
 				$("#folderlist").html("");
 				$("#total_html").hide();
 				$("#rslist").html('');
-				obj = $.dialog.tips("正在检测中，请稍候…",10000000).lock();
-				self.loading();
+				var obj_tip = $.dialog.tips("正在检测中，请稍候…",10000000);
+				self.loading(obj_tip);
 			});
 		},
-		loading:function()
+		loading:function(obj)
 		{
 			var self = this;
 			var url = get_url("index","getlist");
@@ -383,7 +396,7 @@
 					$("#rslist").append(html);
 				}
 				if(list.length>0){
-					self.loading();
+					self.loading(obj);
 				}else{
 					obj.content("检测完成，请查阅").time(2);
 				}
@@ -426,6 +439,14 @@
 				$("tr[data-ext="+list[i]+"]").remove();
 			}
 			return true;
+		},
+		showgroup:function(id,title)
+		{
+			$.dialog({
+				"title":title,
+				"content":document.getElementById("groups-"+id),
+				"lock":true
+			});
 		}
 	}
 })(jQuery);

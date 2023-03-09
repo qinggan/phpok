@@ -1,7 +1,6 @@
 <?php
 /**
  * 购物车相关全局操作
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -86,6 +85,7 @@ class cart_model_base extends phpok_model
 				return false;
 			}
 		}
+		$cart_rs = $this->cart_one($cart_id);
 		if($condition){
 			if(is_numeric($condition)){
 				$condition = "id='".$condition."'";
@@ -106,6 +106,12 @@ class cart_model_base extends phpok_model
 		foreach($rslist as $key=>$value){
 			if($value['ext']){
 				$value['_attrlist'] = $this->product_ext_to_array($value['ext'],$value['tid']);
+			}
+			$value['price_total'] = $value['price'] * $value['qty'];
+			if($value['apps']){
+				$this->data("cart_product",$value);
+				$this->node("cart_product_show");
+				$value = $this->data('cart_product');
 			}
 			if($value['parent_id']){
 				$sublist[$value['parent_id']][] = $value;
@@ -177,12 +183,17 @@ class cart_model_base extends phpok_model
 		if($qty < 1){
 			$qty = 1;
 		}
-		$sql = "UPDATE ".$this->db->prefix."cart_product SET qty='".$qty."' WHERE id='".$id."'";
-		$this->db->query($sql);
 		$rs = $this->get_one($id);
-		if($rs){
-			$this->update_cart_time($rs['cart_id']);
+		if($rs['tid']){
+			$info = $this->model('content')->price($rs['tid'],$rs['ext'],$qty);
+			$price = $info['price'];
+		}else{
+			$price = $rs['price'];
 		}
+		
+		$sql = "UPDATE ".$this->db->prefix."cart_product SET qty='".$qty."',price='".$price."' WHERE id='".$id."'";
+		$this->db->query($sql);
+		$this->update_cart_time($rs['cart_id']);
 		return true;
 	}
 
@@ -385,10 +396,9 @@ class cart_model_base extends phpok_model
 		if(!$tid){
 			return explode(",",$data);
 		}
-		$sql = "SELECT a.title,v.title content,v.val FROM ".$this->db->prefix."list_attr l ";
-		$sql.= "LEFT JOIN ".$this->db->prefix."attr a ON(l.aid=a.id AND a.site_id=".$this->site_id.") ";
-		$sql.= "LEFT JOIN ".$this->db->prefix."attr_values v ON(l.vid=v.id AND l.aid=v.aid) ";
-		$sql.= "WHERE l.tid='".$tid."' AND l.id IN(".$data.") ";
+		$sql  = " SELECT a.title,v.title content,v.val FROM ".$this->db->prefix."attr_values v ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."attr a ON(v.aid=a.id) WHERE v.id IN(".$data.") ";
+		$sql .= " ORDER BY v.taxis ASC";
 		return $this->db->get_all($sql);
 	}
 
@@ -411,7 +421,6 @@ class cart_model_base extends phpok_model
 		if(is_string($check)){
 			$check = $this->product_ext_to_array($check);
 		}
-		$status = false;
 		$diff1 = array_diff($data,$check);
 		$diff2 = array_diff($check,$data);
 		if($diff1 || $diff2){

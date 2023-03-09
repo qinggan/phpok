@@ -25,16 +25,7 @@ class reply_model_base extends phpok_model
 	**/
 	public function get_all($condition="",$offset=0,$psize=30)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."reply ";
-		if($condition){
-			$sql.= " WHERE ".$condition;
-		}
-		$sql .= " ORDER BY addtime DESC,id DESC ";
-		if($psize && $psize>0){
-			$offset = intval($offset);
-			$sql.= " LIMIT ".$offset.",".$psize;
-		}
-		return $this->db->get_all($sql,"id");
+		return $this->get_list($condition,$offset,$psize);
 	}
 
 	/**
@@ -75,36 +66,136 @@ class reply_model_base extends phpok_model
 	public function get_list($condition="",$offset=0,$psize=30,$orderby="")
 	{
 		if(!$orderby){
-			$orderby = 'addtime ASC,id DESC';
+			$orderby = 'r.addtime DESC,r.id DESC';
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."reply WHERE ".$condition." ORDER BY ".$orderby;
+		$sql  = " SELECT r.*,u.user,u.avatar FROM ".$this->db->prefix."reply r";
+		$sql .= " LEFT JOIN ".$this->db->prefix."user u ON(r.uid=u.id) ";
+		$sql .= " WHERE ".$condition." ORDER BY ".$orderby;
 		if($psize && intval($psize)){
 			$offset = intval($offset);
 			$sql .= " LIMIT ".$offset.",".$psize;
 		}
-		$rslist = $this->db->get_all($sql,'id');
-		if(!$rslist){
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
 			return false;
 		}
-		$rslist = $this->_reply($rslist);
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$value['avatar'] = isset($value['avatar']) ? $value['avatar'] : 'images/avatar.gif';
+			$value['user'] = isset($value['user']) ? $value['user'] : P_Lang('游客');
+			$rslist[$value['id']] = $value;
+		}
+		$rslist = $this->_admin_reply($rslist);
 		$rslist = $this->_res($rslist,true);
+		$rslist = $this->_users($rslist);
 		return $rslist;
 	}
 
-	protected function _reply($rslist)
+	/**
+	 * 分组读取子主题数据
+	 * @参数 $ids 父级ID
+	 * @参数 $condition 查询条件
+	 * @参数 $offset 开始位置
+	 * @参数 $psize 每组查询个数
+	**/
+	public function group_parent_list($ids,$condition="",$offset=0,$psize=30)
 	{
-		$ids = array_keys($rslist);
-		$ids = implode(",",$ids);
+		$ids = $this->_ids($ids,true);
+		if(!$ids){
+			return false;
+		}
+		$sqlist = array();
+		foreach($ids as $key=>$value){
+			$sql  = " SELECT r.*,u.user,u.avatar FROM ".$this->db->prefix."reply r";
+			$sql .= " LEFT JOIN ".$this->db->prefix."user u ON(r.uid=u.id) ";
+			$sql .= " WHERE r.parent_id='".$value."'";
+			if($condition){
+				$sql .= " AND ".$condition." ";
+			}
+			$sql .= " ORDER BY r.id DESC ";
+			if($psize && intval($psize)){
+				$offset = intval($offset);
+				$sql .= " LIMIT ".$offset.",".$psize;
+			}
+			$sqlist[] = "(".$sql.")";
+		}
+		$sql = implode(" UNION ALL ",$sqlist);
+		$dlist = $this->db->get_all($sql);
+		if(!$dlist){
+			return false;
+		}
+		$tmplist = array();
+		foreach($dlist as $key=>$value){
+			$value['avatar'] = isset($value['avatar']) ? $value['avatar'] : 'images/avatar.gif';
+			$value['user'] = isset($value['user']) ? $value['user'] : P_Lang('游客');
+			$tmplist[$value['id']] = $value;
+		}
+		$tmplist = $this->_admin_reply($tmplist);
+		$tmplist = $this->_res($tmplist);
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			if(!isset($rslist[$value['parent_id']])){
+				$rslist[$value['parent_id']] = array();
+			}
+			$rslist[$value['parent_id']][] = $value;
+		}
+		return $rslist;
+	}
+
+	protected function _admin_reply($rslist)
+	{
+		$ids = array();
+		foreach($rslist as $key=>$value){
+			$ids[] = $value['id'];
+		}
+		$ids = $this->_ids($ids);
 		$sql = "SELECT id,content,addtime,admin_id,parent_id FROM ".$this->db->prefix."reply WHERE parent_id IN(".$ids.") AND admin_id>0 ORDER BY addtime ASC,id ASC";
 		$tmplist = $this->db->get_all($sql);
 		if(!$tmplist){
 			return $rslist;
 		}
 		foreach($tmplist as $key=>$value){
-			if(!$rslist[$value['parent_id']]['adm_reply']){
+			if(!isset($rslist[$value['parent_id']]['adm_reply'])){
 				$rslist[$value['parent_id']]['adm_reply'] = array();
 			}
 			$rslist[$value['parent_id']]['adm_reply'][] = $value;
+		}
+		return $rslist;
+	}
+
+	protected function _users($rslist,$ext=false)
+	{
+		$ids = array();
+		foreach($rslist as $key=>$value){
+			if($value['uid']){
+				$ids[] = $value['uid'];
+			}
+		}
+		if(!$ids){
+			return $rslist;
+		}
+		$ids = $this->_ids($ids);
+		if(!$ids){
+			return $rslist;
+		}
+		$condition = "u.status=1 AND u.id IN(".$ids.")";
+		$tmplist = $this->model('user')->get_list($condition,0,0);
+		if(!$tmplist){
+			return $rslist;
+		}
+		$userlist = array();
+		foreach($tmplist as $key=>$value){
+			if(!$value['avatar']){
+				$value['avatar'] = 'images/avatar.gif';
+			}
+			$userlist[$value['id']] = $value;
+		}
+		foreach($rslist as $key=>$value){
+			$value['userinfo'] = array();
+			if(isset($userlist[$value['uid']])){
+				$value['userinfo'] = $userlist[$value['uid']];
+			}
+			$rslist[$key] = $value;
 		}
 		return $rslist;
 	}
@@ -124,10 +215,10 @@ class reply_model_base extends phpok_model
 		if(!$ids){
 			return $rslist;
 		}
-		$ids = implode(",",$ids);
-		$list = explode(",",$ids);
-		$list = array_unique($list);
-		$ids = implode(",",$list);
+		$ids = $this->_ids($ids);
+		if(!$ids){
+			return $rslist;
+		}
 		$reslist = $this->model('res')->get_list_from_id($ids,$ext);
 		if(!$reslist){
 			return $rslist;
@@ -136,17 +227,31 @@ class reply_model_base extends phpok_model
 			if(!$value['res']){
 				continue;
 			}
-			$tmp = explode(",",$value['res']);
+			$tmp = $this->_ids($value['res'],true);
 			$tmplist = array();
 			foreach($tmp as $k=>$v){
-				if($v && $reslist[$v]){
+				if(isset($reslist[$v])){
 					$tmplist[$v] = $reslist[$v];
 				}
 			}
-			$value['res'] = $tmplist;
+			$mylist = array();
+			foreach($tmplist as $k=>$v){
+				$v['full_thumb'] = $this->_pic2link($v['ico']);
+				$v['full_link'] = ($v['gd'] && $v['gd']['auto']) ? $this->_pic2link($v['gd']['auto']) : $this->_pic2link($v['filename']);
+				$mylist[] = $v;
+			}
+			$value['res'] = $mylist;
 			$rslist[$key] = $value;
 		}
 		return $rslist;
+	}
+
+	private function _pic2link($url)
+	{
+		if(substr($url,0,7) == 'http://' || substr($url,0,8) == 'https://'){
+			return $url;
+		}
+		return $this->config['url'].$url;
 	}
 
 	/**
@@ -155,11 +260,113 @@ class reply_model_base extends phpok_model
 	**/
 	public function get_total($condition="")
 	{
-		$sql = "SELECT count(id) FROM ".$this->db->prefix."reply";
+		$sql  = "SELECT count(r.id) FROM ".$this->db->prefix."reply r ";
 		if($condition){
 			$sql .= " WHERE ".$condition;
 		}
 		return $this->db->count($sql);
+	}
+
+	/**
+	 * 分组统计主题下的回复数量
+	 * @参数 $ids 要查询的主题ID
+	 * @参数 $condition 查询条件
+	 * @返回 成功返回数组，失败返回 false 
+	**/
+	public function group_tid_total($ids,$condition='')
+	{
+		if(!$ids){
+			return false;
+		}
+		$sql  = "SELECT count(r.id) total,r.tid FROM ".$this->db->prefix."reply r ";
+		$sql .= "WHERE r.tid IN(".$ids.") ";
+		if($condition){
+			$sql .= " AND ".$condition;
+		}
+		$sql .= " GROUP BY tid";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$rslist[$value['tid']] = $value['total'];
+		}
+		return $rslist;
+	}
+
+	/**
+	 * 分组统计父组下的回复数量
+	 * @参数 $ids 要查询的父级ID
+	 * @参数 $condition 查询条件
+	 * @参数 $is_sub 是否包括所有子回复，默认是
+	**/
+	public function group_parent_total($ids,$condition='',$is_sub=true)
+	{
+		$ids = $this->_ids($ids,true);
+		if(!$ids){
+			return false;
+		}
+		if(!$is_sub){
+			$ids = $this->_ids($ids,false);
+			$sql  = "SELECT count(r.id) total,r.parent_id FROM ".$this->db->prefix."reply r ";
+			$sql .= "WHERE r.parent_id IN(".$ids.") ";
+			if($condition){
+				$sql .= " AND ".$condition;
+			}
+			$sql .= " GROUP BY r.parent_id";
+			$tmplist = $this->db->get_all($sql);
+			if(!$tmplist){
+				return false;
+			}
+			$rslist = array();
+			foreach($tmplist as $key=>$value){
+				$rslist[$value['parent_id']] = $value['total'];
+			}
+			return $rslist;
+		}
+		$sqlist = array();
+		foreach($ids as $key=>$value){
+			$tmp = array($value);
+			$this->_sub_id($tmp,$value);
+			$sub_condition = " r.parent_id IN(".implode(",",$tmp).") AND r.admin_id<1 ";
+			if($condition){
+				$sub_condition .= " AND ".$condition." ";
+			}
+			$sql  = "SELECT count(r.id) total,".$value." as pid FROM ".$this->db->prefix."reply r ";
+			$sql .= " WHERE ".$sub_condition;
+			$sqlist[] = $sql;
+		}
+		$sql = implode(" UNION ",$sqlist);
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$rslist[$value['pid']] = isset($value['total']) ? $value['total'] : 0;
+		}
+		return $rslist;
+	}
+
+	private function _sub_id(&$ids,$parent_id=0,$count=10)
+	{
+		if($count<1){
+			return true;
+		}
+		$parent_id = $this->_ids($parent_id);
+		$sql = "SELECT id FROM ".$this->db->prefix."reply WHERE parent_id IN(".$parent_id.")";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$n_ids = array();
+		foreach($tmplist as $key=>$value){
+			$ids[] = $value['id'];
+			$n_ids[] = $value['id'];
+		}
+		$count--;
+		$this->_sub_id($ids,$n_ids,$count);
 	}
 
 	/**
@@ -185,21 +392,22 @@ class reply_model_base extends phpok_model
 	**/
 	public function delete($id)
 	{
+		$id = $this->_ids($id,true);
 		if(!$id){
 			return false;
 		}
-		$rs = $this->get_one($id);
-		if($rs){
-			$sql = "DELETE FROM ".$this->db->prefix."reply WHERE id='".$id."' OR parent_id='".$id."'";
-			$this->db->query($sql);
-			$sql = "SELECT id,addtime FROM ".$this->db->prefix."reply WHERE tid='".$rs['tid']."' ORDER BY id DESC LIMIT 1";
-			$tmp = $this->db->get_one($sql);
-			$sql = "UPDATE ".$this->db->prefix."list SET replydate=0 WHERE id='".$rs['tid']."'";
-			if($tmp){
-				$sql = "UPDATE ".$this->db->prefix."list SET replydate='".$tmp['addtime']."' WHERE id='".$rs['tid']."'";
-			}
-			$this->db->query($sql);
+		$all_ids = array();
+		foreach($id as $key=>$value){
+			$ids = array($value);
+			$this->_sub_id($ids,$value);
+			$all_ids = array_merge($ids,$all_ids);
 		}
+		if(!$all_ids || count($all_ids)<1){
+			return false;
+		}
+		$id_string = $this->_ids($all_ids);
+		$sql = "DELETE FROM ".$this->db->prefix."reply WHERE id IN(".$id_string.")";
+		$this->db->query($sql);
 		return true;
 	}
 
@@ -209,8 +417,22 @@ class reply_model_base extends phpok_model
 	**/
 	public function get_one($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."reply WHERE id='".$id."'";
-		return $this->db->get_one($sql);
+		$sql  = " SELECT r.*,u.user,u.avatar FROM ".$this->db->prefix."reply r";
+		$sql .= " LEFT JOIN ".$this->db->prefix."user u ON(r.uid=u.id) ";
+		$sql .= " WHERE r.id='".$id."' ";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$value['avatar'] = isset($value['avatar']) ? $value['avatar'] : 'images/avatar.gif';
+			$value['user'] = isset($value['user']) ? $value['user'] : P_Lang('游客');
+			$rslist[$value['id']] = $value;
+		}
+		$rslist = $this->_admin_reply($rslist);
+		$rslist = $this->_res($rslist,true);
+		return current($rslist);
 	}
 
 	/**

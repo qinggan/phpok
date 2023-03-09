@@ -101,6 +101,7 @@ class db_pdo_mysql extends db
 
 	public function query($sql,$loadcache=true)
 	{
+		$this->checkquery($sql);
 		$this->check_connect();
 		$this->_time();
 		$this->query = $this->conn->query($sql);

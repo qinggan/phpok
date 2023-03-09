@@ -1,5 +1,5 @@
 /**
- * 阿里云点播上传
+ * 腾迅云点播
  * @作者 苏相锟 <admin@phpok.com>
  * @主页 https://www.phpok.com
  * @版本 5.x

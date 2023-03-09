@@ -1,14 +1,15 @@
-<!-- include tpl=head_lay nopadding=true -->
+<!-- include tpl=head_lay -->
 <script type="text/javascript" src="{url ctrl=js func=ext js=admin.reply.js/}"></script>
 <div class="layui-card">
 	<div class="layui-card-body">
 		<table class="layui-table">
 		<thead>
 		<tr>
-			<th>ID</th>
+			<th colspan="2">ID</th>
 			<th width="20"></th>
 			<th>{lang星数}</th>
-			<th>{lang内容}</th>
+			<th>{lang主题}</th>
+			<th>{lang快评}</th>
 			<th>{lang图片}</th>
 			<th>{lang时间}</th>
 			<th width="160"></th>
@@ -17,6 +18,9 @@
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<tr data-id="replylist_{$value.id}">
 			<td>{$value.id}</td>
+			<td>
+				<input type="checkbox" class="ids" name="id[]" value="{$value.id}" />
+			</td>
 			<td>
 				<span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="$.admin_reply.status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span>
 			</td>
@@ -28,25 +32,54 @@
 				<!-- if $value.star == 5 --><div class="layui-tips" lay-tips="{lang五星}">★★★★★</div><!-- /if -->
 			</td>
 			<td>
-				<div>{$value.content}</div>
+				<div><!-- if $value.vtype == 'title' -->
+				[{lang主题}]
+				<a href="{$sys.www_file}?id={$value.tid}" target="_blank">{$value.title}</a>
+				<!-- else -->
+					<!-- if $value.vtype == 'project' -->[{lang项目}]<!-- /if -->
+					<!-- if $value.vtype == 'cate' -->[{lang分类}]<!-- /if -->
+					<!-- if $value.vtype == 'order' -->[{lang订单}]<!-- /if -->
+					{$value.title}
+				<!-- /if -->
+				<!-- if $value.parent_id --><span class="red">[{lang引用}]</span><!-- /if -->
+				</div>
+				<div>[{lang内容}] {func phpok_cut $value.content 150 …}</div>
 			</td>
 			<td>
-				<!-- loop from=$value.res key=$k value=$v id=$idxx -->
-				<img src="{$v.ico}" width="60px" class="hand" onclick="$.admin_reply.preview_attr({$v.id})" />
+				<!-- loop from=$value.click_list key=$k value=$v id=$idxx -->
+				<div style="margin-bottom:5px;white-space: nowrap;">{$v.title} <small>({$v.total})</small></div>
 				<!-- /loop -->
+			</td>
+			<td>
+				<div class="layui-row">
+					<!-- loop from=$value.res key=$k value=$v id=$idxx -->
+					<div class="layui-col-sm6">
+						<img src="{$v.ico}" width="100%" class="hand" onclick="$.admin_reply.preview_attr({$v.id})" />
+					</div>
+					<!-- /loop -->
+				</div>
+				
 			</td>
 			<td>{func date 'Y-m-d H:i:s' $value.addtime}</td>
 			<td>
+				<div>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang新回复}" onclick="$.admin_reply.adm({$value.id})" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang管理员回复}" onclick="$.admin_reply.adm({$value.id})" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang用户回复}" onclick="$.admin_reply.sublist({$value.id})" class="layui-btn layui-btn-sm" />
+				</div>
+				</div>
+				<div style="margin-top:10px;">
+				<div class="layui-btn-group">
 					<input type="button" value="{lang修改}" onclick="$.admin_reply.edit({$value.id})" class="layui-btn layui-btn-sm" />
 					<input type="button" value="{lang删除}" onclick="$.admin_reply.del({$value.id})" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
 				</div>
 			</td>
 		</tr>
 		<!-- loop from=$value.adm_reply key=$k value=$v id=$idxx -->
 		<tr data-id="replylist_{$value.id}" id="adm_reply_{$v.id}">
-			<td colspan="6">
+			<td>-</td>
+			<td colspan="7">
 				<span class="red">{lang管理员回复} - {$idxx.num}</span>
 				<small class="gray">{lang回复时间} {func date 'Y-m-d H:i:s' $value.addtime}</small>
 				{$v.content}
@@ -60,6 +93,22 @@
 		<!-- /loop -->
 		<!-- /loop -->
 		</table>
+		<ul class="layout">
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.all()" />
+					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.none()" />
+					<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.anti()" />
+				</div>
+			</li>
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang通过审核}" class="layui-btn layui-btn-sm" onclick="$.admin_reply.status_pl(1)" />
+					<input type="button" value="{lang取消审核}" class="layui-btn layui-btn-warm layui-btn-sm" onclick="$.admin_reply.status_pl(0)" />
+					<input type="button" value="{lang删除}" class="layui-btn layui-btn-danger layui-btn-sm" onclick="$.admin_reply.delete_pl()" />
+				</div>
+			</li>
+		</ul>
 		<div class="center"><!-- include tpl=pagelist --></div>
 	</div>
 </div>

@@ -13,125 +13,132 @@ class ext_lib
 	var $app;
 	//连接数据库类
 	var $db;
-	function __construct()
+	public function __construct()
 	{
 		//
 	}
 
-	function title_list($id)
+	public function title_list($id)
 	{
-		$id = $this->safe_format($id);
-		if(!$id) return false;
+		if(!$id){
+			return false;
+		}
+		$list = explode(",",$id);
+		$tmp = array();
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if($value){
+				$tmp[] = $value;
+			}
+		}
+		$id = implode(",",$tmp);
+		if(!$id){
+			return false;
+		}
 		$sql = "SELECT l.* FROM ".$GLOBALS['app']->db->prefix."list l ";
-		//$sql.= "JOIN ".$GLOBALS['app']->db->prefix."id id ON(l.id=id.id AND id.type_id='content' AND l.site_id=id.site_id) ";
 		$sql.= "WHERE l.id IN(".$id.") ORDER BY SUBSTRING_INDEX('".$id."',l.id,1)";
 		$rslist = $GLOBALS['app']->db->get_all($sql,"id");
 		if(!$rslist) return false;
 		//获取模块列表
 		$id_list = $mid_list = $cid_list = array();
-		foreach($rslist AS $key=>$value)
-		{
+		foreach($rslist as $key=>$value){
 			$mid_list[$value["module_id"]] = $value["module_id"];
 			$cid_list[$value["cate_id"]] = $value["cate_id"];
 			$id_list[$value["module_id"]][$value["id"]] = $value["id"];
 		}
-		foreach($mid_list AS $key=>$value)
-		{
+		foreach($mid_list as $key=>$value){
 			$m_rs = $this->module_fields($value);
-			if($m_rs)
-			{
-				$idstring = implode(",",$id_list[$value]);
-				$extlist = $this->title_ext($idstring,$value,true);
-				if(!$extlist) $extlist = array();
-				foreach($extlist AS $k=>$v)
-				{
-					unset($v["cate_id"],$v["project_id"],$v["site_id"]);
-					foreach($m_rs AS $kk=>$vv)
-					{
-						$content = $v[$vv["identifier"]];
-						if($content)
-						{
-							//if(strlen($content)>255) $content = phpok_cut($content,255,"……");
-							$content = $this->content_format($vv,$content);
-							$v[$vv["identifier"]] = $content;
-						}
-					}
-					//合并主题
-					$rslist[$v["id"]] = array_merge($rslist[$v["id"]],$v);
-				}
-				unset($extlist);
+			if(!$m_rs){
+				continue;
 			}
+			$idstring = implode(",",$id_list[$value]);
+			$extlist = $this->title_ext($idstring,$value,true);
+			if(!$extlist){
+				continue;
+			}
+			foreach($extlist as $k=>$v){
+				unset($v["cate_id"],$v["project_id"],$v["site_id"]);
+				foreach($m_rs as $kk=>$vv){
+					$content = $v[$vv["identifier"]];
+					if($content == ''){
+						continue;
+					}
+					$content = $this->content_format($vv,$content);
+					$v[$vv["identifier"]] = $content;
+				}
+				$rslist[$v["id"]] = array_merge($rslist[$v["id"]],$v);
+			}
+			unset($extlist);
 		}
 		//获取分类相关信息
-		if(count($cid_list)>0)
-		{
+		if(count($cid_list)>0){
 			$cate_string = implode(",",$cid_list);
 			$catelist = $this->cate_list($cate_string);
-			foreach($rslist AS $key=>$value)
-			{
-				if($value["cate_id"])
-				{
+			foreach($rslist as $key=>$value){
+				if($value["cate_id"]){
 					$value["cate_id"] = $catelist[$value["cate_id"]];
 					$rslist[$key] = $value;
 				}
 			}
 		}
-		if($rslist && count($rslist)>0)
-		{
+		if($rslist && count($rslist)>0){
 			return $rslist;
 		}
 		return false;
 	}
 
 	//取得项目的单个主题信息
-	function title_info($id)
+	public function title_info($id)
 	{
-		if(!$id) return false;
+		if(!$id || !intval($id)){
+			return false;
+		}
+		$id = intval($id);
 		$sql = "SELECT l.*,id.phpok identifier FROM ".$GLOBALS['app']->db->prefix."list l ";
 		$sql.= "JOIN ".$GLOBALS['app']->db->prefix."id id ON(l.id=id.id AND l.site_id=id.site_id AND id.type_id='content')";
 		$sql.= " WHERE l.id='".$id."'";
 		$rs = $GLOBALS['app']->db->get_one($sql);
-		if(!$rs) return false;
-		if($rs["module_id"])
-		{
-			$mid = $rs["module_id"];
-			$flist = $this->module_fields($mid);
-			$ext_rs = $this->title_ext($id,$mid,false);
-			if($ext_rs && $flist)
-			{
-				foreach($flist AS $key=>$value)
-				{
-					$content = $ext_rs[$value["identifier"]];
-					if($content)
-					{
-						$content = $this->content_format($value,$content);
-						$rs[$value["identifier"]] = $content;
-					}
+		if(!$rs){
+			return false;
+		}
+		if(!$rs['module_id']){
+			return $rs;
+		}
+		$mid = $rs["module_id"];
+		$flist = $this->module_fields($mid);
+		$ext_rs = $this->title_ext($id,$mid,false);
+		if($ext_rs && $flist){
+			foreach($flist as $key=>$value){
+				$content = $ext_rs[$value["identifier"]];
+				if($content == ''){
+					continue;
 				}
-				unset($ext_rs,$flist);
+				$content = $this->content_format($value,$content);
+				$rs[$value["identifier"]] = $content;
 			}
+			unset($ext_rs,$flist);
 		}
 		return $rs;
 	}
 
-	function title_ext($id,$mid,$islist=false)
+	public function title_ext($id,$mid,$islist=false)
 	{
-		if(!$id || !$mid) return false;
+		if(!$id || !$mid){
+			return false;
+		}
 		$sql = "SELECT * FROM ".$GLOBALS['app']->db->prefix."list_".$mid." WHERE id IN(".$id.") ORDER BY SUBSTRING_INDEX('".$id."',id,1)";
 		$rslist = $GLOBALS['app']->db->get_all($sql,"id");
-		if(!$rslist) return false;
-		if($islist)
-		{
+		if(!$rslist){
+			return false;
+		}
+		if($islist){
 			return $rslist;
 		}
-		else
-		{
-			return $rslist[$id];
-		}
+		return $rslist[$id];
 	}
 
 	//取得附件列表
-	function res_list($id)
+	public function res_list($id)
 	{
 		$id = $this->safe_format($id);
 		if(!$id){
@@ -141,7 +148,7 @@ class ext_lib
 	}
 
 	//取得单个附件信息
-	function res_info($id)
+	public function res_info($id)
 	{
 		if(!$id){
 			return false;
@@ -150,28 +157,27 @@ class ext_lib
 	}
 
 	//取得用户列表
-	function user_list($id)
+	public function user_list($id)
 	{
 		$id = $this->safe_format($id);
-		if(!$id) return false;
+		if(!$id){
+			return false;
+		}
 		$idlist = explode(",",$id);
 		$rslist = array();
-		foreach($idlist AS $key=>$value)
-		{
+		foreach($idlist as $key=>$value){
 			$rs = $this->user_info($value);
-			if($rs)
-			{
+			if($rs){
 				$rslist[] = $rs;
 			}
 		}
-		if($rslist && count($rslist)>0)
-		{
+		if($rslist && count($rslist)>0){
 			return $rslist;
 		}
 		return false;
 	}
 
-	function user_info($id)
+	public function user_info($id)
 	{
 		if(!$id) return false;
 		$sql = "SELECT * FROM ".$GLOBALS['app']->db->prefix."user WHERE id='".$id."'";
@@ -227,11 +233,12 @@ class ext_lib
 		if(!$idlist){
 			$idlist = array();
 		}
-		$rslist = false;
-		foreach($idlist AS $key=>$value)
-		{
+		$rslist = array();
+		foreach($idlist as $key=>$value){
 			$rs = $this->opt_info($value,$gid,0);
-			if($rs) $rslist[] = $rs;
+			if($rs){
+				$rslist[] = $rs;
+			}
 		}
 		return $rslist;
 	}

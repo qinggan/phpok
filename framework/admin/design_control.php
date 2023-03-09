@@ -40,6 +40,22 @@ class design_control extends phpok_control
 		$this->view('design_code');
 	}
 
+	public function component_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$val = $this->get('val','system');
+		if($val){
+			$this->assign('val',$val);
+		}
+		$this->assign('id',$id);
+		$rslist = $this->model('design')->get_all();
+		$this->assign('rslist',$rslist);
+		$this->view('design_component');
+	}
+
 	public function content_f()
 	{
 		$id = $this->get('id');
@@ -49,15 +65,15 @@ class design_control extends phpok_control
 		$this->assign('id',$id);
 		$type = $this->get('type');
 		if(!$type){
-			$type = 'textarea';
+			$this->error('未指定类型');
 		}
 		$this->assign('type',$type);
 		if($type == 'editor'){
-			$content_html = form_edit('content','','editor','height=320');
+			$content_html = form_edit('content','','editor','height=350&auto_height=1');
 			$this->assign('content_html',$content_html);
 		}
 		if($type == 'code'){
-			$content_html = form_edit('content','','code_editor','height=420&width=720');
+			$content_html = form_edit('content','','code_editor','height=450&width=720');
 			$this->assign('content_html',$content_html);
 		}
 		if($type == 'image'){
@@ -77,24 +93,133 @@ class design_control extends phpok_control
 				}
 				$this->assign('rslist',$rslist);
 			}
-			$glist = array();
-			//读取模板记录
-			$syslist = $this->model('design')->tplist($this->dir_data.'design/');
-			if($syslist){
-				$tmp = array('title'=>'系统','rslist'=>$syslist);
-				$glist[] = $tmp;
-			}
-			if($this->site && $this->site['tpl_id']){
-				$tpl_rs = $this->model('tpl')->get_one($this->site['tpl_id']);
-				$wwwlist = $this->model('design')->tplist($this->dir_root.'tpl/'.$tpl_rs['folder'].'/design/');
-				if($wwwlist){
-					$tmp = array('title'=>$tpl_rs['title'],'rslist'=>$wwwlist);
-					$glist[] = $tmp;
-				}
-			}
-			$this->assign('tplist',$glist);
 		}
 		$this->view('design_content');
+	}
+
+	public function delete_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error('仅限超级管理员有权限操作');
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$this->model('design')->delete($id);
+		$this->success();
+	}
+
+	public function list_f()
+	{
+		$rslist = $this->model('design')->get_all();
+		$this->assign('rslist',$rslist);
+		$this->view('design_list');
+	}
+
+	public function set_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error('仅限超级管理员有权限操作');
+		}
+		$id = $this->get('id','int');
+		if($id){
+			$rs = $this->model('design')->get_one($id);
+			$this->assign('rs',$rs);
+			$this->assign('id',$id);
+			$code = $rs['code'] ? $rs['code'] : $rs['id'];
+			$content = $this->model('design')->content($code);
+			$content_html = form_edit('content',$content,'code_editor','height=450&width=720');
+		}else{
+			$content_html = form_edit('content','','code_editor','height=450&width=720');
+		}
+		$this->assign('content_html',$content_html);
+		$typelist = $this->model('design')->typelist();
+		$this->assign('typelist',$typelist);
+
+		//数据调用中心
+		$datalist = $this->model('call')->get_list('',0,9999);
+		if($datalist){
+			$typelist = $this->model('call')->types();
+			foreach($datalist as $key => $value){
+				$value['typename'] = $typelist[$value['type_id']] ? $typelist[$value['type_id']]['title'] : $value['type_id'];
+				$datalist[$key] = $value;
+			}
+			$this->assign('datalist',$datalist);
+		}
+		//图片
+		$res_id = ($rs && $rs['ext'] && $rs['ext']['res_id']) ? $rs['ext']['res_id'] : 0;
+		$content_html = form_edit('res_id',$res_id,'upload');
+		$this->assign('image_content_html',$content_html);
+
+		$this->view('design_set');
+	}
+
+	public function save_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error('仅限超级管理员有权限操作');
+		}
+		$id = $this->get('id','int');
+		$data = array();
+		$code = $this->get('code','system');
+		if(!$code){
+			$this->error(P_Lang('未指定编码'));
+		}
+		if($code == 'preview'){
+			$this->error(P_Lang('不支持使用 preview 标识符'));
+		}
+		$chk = $this->model('design')->code_check($code,$id);
+		if($chk){
+			$this->error(P_Lang('代码已存在，请检查'));
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->error(P_Lang('未指定组件名称'));
+		}
+		$note = $this->get('note');
+		$img = $this->get('img');
+		$vtype = $this->get('vtype');
+		if(!$vtype){
+			$this->error(P_Lang('未指定数据源'));
+		}
+		$data = array('code'=>$code,'title'=>$title,'note'=>$note,'img'=>$img);
+		$data['vtype'] = $vtype;
+		$data['ext'] = $this->get('ext');
+		$data['ext']['res_id'] = $this->get('res_id');
+		$content = $this->get('content','html_js');
+		$is_content_list = array('calldata','code','editor','textarea');
+		if($id){
+			$old = $this->model('design')->get_one($id);
+			$act = $this->model('design')->save($data,$id);
+			if($act && in_array($vtype,$is_content_list)){
+				$this->model('design')->content($code,$content,$old['code']);
+			}
+			$this->success();
+		}
+		$id = $this->model('design')->save($data);
+		if(!$id){
+			$this->error(P_Lang('保存失败，请检查'));
+		}
+		if(in_array($vtype,$is_content_list)){
+			$this->model('design')->content($code,$content);
+		}
+		$this->success($id);
+	}
+
+	public function style_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error('未指定层');
+		}
+		$this->assign('id',$id);
+		$this->addjs('js/jscolor/jscolor.js');
+		$inlist = $this->_in_style();
+		$this->assign("inlist",$inlist);
+		$outlist = $this->_out_style();
+		$this->assign("outlist",$outlist);
+		$this->view("design_style");
 	}
 
 	public function tpl_f()
@@ -130,16 +255,27 @@ class design_control extends phpok_control
 			$tplfile = $this->dir_root.$rs['tplfile'].'.html';
 			$content = $this->lib('file')->cat($tplfile);
 			$content_html = form_edit('content',$content,'code_editor','height=420&width=720');
-			
+
 			$this->assign('rs',$rs);
 		}else{
 			$content_html = form_edit('content','','code_editor','height=420&width=720');
 		}
-		
+
 		$this->assign('content_html',$content_html);
 		$this->assign('id',$id);
 		$this->assign('tplist',$glist);
 		$this->view("design_tpl");
+	}
+
+	public function tpl_content_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error('仅限超级管理员有权限操作');
+		}
+		$id = $this->get('id','system');
+		if(!$id){
+			$this->error('未指定模板ID');
+		}
 	}
 
 	public function tplsave_f()
@@ -147,9 +283,9 @@ class design_control extends phpok_control
 		if(!$this->session->val('admin_rs.if_system')){
 			$this->error('仅限超级管理员有权限操作');
 		}
-		$id = $this->get('id');
+		$id = $this->get('id','html');
 		if(!$id){
-			$id = $this->get('tplfile');
+			$id = $this->get('tplfile','html');
 		}
 		if(!$id){
 			$this->error('未指定要创建的文件');
@@ -188,21 +324,6 @@ class design_control extends phpok_control
 		$phpfile = $this->dir_root.$id.'.php';
 		$this->lib('file')->vi($data,$phpfile,'config');
 		$this->success();
-	}
-
-	public function style_f()
-	{
-		$id = $this->get('id');
-		if(!$id){
-			$this->error('未指定层');
-		}
-		$this->assign('id',$id);
-		$this->addjs('js/jscolor/jscolor.js');
-		$inlist = $this->_in_style();
-		$this->assign("inlist",$inlist);
-		$outlist = $this->_out_style();
-		$this->assign("outlist",$outlist);
-		$this->view("design_style");
 	}
 
 	public function tplfile_f()

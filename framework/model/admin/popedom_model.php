@@ -106,13 +106,13 @@ class popedom_model extends popedom_model_base
 			return false;
 		}
 		if(is_array($pid)){
-			$idlist = false;
+			$idlist = array();
 			foreach($pid as $key=>$value){
 				if($value && intval($value)){
 					$idlist[] = intval($value);
 				}
 			}
-			if(!$idlist){
+			if(!$idlist || count($idlist)<1){
 				return false;
 			}
 			$pid = implode(",",$idlist);

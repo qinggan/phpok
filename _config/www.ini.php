@@ -8,3 +8,4 @@ safe_homepage = 0
 ;首页安全参数，不符合这些参数的，直接报 404 错误
 get_params = 'uid,phpfile,siteId,_langid,_noCache,tdsourcetag'
 
+reserved = "index"

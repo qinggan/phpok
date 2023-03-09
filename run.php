@@ -15,46 +15,39 @@ if(!defined("PHPOK_SET")){
 }
 
 /**
- * 删除无用的 safecheck
- * 时间：2021年12月28日
+ * 变更fields的扩展字段存储方式
 **/
-$folder = $this->dir_app."safecheck";
-if(file_exists($folder)){
-	$this->lib('file')->rm($this->dir_app."safecheck",true);
-}
-$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE appfile='safecheck'";
-$rs = $this->db->get_one($sql);
-if($rs){
-	$sql = "DELETE FROM ".$this->db->prefix."popedom WHERE gid='".$rs['id']."'";
-	$this->db->query($sql);
-	$sql = "DELETE FROM ".$this->db->prefix."sysmenu WHERE id='".$rs['id']."'";
-	$this->db->query($sql);
-}
+$sql = "CREATE TABLE IF NOT EXISTS `".$this->db->prefix."fields_ext` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',`fields_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '扩展字段ID',`keyname` varchar(255) NOT NULL COMMENT '键名',`keydata` text NOT NULL COMMENT '键值',PRIMARY KEY (`id`),KEY `fields_id` (`fields_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='字段扩展表' AUTO_INCREMENT=1";
+$this->db->query($sql);
 
-/**
- * 检查财富表字段
-**/
-$fields = $this->db->list_fields('wealth');
-if(!in_array('banner',$fields)){
-	$sql = "ALTER TABLE ".$this->db->prefix."wealth ADD banner varchar(255) NOT NULL COMMENT '大图'";
+$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ext!=''";
+$tmplist = $this->db->get_all($sql);
+if($tmplist){
+	foreach($tmplist as $key=>$value){
+		$xmldata = unserialize($value['ext']);
+		$file = $this->dir_data.'xml/fields_'.$value['id'].'.xml';
+		$is_delete = false;
+		if(file_exists($file)){
+			$tmp = $this->lib('xml')->read($file);
+			if($tmp){
+				$xmldata = array_merge($xmldata,$tmp);
+			}
+			$is_delete = true;
+		}
+		$sql = "DELETE FROM ".$this->db->prefix."fields_ext WHERE fields_id='".$value['id']."'";
+		$this->db->query($sql);
+		foreach($xmldata as $k=>$v){
+			if($v && is_array($v)){
+				$v = serialize($v);
+			}
+			$array = array('fields_id'=>$value['id'],'keyname'=>$k,'keydata'=>$v);
+			$this->db->insert($array,'fields_ext');
+		}
+		//删除文件
+		if($is_delete){
+			$this->lib('file')->rm($file);
+		}
+	}
+	$sql = "UPDATE ".$this->db->prefix."fields SET ext=''";
 	$this->db->query($sql);
 }
-if(!in_array('thumb',$fields)){
-	$sql = "ALTER TABLE ".$this->db->prefix."wealth ADD thumb varchar(255) NOT NULL COMMENT '小图'";
-	$this->db->query($sql);
-}
-if(!in_array('iconfont',$fields)){
-	$sql = "ALTER TABLE ".$this->db->prefix."wealth ADD iconfont varchar(255) NOT NULL COMMENT '字体图标'";
-	$this->db->query($sql);
-}
-
-/**
- * 删除 user_autologin
- * 时间：2022年1月10日
-**/
-$tblist = $this->db->list_tables();
-if(in_array($this->db->prefix."user_autologin",$tblist)){
-	$sql = "DROP TABLE IF EXISTS ".$this->db->prefix."user_autologin";
-	$this->db->query($sql);
-}
-

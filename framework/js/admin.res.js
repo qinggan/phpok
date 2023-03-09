@@ -72,7 +72,9 @@
 			}
 			$.dialog.confirm(p_lang('确定要删除选中的附件吗？删除后是不可恢复的'),function(){
 				var url = get_url("res","delete_pl") + "&id="+$.str.encode(id);
+				var tip = $.dialog.tips("正在删除中，请稍候…",100).lock();
 				$.phpok.json(url,function(rs){
+					tip.close();
 					if(rs.status == 'ok'){
 						$.dialog.tips(p_lang('批量删除附件操作成功'),function(){
 							$.phpok.reload();
@@ -91,7 +93,9 @@
 		{
 			$.dialog.confirm(p_lang('确定要删除此附件吗？删除后不能恢复'),function(){
 				url = get_url('upload','delete','id='+id);
+				var tip = $.dialog.tips("正在删除中，请稍候…",100).lock();
 				$.phpok.json(url,function(rs){
+					tip.close();
 					if(rs.status == 'ok'){
 						$.dialog.tips(p_lang('附件删除成功'),function(){
 							$("#thumb_"+id).remove();

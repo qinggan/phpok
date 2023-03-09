@@ -30,6 +30,7 @@ class logout_control extends phpok_control
 		$this->session->unassign('user_id');
 		$this->session->unassign('user_gid');
 		$this->session->unassign('user_name');
+		$this->session->unassign('user_status');
 		$this->success();
 	}
 }

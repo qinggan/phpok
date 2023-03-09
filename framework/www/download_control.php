@@ -60,6 +60,12 @@ class download_control extends phpok_control
 		//更新下载次数
 		$download = $rs['download'] + 1;
 		$this->model('res')->save(array('download'=>$download),$rs['id']);
+		//检测是否本地
+		$tmp1 = substr($rs['filename'],0,7);
+		$tmp2 = substr($rs['filename'],0,8);
+		if($tmp1 == 'http://' || $tmp2 == 'https://'){
+			$this->_location($rs['filename']);
+		}
 		$this->lib('file')->download($rs['filename'],$title);
 		exit;
 	}

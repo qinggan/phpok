@@ -22,20 +22,14 @@ class server_lib
 
 	/**
 	 * 取得域名，通过$_SERVER['SERVER_NAME'] 或 $_SERVER['HTTP_HOST'] 取得，并进行安全过滤检测
-	 * @参数 $name 支持 server_name 和 http_host
 	 * @返回 false 或是 正确的域名
 	**/
-	public function domain($name='server_name')
+	public function domain()
 	{
-		if(!$name){
-			$name = 'server_name';
-		}
-		$name = strtolower($name);
-		if(!in_array($name,array('server_name','http_host'))){
+		$domain = $_SERVER['HTTP_HOST'] ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
+		if(!$domain){
 			return false;
 		}
-		$domain = $_SERVER[strtoupper($name)];
-		//使用HTTP_HOST，会把端口号一起包含进来，这时候需要手动把端口号清除掉
 		if(strpos($domain,":") !== false){
 			$tmp = explode(":",$domain);
 			$domain = $tmp[0];
@@ -76,7 +70,7 @@ class server_lib
 	**/
 	public function path_info()
 	{
-		return $_SERVER['PATH_INFO'];
+		return isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
 	}
 
 	/**
@@ -167,6 +161,9 @@ class server_lib
 		if(isset($_SERVER['phpok_ajax']) || isset($_SERVER['is_ajax'])){
 			return true;
 		}
+		if(isset($_SERVER['HTTP_AJAX'])){
+			return true;
+		}
 		if(isset($_SERVER['HTTP_PHPOK_AJAX']) || isset($_SERVER['HTTP_IS_AJAX'])){
 			return true;
 		}
@@ -174,6 +171,30 @@ class server_lib
 			return true;
 		}
 		if(isset($_SERVER['CONTENT_TYPE']) && strpos(strtolower($_SERVER['CONTENT_TYPE']),'json') !== false){
+			return true;
+		}
+		if(isset($_POST['IS_AJAX']) && $_POST['IS_AJAX']){
+			return true;
+		}
+		if(isset($_POST['AJAX']) && $_POST['AJAX']){
+			return true;
+		}
+		if(isset($_POST['is_ajax']) && $_POST['is_ajax']){
+			return true;
+		}
+		if(isset($_POST['ajax']) && $_POST['ajax']){
+			return true;
+		}
+		if(isset($_GET['IS_AJAX']) && $_GET['IS_AJAX']){
+			return true;
+		}
+		if(isset($_GET['AJAX']) && $_GET['AJAX']){
+			return true;
+		}
+		if(isset($_GET['is_ajax']) && $_GET['is_ajax']){
+			return true;
+		}
+		if(isset($_GET['ajax']) && $_GET['ajax']){
 			return true;
 		}
 		return false;
@@ -195,6 +216,7 @@ class server_lib
 		}
 		$tlist = parse_url($info);
 		$info = str_replace(array('<','>','"',"'"),'',$info);
+		return $info;
 	}
 
 	public function agent()

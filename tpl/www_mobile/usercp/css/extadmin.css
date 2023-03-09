@@ -1,0 +1,597 @@
+/**
+ * Layui后台模板自定义兼容及4.x扩展CSS
+ * @作者 qinggan <admin@phpok.com>
+ * @版权 深圳市锟铻科技有限公司
+ * @主页 http://www.phpok.com
+ * @版本 5.x
+ * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @时间 2018年09月13日
+**/
+
+/* 系统样式改写兼容 */
+* html .clearfix{zoom: 1;}
+*:first-child + html .clearfix{zoom: 1;}
+body{overflow-x: hidden;}
+select{
+	padding:2px 30px 2px 3px;
+	line-height:24px;
+	border: solid 1px #D2D2D2;
+	appearance:none;
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	background:#fff url("../images/arrow-select.png") no-repeat right center;
+}
+select:focus{
+	outline:none;
+}
+select[multiple=true]{
+	background:none;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+img{
+	max-width:100%;
+}
+
+/* LayUI 后台框架样式改写-开始 */
+.layui-nav-tree .layui-nav-bar{
+	background-color:#E77717 !important;
+}
+.layui-nav-tree .layui-this, .layui-nav-tree .layui-this>a, .layui-nav-tree .layui-nav-child dd.layui-this, .layui-nav-tree .layui-nav-child dd.layui-this a{
+	background-color:#1D5595 !important;
+}
+.layui-layout-admin .layui-body {
+	background:#fff;
+}
+.layui-side-menu .layui-nav .layui-nav-item a {
+	height:26px;
+	line-height:26px;
+}
+.layui-side-menu .layui-nav .layui-nav-itemed>.layui-nav-child dd{
+	padding:5px 0;
+}
+.layui-side-menu .layui-nav .layui-nav-item .layui-icon {
+	margin-top:-13px
+}
+.layadmin-side-shrink .layui-layout-admin .layui-logo {
+	width:60px;
+	background-image:url("../images/logo.svg");
+	background-size:80%;
+	background-repeat:no-repeat;
+	background-position: center;
+}
+.layui-form-label{
+	overflow:hidden;
+	padding-top:0;
+	padding-left:0;
+	padding-right:0;
+	width:120px;
+}
+
+.layui-input-block{
+	margin-left:0;
+}
+
+.layui-card-header.layuiadmin-card-header-auto{
+	padding-top:8px;
+	padding-bottom:5px;
+}
+
+.layui-card-header .fr .layui-icon{
+	line-height:180%;
+	position:static;
+	right:auto;
+	vertical-align: middle;
+}
+.layui-card-header.auto{
+	height:auto;
+	padding-bottom:5px;
+}
+.layui-form-item .layui-input-inline{
+	margin-left:10px;
+}
+
+.layui-form .layui-form-item .long{
+	width: 500px;
+}
+.layui-form .layui-form-item .w99{
+	width:99%
+}
+.layui-form .layui-form-item select[multiple]{
+	height:120px;
+}
+.layui-form .layui-form-item .long-auto{
+	width:auto;
+	min-width:500px;
+}
+.layui-form .layui-form-item .long textarea{
+	height:80px;
+}
+.layui-form .layui-form-item .default{
+	width: 350px;
+}
+.layui-form .layui-form-item .auto{
+	width: auto;
+}
+.layui-form .layui-form-item .default-auto{
+	width:auto;
+	min-width:350px;
+}
+.layui-form .layui-form-item .layui-input-inline.short{
+	width:100px;
+}
+.layui-form .layui-form-item .title{
+	padding-top:0;
+}
+.layui-laypage>a:hover{
+	text-decoration:none
+}
+.layui-color-blue {
+	color:#1E9FFF;
+}
+.layui-col-offset01{
+	margin-left: 5%;
+}
+.layui-mg-bottom7{
+	margin-bottom: 7px;
+}
+.layui-form .layui-disabled{
+	background: #eee;
+	color: #666!important;
+}
+.layui-form [lay-ignore] {
+
+    display: initial !important;
+
+}
+
+.layui-layout-admin .layui-layout-left .layui-nav-item{
+	margin:0 10px;
+}
+.layui-nav .layui-nav-item a{
+	padding:0 10px;
+}
+
+.layui-btn-group .layui-btn:first-child{
+	border-radius:0;
+}
+
+.layui-btn-group .layui-btn:last-child{
+	border-radius:0;
+}
+
+.layui-btn-group .layui-btn{
+	border-left:1px solid #fff;
+}
+
+.layui-btn-normal{
+	background-color:#2872C8;
+}
+
+.layui-btn-primary:hover{
+	border-color:#1D5595
+}
+
+.layui-elem-quote{
+	border-left-color:#1D5595;
+}
+
+.layadmin-backlog-body p cite{
+	color:#1D5595;
+}
+
+.layui-form-checked span, .layui-form-checked:hover span{
+	background:#1d5595;
+}
+.layui-form-checked[lay-skin=primary] span,.layui-form-checked[lay-skin=primary]:hover span{
+	background:none;
+}
+
+/* 通过 layui.newphper.com 在线生成的代码 */
+
+.layui-layout-admin .layui-logo {
+	color: #1d5595
+}
+.layui-elem-quote {
+	border-left-color: #1d5595
+}
+.layui-btn {
+	background-color: #1d5595
+}
+.layui-btn-primary {
+	background-color: #fff
+}
+.layui-btn-primary:hover {
+	border-color: #1d5595
+}
+.layui-btn-group .layui-btn-primary:hover {
+	color: #1d5595
+}
+.layui-laypage a:hover {
+	color: #1d5595
+}
+.layui-laypage .layui-laypage-curr .layui-laypage-em {
+	background-color: #1d5595
+}
+.layui-laypage select:focus {
+	border-color: #1d5595 !important
+}
+.layui-upload-drag .layui-icon {
+	font-size: 50px;
+	color: #1d5595
+}
+.layui-upload-drag[lay-over] {
+	border-color: #1d5595
+}
+.layui-nav-tree .layui-nav-child dd.layui-this a {
+	background-color: #1d5595
+}
+.layui-nav-tree .layui-nav-bar {
+	background-color: #1d5595
+}
+.layui-tab-brief > .layui-tab-title .layui-this {
+	color: #1d5595
+}
+.layui-slider-input-btn i:hover {
+	color: #1d5595
+}
+.layui-slider-wrap-btn {
+	border-color: #1d5595 !important
+}
+.layui-slider-bar {
+	background: #1d5595 !important
+}
+html .layui-laydate .layui-this {
+	background-color: #1d5595 !important
+}
+.laydate-theme-molv .layui-laydate-header {
+	background-color: #1d5595
+}
+.laydate-theme-grid .laydate-selected, .laydate-theme-grid .laydate-selected:hover {
+	color: #1d5595 !important
+}
+.layui-progress-bar {
+	background-color: #508aca
+}
+.layui-form-select dl dd.layui-this {
+	background-color: #508aca
+}
+.layui-form-checked, .layui-form-checked:hover {
+	border-color: #508aca
+}
+
+.layui-form-checked i, .layui-form-checked:hover i {
+	color: #508aca
+}
+.layui-form-checkbox[lay-skin=primary]:hover i {
+	border-color: #508aca
+}
+.layui-form-checked[lay-skin=primary] i {
+	border-color: #508aca;
+	background-color: #508aca
+}
+.layui-form-onswitch {
+	border-color: #508aca;
+	background-color: #508aca
+}
+.layui-form-radio > i:hover, .layui-form-radioed > i {
+	color: #508aca
+}
+.layui-table-edit:focus {
+	border-color: #508aca !important
+}
+.layui-nav-tree .layui-nav-itemed:after {
+	background-color: #508aca
+}
+.layui-nav-child dd.layui-this {
+	background-color: #508aca
+}
+.layui-nav .layui-nav-child dd.layui-this a {
+	background-color: #508aca
+}
+.layui-breadcrumb a:hover {
+	color: #508aca !important
+}
+.layui-tab-brief > .layui-tab-more li.layui-this:after, .layui-tab-brief > .layui-tab-title .layui-this:after {
+	border-bottom: 2px solid #508aca
+}
+.layui-tab-card > .layui-tab-more .layui-this {
+	color: #508aca
+}
+.layui-timeline-axis {
+	color: #508aca
+}
+.laydate-day-mark::after {
+	background-color: #508aca !important
+}
+.layui-laydate-header i:hover, .layui-laydate-header span:hover {
+	color: #508aca !important
+}
+.layui-laydate-footer span:hover {
+	color: #508aca !important
+}
+.layui-nav .layui-this:after, .layui-nav-bar, .layui-nav-tree .layui-nav-itemed:after {
+	background-color: #508aca !important
+}
+.layui-transfer-active .layui-btn {
+	background-color: #508aca;
+	border-color: #508aca;
+}
+.layui-form-checked[lay-skin=primary] i {
+	border-color: #508aca!important;
+	background-color: #508aca;
+}
+.layui-btn-normal {
+	background-color: #2872c8;
+}
+.layui-btn-warm {
+	background-color: #ff5722;
+}
+.layui-btn-danger {
+	background-color: #ff0000;
+}
+.layui-btn-disabled, .layui-btn-disabled:hover, .layui-btn-disabled:active {
+	background-color: #FBFBFB;
+}
+
+.layui-form-radio{
+	margin-top:0;
+}
+
+/* 通过 layui.newphper.com 在线生成的代码 */
+
+
+/* 兼容手机版的一些设置 */
+@media screen and (max-width: 375px){
+	.layui-card-header{
+		height:auto;
+	}
+	.layui-fluid{
+		width:640px;
+	}
+	body{
+		overflow-x:auto;
+	}
+}
+
+/* LayUI 后台样式框架改写-结束*/
+
+.red{color:red;}
+.fr{float:right;}
+.fl{float:left;}
+.hand{cursor: pointer;}
+.darkblue{color:darkblue;}
+.gray{color:gray;}
+.center{text-align:center !important;}
+.mtop{margin-top:10px;}
+.mbtm{margin-bottom:10px;}
+.lh38{line-height:38px;}
+.lh30{line-height:30px;}
+.clear{
+	clear:both;
+	height:0;
+	margin:0;
+	padding:0;
+	width:0;
+	border:none;
+	overflow:hidden;
+	font-size:0;
+}
+.clearfix:after{
+	visibility:hidden;
+	display:block;
+	font-size:0;
+	clear:both;
+	height:0;
+	line-height:0;
+	margin:0;
+	padding:0;
+}
+.hide{display:none;}
+.phpok-search .layui-inline{min-width:310px;width:20%;}
+
+.ext_edit{
+	position: absolute;
+	right:0;
+	top:0;
+	z-index:99999;
+	padding:5px;
+	border:1px solid #ccc;
+	border-radius:2px;
+	background:#eee;
+}
+.layui-form-item:hover .ext_edit{display:block;}
+
+
+.status0,.status1,.status2
+{
+	background-repeat:no-repeat;
+	background-position:center center;
+	width:16px;
+	height:16px;
+	overflow:hidden;
+	cursor:pointer;
+	display:block;
+}
+
+/* 状态属性 */
+.status0{background-image:url('../images/status0.png');}
+.status1{background-image:url('../images/status1.png');}
+.status2{background-image:url('../images/status2.png');}
+
+
+ul.project{list-style:none;margin:0;padding:0;position: relative;}
+ul.project li{float:left;cursor:pointer;margin:0 20px;padding:10px 20px;position:relative;z-index:2;border:1px solid #fff;border-radius:5px;text-align:center;}
+ul.project li:hover{background:#EFEFEF;border:1px solid #ECECEC;}
+ul.project li div.img{margin:0;position:relative;}
+ul.project li div.img img{width:48px;}
+ul.project li div.txt{text-align:center;overflow:hidden;height:24px;line-height:24px;}
+em.toptip{float:right;display:block;min-width:16px;height:16px;border-radius:8px;background:red;color:#fff;text-align:center;line-height:16px;font-style:normal;}
+ul.project li em{position:absolute;top:5px;right:5px;}
+
+div.table{padding:2px 10px 2px 0;margin:1px 5px 0 15px;cursor:default;}
+div.table:after{clear:both;height:0;visibility:hidden;display: block;}
+div.table div.title{padding-left:3px;line-height:23px;}
+div.table .title span.note{color:gray;font-style:italic;font-weight:normal;}
+div.table .content{padding-left:3px;}
+div.table .content input.title{padding:0;width:100%;outline:0;margin: 0;}
+div.table .content:after{clear:both;content:'.';height:0;line-height:0;overflow:hidden;font-size:0;display: block;visibility: hidden;}
+div.table .content .price{margin-top:5px;margin-right:0;}
+div.table .content .price th{padding:0;border-bottom:2px solid #E5E5E5;height:25px;background:#D1D1D1;}
+div.table .content .price th.lft{text-align:left;}
+div.table .content .price tr.list{background:#F3F3F3}
+div.table .content .price td{padding:3px;}
+div.table .content textarea{font-size:14px;font-family:"Microsoft Yahei","宋体","Arial","Tahoma"}
+div.table .content td label{margin:0 10px 0 0;padding:0;display:inline-block;}
+div.table .content td label input{margin-right:5px;vertical-align:-7%;}
+div.table .content ul.lang{margin:0;padding:0;list-style:none;}
+div.table .content ul.lang li{margin-bottom:3px;}
+
+
+.phpok-btn{
+	position:relative;
+	overflow:visible;
+	display:inline-block;
+	padding:0.2em 0.6em;
+	border:1px solid #d4d4d4;
+	margin:0;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0 #fff;
+	font:14px/normal "Microsoft Yahei","宋体","Arial",sans-serif;
+	color:#333;
+	white-space:nowrap;
+	cursor:pointer;
+	outline:none;
+	background-color:#ececec;
+	background-image:-webkit-gradient(linear,0 0,0 100%,from(#f4f4f4),to(#ececec));
+	background-image:-moz-linear-gradient(#f4f4f4,#ececec);
+	background-image:-ms-linear-gradient(#f4f4f4,#ececec);
+	background-image:-o-linear-gradient(#f4f4f4,#ececec);
+	background-image:linear-gradient(#f4f4f4,#ececec);
+	-moz-background-clip:padding;
+	background-clip:padding-box;
+	border-radius:3px;
+	zoom:1;
+	*display:inline
+}
+
+.phpok-btn:hover,
+.phpok-btn:focus,
+.phpok-btn:active,
+.phpok-btn.active {
+	border-color: #3072b3;
+	border-bottom-color: #2a65a0;
+	text-decoration: none;
+	text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+	color: #fff;
+	background-color: #3c8dde;
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#599bdc), to(#3072b3));
+	background-image: -moz-linear-gradient(#599bdc, #3072b3);
+	background-image: -o-linear-gradient(#599bdc, #3072b3);
+	background-image: linear-gradient(#599bdc, #3072b3);
+}
+
+.phpok-btn:active,
+.phpok-btn.active {
+	border-color: #2a65a0;
+	border-bottom-color: #3884cd;
+	background-color: #3072b3;
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#3072b3), to(#599bdc));
+	background-image: -moz-linear-gradient(#3072b3, #599bdc);
+	background-image: -ms-linear-gradient(#3072b3, #599bdc);
+	background-image: -o-linear-gradient(#3072b3, #599bdc);
+	background-image: linear-gradient(#3072b3, #599bdc);
+}
+
+.phpok-btn::-moz-focus-inner {padding: 0;border: 0;}
+
+.button-group {
+    display: inline-block;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    /* IE hacks */
+    zoom: 1;
+    *display: inline;
+}
+
+.phpok-btn + .phpok-btn,
+.phpok-btn + .button-group,
+.button-group + .phpok-btn,
+.button-group + .button-group {
+    margin-left: 15px;
+}
+
+.button-group li {
+    float: left;
+    padding: 0;
+    margin: 0;
+}
+
+.button-group .phpok-btn {
+    float: left;
+    margin-left: -1px;
+}
+
+.button-group > .phpok-btn:not(:first-child):not(:last-child),
+.button-group li:not(:first-child):not(:last-child) .phpok-btn {
+    border-radius: 0;
+}
+
+.button-group > .phpok-btn:first-child,
+.button-group li:first-child .phpok-btn {
+    margin-left: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.button-group > .phpok-btn:last-child,
+.button-group li:last-child > .phpok-btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+input.phpok-btn[type=text]{margin:0;padding:0}
+input.short{width:55px;border:1px solid #E5E5E5;font-size:18px;font-weight:normal;}
+input[name=identifier]{ime-mode:disabled}
+
+.cate_line{float:left;display:block;height: 28px;padding: 0;margin: 0;width:2em;background:url("../images/cate_line.gif") center center repeat-y;}
+.cate_middle{float:left;display:block;height: 28px;padding: 0;margin: 0;width:2em;background:url("../images/cate_middle.gif") center center no-repeat;}
+.cate_txt{float:left;display:block;height: 28px;line-height:28px;}
+
+div.submit-info-clear{height:66px;content:' ';line-height:0;font-size:0;display:block;visibility: hidden;clear:both;}
+div.submit-info{position:fixed;bottom:0px;background:#fff;border-bottom:1px solid #fff;border-top:1px solid #BFBFBF;width:100%;display:block;margin-left:-15px;padding:10px 0;z-index:9999}
+div.submit-info:after{content:'.';height:0;line-height:0;font-size:0;display: block;visibility: hidden;clear:both;}
+
+input.submit2 {
+	margin:0;
+	text-align:center;
+	border:1px solid #D14836;
+	background:#D74937;
+	padding:3px 20px;
+	min-height:30px;
+	min-width:100px;
+	color:#fff;
+	font-weight:bold;
+	border-radius:4px;
+	line-height:200%;
+}
+input.submit2:hover{
+	border:1px solid #B0281A;
+	box-shadow:0 1px 1px rgba(0,0,0,0.1);
+}
+
+
+/* 图标下拉菜单 */
+.dropdown{margin:0;padding:0;}
+.dropdown dd, .dropdown dt, .dropdown ul { margin:0px; padding:0px; }
+.dropdown dd { position:relative; }
+.dropdown dt:hover { color:#5d4617; border: 1px solid #E5E5E5;}
+.dropdown dt{display:block; padding-right:20px; border:1px solid #E5E5E5; width:180px; height:36px;background:url('../images/arrow-select.png') right center no-repeat;}
+.dropdown dt span { cursor:pointer; display:block; padding:5px; }
+.dropdown dd ul { background:#fff; border:1px solid #E5E5E5; color:#000; display:none; left:0px; padding:5px 0px; position:absolute; top:2px; width:auto; min-width:200px; list-style:none;height:300px;overflow-y:scroll;z-index:10; }
+.dropdown span.value { display:none; }
+.dropdown dd ul li{ padding:5px; display:block; }
+.dropdown dd ul li:hover { background-color:#d0c9af; }

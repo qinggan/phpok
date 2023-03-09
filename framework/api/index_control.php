@@ -48,22 +48,26 @@ class index_control extends phpok_control
 
 	public function index_f()
 	{
-		if(!$this->site['api_code']){
-			$this->error(P_Lang("系统未启用接口功能"));
-		}
 		$data = array('ctrl_id'=>$this->config['ctrl_id']);
 		$data['func_id'] = $this->config['func_id'];
 		$data['site_id'] = $this->site['id'];
 		$tmpinfo = $this->site;
+		$unset_ids = array('tpl_id','_domain','meta','seo_keywords','seo_desc','seo_title');
+		array_push($unset_ids,'adm_logo29','adm_logo50','adm_logo180');
+		foreach($tmpinfo as $key=>$value){
+			if(isset($key) && in_array($key,$unset_ids)){
+				unset($tmpinfo[$key]);
+			}
+		}
 		$list = $this->model('site')->all_list($this->site['id']);
 		if($list){
 			foreach($list as $key=>$value){
-				if(!$value['is_api'] && $tmpinfo[$value['identifier']]){
+				if(!$value['is_api']){
 					unset($tmpinfo[$value['identifier']]);
 				}
 			}
 		}
-		unset($tmpinfo['api_code']);
+		ksort($tmpinfo);
 		$data['site'] = $tmpinfo;
 		$this->success($data);
 	}
@@ -71,10 +75,10 @@ class index_control extends phpok_control
 	public function site_f()
 	{
 		$this->config('is_ajax',true);
-		if(!$this->site['api_code']){
+		$api_code = $this->model('config')->get_one('api_code',$this->site['id']);
+		if(!$api_code){
 			$this->error(P_Lang("系统未启用接口功能"));
 		}
-		unset($this->site['api_code']);
 		$id = $this->get('id');
 		if(!$id){
 			$id = 'title';
@@ -97,8 +101,9 @@ class index_control extends phpok_control
 	**/
 	public function safecode_f()
 	{
-		if(!$this->site['api_code']){
-			$this->error(P_Lang('未设置 API 密钥'));
+		$api_code = $this->model('config')->get_one('api_code',$this->site['id']);
+		if(!$api_code){
+			$this->error(P_Lang("系统未启用接口功能"));
 		}
 		$data = $this->get("data");
 		if(!$data){
@@ -116,15 +121,16 @@ class index_control extends phpok_control
 		if(!$isok){
 			$this->error(P_Lang('参数不合法'));
 		}
-		$code = md5($this->site['api_code'].",".implode(",",$list));
+		$code = md5($api_code.",".implode(",",$list));
 		$this->success($code);
 	}
 
 	public function token_f()
 	{
 		$this->config('is_ajax',true);
-		if(!$this->site['api_code']){
-			$this->error(P_Lang("系统未配置接口功能"));
+		$api_code = $this->model('config')->get_one('api_code',$this->site['id']);
+		if(!$api_code){
+			$this->error(P_Lang("系统未启用接口功能"));
 		}
 		$id = $this->get('id','system');
 		if(!$id){
@@ -195,7 +201,7 @@ class index_control extends phpok_control
 				$param[$key] = $value;
 			}
 		}
-		$this->lib('token')->keyid($this->site['api_code']);
+		$this->lib('token')->keyid($api_code);
 		$array = array('id'=>$id,'param'=>$param);
 		$token = $this->lib('token')->encode($array);
 		$this->success($token);
@@ -203,14 +209,15 @@ class index_control extends phpok_control
 
 	public function phpok_f()
 	{
-		if(!$this->site['api_code']){
-			$this->json(P_Lang("系统未启用接口功能"));
+		$api_code = $this->model('config')->get_one('api_code',$this->site['id']);
+		if(!$api_code){
+			$this->error(P_Lang("系统未启用接口功能"));
 		}
 		$token = $this->get("token");
 		if(!$token){
 			$this->json(P_Lang("接口数据异常"));
 		}
-		$this->lib('token')->keyid($this->site['api_code']);
+		$this->lib('token')->keyid($api_code);
 		$info = $this->lib('token')->decode($token);
 		if(!$info){
 			$this->json(P_Lang('信息为空'));
@@ -327,5 +334,19 @@ class index_control extends phpok_control
 			$this->success($list);
 		}
 		$this->success(price_format_val($price,$from,$to));
+	}
+	
+	public function phpinc_f()
+	{
+		$phpfile = $this->get('phpfile','system');
+		if(!$phpfile){
+			$this->error(P_Lang('未指定合法的 PHP 文件'));
+		}
+		$phpfile .= ".php";
+		if(!file_exists($this->dir_root.'phpinc/'.$phpfile)){
+			$this->error(P_Lang('PHP 文件不存在'));
+		}
+		global $app;
+		include($this->dir_root.'phpinc/'.$phpfile);
 	}
 }

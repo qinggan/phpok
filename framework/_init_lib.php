@@ -39,6 +39,11 @@ class _init_lib
 	protected $dir_data;
 	protected $dir_cache;
 	protected $dir_extension;
+	protected $db;
+	protected $cache;
+	protected $session;
+	protected $time;
+	
 	public function __construct()
 	{
 		$this->dir_root = $GLOBALS['app']->dir_root;

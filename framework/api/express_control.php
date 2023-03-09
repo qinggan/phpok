@@ -32,9 +32,11 @@ class express_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('数据不存在'));
 		}
-		if(!$rs['order_id'] || $rs['is_end'] || !$rs['express_id']){
+		if(!$rs['order_id'] || !$rs['express_id']){
 			$this->success();
 		}
+		$order = $this->model('order')->get_one($rs['order_id']);
+		$rs['mobile'] = $order['mobile'];
 		$express = $this->model('express')->get_one($rs['express_id']);
 		if(!$express){
 			$this->success();

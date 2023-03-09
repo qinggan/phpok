@@ -3,13 +3,22 @@
 	<!-- if $_html -->
 	{$_html}
 	<!-- else -->
-		<!-- if !$_rs.form_true_delete -->
-		<div class="button-group" style="padding:2px 0 0 0;">
-			<input type="button" value="{lang选择}" onclick="$.phpokform.extitle_list('{$_rs.id}','{$_rs.identifier}',{$_rs.form_maxcount},'{$_rs.form_input_val}')" class="layui-btn layui-btn-sm" />
+		<!-- if !$_rs.only_preview -->
+			<!-- if !$_rs.form_true_delete -->
+			<div class="button-group" style="padding:2px 0 0 0;">
+				<input type="button" value="{lang选择}" onclick="$.phpokform.extitle_list('{$_rs.id}','{$_rs.identifier}',{$_rs.form_maxcount},'{$_rs.form_input_val}')" class="layui-btn layui-btn-sm" />
+				<input type="button" value="{lang添加}" onclick="$.phpokform.extitle_quickadd('{$_rs.id}','{$_rs.identifier}',{$_rs.form_maxcount})" class="layui-btn layui-btn-sm" />
+			</div>
+			<!-- else -->
 			<input type="button" value="{lang添加}" onclick="$.phpokform.extitle_quickadd('{$_rs.id}','{$_rs.identifier}',{$_rs.form_maxcount})" class="layui-btn layui-btn-sm" />
-		</div>
-		<!-- else -->
-		<input type="button" value="{lang添加}" onclick="$.phpokform.extitle_quickadd('{$_rs.id}','{$_rs.identifier}',{$_rs.form_maxcount})" class="layui-btn layui-btn-sm" />
+			<!-- /if -->
 		<!-- /if -->
 	<!-- /if -->
 </div>
+<!-- if $_rs.js_admin -->
+<script type="text/javascript">
+$(document).ready(function(){
+	{$_rs.js_admin}
+});
+</script>
+<!-- /if -->

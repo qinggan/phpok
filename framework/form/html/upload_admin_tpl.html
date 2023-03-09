@@ -52,4 +52,10 @@ $(document).ready(function(){
 	$.phpokform.upload_showhtml('{$_rs.identifier}',{$_rs.is_multiple ? 'true' : 'false'});
 });
 </script>
-
+<!-- if $_rs.js_admin -->
+<script type="text/javascript">
+$(document).ready(function(){
+	{$_rs.js_admin}
+});
+</script>
+<!-- /if -->

@@ -1,7 +1,6 @@
 <?php
 /**
  * Tag标签管理工具
- * @package phpok
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -75,6 +74,40 @@ class tag_control extends phpok_control
 			}
 		}
 		$this->view("tag_set");
+	}
+
+	public function pl_f()
+	{
+		if(!$this->popedom['add']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$this->view('tag_pl');
+	}
+
+	public function save_pl_f()
+	{
+		if(!$this->popedom['add']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$content = $this->get('content');
+		if(!$content){
+			$this->error(P_Lang('标签不能为空'));
+		}
+		$list = explode("\n",$content);
+		foreach($list as $key=>$value){
+			$value = trim($value);
+			if(!$value){
+				continue;
+			}
+			$chk = $this->model('tag')->chk_title($value);
+			if($chk){
+				continue;
+			}
+			$data = array('title'=>$value);
+			$data['site_id'] = $this->session->val('admin_site_id');
+			$this->model('tag')->save($data);
+		}
+		$this->success();
 	}
 
 	/**

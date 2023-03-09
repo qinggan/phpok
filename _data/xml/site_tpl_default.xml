@@ -8,6 +8,10 @@
 		<title><![CDATA[购物车页]]></title>
 		<default><![CDATA[cart/index]]></default>
 	</cart-index>
+	<cart-quick>
+		<title><![CDATA[快速订单]]></title>
+		<default><![CDATA[cart/quick]]></default>
+	</cart-quick>
 	<cart-tip>
 		<title><![CDATA[购物车为空提示页]]></title>
 		<default><![CDATA[cart/tip]]></default>
@@ -92,6 +96,10 @@
 		<title><![CDATA[付款成功提示]]></title>
 		<default><![CDATA[usercp/introducer]]></default>
 	</usercp-introducer>
+	<usercp-comments>
+		<title><![CDATA[用户评论管理页]]></title>
+		<default><![CDATA[usercp/comments]]></default>
+	</usercp-comments>
 	<usercp-destory>
 		<title><![CDATA[用户信息注销页]]></title>
 		<default><![CDATA[usercp/destory]]></default>

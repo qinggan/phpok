@@ -2,6 +2,8 @@
 <section class="container pt-4 mb-4">
 	<div class="row justify-content-center">
 		<div class="col col-sm-6 p-4 m-4 bg-white border shadow">
+			<h3 class="text-center">用户登录</h3>
+			<hr />
 			<form onsubmit="return $.login.ok(this)" method="post" id="login-submit">
 				<input type="hidden" name="_back" id="_back" value="{$_back}" />
 				<div class="form-group">
@@ -16,7 +18,6 @@
 				<div class="form-group">
 					<label for="_chkcode">验证码 <img src="{#images#}/blank.gif" border="0" align="absmiddle" id="vcode" class="hand" /></label>
 					<input type="text" class="form-control" required name="_chkcode" id="_chkcode" placeholder="请输入图片上的字符" />
-					
 				</div>
 				<!-- /if -->
 				<div class="row">
@@ -25,9 +26,11 @@
 					</div>
 				</div>
 				<div class="row mt-4">
+					<!-- if $config.register_status -->
 					<div class="col col-6 col-xl-3 pt-2">
 						<a href="{url ctrl=register/}"><i class="fa fa-user-plus"></i> 用户注册</a>
 					</div>
+					<!-- /if -->
 					<!-- if $login_sms -->
 					<div class="col col-6 col-xl-3 pt-2">
 						<a href="{url ctrl=login func=sms/}"><i class="fa fa-mobile"></i> 短信登录</a>

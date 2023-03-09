@@ -1,47 +1,45 @@
 <!-- include tpl=usercp/head title=收货地址 -->
-<div class="container-fluid no-gutters main layout-main">
-	<!-- include tpl=usercp/sidebar -->
-	<div class="layout-right">
-		<!-- include tpl=usercp/header -->
-		<div class="layout-body">
-			<div class="card">
-				<div class="card-header">
-					收货地址<!-- if $total < 30 --><a href="{url ctrl=usercp func=address_setting/}" class="btn btn-primary btn-sm float-right">添加地址</a><!-- /if -->
-				</div>
-				<div class="card-body">
-					<table class="table">
-					<thead>
-						<tr>
-							<th></th>
-							<th>收件人/地址</th>
-							<th>联系方式</th>
-							<th style="width:260px">操作</th>
-						</tr>
-					</thead>
-					<tbody>
-						<!-- loop from=$rslist key=$key value=$value -->
-						<tr>
-							<td>#{$value.id}</td>
-							<td>{$value.fullname}<br />{$value.province}<!-- if $value.province != $value.city -->{$value.city}<!-- /if -->{$value.county}-{$value.address}（{$value.country}）</td>
-							<td>{$value.mobile}<!-- if $value.mobile && $value.tel --> / <!-- /if -->{$value.tel}</td>
-							<td>
-								<div class="btn-group">
-									<a href="{url ctrl=usercp func=address_setting id=$value.id/}" class="btn btn-primary">编辑</a>
-									<button type="button" onclick="$.address.del('{$value.id}')" class="btn btn-danger">删除</button>
-									<!-- if !$value.is_default -->
-									<button type="button" onclick="$.address.set_default('{$value.id}')" class="btn btn-primary">设为默认</button>
-									<!-- else -->
-									<button type="button" class="btn btn-primary" disabled>默认地址</button>
-									<!-- /if -->
-								</div>
-							</td>
-						</tr>
-						<!-- /loop -->
-					</tbody>
-					</table>
-				</div>
-			</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		收货地址
+		<!-- if $total < 30 -->
+		<div class="float-right">
+		<input type="button" value="添加地址" onclick="$.win('添加地址','{url ctrl=usercp func=address_setting/}')" class="layui-btn layui-btn-sm" />
 		</div>
+		<!-- /if -->
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th></th>
+			<th>收件人/地址</th>
+			<th>联系方式</th>
+			<th>默认</th>
+			<th style="width:260px">操作</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr>
+			<td>#{$value.id}</td>
+			<td>{$value.fullname}<br />{$value.province}<!-- if $value.province != $value.city -->{$value.city}<!-- /if -->{$value.county}-{$value.address}（{$value.country}）</td>
+			<td>{$value.mobile}<!-- if $value.mobile && $value.tel --> / <!-- /if -->{$value.tel}</td>
+			<td>
+				<!-- if $value.is_default -->
+				默认地址
+				<!-- else -->
+				<input type="button" value="设为默认" onclick="$.address.set_default('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-normal" />
+				<!-- /if -->
+			</td>
+			<td>
+				<div class="layui-btn-group">
+					<input type="button" value="编辑" onclick="$.win('地址编辑_#{$value.id}','{url ctrl=usercp func=address_setting id=$value.id/}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="删除" onclick="$.address.del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
 	</div>
 </div>
 <!-- include tpl=usercp/foot -->

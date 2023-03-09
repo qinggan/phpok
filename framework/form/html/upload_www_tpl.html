@@ -19,7 +19,7 @@
 <script type="text/javascript">
 var obj_{$_rs.identifier};
 $(document).ready(function(){
-	$.dialog.data('upload-{$_rs.identifier}','');
+	$.phpok.undata('upload-{$_rs.identifier}');
 	obj_{$_rs.identifier} = new $.www_upload({
 		'id':'{$_rs.identifier}',
 		'server':'{url ctrl=upload func=save cateid=$_rs.cate_id/}',

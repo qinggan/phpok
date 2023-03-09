@@ -35,17 +35,6 @@ class project_control extends phpok_control
 	//栏目
 	public function index_f()
 	{
-		if(!$this->site['api_code']){
-			$this->error(P_Lang('未启用API接口'));
-		}
-		$this->model('apisafe')->code($this->site['api_code']);
-		if(!$this->model('apisafe')->check()){
-			$errInfo = $this->model('apisafe')->error_info();
-			if(!$errInfo){
-				$errInfo = P_Lang('未通过安全接口拼接');
-			}
-			$this->error($errInfo);
-		}
 		$id = $this->get("id");
 		if(!$id){
 			$this->error(P_Lang('未指ID'));
@@ -112,6 +101,7 @@ class project_control extends phpok_control
 		$tag = $this->get("tag");
 		$uid = $this->get('uid','int');
 		$attr = $this->get('attr');
+		$is_usercp = $this->get('is_usercp','int');
 		//价格，支持价格区间
 		$price = $this->get('price','float');
 		$sort = $this->get('sort');
@@ -203,6 +193,9 @@ class project_control extends phpok_control
 		if($uid){
 			$pageurl .= "&uid=".$uid;
 			$dt['user_id'] = $uid;
+			if($uid == $this->session->val('user_id') && $is_usercp){
+				$dt['is_usercp'] = true;
+			}
 		}
 		//自定义排序
 		if($sort){
@@ -227,10 +220,20 @@ class project_control extends phpok_control
 			$fields = '*';
 		}
 		$dt['fields'] = $fields;
+		$this->plugin("system_api_arclist",$rs,$m_rs);
+		$dt_ext = $this->data('dt');
+		if($dt_ext){
+			if($dt_ext['sqlext']){
+				$dt['sqlext'] = $dt['sqlext'] ? $dt['sqlext'].' AND '.$dt_ext['sqlext'] : $dt_ext['sqlext'];
+				unset($dt_ext['sqlext']);
+			}
+			$dt = array_merge($dt,$dt_ext);
+		}
 		$info = $this->call->phpok('_arclist',$dt);
 		unset($dt);
 		if(!$info['rslist']){
-			$this->error(P_Lang('已是最后一条数据'));
+			$tip = $offset>0 ? P_Lang('已是最后一条数据') : P_Lang('没有数据');
+			$this->error($tip);
 		}
 		$this->rlist['pageid'] = $pageid;
 		$this->rlist['psize'] = $psize;

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<admin-post-style><![CDATA[1]]></admin-post-style>
+	<admin-post-width><![CDATA[80%]]></admin-post-width>
+	<admin-post-height><![CDATA[70%]]></admin-post-height>
+	<admin-list-stat><![CDATA[0]]></admin-list-stat>
+	<quick-comment-status><![CDATA[0]]></quick-comment-status>
+	<layout><![CDATA[dateline,fullname,email,pic]]></layout>
+</root>

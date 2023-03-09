@@ -482,12 +482,99 @@ class sql_control extends phpok_control
 			$this->error(P_Lang('未指定字段名'));
 		}
 		$val1 = $this->get('val1','html');
-		if(!$val1){
+		if($val1 == ''){
 			$this->error(P_Lang('未指定替换前的文本'));
 		}
 		$val2 = $this->get('val2');
 		$sql = "UPDATE ".$tbl." SET ".$field."=REPLACE(".$field.",'".$val1."','".$val2."')";
 		$this->db->query($sql);
 		$this->success();
+	}
+
+	public function export_f()
+	{
+		if(!$this->popedom['create']){
+			$this->error(P_Lang('您没有权限执行此操作'),$this->url('sql'));
+		}
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定要导出的表信息'),$this->url('sql'));
+		}
+		$rslist = $this->model('sql')->tbl_all();
+		if(!$rslist){
+			$this->error(P_Lang('没有获取表信息'),$this->url('sql'));
+		}
+		if($id != 'all'){
+			$list = explode(",",$id);
+			foreach($rslist as $key=>$value){
+				$tmp = $value['Name'];
+				if(!in_array($tmp,$list)){
+					unset($rslist[$key]);
+					continue;
+				}
+			}
+		}
+		$this->lib('phpexcel');
+		$phpexcel = new PHPExcel();
+		$cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_in_memory_gzip;
+        if (!\PHPExcel_Settings::setCacheStorageMethod($cacheMethod)) {
+            $this->error($cacheMethod . " 缓存方法不可用");
+        }
+        $i = 1;
+		$phpexcel->getActiveSheet()->getColumnDimension('A')->setWidth(24);
+		$phpexcel->getActiveSheet()->getColumnDimension('B')->setWidth(24);
+		$phpexcel->getActiveSheet()->getColumnDimension('D')->setWidth(22);
+		$phpexcel->getActiveSheet()->getColumnDimension('D')->setWidth(80);
+		foreach($rslist as $key=>$value){
+			$val = $value['Name'];
+			if($value['Comment']){
+				$val .= '（'.$value['Comment'].'）';
+			}
+			$phpexcel->getActiveSheet()->setCellValueExplicit("A".$i,$val,PHPExcel_Cell_DataType::TYPE_STRING);
+			$phpexcel->getActiveSheet()->getStyle("A".$i)->getFont()->setBold(true);
+			$phpexcel->getActiveSheet()->getStyle("A".$i)->getFont()->setSize(20);
+			$phpexcel->getActiveSheet()->getStyle("A".$i)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('cccccc');
+			$phpexcel->getActiveSheet()->mergeCells('A'.$i.':D'.$i);
+			$i++;
+			$tmplist = $this->model('sql')->table_info($value['Name']);
+			if($tmplist){
+				$phpexcel->getActiveSheet()->getStyle("A".$i.":D".$i)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('dee0e3');
+				$phpexcel->getActiveSheet()->getStyle("A".$i.":D".$i)->getFont()->setBold(true);
+				$phpexcel->getActiveSheet()->getStyle("A".$i.":D".$i)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+				$tmp =array('A'=>P_Lang('字段'));
+				$tmp['B'] = P_Lang('类型');
+				$tmp['C'] = P_Lang('默认值');
+				$tmp['D'] = P_Lang('备注说明');
+				foreach($tmp as $k=>$v){
+					$phpexcel->getActiveSheet()->setCellValueExplicit($k.$i,$v,PHPExcel_Cell_DataType::TYPE_STRING);
+				}
+				$i++;
+				foreach($tmplist as $k=>$v){
+					$tmp =array('A'=>$v['field']);
+					$tmp['B'] = $v['type'];
+					$tmp['C'] = $v['default'];
+					$tmp['D'] = $v['note'];
+					foreach($tmp as $kk=>$vv){
+						$phpexcel->getActiveSheet()->setCellValueExplicit($kk.$i,$vv,PHPExcel_Cell_DataType::TYPE_STRING);
+					}
+					$i++;
+				}
+			}
+		}
+		if($id == 'all'){
+			$filename = P_Lang('全部表结构');
+		}else{
+			if(strpos($id,',') !== false){
+				$filename = P_Lang('选中的表结构');
+			}else{
+				$filename = P_Lang('表结构').'-'.$id;
+			}
+		}
+		$phpexcel->createSheet();
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'.$filename.'.xls"');
+		header('Cache-Control: max-age=0');
+		$XLS_W = PHPExcel_IOFactory::createWriter($phpexcel, 'Excel5');
+		$XLS_W->save('php://output');
 	}
 }

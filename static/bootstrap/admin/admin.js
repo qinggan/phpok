@@ -9,12 +9,11 @@
 
 ;(function($){
 	$.form_design = {
-
 		layer_add:function(id)
 		{
 			var url = get_url('design','index','id='+id);
 			$.dialog.open(url,{
-				'title':'选择层对应列设置（后台隐藏无效，前台有效）',
+				'title':'选择块的布局设置（后台隐藏无效，前台有效）',
 				'lock':true,
 				'width':'800px',
 				'height':'270px',
@@ -172,7 +171,7 @@
 			var id = $(obj).parents("div[pre-type=layer]").attr("pre-id");
 			var url = get_url('design','layer_setting','id='+id);
 			$.dialog.open(url,{
-				'title':'父层属性设置',
+				'title':'块级属性设置',
 				'width':'750px',
 				'height':'450px',
 				'cancel':true,
@@ -192,7 +191,7 @@
 			var id = $(obj).parent().parent().parent().attr("pre-id");
 			var url = get_url('design','layer2','id='+id);
 			$.dialog.open(url,{
-				'title':'添加子层布局',
+				'title':'添加层布局',
 				'width':'750px',
 				'height':'295px',
 				'lock':true,
@@ -221,11 +220,39 @@
 			$("div[pre-type=layer]").hover(function(){
 				var name = $(this).attr("pre-name");
 				html = '<div pre-type="toolbar-layer">'+$('#'+name+'_toolbar_layer').html()+'</div>';
-				html += '<div pre-type="toolbar-updown">'+$('#'+name+'_toolbar_updown').html()+'</div>';
 				$(this).append(html);
+				//检测是否隐藏
 			},function(){
 				$(this).find("div[pre-type=toolbar-layer]").remove();
-				$(this).find("div[pre-type=toolbar-updown]").remove();
+			});
+		},
+		set_component:function(obj)
+		{
+			var tmpobj = $(obj).parent().parent().parent();
+			var id = tmpobj.attr("pre-id");
+			var url = get_url('design','component','id='+id);
+			var val = tmpobj.attr("pre-code");
+			if(val){
+				url += "&val="+val;
+			}
+			$.dialog.open(url,{
+				'title':'绑定组件',
+				'width':'750px',
+				'height':'510px',
+				'lock':true,
+				'ok':function(){
+					var iframe = this.iframe.contentWindow;
+					if (!iframe.document.body) {
+						alert('iframe还没加载完毕呢');
+						return false;
+					};
+					var b = iframe.save();
+					if(!b){
+						return false;
+					}
+					return true;
+				},
+				'cancel':true
 			});
 		},
 		set_content:function(obj)
@@ -233,19 +260,22 @@
 			var id = $(obj).parent().parent().parent().attr("pre-id");
 			var type = $(obj).parent().parent().parent().attr("pre-vtype");
 			var url = get_url('design','content','id='+id);
-			if(type && type != 'undefined'){
-				url += "&type="+type;
-				if(type == 'image'){
-					var tmp_id = $(obj).parent().parent().parent().attr("pre-image");
-					if(tmp_id && tmp_id != 'undefined'){
-						url += "&res_id="+tmp_id;
-					}
+			if(!type || type == 'undefined'){
+				$.dialog.tips("不支持编辑，请选择组件，再执行编辑").lock();
+				return false;
+			}
+			url += "&type="+type;
+			if(type == 'image'){
+				var tmp_id = $(obj).parent().parent().parent().attr("pre-image");
+				if(tmp_id && tmp_id != 'undefined'){
+					url += "&res_id="+tmp_id;
 				}
 			}
 			$.dialog.open(url,{
 				'title':'内容管理',
-				'width':'750px',
-				'height':'510px',
+				'width':'90%',
+				'height':'80%',
+				'lock':true,
 				'ok':function(){
 					var iframe = this.iframe.contentWindow;
 					if (!iframe.document.body) {
@@ -308,6 +338,7 @@
 			if ($tr.index() != 0) {
 				$tr.fadeOut().fadeIn();
 				$tr.prev().before($tr);
+				$("html,body").scrollTop($tr.offset().top);
 			}
 		},
 		to_back:function(obj)
@@ -318,6 +349,7 @@
 			if ($tr.index() != len - 1) {
 				$tr.fadeOut().fadeIn();
 				$tr.next().after($tr);
+				$("html,body").scrollTop($tr.offset().top);
 			}
 		}
 	}

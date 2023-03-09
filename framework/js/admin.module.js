@@ -67,9 +67,7 @@
 				'success':function(rs){
 					if(rs.status){
 						$.dialog.tips(p_lang('字段创建成功'));
-						var tourl = get_url('module','fields','id='+mid);
-						$.admin.reload(tourl);
-						$.admin.close(tourl);
+						$.admin.close(get_url('module','fields','id='+mid));
 						return false;
 					}
 					$.dialog.alert(rs.info);
@@ -326,6 +324,40 @@
 					});
 				}
 			},taxis);
+		},
+		toH:function()
+		{
+			var ids = $.checkbox.join();
+			if(!ids){
+				$.dialog.alert('未指定ID');
+				return false;
+			}
+			$.phpok.json(get_url('module','field_hv','id='+ids+"&type=1"),function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				$.dialog.tips('操作成功',function(){
+					$.phpok.reload();
+				});
+			});
+		},
+		toV:function()
+		{
+			var ids = $.checkbox.join();
+			if(!ids){
+				$.dialog.alert('未指定ID');
+				return false;
+			}
+			$.phpok.json(get_url('module','field_hv','id='+ids+"&type=0"),function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				$.dialog.tips('操作成功',function(){
+					$.phpok.reload();
+				});
+			});
 		}
 	}
 	$(document).ready(function(){

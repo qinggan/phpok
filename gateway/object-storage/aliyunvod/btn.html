@@ -22,7 +22,7 @@ $(document).ready(function(){
 	<div class="_select">
 		<table>
 		<tr>
-			<td><a href="javascript:void(0);" class="layui-btn layui-btn-sm" style="position: relative;z-index:2;overflow:hidden;">上传{$_rs.upload_type.title}<input type="file" name="file_{$_rs.identifier}" id="file_{$_rs.identifier}" style="z-index:3;position: absolute;left:0;top:0;width:100%;height:100%;opacity:0;" onchange="$.phpok_aliyunvod_gateway.act(this,'{$_rs.identifier}')"/></a></td>
+			<td><a href="javascript:void(0);" class="layui-btn layui-btn-sm" style="position: relative;z-index:2;overflow:hidden;">上传{$_rs.upload_type.title}<input type="file" name="file_{$_rs.identifier}" id="file_{$_rs.identifier}" style="z-index:3;position: absolute;left:0;top:0;width:100%;height:100%;opacity:0;"{if $_rs.is_multiple} multiple="multiple"{/if} onchange="$.phpok_aliyunvod_gateway.act(this,'{$_rs.identifier}')"/></a></td>
 			<!-- if !$_rs.manage_forbid --><td><div><input type="button" class="layui-btn layui-btn-sm" value="{lang选择}{$_rs.upload_type.title}" onclick="$.phpokform.upload_select('{$_rs.identifier}','{$_rs.cate_id}',{$_rs.is_multiple ? 'true' : 'false'})" class="layui-btn layui-btn-sm button" /></div></td><!-- /if -->
 			<td id="{$_rs.identifier}_sort" style="display:none">
 				<div class="layui-btn-group">

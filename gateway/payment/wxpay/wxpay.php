@@ -181,7 +181,7 @@ class wxpay_lib
 		if (!isset($_GET['code'])){
 			$baseUrl = urlencode('https://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
 			$url = $this->__CreateOauthUrlForCode($baseUrl);
-			header("Location: $url");
+			header("Location: ".$url);
 			exit;
 		}else{
 		    $code = $_GET['code'];
@@ -286,26 +286,25 @@ class wxpay_lib
 
 	public function getIp()
 	{
-		if(!empty($_SERVER["HTTP_CLIENT_IP"]))
-		{
-			$cip = $_SERVER["HTTP_CLIENT_IP"];
+		$cip = (isset($_SERVER['HTTP_CLIENT_IP']) AND $_SERVER['HTTP_CLIENT_IP'] != "") ? $_SERVER['HTTP_CLIENT_IP'] : false;
+		$rip = (isset($_SERVER['REMOTE_ADDR']) AND $_SERVER['REMOTE_ADDR'] != "") ? $_SERVER['REMOTE_ADDR'] : false;
+		$fip = (isset($_SERVER['HTTP_X_FORWARDED_FOR']) AND $_SERVER['HTTP_X_FORWARDED_FOR'] != "") ? $_SERVER['HTTP_X_FORWARDED_FOR'] : false;
+		$ip = "Unknown";
+		if($cip && $rip){
+			$ip = $cip;
+		}elseif($rip){
+			$ip = $rip;
+		}elseif($cip){
+			$ip = $cip;
+		}elseif($fip){
+			$ip = $fip;
 		}
-		else if(!empty($_SERVER["HTTP_X_FORWARDED_FOR"]))
-		{
-			$cip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+
+		if (strstr($ip, ',')){
+			$x = explode(',', $ip);
+			$ip = end($x);
 		}
-		else if(!empty($_SERVER["REMOTE_ADDR"]))
-		{
-			$cip = $_SERVER["REMOTE_ADDR"];
-		}
-		else
-		{
-			$cip = '';
-		}
-		preg_match("/[\d\.]{7,15}/", $cip, $cips);
-		$cip = isset($cips[0]) ? $cips[0] : 'unknown';
-		unset($cips);
-		return $cip;
+		return $ip;
 	}
 
 	//创建订单

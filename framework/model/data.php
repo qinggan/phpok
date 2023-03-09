@@ -359,7 +359,7 @@ class data_model_base extends phpok_model
 	//读取当前分类的子分类
 	public function cate_sublist(&$list,$parent_id=0,$rslist='',$identifier='')
 	{
-		if($rslist){
+		if($rslist && is_array($rslist)){
 			foreach($rslist as $key=>$value){
 				if($value['parent_id'] == $parent_id){
 					if($identifier){
@@ -368,6 +368,17 @@ class data_model_base extends phpok_model
 					if($value['_url']){
 						$value['url'] = $value['_url'];
 						unset($value['_url']);
+					}
+					if($value['url'] && !isset($value['title_format'])){
+						$html = '<a href="'.$value['url'].'" title="'.$value['title'].'"';
+						if($value['style']){
+							$html .= ' style="'.$value['style'].'"';
+						}
+						if($value['target']){
+							$html .= ' target="'.$value['target'].'"';
+						}
+						$html .= '>'.$value['title'].'</a>';
+						$value['title_format'] = $html;
 					}
 					$list[$value['id']] = $value;
 					$this->cate_sublist($list,$value['id'],$rslist,$identifier);
@@ -596,21 +607,16 @@ class data_model_base extends phpok_model
 					$ext = unserialize($ext);
 				}
 				//格式化附件信息
-				if($value['form_type'] == "upload" && $rs[$value['identifier']] && $reslist && is_array($reslist))
-				{
-					if($ext['is_multiple'])
-					{
-						$res = false;
+				if($value['form_type'] == "upload" && $rs[$value['identifier']] && $reslist && is_array($reslist)){
+					if($ext['is_multiple']){
+						$res = array();
 						$tmp = explode(',',$rs[$value['identifier']]);
-						foreach($tmp AS $k=>$v)
-						{
+						foreach($tmp as $k=>$v){
 							$v = intval($v);
 							if($v && $reslist[$v]) $res[$v] = $reslist[$v];
 						}
 						$rs[$value['identifier']] = $res;
-					}
-					else
-					{
+					}else{
 						$rs[$value['identifier']] = $reslist[$rs[$value['identifier']]];
 					}
 				}
@@ -618,9 +624,13 @@ class data_model_base extends phpok_model
 			unset($flist);
 		}
 		//格式化分类信息
-		if($rs['cate_id'] && $catelist && $catelist[$rs['cate_id']]) $rs['cate_id'] = $catelist[$rs['cate_id']];
+		if($rs['cate_id'] && $catelist && $catelist[$rs['cate_id']]){
+			$rs['cate_id'] = $catelist[$rs['cate_id']];
+		}
 		//格式化用户信息
-		if($rs['user_id'] && $userlist && $userlist[$rs['user_id']]) $rs['user_id'] = $userlist[$rs['user_id']];
+		if($rs['user_id'] && $userlist && $userlist[$rs['user_id']]){
+			$rs['user_id'] = $userlist[$rs['user_id']];
+		}
 		return $rs;
 	}
 

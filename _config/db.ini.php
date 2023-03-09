@@ -5,7 +5,7 @@ file = "mysqli"
 
 ; 数据库服务器，本地请填写localhost或127.0.0.1
 ; 当使用 http 时，这里填写服务器的 IP，可用于解决无法认别域名问题
-;host = "127.0.0.1"
+host = "127.0.0.1"
 
 ; 数据库服务器的端口号，默认是3306
 ; 使用 http 模式此项无效
@@ -22,7 +22,7 @@ pass = "root"
 ; 数据库名称
 ; 使用 sqlite 或 pdo_sqlite 时，请填写数据库相对地址，要确保文件存在
 ; 使用 mysqli 或 pdo_mysql 时，请填写数据库名称
-data = "phpok5"
+data = "phpok6"
 
 ; 数据表前缀，实现同一个数据库安装不同版本程序，默认使用 qinggan_
 ; 使用 http 模式时，注意生成的 SQL 文件会补上前缀

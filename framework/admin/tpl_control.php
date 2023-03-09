@@ -133,7 +133,7 @@ class tpl_control extends phpok_control
 		$this->lib('file')->deep_ls($tpl_dir,$tpl_list);
 		$ext_length = strlen($rs["ext"]);
 		$myurl = $this->url("tpl","open",'tpl_id='.$tpl_id);
-		$rslist = false;
+		$rslist = array();
 		foreach($tpl_list as $key=>$value){
 			$tmp = str_replace($tpl_dir,'',$value);
 			$bname = $this->lib('string')->to_utf8($tmp);

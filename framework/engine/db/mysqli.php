@@ -45,10 +45,10 @@ class db_mysqli extends db
 	{
 		$this->_time();
 		$this->conn = mysqli_init();
-		@mysqli_real_connect($this->conn,$this->host,$this->user,$this->pass,$this->database,$this->port,$this->socket,MYSQLI_CLIENT_COMPRESS);
-		if(mysqli_connect_errno($this->conn)){
+		if(!$this->conn){
 			$this->error(mysqli_connect_error($this->conn),mysqli_connect_errno($this->conn));
 		}
+		@mysqli_real_connect($this->conn,$this->host,$this->user,$this->pass,$this->database,$this->port,$this->socket,MYSQLI_CLIENT_COMPRESS);
 		if(mysqli_error($this->conn)){
 			$this->error(mysqli_error($this->conn),mysqli_errno($this->conn));
 		}
@@ -350,6 +350,7 @@ class db_mysqli extends db
 	**/
 	public function query($sql)
 	{
+		$this->checkquery($sql);
 		$this->check_connect();
 		$this->_time();
 		$this->query = mysqli_query($this->conn,$sql);
@@ -401,7 +402,7 @@ class db_mysqli extends db
 	{
 		return $this->transaction('rollback');
 	}
-	
+
 	/**
 	 * 事务开始
 	**/
@@ -415,8 +416,8 @@ class db_mysqli extends db
 	 * @参数 $type  当值为【start,begin,1,open,init】，表示开启事务
 	 *             当值为【finish,end,ok,true,2,commit,right,success】表示提交事务
 	 *             当值为【cacel,stop,fail,false,0,wrong,error,rollback】表示回滚事务
-	 * @参数 
-	 * @参数 
+	 * @参数
+	 * @参数
 	**/
 	public function transaction($type='')
 	{
@@ -468,7 +469,7 @@ class db_mysqli extends db
 			$this->type = MYSQLI_ASSOC;
 		}
 		return $this->type;
-	}	
+	}
 
 	/**
 	 * 增加或修改表字段
@@ -564,5 +565,5 @@ class db_mysqli extends db
 			return mysqli_get_client_info($this->conn);
 		}
 	}
-	
+
 }

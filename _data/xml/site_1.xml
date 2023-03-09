@@ -5,12 +5,9 @@
 	<login_type_email><![CDATA[email_code]]></login_type_email>
 	<login_type_sms><![CDATA[sms_code]]></login_type_sms>
 	<adm_logo50><![CDATA[]]></adm_logo50>
-	<encode_type><![CDATA[public_key]]></encode_type>
-	<public_key><![CDATA[]]></public_key>
-	<private_key><![CDATA[]]></private_key>
 	<biz_status><![CDATA[1]]></biz_status>
-	<biz_freight><![CDATA[0]]></biz_freight>
+	<biz_freight><![CDATA[1]]></biz_freight>
 	<biz_main_service><![CDATA[1]]></biz_main_service>
 	<biz_is_user><![CDATA[0]]></biz_is_user>
-	<favicon><![CDATA[res/202111/29/73262b8dbac46c75.png]]></favicon>
+	<favicon><![CDATA[https://cdn.phpok.com/res/202107/27/936b0ca9dcf0ae06.png]]></favicon>
 </root>

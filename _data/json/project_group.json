@@ -1,4 +1,6 @@
 {
-    "default": "我的应用",
-    "ext001": "测试"
+    "default": "应用",
+    "miniprogram": "小程序",
+    "pc": "电脑端",
+    "mobile": "手机端"
 }

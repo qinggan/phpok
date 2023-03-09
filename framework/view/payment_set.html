@@ -13,10 +13,24 @@
 			<label class="layui-form-label">
 				{lang支付名称}
 			</label>
-			<div class="layui-input-block">
+			<div class="layui-input-inline default-auto">
 				<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
 			</div>
-			<div class="layui-input-block mtop">{lang设置一个支付名称，该名称在前台会显示出来}</div>
+			<div class="layui-form-mid">
+				{lang设置一个支付名称，该名称在前台会显示出来}
+			</div>
+		</div>
+		
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang后台备注}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" id="admin_note" name="admin_note" class="layui-input" value="{$rs.admin_note}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang仅限后台使用}
+			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -29,7 +43,7 @@
 					<!-- /loop -->
 				</select>
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang设置支付所属组，此项不能为空}</div>
+			<div class="layui-form-mid">{lang设置支付所属组，此项不能为空}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -39,7 +53,7 @@
 				<input type="radio" name="status" value="1"{if $rs.status} checked{/if} title="{lang启用}" />
 				<input type="radio" name="status" value="0"{if !$rs.status} checked{/if} title="{lang禁用}" />
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang只有启用此项，前台支付才能生效}</div>
+			<div class="layui-form-mid">{lang只有启用此项，前台支付才能生效}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -49,7 +63,7 @@
 				<input type="radio" name="wap" value="1"{if $rs.wap} checked{/if} title="{lang启用}" />
 				<input type="radio" name="wap" value="0"{if !$rs.wap} checked{/if} title="{lang禁用}" />
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang启用后将允许在手机端使用该支付接口}</div>
+			<div class="layui-form-mid">{lang启用后将允许在手机端使用该支付接口}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -59,7 +73,7 @@
 				<input type="radio" name="iframe" value="1"{if $rs.iframe} checked{/if} title="{lang嵌入}" />
 				<input type="radio" name="iframe" value="0"{if !$rs.iframe} checked{/if} title="{lang跳转}" />
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang嵌入模式主要用于不离开当前网站使用}</div>
+			<div class="layui-form-mid">{lang嵌入模式主要用于不离开当前网站使用}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -73,7 +87,7 @@
 					<!-- /loop -->
 				</select>
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang仅支持单选，不清楚请选择：人民币}</div>
+			<div class="layui-form-mid">{lang仅支持单选，不清楚请选择：人民币}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -82,7 +96,7 @@
 			<div class="layui-input-inline default-auto">
 				{func form_edit logo1 $rs.logo1 text form_btn=image&width=500}
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang设置该支付接口的小图，建议使用正方形小图}</div>
+			<div class="layui-form-mid">{lang设置该支付接口的小图，建议使用正方形小图}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -91,7 +105,7 @@
 			<div class="layui-input-inline default-auto">
 				{func form_edit logo2 $rs.logo2 text form_btn=image&width=500}
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang设置该支付图片，建议使用长方形，如160x50之类的}</div>
+			<div class="layui-form-mid">{lang设置该支付图片，建议使用长方形，如160x50之类的}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -100,7 +114,7 @@
 			<div class="layui-input-inline default-auto">
 				{func form_edit logo3 $rs.logo3 text form_btn=image&width=500}
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang这个图片一般是大图，适用于一些需要大图的场合}</div>
+			<div class="layui-form-mid">{lang这个图片一般是大图，适用于一些需要大图的场合}</div>
 		</div>
 		<!-- loop from=$extlist.code key=$key value=$value -->
 		<!-- php:$valinfo = ($rs['param'] && $rs['param'][$key]) ? $rs['param'][$key] : $value.default -->
@@ -152,7 +166,7 @@
 			<div class="layui-input-inline">
 				<input type="text" id="taxis" name="taxis" class="layui-input" value="{$id ? $rs.taxis : 255}" />
 			</div>
-			<div class="layui-input-inline auto gray lh38">{lang值范围在0-255，越小越往前靠，默认为255}</div>
+			<div class="layui-form-mid">{lang值范围在0-255，越小越往前靠，默认为255}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">

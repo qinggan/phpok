@@ -12,15 +12,11 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class inp_control extends phpok_control
 {
-	var $form_list;
 	var $field_list;
 	var $format_list;
 	public function __construct()
 	{
 		parent::control();
-		$this->form_list = $this->model("form")->form_list();
-		$this->field_list = $this->model("form")->field_list();
-		$this->format_list = $this->model("form")->format_list();
 	}
 
 	//取得表单数据

@@ -58,6 +58,41 @@ class order_control extends phpok_control
 			$pageurl = $this->url('order','','status='.rawurlencode($status));
 			$this->assign('status',$status);
 		}
+		$keywords = $this->get('keywords');
+		if($keywords){
+			$tmp = str_replace(' ','%',$keywords);
+			$sql = "SELECT DISTINCT op.order_id FROM ".$this->db->prefix."order_product op LEFT JOIN ".$this->db->prefix."order o ON(op.order_id=o.id) WHERE o.user_id='".$this->session->val('user_id')."' AND op.title LIKE '%".$tmp."%' ORDER BY o.id DESC LIMIT 500";
+			$tmplist = $this->db->get_all($sql);
+			if($tmplist){
+				$o_ids = array();
+				foreach($tmplist as $key=>$value){
+					$o_ids[] = $value['order_id'];
+				}
+				$condition .= " AND (id IN(".implode(",",$o_ids).") OR sn LIKE '%".$keywords."%')";
+			}else{
+				$condition .= " AND sn LIKE '%".$keywords."%'";
+			}
+			$this->assign('keywords',$keywords);
+			$pageurl .= "&keywords=".rawurlencode($keywords);
+		}
+		$days = $this->get('days');
+		if($days){
+			$this->assign('days',$days);
+			$pageurl .= "&days=".rawurlencode($days);
+			$tmp = explode(":",$days);
+			if($tmp[1] && is_numeric($tmp[1])){
+				if($tmp[0] == 'day'){
+					$condition .= " AND addtime>=".($this->time-($tmp[1]*24*3600));
+				}
+				if($tmp[0] == 'month'){
+					$tmptime = mktime(0, 0, 0, date("m",$this->time)-$tmp[1], 1, date("Y",$this->time));
+					$condition .= " AND addtime>=".$tmptime;
+				}
+				if($tmp[0] == 'year'){
+					$condition .= " AND FROM_UNIXTIME(addtime,'%Y')=".$tmp[1];
+				}
+			}
+		}
 		$total = $this->model('order')->get_count($condition);
 		if($total){
 			$rslist = $this->model('order')->get_list($condition,$offset,$psize);
@@ -86,6 +121,26 @@ class order_control extends phpok_control
 		if(!$tplfile){
 			$tplfile = 'order_list';
 		}
+		$yearlist = array();
+		
+		
+		$sql = "SELECT MIN(addtime) FROM ".$this->db->prefix."order";
+		$tmp = $this->db->count($sql);
+		if($tmp){
+			$yearlist[] = array('content'=>"day:30",'title'=>P_Lang('30天内订单'));
+			$tmptime = mktime(0, 0, 0, date("m",$this->time)-3, 1, date("Y",$this->time));
+			if($tmp && $tmp<$tmptime){
+				$yearlist[] = array('content'=>"month:3",'title'=>P_Lang('三个月内订单'));
+			}
+			$year = date("Y",$this->time);
+			for($i=$year;$i>=$tmp;$i--){
+				$yearlist[] = array('content'=>"year:".$i,'title'=>P_Lang('{year}年订单',array('year'=>$i)));
+			}
+		}else{
+			$year = date("Y",$this->time);
+			$yearlist[] = array('content'=>"year:".$year,'title'=>P_Lang('{year}年订单',array('year'=>$year)));
+		}
+		$this->assign('yearlist',$yearlist);
 		$this->view($tplfile);
 	}
 
@@ -227,18 +282,40 @@ class order_control extends phpok_control
 			$this->error($order['error'],$back);
 		}
 		$rs = $order['info'];
-		$this->assign('rs',$rs);
-		$price_paid = $this->model('order')->paid_price($rs['id']);
+		$status_list = $this->model('order')->status_list();
+		$price_unpaid = $unpaid_price = $this->model('order')->unpaid_price($rs['id']);
+		$price_paid = $paid_price = $this->model('order')->paid_price($rs['id']);
+		if($unpaid_price > 0){
+			if($paid_price>0){
+				$rs['pay_info'] = P_Lang('部分支付');
+			}else{
+				$rs['pay_info'] = P_Lang('未支付');
+			}
+		}else{
+			$rs['pay_info'] = P_Lang('已支付');
+		}
+		$rs['status_info'] = ($status_list && $status_list[$rs['status']]) ? $status_list[$rs['status']] : $rs['status'];
 		$this->assign('price_paid',$price_paid);
-		$price_unpaid = $this->model('order')->unpaid_price($rs['id']);
 		$this->assign('price_unpaid',$price_unpaid);
+		$this->assign('price_val',($price_unpaid ? $price_unpaid : $rs['price']));
+		$this->assign('rs',$rs);
 		unset($order);
 		if($price_unpaid && $price_unpaid<0.01){
 			$url = $this->session->val('user_id') ? $this->url('order','info','id='.$rs['id']) : $this->url('order','info','sn='.$rs['sn'].'&passwd='.$rs['passwd']);
 			$this->success(P_Lang('您的订单 {sn} 已经支付完成',array('sn'=>$rs['sn'])),$url);
 		}
-		$mobile = $this->is_mobile ? 1 : 0;
-		$paylist = $this->model('payment')->get_all($this->site['id'],1,$mobile);
+		//支付方式
+		$user_agent = $_SERVER['HTTP_USER_AGENT'];
+		$weixin_client = false;
+		$miniprogram_client = false;
+		if($user_agent && strpos(strtolower($user_agent),'micromessenger') !== false){
+			$weixin_client = true;
+		}
+		if($user_agent && strpos(strtolower($user_agent),'miniprogram') !== false){
+			$miniprogram_client = true;
+		}
+		$is_mobile = ($this->is_mobile() || $weixin_client || $miniprogram_client) ? true : false;
+		$paylist = $this->model('payment')->get_all($this->site['id'],1,$is_mobile);
 		if(!$paylist){
 			$this->error(P_Lang('系统未配置支付方式，请检查'));
 		}	
@@ -247,8 +324,29 @@ class order_control extends phpok_control
 				unset($paylist[$key]);
 				continue;
 			}
+			if($weixin_client || $miniprogram_client){
+				foreach($value['paylist'] as $k=>$v){
+					if($v['code'] != 'wxpay'){
+						unset($value['paylist'][$k]);
+						continue;
+					}
+					$t = array();
+					if($v['param'] && is_string($v['param'])){
+						$t = unserialize($v['param']);
+					}
+					if($miniprogram_client && $t['trade_type'] != 'miniprogram'){
+						unset($value['paylist'][$k]);
+						continue;
+					}
+					if(!$miniprogram_client && $t['trade_type'] == 'miniprogram'){
+						unset($value['paylist'][$k]);
+						continue;
+					}
+				}
+				$paylist[$key] = $value;
+			}
 		}
-		$this->assign("paylist",$paylist);
+		$this->assign('paylist',$paylist);
 		$addressconfig = $this->config['order']['address'] ? explode(",",$this->config['order']['address']) : array('shipping');
 		if($addressconfig){
 			$address = array();
@@ -347,6 +445,7 @@ class order_control extends phpok_control
 			return false;
 		}
 		$wlist = $this->model('order')->balance($this->session->val('user_id'));
+		
 		if(!$wlist){
 			return false;
 		}
@@ -573,6 +672,10 @@ class order_control extends phpok_control
 		}
 		$this->assign('rslist',$rslist);
 		$this->assign('rs',$rs);
-		$this->view('order_logistics');
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'order_logistics';
+		}
+		$this->view($tplfile);
 	}
 }

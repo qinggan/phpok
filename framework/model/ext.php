@@ -30,24 +30,28 @@ class ext_model_base extends phpok_model
 	**/
 	public function ext_all($module,$show_content=true)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ftype='".$module."' ORDER BY taxis ASC,id DESC";
-		if($show_content){
-			$sql = "SELECT e.*,c.content content_val FROM ".$this->db->prefix."fields e ";
-			$sql.= "LEFT JOIN ".$this->db->prefix."extc c ON(e.id=c.id) ";
-			$sql.= "WHERE e.ftype='".$module."' ";
-			$sql.= "ORDER BY e.taxis asc,id DESC";
-		}
-		$rslist = $this->db->get_all($sql);
+		$rslist = $this->model('fields')->flist($module);
 		if(!$rslist){
 			return false;
 		}
 		if($show_content){
-			foreach($rslist AS $key=>$value){
-				if($value['content_val']){
-					$value["content"] = $value['content_val'];
+			$ids = array();
+			foreach($rslist as $key=>$value){
+				$ids[] = $value['id'];
+			}
+			$sql = "SELECT * FROM ".$this->db->prefix."extc WHERE id IN(".implode(",",$ids).")";
+			$tmplist = $this->db->get_all($sql);
+			$rs = array();
+			if($tmplist){
+				foreach($tmplist as $key=>$value){
+					$rs[$value['id']] = $value['content'];
 				}
-				unset($value['content_val']);
-				$rslist[$key] = $value;
+			}
+			foreach($rslist as $key=>$value){
+				if(isset($rs[$value['id']]) && $rs[$value['id']] != ''){
+					$value['content'] = $rs[$value['id']];
+					$rslist[$key] = $value;
+				}
 			}
 		}
 		return $rslist;
@@ -82,8 +86,7 @@ class ext_model_base extends phpok_model
 	# 取得单个字段的配置
 	public function get_one($id)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id='".$id."'";
-		return $this->db->get_one($sql);
+		return $this->model('fields')->one($id);
 	}
 
 
@@ -123,11 +126,15 @@ class ext_model_base extends phpok_model
 		$sql.= "JOIN ".$this->db->prefix."extc extc ON(ext.id=extc.id) ";
 		$sql.= "WHERE ext.ftype LIKE '".$id."%' ORDER BY ext.taxis ASC,ext.id DESC";
 		$rslist = $this->db->get_all($sql);
-		if(!$rslist) return false;
-		$list = false;
-		foreach($rslist AS $key=>$value)
-		{
+		if(!$rslist){
+			return false;
+		}
+		$list = array();
+		foreach($rslist as $key=>$value){
 			$list[$value["ftype"]][$value["identifier"]] = content_format($value);
+		}
+		if(!$list || count($list)<1){
+			return false;
 		}
 		return $list;
 	}

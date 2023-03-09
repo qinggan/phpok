@@ -134,6 +134,35 @@ function marginSetting(id,obj)
 
 ;(function($){
 	$.admin_design = {
+		save:function(obj)
+		{
+			$.phpok.submit(obj,get_url('design','save'),function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				$.dialog.tips('数据保存成功',function(){
+					$.admin.close(get_url('design','list'));
+				}).lock();
+				return true;
+			});
+			return false;
+		},
+		delete:function(id)
+		{
+			$.dialog.confirm(p_lang('确定要删除ID为：{id} 的组件吗？删除后不能恢复',{'id':id}),function(){
+				var url = get_url('design','delete','id='+id);
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.tips(rs.info);
+						return false;
+					}
+					$.dialog.tips('操作成功',function(){
+						$.phpok.reload();
+					}).lock();
+				});
+			});
+		},
 		padding:function(obj)
 		{
 			var top = obj.css("padding-top");

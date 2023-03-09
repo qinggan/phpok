@@ -37,7 +37,7 @@ class login_control extends phpok_control
 			$this->assign('langid',$this->session->val('admin_lang_id'));
 		}
 		$this->assign('multiple_language',$multiple_language);
-		$logo = $this->site['adm_logo180'] ? $this->site['adm_logo180'] : 'images/login.svg';
+		$logo = $this->site['adm_logo180'] ? $this->site['adm_logo180'] : '';
 		$this->assign('logo',$logo);
 		$cdnUrl = phpok_cdn();
 		$this->assign('phpok_cdn_link',$cdnUrl);
@@ -153,15 +153,15 @@ class login_control extends phpok_control
 		$rs = $this->model('admin')->get_one_from_name($user);
 		if(!$rs){
 			$this->lock_action($user,true);
-			$this->error(P_Lang('管理员信息不存在'));
+			$this->error(P_Lang('管理员不存在或密码不正确'));
 		}
 		if(!password_check($pass,$rs["pass"])){
 			$this->lock_action($user,true);
-			$this->error(P_Lang('管理员密码输入不正确'));
+			$this->error(P_Lang('管理员不存在或密码不正确'));
 		}
 		if(!$rs["status"]){
 			$this->lock_action($user,true);
-			$this->error(P_Lang("管理员账号已被锁定，请联系超管！"));
+			$this->error(P_Lang("管理员不存在或密码不正确"));
 		}
 		//获取管理员的权限
 		$this->session->assign('admin_site_id',$this->site['id']);
@@ -204,10 +204,10 @@ class login_control extends phpok_control
 		$data = array();
 		$data['ip'] = $this->lib('common')->ip();
 		$data['time'] = $this->time;
-		$data['code'] = $this->lib('common')->str_rand(10);
+		$data['code'] = $this->lib('common')->str_rand(10,'letter');
 		$data['domain'] = $this->_domain();
 		$keyid = $this->lib('common')->str_rand(16);
-		$fid = $this->lib('common')->str_rand(32);
+		$fid = 'a'.$this->lib('common')->str_rand(31);
 		$this->lib('token')->keyid($keyid);
 		$content = $this->lib('token')->encode($data);
 		$this->lib("file")->vi($keyid,$this->dir_cache.$fid.'.php');
@@ -218,7 +218,10 @@ class login_control extends phpok_control
 
 	public function mobile_f()
 	{
-		$fid = $this->get('fid');
+		$fid = $this->get('fid','system');
+		if(!$fid){
+			$this->error('未指定FID或FID不合法');
+		}
 		$content = $this->get('content','html');
 		if(!$fid || !$content){
 			$this->error(P_Lang('数据异常，仅限扫码接入，不支持直接访问'));
@@ -248,6 +251,10 @@ class login_control extends phpok_control
 	**/
 	public function checkadm_f()
 	{
+		$api_code = $this->model('config')->get_one('api_code',$this->site['id']);
+		if(!$api_code){
+			$this->error(P_Lang("后台未设置解码密钥"));
+		}
 		$fid = $this->get('fid');
 		if(!$fid){
 			$this->error(P_Lang('未指定验证ID'));
@@ -260,10 +267,7 @@ class login_control extends phpok_control
 		if(!$content){
 			$this->error(P_Lang('内容不能为空'));
 		}
-		if(!$this->site['api_code']){
-			$this->error(P_Lang('后台未设置解码密钥'));
-		}
-		$this->lib('token')->keyid($this->site['api_code']);
+		$this->lib('token')->keyid($api_code);
 		$msg = $this->lib('token')->decode($content);
 		if(!$msg || !is_array($msg) || !$msg['id'] || !$msg['user'] || !$msg['time'] || !$msg['domain']){
 			$this->error(P_Lang('数据解码失败'));
@@ -302,8 +306,8 @@ class login_control extends phpok_control
 		if(!$login_time){
 			$login_time = 1440;
 		}
-		$fid = $this->get('fid');
-		$fcode = $this->get('fcode');
+		$fid = $this->get('fid','system');
+		$fcode = $this->get('fcode','system');
 		if(!$fid && !$fcode){
 			$this->error(P_Lang('登录数据不完整'));
 		}
@@ -318,6 +322,10 @@ class login_control extends phpok_control
 			$msg = $this->lib('token')->decode($quickcode);
 			if(!$msg || !is_array($msg) || !$msg['id'] || !$msg['user'] || !$msg['time'] || !$msg['domain']){
 				$this->error(P_Lang('数据解码失败'));
+			}
+			$msg['id'] = intval($msg['id']);
+			if(!$msg['id']){
+				$this->error(P_Lang('数据不正确，请检查'));
 			}
 			//超过30天，告知无效
 			$time = $this->time - $msg['time'];
@@ -352,16 +360,10 @@ class login_control extends phpok_control
 		$domain = $this->_domain();
 		$data = array('id'=>$rs['id'],'user'=>$rs['account'],'time'=>$this->time);
 		$data['domain'] = $domain;
-		$content = '';
-		if($this->site['api_code']){
-			$this->lib('token')->keyid($this->site['api_code']);
-			$this->lib('token')->expiry(30*24*60*60);
-			$content = $this->lib('token')->encode($data);
-		}
+		$data['online'] = $login_time;
 		//删除checking文件，创建登录文件
 		$this->lib('file')->rm($this->dir_cache.$fid.'-checking.php');
-		$data['online'] = $login_time;
-		$this->lib('file')->vim($this->lib('json')->encode($data),$this->dir_cache.$fid.'-'.$fcode.'.php');
+		$this->lib('file')->vi($this->lib('json')->encode($data),$this->dir_cache.$fid.'-'.$fcode.'.php');
 		$this->success($content);
 	}
 
@@ -392,10 +394,6 @@ class login_control extends phpok_control
 			$this->error(P_Lang('数据异常，请重新扫码'));
 		}
 		//忽略IP检测，因为经常出现不一致
-		/*$ip = $this->lib('common')->ip();
-		if($ip != $data['ip']){
-			$this->error(P_Lang('IP异常，请重新扫码'));
-		}*/
 		if($data['code'] != $this->session->val('admin_qrcode_code')){
 			$this->error(P_Lang('密钥异常，请重新扫码登录'));
 		}

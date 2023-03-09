@@ -17,7 +17,7 @@
 				{$value.title}
 				<div class="darkblue"><small>[{$value.identifier}]</small></div>
 			</label>
-			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
+			<!-- if $value.note --><div class="layui-input-block gray">{$value.note}</div><!-- /if -->
 			<div class="layui-input-block">
 				{$value.html}
 			</div>
@@ -27,7 +27,7 @@
 					<!-- if $ext_module != 'add-cate' -->
 					<input type="button" value="{lang编辑}" class="layui-btn layui-btn-xs" onclick="ext_edit('{$value.identifier}','{$ext_module}')" />
 					<!-- /if -->
-					<input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-normal" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')" />
+					<input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-danger" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')" />
 				</div>
 			</div>
 			<!-- /if -->

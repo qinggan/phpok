@@ -23,7 +23,11 @@
 			return true;
 		}
 		var tips = "已发送("+time+")";
-		$(obj).val(tips);
+		if($(obj).is('input')){
+			$(obj).val(tips);
+		}else{
+			$(obj).html(tips);
+		}
 	}
 
 	$.vcode = {
@@ -84,7 +88,9 @@
 			}else{
 				url += "&email="+$.str.encode(val);
 			}
+			var aInfo = $.dialog.tips('正在操作中，请稍候…').lock();
 			$.phpok.json(url,function(rs){
+				aInfo.close();
 				if(!rs.status){
 					$.dialog.tips(rs.info).lock();
 					return false;
@@ -167,24 +173,19 @@
 		},
 		repass:function(obj)
 		{
-			$(obj).ajaxSubmit({
-				url:api_url('login','repass'),
-				type:'post',
-				dataType:'json',
-				success:function(rs){
-					if(rs.status){
-						$.dialog.alert(p_lang('密码修改成功，请登录'),function(){
-							$.phpok.go(get_url('login'));
-							return true;
-						},'succeed');
+			$.phpok.submit(obj,api_url('login','repass'),function(rs){
+				if(rs.status){
+					$.dialog.tips(p_lang('密码修改成功，请登录'),function(){
+						$.phpok.go(get_url('login'));
 						return true;
-					}
-					if(!rs.info){
-						rs.info = p_lang('获取失败，请联系管理员。');
-					}
-					$.dialog.alert(rs.info);
-					return false;
+					});
+					return true;
 				}
+				if(!rs.info){
+					rs.info = p_lang('获取失败，请联系管理员。');
+				}
+				$.dialog.tips(rs.info);
+				return false;
 			});
 			return false;
 		},
@@ -195,31 +196,26 @@
 			}else{
 				var url = api_url('login');
 			}
-			$(obj).ajaxSubmit({
-				'url':url,
-				'type':'post',
-				'dataType':'json',
-				'success':function(rs){
-					if(!rs.status){
-						$.dialog.tips(rs.info);
-						$("input[name=_chkcode]").val('');
-						$("#vcode").phpok_vcode();
-						return false;
-					}
-					$.dialog.tips('用户登录成功').lock();
-					if(type == 'open'){
-						top.$.phpok.reload();
-						return true;
-					}
-					if(!rs.url || rs.url == 'undefined'){
-						rs.url = $("#_back").val();
-						if(!rs.url){
-							rs.url = webroot;
-						}
-					}
-					$.phpok.go(rs.url);
+			$.phpok.submit(obj,url,function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					$("input[name=_chkcode]").val('');
+					$("#vcode").phpok_vcode();
 					return false;
 				}
+				$.dialog.tips('用户登录成功').lock();
+				if(type == 'open'){
+					top.$.phpok.reload();
+					return true;
+				}
+				if(!rs.url || rs.url == 'undefined'){
+					rs.url = $("#_back").val();
+					if(!rs.url){
+						rs.url = webroot;
+					}
+				}
+				$.phpok.go(rs.url);
+				return false;
 			});
 			return false;
 		}
@@ -236,10 +232,15 @@
 		 * 用户退出操作
 		**/
 		logout: function(name){
-			var tip = '您确定要退出吗？';
-			if(name && name != 'undefined'){
-				tip = '您（<i style="color:red;">'+name+'</i>）确定要退出吗？';
+			if(!name || name == 'undefined'){
+				$.phpok.json(api_url('logout'),function(rs){
+					$.dialog.tips('成功退出，欢迎您再次登录',function(){
+						$.phpok.go(webroot);
+					}).lock();
+				});
+				return false;
 			}
+			var tip = '您（<i style="color:red;">'+name+'</i>）确定要退出吗？';
 			$.dialog.confirm(tip,function(){
 				$.phpok.json(api_url('logout'),function(rs){
 					$.dialog.tips('成功退出，欢迎您再次登录',function(){
@@ -252,58 +253,55 @@
 		//修改个人信息事件
 		info:function(obj)
 		{
-			$(obj).ajaxSubmit({
-				type:'post',
-				url: api_url('usercp','info'),
-				dataType:'json',
-				success: function(rs){
-					if(!rs.status){
-						$.dialog.alert(rs.info);
-						return false;
-					}
-					$.dialog.alert(p_lang('您的信息更新成功'),function(){
-						$.phpok.reload();
-					},'succeed');
-					return true;
+			$.phpok.submit(obj,api_url('usercp','info'),function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
 				}
+				$.dialog.tips(p_lang('您的信息更新成功'));
+				return true;
+			});
+			return false;
+		},
+		email:function(obj)
+		{
+			$.phpok.submit(obj,api_url('usercp','email'),function(rs){
+				if(!rs.status){
+					$.dialog.alert(rs.info);
+					return false;
+				}
+				$.dialog.tips(p_lang('您的邮箱更新成功'),function(){
+					$.phpok.reload()
+				}).lock();
+				return true;
 			});
 			return false;
 		},
 		mobile:function(obj)
 		{
-			$(obj).ajaxSubmit({
-				type:'post',
-				url: api_url('usercp','mobile'),
-				dataType:'json',
-				success: function(rs){
-					if(!rs.status){
-						$.dialog.alert(rs.info);
-						return false;
-					}
-					$.dialog.alert(p_lang('您的手机号更新成功'),function(){
-						$.phpok.reload();
-					},'succeed');
-					return true;
+			$.phpok.submit(obj,api_url('usercp','mobile'),function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
 				}
+				$.dialog.tips(p_lang('您的手机号更新成功'),function(){
+					$.phpok.reload();
+				}).lock();
+				return true;
 			});
 			return false;
 		},
 		pass:function(obj)
 		{
-			$(obj).ajaxSubmit({
-				type:'post',
-				url: api_url('usercp','passwd'),
-				dataType:'json',
-				success: function(rs){
-					if(!rs.status){
-						$.dialog.alert(rs.info);
-						return false;
-					}
-					$.dialog.alert(p_lang('您的密码更新成功'),function(){
-						$.phpok.reload();
-					},'succeed');
-					return true;
+			$.phpok.submit(obj,api_url('usercp','passwd'),function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
 				}
+				$.dialog.tips(p_lang('您的密码更新成功'),function(){
+					$.phpok.reload();
+				});
+				return true;
 			});
 			return false;
 		},
@@ -312,7 +310,7 @@
 			$.dialog.confirm(p_lang('确定要更新邀请码吗？更新后旧的邀请码就会失败'),function(){
 				$.phpok.json(api_url('usercp','vcode'),function(rs){
 					if(!rs.status){
-						$.dialog.alert(rs.info);
+						$.dialog.tips(rs.info);
 						return false;
 					}
 					$.dialog.tips(p_lang('邀请码更新成功'),function(){
@@ -330,23 +328,19 @@
 				$.dialog.alert('注册前请先同意本站协议');
 				return false;
 			}
-			$(obj).ajaxSubmit({
-				'url':api_url('register','save'),
-				'type':'post',
-				'dataType':'json',
-				'success':function(rs){
-					if(rs.status){
-						$.dialog.tips('用户注册成功').lock();
+			$.phpok.submit(obj,api_url('register','save'),function(rs){
+				if(rs.status){
+					$.dialog.tips('用户注册成功',function(){
 						var url = $("#_back").val();
 						if(!url){
 							url = webroot;
 						}
 						$.phpok.go(url);
-						return true;
-					}
-					$.dialog.alert(rs.info);
-					return false;
+					}).lock();
+					return true;
 				}
+				$.dialog.tips(rs.info);
+				return false;
 			});
 			return false;
 		},
@@ -362,22 +356,148 @@
 	$.comment = {
 		post:function(obj)
 		{
-			$(obj).ajaxSubmit({
-				'url':api_url('comment','save'),
-				'type':'post',
-				'dataType':'json',
-				'success':function(rs){
-					if(rs.status){
-						$.dialog.alert('感谢您提交的评论',function(){
-							$.phpok.reload();
-						},'succeed');
-						return true;
-					}
-					$.dialog.alert(rs.info);
+			var url = api_url('comment','save');
+			$.phpok.submit(obj,url,function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
 					return false;
 				}
+				$.dialog.tips(p_lang('感谢您提交的评论'),function(){
+					$.phpok.reload();
+				}).lock();
 			});
 			return false;
+		},
+		reply:function(id,tid,vcode)
+		{
+			var html = '<textarea class="form-control" rows="3" id="_reply_content" style="width:350px;resize: none;" placeholder="请在这里输入评论"></textarea>';
+			if(vcode == 1){
+				html += '<div style="margin-top:10px;">';
+				html += '<div class="row">';
+				html += '<div class="col"><input class="form-control" type="text" id="_chkcode_reply" placeholder="请填写验证码" /></div>';
+				html += '<div class="col"><img src="" border="0" align="absmiddle" id="vcode2" class="hand" /></div>';
+				html += '</div></div>';
+				
+			}
+			$.dialog({
+				'title':p_lang('回复此评论'),
+				'content':html,
+				'fixed':true,
+				'padding':'5px 10px',
+				'lock':true,
+				'ok':function(){
+					var url = api_url('comment','save');
+					url += "&tid="+tid+"&parent_id="+id+"&vtype=title";
+					var content = $("#_reply_content").val();
+					if(!content){
+						$.dialog.tips('评论内容不能为空');
+						return false;
+					}
+					url += "&comment="+$.str.encode(content);
+					if(vcode == 1){
+						var chkcode = $("#_chkcode_reply").val();
+						if(!chkcode){
+							$.dialog.tips('没有填写验证码');
+							return false;
+						}
+						url += "&_chkcode="+chkcode;
+					}
+					$.phpok.json(url,function(rs){
+						if(!rs.status){
+							$.dialog.tips(rs.info);
+							return false;
+						}
+						$.dialog.tips('回复成功',function(){
+							$.phpok.reload();
+						}).lock();
+					});
+					return false;
+				},
+				'init':function(){
+					$("#vcode2").phpok_vcode();
+					$("#vcode2").click(function(){
+						$(this).phpok_vcode();
+					});
+				},
+				'okVal':p_lang('发送评论'),
+				'cancel':true
+			});
+		},
+		click:function(id,code,type)
+		{
+			var url = '';
+			if(type == 'list'){
+				url = api_url('content','click','id='+id+"&code="+code);
+			}
+			if(type == 'reply'){
+				url = api_url('comment','click','id='+id+"&code="+code);
+			}
+			if(!url){
+				$.dialog.tips('未指定目标链接');
+				return false;
+			}
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				var info = rs.info;
+				if(!info.total){
+					info.total = 0;
+				}
+				$("#"+code+"-"+id+'-total').html('('+info.total+')');
+				if(info.action == 'add'){
+					$("#"+code+"-"+id+'-img').attr("src",info.icon1);
+				}else{
+					$("#"+code+"-"+id+'-img').attr("src",info.icon2);
+				}
+			})
+		},
+		vouch:function(id,vouch)
+		{
+			if(vouch == 0){
+				$.dialog.confirm('确定要取消此评论推荐吗？',function(){
+					var url = api_url('comment','vouch','id='+id+"&vouch=0");
+					$.phpok.json(url,function(rs){
+						if(!rs.status){
+							$.dialog.tips(rs.info);
+							return false;
+						}
+						$.dialog.tips('取消推荐成功',function(){
+							$.phpok.reload();
+						}).lock();
+						return false;
+					})
+				});
+				return false;
+			}
+			var url = api_url('comment','vouch','id='+id+"&vouch=1");
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				$.dialog.tips('推荐成功',function(){
+					$.phpok.reload();
+				}).lock();
+				return false;
+			})
+		},
+		del:function(id)
+		{
+			$.dialog.confirm('确定要删除此评论吗？评论的回复也将同时删除。',function(){
+				var url = api_url('comment','delete','id='+id);
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.tips(rs.info);
+						return false;
+					}
+					$.dialog.tips('删除成功',function(){
+						$.phpok.reload();
+					}).lock();
+					return false;
+				})
+			});
 		}
 	};
 
@@ -433,8 +553,15 @@
 		{
 			$.dialog.confirm(p_lang('确定要删除这个地址吗？地址ID {id}',"#"+id),function(){
 				var url = api_url('address','delete','id='+id);
-				$.phpok.json(url,function(){
-					$.phpok.reload();
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.tips(rs.info).lock();
+						return false;
+					}
+					$.dialog.tips(p_lang('地址删除成功'),function(){
+						$.phpok.reload();
+					}).lock();
+					return false;
 				})
 			});
 		},
@@ -473,21 +600,21 @@
 					return false;
 				}
 				var html = that._country_html(rs.info.country,country);
-				$("#country").html(html).show();
+				$("#country").html(html).parent().show();
 				if(rs.info.province && rs.info.province != 'undefined'){
-					$("#province").html(that._pca_html(rs.info.province,province)).show();
+					$("#province").html(that._pca_html(rs.info.province,province)).parent().show();
 					if(rs.info.city && rs.info.city != 'undefined'){
-						$("#city").html(that._pca_html(rs.info.city,city)).show();
+						$("#city").html(that._pca_html(rs.info.city,city)).parent().show();
 						if(rs.info.county && rs.info.county != 'undefined'){
-							$("#county").html(that._pca_html(rs.info.county,county)).show();
+							$("#county").html(that._pca_html(rs.info.county,county)).parent().show();
 						}else{
-							$("#county").html('').hide();
+							$("#county").html('').parent().hide();
 						}
 					}else{
-						$("#city,#county").html('').hide();
+						$("#city,#county").html('').parent().hide();
 					}
 				}else{
-					$("#province,#city,#county").html('').hide();
+					$("#province,#city,#county").html('').parent().hide();
 				}
 			})
 		},
@@ -523,31 +650,61 @@
 	}
 
 	$.order = {
-		payment:function(obj)
+		payment:function(obj,open)
 		{
 			var opener = $.dialog.opener;
-			$(obj).ajaxSubmit({
-				'url':api_url('payment','create'),
-				'type':'post',
-				'dataType':'json',
-				'success':function(rs){
-					if(!rs.status){
-						$.dialog.alert(rs.info);
-						return false;
-					}
-					if(!rs.info){
-						$.dialog.tips(p_lang('付款成功，请稍候…')).lock();
-						//跳转到订单详情
-						var sn = $("#order-sn").val();
-						var passwd = $("#order-passwd").val();
-						$.phpok.go(get_url('order','info','sn='+sn+"&passwd="+passwd));
-						return false;
-					}
-					$.phpok.go(get_url('payment','action','id='+rs.info));
+			if(open && open != 'undefined'){
+				var temp = window.open('about:blank');
+			}
+			$.phpok.submit(obj,api_url('payment','create'),function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
 					return false;
 				}
+				if(!rs.info){
+					$.dialog.tips(p_lang('付款成功，请稍候…')).lock();
+					//跳转到订单详情
+					var sn = $("#order-sn").val();
+					var passwd = $("#order-passwd").val();
+					$.phpok.go(get_url('order','info','sn='+sn+"&passwd="+passwd));
+					return false;
+				}
+				if(open && open != 'undefined'){
+					temp.location.href = get_url('payment','action','id='+rs.info);
+				}else{
+					$.phpok.go(get_url('payment','action','id='+rs.info));
+				}
+				return false;
 			});
 			return false;
+		},
+		cancel:function(id,passwd)
+		{
+			var reg = /^\d{1,}$/
+    		var pattern = new RegExp(reg);
+    		var url = api_url('order','cancel');
+    		if(pattern.test(id)){
+	    		url += "&id="+id;
+    		}else{
+	    		if(!passwd || passwd == 'undefined'){
+		    		$.dialog.alert(p_lang('未指定订单密码'));
+		    		return false;
+	    		}
+	    		url += "&sn="+id+"&passwd="+passwd;
+    		}
+    		$.dialog.confirm(p_lang('确定要取消当前订单吗？'),function(){
+	    		var obj = $.dialog.tips('正在取消订单中，请稍候…').lock();
+	    		$.phpok.json(url,function(rs){
+		    		obj.close();
+		    		if(!rs.status){
+			    		$.dialog.alert(rs.info);
+			    		return false;
+		    		}
+		    		$.dialog.tips("订单取消成功",function(){
+			    		$.phpok.reload();
+		    		});
+	    		})
+    		});
 		}
 	}
 
@@ -576,6 +733,29 @@
 					$.phpok.reload();
 				});
 			});
+		},
+		post_save:function(obj,tipinfo)
+		{
+			if(!tipinfo || tipinfo == 'undefined'){
+				tipinfo = '内容添加成功';
+			}
+			$.phpok.submit(obj,api_url('post','ok'),function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				$.dialog.tips(tipinfo).lock(1);
+				setTimeout(function(){
+					if(self.location.href != top.location.href){
+						var reUrl = get_url('usercp','list','id='+$("input[name=id]").val());
+						$.admin.close(reUrl);
+						return false;
+					}
+					$.phpok.go($("input[name=_back]").val());
+				}, 1200);
+				return false;
+			});
+			return false;
 		}
 	}
 })(jQuery);

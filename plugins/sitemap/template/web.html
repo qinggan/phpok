@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta name="renderer" content="webkit">
+	<title>网站地图<!-- if $get.pageid --> - 第 {$get.pageid + 1} 页<!-- /if --></title>
+	<!-- if $seo.keywords --><meta name="keywords" content="{$seo.keywords}" /><!-- /if -->
+	<!-- if $seo.description --><meta name="description" content="{$seo.description}" /><!-- /if -->
+	<meta name="toTop" content="true" />
+	{$config.meta}
+	<base href="{$sys.url}" />
+	<!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
+</head>
+<body>
+<style type="text/css">
+body{background:#fff;}
+.lks{list-style:none;margin:0;padding:0;}
+.lks a {font-size:13px;border:1px solid #e4e4e4;width:150px;height:30px;line-height:30px;float:left;padding-left:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lks span {font-size:10px;width:40px;background-color:#e4e4e469;margin-bottom:3px;text-align:center;border-left:1px solid #e4e4e4;float:left;border-top:1px solid #e4e4e4;border-bottom:1px solid #e4e4e4;}
+h2,h5{margin:5px}.lks {line-height:30px;font-size:16px;height:32px;width:200px;text-align:left;float:left;margin-bottom:3px;}
+@media only screen and (max-width: 720px){.lks{width: 50%;}.lks a{width: 60%;}}
+</style>
+<div style="padding:10px;text-align:center;"><a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" border="0" style="max-width:200px;" alt="{$config.title}" /></a></div>
+<div style="margin:10px auto;width:1200px">
+<ul>
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	<li class="lks">
+		<span>{$tmpid.num}</span>
+		<a href="{$value.url}" title="{$value.title}" target="_blank">{$value.title ? $value.title : '首页'}</a>
+	</li>
+	<!-- /loop -->
+</ul>
+</div>
+</body>
+</html>

@@ -154,10 +154,8 @@
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
-						$.dialog.alert(rs.info,function(){
-							$.admin.reload(get_url('user'));
-							$.admin.close();
-						},'succeed');
+						$.dialog.tips(rs.info);
+						$.admin.close(get_url('user'));
 						return true;
 					}
 					$.dialog.alert(rs.info);

@@ -19,7 +19,7 @@
 			<!-- if $popedom.set -->
 			<th width="30px"></th>
 			<!-- /if -->
-			<th width="70px" class="center">ID</th>
+			<th width="50px" class="center">ID</th>
 			<th width="30px">&nbsp;</th>
 			<th>{lang项目名称}</th>
 			<th>{lang标识串}</th>
@@ -40,7 +40,11 @@
 			<!-- /if -->
 			<td class="center gray" height="24px">{$value.id}</td>
 			<td class="center"><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="$.admin_project.set_status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
-			<td><label for="id_{$value.id}" style="{$value.style}">{$value.space}{$value.title}<!-- if $value.nick_title --><span class="gray i"> ({$value.nick_title})</span><!-- /if --><!-- if $value.hidden --><span class="red i">{lang（隐藏）}</span><!-- /if --></label></td>
+			<td><label for="id_{$value.id}">{$value.space}<span style="{$value.style}">{$value.title}</span>
+				<!-- if $value.nick_title --><span class="gray"> ({$value.nick_title})</span><!-- /if -->
+				<!-- if $value.admin_group_title --><span class="gray"> ({$value.admin_group_title})</span><!-- /if -->
+				<!-- if $value.hidden --><span class="red i">{lang（隐藏）}</span><!-- /if -->
+				</label></td>
 			<td>{$value.identifier}</td>
 			<td><!-- if $value.is_api -->{lang启用}<!-- else --><span class="gray">{lang禁用}</span><!-- /if --></td>
 			<td><!-- if $value.is_front -->{lang启用}<!-- else --><span class="gray">{lang禁用}</span><!-- /if --></td>
@@ -72,22 +76,32 @@
 				</div>
 			</li>
 			<li>
-				<div class="layui-btn-group">
-					<input type="button" value="{lang禁用}" onclick="$.admin_project.set_lock(0)" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang启用}" onclick="$.admin_project.set_lock(1)" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang显示}" onclick="$.admin_project.set_hidden(0)" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang隐藏}" onclick="$.admin_project.set_hidden(1)" class="layui-btn layui-btn-sm" />
-				</div>
+				<select id="action_type">
+					<optgroup label="后台分组">
+						<option value="">{lang请选择…}</option>
+						<option value="-">{lang - 取消分组 - }</option>
+						<!-- loop from=groups key=$key value=$value id=$tmpid -->
+						<option value="{$key}">{$value}</option>
+						<!-- /loop -->
+					</optgroup>
+					<optgroup label="禁用或启用">
+						<option value="set_lock:0">{lang禁用}</option>
+						<option value="set_lock:1">{lang启用}</option>
+					</optgroup>
+					<optgroup label="显示或隐藏">
+						<option value="set_hidden:0">{lang显示}</option>
+						<option value="set_hidden:1">{lang隐藏}</option>
+					</optgroup>
+					<optgroup label="其他操作">
+						<option value="clear">{lang清空}</option>
+						<option value="copy">{lang复制}</option>
+						<option value="export">{lang导出}</option>
+					</optgroup>
+				</select>
 			</li>
-			
-			<!-- if $session.adm_develop -->
 			<li>
-				<div class="layui-btn-group">
-					<input type="button" value="{lang复制}" onclick="$.admin_project.copy()" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang导出}" onclick="$.admin_project.export()" class="layui-btn layui-btn-sm" />
-				</div>
+				<input type="button" value="{lang确定}" onclick="$.admin_project.set_submit()" class="layui-btn layui-btn-sm" />
 			</li>
-			<!-- /if -->
 		</ul>
 		</div>
 		<!-- /if -->

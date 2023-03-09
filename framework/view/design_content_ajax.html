@@ -1,0 +1,243 @@
+<!-- if $type == 'editor' -->
+<div class="layui-form-item">
+	{$content_html}
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	var opener = $.dialog.opener;
+	var c = opener.$("div[pre-id={$id}]").find("div[pre-type=content]").html();
+	if(c && c != 'undefined'){
+		c = $.trim(c);
+	}
+	if(c && c != 'undefined'){
+		CKEDITOR.instances['content'].setData(c);
+	}
+});
+</script>
+<!-- elseif $type == 'code' -->
+<div class="layui-form-item">
+	{$content_html}
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	var opener = $.dialog.opener;
+	var c = opener.$("div[pre-id={$id}]").find("div[pre-type=content]").html();
+	if(c && c != 'undefined'){
+		c = $.trim(c);
+	}
+	if(c && c != 'undefined'){
+		code_editor_content.setValue(c);
+	}
+});
+</script>
+<!-- elseif $type == 'textarea' -->
+<div class="layui-form-item">
+	<textarea name="content" id="content" style="width:720px;height:420px;resize:none;"></textarea>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	var opener = $.dialog.opener;
+	var c = opener.$("div[pre-id={$id}]").find("div[pre-type=content]").html();
+	if(c && c != 'undefined'){
+		c = $.trim(c);
+	}
+	if(c && c != 'undefined'){
+		c = c.replace(/<br\s*[\/]*\s*>/g,"\n");
+		$("#content").val(c);
+	}
+});
+</script>
+<!-- elseif $type == 'image' -->
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		<i class="layui-icon layui-tips" lay-tips='设为0或留空表示默认，支持百分比和像素'>&#xe702;</i> 规格
+	</label>
+	<div class="layui-input-inline default-auto">
+		<select id="gdtype" name="gdtype">
+			<option value="">原图（默认）</option>
+			<!-- loop from=$gdlist key=$key value=$value id=$tmpid -->
+			<option value="{$value.identifier}">{$value.title}（{$value.width ? $value.width : '默认'} &#215; {$value.height ? $value.height : '默认'}）</option>
+			<!-- /loop -->
+		</select>
+	</div>
+	<div class="layui-input-inline">
+		<input type="text" name="round" id="round" placeholder="圆角" class="layui-input" />
+	</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">宽高</label>
+	<div class="layui-input-inline" style="width: 100px;">
+		<input type="text" name="width" id="width" placeholder="宽度" autocomplete="off" class="layui-input">
+	</div>
+	<div class="layui-form-mid"> &#215; </div>
+	<div class="layui-input-inline" style="width: 100px;">
+		<input type="text" name="height" id="height" placeholder="高度" autocomplete="off" class="layui-input">
+	</div>
+	<div class="layui-form-mid">单位是像素，留空表示自动</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		链接
+	</label>
+	<div class="layui-input-inline default-auto">
+		<input type="text" name="link" id="link" class="layui-input" />
+	</div>
+	<div class="layui-input-inline">
+		<select id="target" name="target">
+			<option value="">默认</option>
+			<option value="_blank">新窗口</option>
+		</select>
+	</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		Alt 文本
+	</label>
+	<div class="layui-input-block">
+		<input type="text" name="alt" id="alt" placeholder="用于图片未加载或丢失时显示的提示" class="layui-input" />
+	</div>
+</div>
+<div class="layui-form-item" style="min-height:220px">
+	<label class="layui-form-label">图片</label>
+	<div class="layui-input-block">
+		{$content_html}
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	design_update_image();
+});
+</script>
+<!-- elseif $type == 'video' -->
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		视频地址
+	</label>
+	<div class="layui-input-inline default-auto">
+		<input type="text" name="link" id="link" class="layui-input" />
+	</div>
+	<div class="layui-input-inline auto gray lh38">
+		<div class="layui-btn-group">
+			<input type="button" value="{lang选择视频}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_video_select('link')" />
+			<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_video_preview('link')" />
+			<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('link');" />
+		</div>
+	</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		视频设置
+	</label>
+	<div class="layui-input-block">
+		<input type="checkbox" name="autoplay" id="autoplay" title="自动播放" lay-skin="primary" />
+		<input type="checkbox" name="loop" id="loop" title="循环" lay-skin="primary" />
+		<input type="checkbox" name="muted" id="muted" title="静音" lay-skin="primary" />
+		<input type="checkbox" name="controls" id="controls" title="控制器" lay-skin="primary" />
+		<input type="checkbox" name="playsinline" id="playsinline" title="内联播放" lay-skin="primary" />
+	</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		预加载
+	</label>
+	<div class="layui-input-block">
+		<input type="radio" name="preload" value="auto" title="自动" />
+		<input type="radio" name="preload" value="metadata" title="元数据" />
+		<input type="radio" name="preload" value="none" title="无" checked />
+	</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">宽高</label>
+	<div class="layui-input-inline" style="width: 100px;">
+		<input type="text" name="width" id="width" placeholder="宽度" autocomplete="off" class="layui-input">
+	</div>
+	<div class="layui-form-mid"> &#215; </div>
+	<div class="layui-input-inline" style="width: 100px;">
+		<input type="text" name="height" id="height" placeholder="高度" autocomplete="off" class="layui-input">
+	</div>
+	<div class="layui-form-mid">单位是像素，留空表示自动</div>
+</div>
+<div class="layui-form-item" style="min-height:200px;">
+	<label class="layui-form-label">
+		海报图像
+	</label>
+	<div class="layui-input-inline default-auto">
+		<input type="text" name="poster" id="poster" class="layui-input" />
+	</div>
+	<div class="layui-input-inline auto gray lh38">
+		<div class="layui-btn-group">
+			<input type="button" value="{lang选择图片}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_select('poster')" />
+			<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_preview('poster')" />
+			<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('poster');" />
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	design_update_video();
+});
+</script>
+<!-- elseif $type == 'iframe' -->
+<div class="layui-form-item">
+	<label class="layui-form-label">宽高</label>
+	<div class="layui-input-inline" style="width: 100px;">
+		<input type="text" name="width" id="width" placeholder="宽度" autocomplete="off" class="layui-input">
+	</div>
+	<div class="layui-form-mid"> &#215; </div>
+	<div class="layui-input-inline" style="width: 100px;">
+		<input type="text" name="height" id="height" placeholder="高度" autocomplete="off" class="layui-input">
+	</div>
+	<div class="layui-form-mid">单位是像素或%，留空表示自动</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		链接
+	</label>
+	<div class="layui-input-block">
+		<input type="text" name="link" id="link" class="layui-input" />
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	design_update_iframe();
+});
+</script>
+<!-- elseif $type == 'calldata' -->
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		调用中心
+	</label>
+	<div class="layui-input-block">
+		<select id="code" name="code" lay-filter="code">
+			<option value="">请选择…</option>
+			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+			<option value="{$value.identifier}">{$value.title} / {$value.typename} / {$value.identifier}</option>
+			<!-- /loop -->
+		</select>
+	</div>
+</div>
+
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		自定义参数
+	</label>
+	<div class="layui-input-block gray">一行一个参数，参数写法如：keywords=关键字，或 ext[扩展字段]=值，具体请上官网论坛查询</div>
+	<div class="layui-input-block">
+		<textarea name="param" id="param" class="layui-textarea" style="resize:none;"></textarea>
+	</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		变量替换
+	</label>
+	<div class="layui-input-block gray">请写完整的变量替换，如 $value.thumb=$value.picture，一行一个</div>
+	<div class="layui-input-block">
+		<textarea name="param-replace" id="param-replace" class="layui-textarea" style="resize:none;"></textarea>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	design_update_calldata();
+});
+</script>
+<!-- /if -->

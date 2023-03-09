@@ -1,16 +1,15 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/admin/call_control.php
-	Note	: 数据调用中心
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-04-18 02:22
-***********************************************************/
+/**
+ * 数据调用中心
+ * @作者 苏相锟 <admin@phpok.com>
+ * @版本 6.x
+ * @授权 GNU Lesser General Public License (LGPL)
+ * @时间 2023年1月10日
+**/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class call_control extends phpok_control
 {
-	private $psize = 20;
+	private $psize = 100;
 	private $phpok_type_list;//可调用类型
 	private $popedom;
 	public function __construct()
@@ -26,8 +25,7 @@ class call_control extends phpok_control
 	{
 		$site_id = $this->session->val('admin_site_id');
 		$this->model('call')->site_id($site_id);
-		$this->model('call')->psize($psize);
-		$this->psize = $psize;
+		$this->model('call')->psize($this->psize);
 	}
 
 	public function index_f()
@@ -36,7 +34,7 @@ class call_control extends phpok_control
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$this->phpok_autoload();
-		$psize = $this->config["psize"] ? $this->config["psize"] : 20;
+		$psize = $this->psize;
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid){
 			$pageid = 1;
@@ -54,9 +52,12 @@ class call_control extends phpok_control
 		$this->assign("rslist",$rslist);
 		$total = $this->model('call')->get_count($condition);
 		$this->assign("total",$total);
-		$string = P_Lang("home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1");
-		$pagelist = phpok_page($pageurl,$total,$pageid,$this->psize,$string);
-		$this->assign("pagelist",$pagelist);
+		
+		if($total>$this->psize){
+			$string = P_Lang("home=首页&prev=上一页&next=下一页&last=尾页&half=5&add=数量：(total)/(psize)，页码：(num)/(total_page)&always=1");
+			$pagelist = phpok_page($pageurl,$total,$pageid,$this->psize,$string);
+			$this->assign("pagelist",$pagelist);
+		}
 		$attrlist = $this->model('list')->attr_list();
 		$this->assign("attrlist",$attrlist);
 		$this->view("phpok_index");
@@ -92,6 +93,14 @@ class call_control extends phpok_control
 		//读取用户组
 		$ugroup = $this->model('usergroup')->get_all("is_guest=0");
 		$this->assign("usergroup",$ugroup);
+
+		//读取表单选项
+		$option_list = $this->model('opt')->group_all();
+		$this->assign('option_list',$option_list);
+
+		//读取菜单列表
+		$menulist = $this->model('menu')->group();
+		$this->assign('menulist',$menulist);
 		
 		$this->view("phpok_set");
 	}
@@ -266,6 +275,10 @@ class call_control extends phpok_control
 		$ext['usergroup'] = $this->get('usergroup','int');
 		$ext['in_sub'] = $this->get('in_sub','int');
 		$ext['title_id'] = $this->get('title_id');
+		$ext['menu'] = $this->get('menu');
+		$ext['option_id'] = $this->get('option_id','int');
+		$ext['keywords_sign'] = $this->get('keywords_sign','int');
+		$ext['keywords_type'] = $this->get('keywords_type');
 		$array['ext'] = serialize($ext);
 		$id = $this->model('call')->save($array,$id);
 		$this->success();

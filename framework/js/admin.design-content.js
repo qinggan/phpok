@@ -130,9 +130,8 @@ function save()
 			$.dialog.alert('内容不能为空');
 			return false;
 		}
-		c = c.replace(/\n/g,'<br>');
+		c = c.replace(/\n/g,'<br />');
 		opener.$("div[pre-id="+id+"]").find("div[pre-type=content]").html(c);
-		opener.$("div[pre-id="+id+"]").attr("pre-vtype","textarea");
 	}
 	if(type == 'iframe'){
 		var width = $("#width").val();
@@ -227,12 +226,15 @@ function save()
 				img = rs.info.gd[gdtype];
 			}
 
-			html += '<img src="'+img+'" style="'+css+'" alt="'+alt+'" />';
+			html += '<img src="'+img+'" style="'+css+'" alt="'+alt+'" title="'+alt+'" />';
 			if(link && link != 'undefined'){
 				html += '</a>';
 			}
 			opener.$("div[pre-id="+id+"]").find("div[pre-type=content]").html(html);
 			opener.$("div[pre-id="+id+"]").attr("pre-vtype","image").attr("pre-gdtype",gdtype).attr("pre-image",c);
+			if(alt){
+				opener.$("div[pre-id="+id+"]").attr("pre-alt",alt);
+			}
 			$.dialog.close();
 			return true;
 		});
@@ -280,10 +282,14 @@ function save()
 	}
 	if(type == 'calldata'){
 		var obj = opener.$("div[pre-id="+id+"]");
-		obj.attr("pre-vtype","calldata");
-		var code = $("#code").val();
+		var code = obj.attr("pre-code");
 		if(!code){
-			$.dialog.alert('请选择一个调用接口');
+			$.dialog.tips('请选择一个调用接口');
+			return false;
+		}
+		var calldata_val = $("#code").val();
+		if(!calldata_val){
+			$.dialog.tips('请选择一个数据调用方式');
 			return false;
 		}
 		var param = $("#param").val();
@@ -293,24 +299,17 @@ function save()
 			param = param.replace(/"/g,'&quot;');
 			param = param.replace(/'/g,'&apos;');
 		}
-		var tplfile = $("#tplfile").val();
-		if(!tplfile){
-			$.dialog.alert('模板不能为空');
-			return false;
-		}
 		var param_replace = $("#param-replace").val();
-		obj.attr('pre-code',code);
+		obj.attr('data-ext-calldata',calldata_val);
 		obj.attr("pre-param",param);
-		obj.attr("pre-tplfile",tplfile);
 		obj.attr("pre-replace",param_replace);
-		var iframe_url = api_url('call','admin_preview','id='+id+"&code="+$.str.encode(code));
+		var iframe_url = api_url('call','admin_preview','id='+id+"&code="+code+"&calldata="+calldata_val);
 		if(param){
 			iframe_url += "&param="+$.str.encode(param);
 		}
 		if(param_replace){
 			iframe_url += "&param_replace="+$.str.encode(param_replace);
 		}
-		iframe_url += "&tplfile="+$.str.encode(tplfile);
 
 		var html = '<!-- content-'+id+' --><div style="background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;"></div>';
 		html += '<iframe src="'+iframe_url+'" style="border:0;margin:0;padding:0;background-color:transparent;z-index:1"';
@@ -484,7 +483,10 @@ function design_update_calldata()
 	var opener = $.dialog.opener;
 	var id = $("#id").val();
 	var obj = opener.$("div[pre-id="+id+"]");
-	var code = obj.attr("pre-code");
+	var code = obj.attr("data-ext-calldata");
+	if(!code || code == 'undefined'){
+		code = obj.attr("pre-code");
+	}
 	if(code){
 		$("#code").val(code);
 	}

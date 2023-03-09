@@ -34,7 +34,7 @@ class site_model extends site_model_base
 		}
 		//检查表字段
 		$fields = $this->db->list_fields('site');
-		$xmldata = false;
+		$xmldata = array();
 		foreach($data as $key=>$value){
 			if(!in_array($key,$fields)){
 				if(!$xmldata){
@@ -46,13 +46,13 @@ class site_model extends site_model_base
 		}
 		if($id){
 			$this->db->update_array($data,"site",array("id"=>$id));
-			if($xmldata){
+			if($xmldata && count($xmldata)>0){
 				$this->lib('xml')->save($xmldata,$this->dir_data.'xml/site_'.$id.'.xml');
 			}
 			return true;
 		}else{
 			$insert_id = $this->db->insert_array($data,"site");
-			if($insert_id && $xmldata){
+			if($insert_id && $xmldata && count($xmldata)>0){
 				$this->lib('xml')->save($xmldata,$this->dir_data.'xml/site_'.$insert_id.'.xml');
 			}
 			return $insert_id;

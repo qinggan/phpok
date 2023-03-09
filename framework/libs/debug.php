@@ -1,7 +1,6 @@
 <?php
 /**
  * Debug调试使用类
- * @package phpok\framework\libs
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -38,7 +37,7 @@ class debug_lib
 		$memory = memory_get_usage();
 		$used_time = round(($time - $this->time_point),5);
 		$used_memory = round(($memory - $this->memory_point),5);
-		if($name && $this->time_node[$name] && $this->memory_node[$name]){
+		if($name && isset($this->time_node[$name]) && isset($this->memory_node[$name])){
 			$used_time = round(($time - $this->time_node[$name]),5);
 			$used_memory = round(($memory - $this->memory_node[$name]),5);
 		}

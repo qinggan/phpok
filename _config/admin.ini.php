@@ -11,3 +11,10 @@ show_env = false
 ;扫码登录超时，单位是秒，默认是300秒（即5分钟）
 ;值不大于120秒时，将使用系统默认的300秒
 admin_qrcode_expire_time = 300
+
+;允许主题复制，0或false不复制，1或true支持复制
+copy_status = 1
+
+;码表地址，留空使用系统自带
+table_url = https://cdn.phpok.com/tables/table.txt
+

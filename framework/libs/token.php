@@ -106,7 +106,7 @@ class token_lib
 		if(!$this->keyid){
 			return false;
 		}
-		$string = serialize($string);
+		$string = json_encode($string,JSON_UNESCAPED_UNICODE);
 		$expiry_time = $this->expiry ? $this->expiry : 365*24*3600;
 		$string = sprintf('%010d',($expiry_time + $this->time)).substr(md5($string.$this->keyb), 0, 16).$string;	
 		$keyc = substr(md5(microtime().rand(1000,9999)), -$this->keyc_length);
@@ -123,14 +123,9 @@ class token_lib
 		if(!$this->public_key){
 			return false;
 		}
-		$string = serialize($string);
-		$crypto = '';
-		$tlist = str_split($string,117);
-		foreach($tlist as $key=>$value){
-			openssl_public_encrypt($value,$data,$this->public_key);
-			$crypto .= $data;
-		}
-		return base64_encode($crypto);
+		$string = json_encode($string,JSON_UNESCAPED_UNICODE);
+		openssl_public_encrypt($string,$data,$this->public_key);
+		return base64_encode($data);
 	}
 
 	/**
@@ -153,7 +148,7 @@ class token_lib
 		$chkb = substr(md5(substr($rs,26).$this->keyb),0,16);
 		if((substr($rs, 0, 10) - $this->time > 0) && substr($rs, 10, 16) == $chkb){
 			$info = substr($rs, 26);
-			return unserialize($info);
+			return json_decode($info,true);
 		}
 		return false;
 	}
@@ -166,16 +161,38 @@ class token_lib
 		if(!$this->private_key){
 			return false;
 		}
-		$crypto = '';
-		$tlist = str_split(base64_decode($string),128);
-		foreach($tlist as $key=>$value){
-			openssl_private_decrypt($value,$data,$this->private_key);
-			$crypto .= $data;
-		}
-		if($crypto){
-			return unserialize($crypto);
+		$string = str_replace(' ','+',$string);
+		openssl_private_decrypt(base64_decode($string),$data,$this->private_key);
+		if($data){
+			return json_decode($data,true);
 		}
 		return false;
+	}
+
+	public function create($email='')
+	{
+		if(!$email){
+			$email = 'admin@admin.com';
+		}
+		$dn = array();
+		$dn['countryName'] = 'CN';
+		$dn['stateOrProvinceName'] = 'Guangdong';
+		$dn['localityName'] = 'Shenzhen';
+		$dn['organizationName'] = 'MySelf';
+		$dn['organizationalUnitName'] = 'Whatever';
+		$dn['commonName'] = 'WebSite';
+		$dn['emailAddress'] = $email;
+		$numberofdays = 365;
+		try{
+			$privkey = openssl_pkey_new(array("digest_alg"=>"sha512",'private_key_bits' => 1024,'private_key_type' => OPENSSL_KEYTYPE_RSA));
+			$res =    openssl_pkey_new($config); 
+			openssl_pkey_export($res, $private_key);
+			$public_key = openssl_pkey_get_details($res);
+			$public_key=$public_key["key"];
+			return array('public_key'=>$public_key,'private_key'=>$private_key);
+		}catch(\Exception $e){
+			return false;
+		}
 	}
 
 	private function core($string,$cryptkey)

@@ -1,0 +1,59 @@
+<!-- include tpl=usercp/head title=订单列表 -->
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		订单：#{$value.id}
+		<div class="float-right">
+			<div class="layui-btn-group">
+				<input type="button" value="查看" onclick="$.phpok.go('{url ctrl=order func=info id=$value.id/}')" class="layui-btn layui-btn-xs" />
+				<input type="button" value="日志" onclick="$.phpok.go('{url ctrl=order func=log id=$value.id/}')" class="layui-btn layui-btn-xs" />
+			</div>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-row">
+			<div class="layui-col-xs4">
+		    	订单编号：
+			</div>
+			<div class="layui-col-xs8 text-right">
+				{$value.sn}
+			</div>
+			<div class="layui-col-xs4">
+		    	下单时间：
+			</div>
+			<div class="layui-col-xs8 text-right">
+				{func time_format $value.addtime}
+			</div>
+			<div class="layui-col-xs4">
+		    	下单数量：
+			</div>
+			<div class="layui-col-xs8 text-right">
+				{$value.qty}
+			</div>
+			<div class="layui-col-xs4">
+		    	金额：
+			</div>
+			<div class="layui-col-xs8 text-right">
+				{func price_format $value.price $value.currency_id $value.currency_id}
+			</div>
+			<div class="layui-col-xs4">
+		    	订单状态：
+			</div>
+			<div class="layui-col-xs8 text-right">
+				{$value.status_info}
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /loop -->
+<!-- include tpl=usercp/pagelist -->
+
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div style="text-align:center">
+		<input type="button" value="{lang返回}" class="layui-btn layui-btn-primary" onclick="$.phpok.go('{url ctrl=usercp/}')" />
+		
+	</div>
+</div>
+
+<!-- include tpl=usercp/foot -->

@@ -33,7 +33,8 @@ class weixin_lib
 		$data = file_get_contents("php://input");
 		if($data){
 			libxml_disable_entity_loader(true);
-			$this->obj = simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA);
+			// 增加参数 LIBXML_NONET 禁止解析 xml 外部实体内容的
+			$this->obj = simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NONET);
 			$this->wx_type = trim($this->obj->MsgType);
 		}
 	}

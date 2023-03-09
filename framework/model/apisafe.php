@@ -51,8 +51,7 @@ class apisafe_model_base extends phpok_model
 		if(!$isok){
 			return false;
 		}
-		$code = $this->code ? $this->code : $this->site['api_code'];
-		$sign = md5($code.",".implode(",",$list));
+		$sign = md5($this->code.",".implode(",",$list));
 		return $sign;
 	}
 
@@ -67,21 +66,35 @@ class apisafe_model_base extends phpok_model
 		$keys = array();
 		if(isset($_POST)){
 			foreach($_POST as $k=>$v){
-				if($k && !is_array($k) && $k != '_safecode'){
+				if($k && !is_array($k) && $k != '_safecode' && $k != "_safeid"){
 					$keys[] = $k;
+				}
+				if($k && is_array($k)){
+					foreach($k as $kk=>$vv){
+						if($kk && !is_array($kk)){
+							$keys[] = $kk;
+						}
+					}
 				}
 			}
 		}
 		if(isset($_GET)){
 			foreach($_GET as $k=>$v){
-				if($k && !is_array($k) && $k != '_safecode'){
+				if($k && !is_array($k) && $k != '_safecode' && $k != "_safeid"){
 					$keys[] = $k;
+				}
+				if($k && is_array($k)){
+					foreach($k as $kk=>$vv){
+						if($kk && !is_array($kk)){
+							$keys[] = $kk;
+						}
+					}
 				}
 			}
 		}
+		$keys = array_unique($keys);
 		sort($keys);
-		$code = $this->code ? $this->code : $this->site['api_code'];
-		$chkcode = md5($code.",".implode(",",$keys));
+		$chkcode = md5($this->code.",".implode(",",$keys));
 		if($chkcode != $safecode){
 			$this->error_info(P_Lang('验证不通过'));
 			return false;

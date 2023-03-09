@@ -1,0 +1,8 @@
+<textarea name="{$_rs.identifier}" id="{$_rs.identifier}" phpok_id="textarea" class="layui-textarea" style="{$_rs.form_style};width:100% !important;height:{$_rs.height};resize:{$_rs.resize ? $_rs.resize : 'both'};">{$_rs.content}</textarea>
+<!-- if $_rs.js_admin -->
+<script type="text/javascript">
+$(document).ready(function(){
+	{$_rs.js_admin}
+});
+</script>
+<!-- /if -->

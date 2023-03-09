@@ -1,0 +1,68 @@
+<!-- include tpl=head_lay nopadding=true -->
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	var ids = $.checkbox.join();
+	if(!ids){
+		$.dialog.tips('未指定样式文件');
+		return false;
+	}
+	var list = ids.split(',');
+	var html = '';
+	for(var i in list){
+		html += '<link rel="stylesheet" type="text/css" href="'+list[i]+'" />'+"\n";
+	}
+	opener.editor_css_refresh(html);
+	$.dialog.close();
+}
+</script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		<div class="layui-btn-group fl">
+			<input type="button" value="目录：" class="layui-btn layui-btn-sm" />
+			<!-- loop from=$leadlist key=$key value=$value id=$tmpid -->
+			<input type="button" value="{$value.title} /" onclick="$.phpok.go('{$value.url}')" class="layui-btn layui-btn-sm layui-btn-normal" style="border-left:0;" />
+			<!-- /loop -->
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<blockquote class="layui-elem-quote">
+			{lang勾选要引用的文件，然后一起提交}
+		</blockquote>
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th width="30">&nbsp;</th>
+			<th width="40">&nbsp;</th>
+			<th>{lang名称}</th>
+			<th width="150px">{lang时间}</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- loop from=$dirlist key=$key value=$value -->
+		<tr id="{$value.id}">
+			<td>&nbsp;</td>
+			<td align="center"><a href="{$value.url}"><img src="images/filetype/dir.gif" border="0" alt="{lang文件夹}" /></a></td>
+			<td><a href="{$value.url}">{$value.title}</a></td>
+			<td>{$value.date}</td>
+		</tr>
+		<!-- /loop -->
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr id="{$value.id}">
+			<td><input type="checkbox" id="bb-{$value.id}" lay-ignore value="{$folder}{$value.title}" /></td>
+			<td align="center"><img src="images/filetype/css.gif" border="0" alt="文件：{$value.title}"></td>
+			<td><label for="bb-{$value.id}">{$value.title}</label></td>
+			<td>{$value.date}</td>
+		</tr>
+		<!-- /loop -->
+		</tbody>
+		</table>
+		<div class="layui-btn-group">
+			<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.all()" />
+			<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.none()" />
+			<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.anti()" />
+		</div>
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

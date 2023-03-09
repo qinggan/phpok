@@ -27,6 +27,10 @@ class project_control extends phpok_control
 	//栏目
 	public function index_f()
 	{
+		$backurl = $this->get('_back');
+		if(!$backurl){
+			$backurl = $this->config['url'];
+		}
 		$id = $this->get("id","system");
 		if(!$id){
 			$this->error(P_Lang('未指ID'));
@@ -37,7 +41,7 @@ class project_control extends phpok_control
 		}
 		$pid = $tmp['id'];
 		if(!$this->model('popedom')->check($pid,$this->user_groupid,'read')){
-			$this->error(P_Lang('您没有阅读权限，请联系网站管理员'));
+			$this->error(P_Lang('您没有阅读权限，请联系网站管理员'),$backurl);
 		}
 		$project = $this->call->phpok('_project',array('pid'=>$pid));
 		$this->assign("page_rs",$project);
@@ -281,7 +285,7 @@ class project_control extends phpok_control
 			$total_page++;
 		}
 		if($total_page && $total_page<$pageid){
-			$this->error_404(P_Lang('内容信息不存在'));
+			$this->error(P_Lang('内容信息不存在'));
 		}
 		$this->assign('dt',$dt);
 		$this->assign("pageid",$pageid);
@@ -309,14 +313,25 @@ class project_control extends phpok_control
 		$tmpdata['cate_root'] = $cate_root_rs;
 		$tmpdata['module'] = $m_rs;
 		$tmpdata['price'] = $price;
+		$tmpdata['mlist'] = $this->model('module')->fields_all($rs['module']);
 		if($rs['filter_status']){
 			$this->_filter($tmpdata);
 		}
-		unset($rslist,$total,$pageurl,$psize,$pageid,$rs,$parent_rs);
+		unset($rslist,$total,$pageurl,$psize,$rs,$parent_rs);
 		$this->phpok_seo();
 		$tpl = $this->get('tplfile');
 		if($tpl && $this->tpl->check_exists($tpl)){
 			$tplfile = $tpl;
+		}
+		$ajax = $this->get('ajax','int');
+		if($ajax && $pageid>1){
+			$tplfile_ajax = $tplfile.'_ajax';
+			if(!$this->tpl->check_exists($tplfile_ajax)){
+				$this->error(P_Lang('模板（{tplfile}）不存在',array('tplfile'=>$tplfile_ajax)));
+			}
+			$this->config('is_ajax',true);
+			$content = $this->fetch($tplfile_ajax);
+			$this->success($content);
 		}
 		$this->view($tplfile);
 	}
@@ -343,7 +358,7 @@ class project_control extends phpok_control
 					if($value['form_type'] == 'text'){
 						$this->filter_text($filter,$data,$urlist,$value);
 					}
-					if($value['form_type'] == 'radio' || $value['form_type'] == 'checkbox' || $value['form_type'] == 'select'){
+					if($value['form_type'] == 'radio' || $value['form_type'] == 'checkbox' || $value['form_type'] == 'select' || $value['form_type'] == 'selectpage'){
 						$this->filter_options($filter,$data,$urlist,$value);
 					}
 				}
@@ -463,6 +478,88 @@ class project_control extends phpok_control
 	}
 
 	/**
+	 * 清除下拉选项中不存在的值
+	**/
+	private function _options_clear($rslist,$data,$fields)
+	{
+		$tbl = $this->db->prefix;
+		$dt = $data['dt'];
+		$mlist = $data['mlist'];
+		$keywords_list = array();
+		if($dt['keywords']){
+			$tmp = str_replace(array("\r","\n","\t","　"," ","&nbsp;","&amp;",'"',"'")," ",$dt['keywords']);
+			$tmp = preg_replace("/(\x20{2,})/"," ",$tmp);# 去除多余空格，只保留一个空格
+			$keywords_list = explode(" ",$tmp);
+		}
+		if($data['module'] && $data['module']['mtype']){
+			$tbl .= $data['module']['id'];
+			$sql  = "SELECT count(id) as total,".$fields['identifier']." as val FROM ".$tbl." WHERE project_id='".$data['page_rs']['id']."'";
+			if($mlist && $keywords_list){
+				$orlist = array();
+				foreach($mlist as $key=>$value){
+					if($value['search'] == 1){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = $value['identifier']."='".$v."'";
+						}
+					}
+					if($value['search'] == 2){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = $value['identifier']." LIKE '%".$v."%'";
+						}
+					}
+				}
+				if($orlist && count($orlist)>0){
+					$sql .= " AND (".implode(" OR ",$orlist).")";
+				}
+			}
+			$sql .= " GROUP BY ".$fields['identifier'];
+		}else{
+			$tbl .= 'list_'.$data['module']['id'];
+			$sql  = " SELECT count(l.id) as total,e.".$fields['identifier']." as val FROM ".$this->db->prefix."list l ";
+			$sql .= " LEFT JOIN ".$tbl." e ON(l.id=e.id) ";
+			$sql .= " WHERE l.project_id='".$data['page_rs']['id']."' AND l.site_id='".$data['page_rs']['site_id']."' AND l.status=1 AND l.hidden=0 ";
+			$sql .= " AND e.".$fields['identifier']."!='' AND e.".$fields['identifier']." IS NOT NULL";
+			if($mlist && $keywords_list){
+				$orlist = array();
+				foreach($mlist as $key=>$value){
+					if($value['search'] == 1){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = 'e.'.$value['identifier']."='".$v."'";
+						}
+					}
+					if($value['search'] == 2){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = 'e.'.$value['identifier']." LIKE '%".$v."%'";
+						}
+					}
+				}
+				if($orlist && count($orlist)>0){
+					$sql .= " AND (".implode(" OR ",$orlist).")";
+				}
+			}
+			$sql .= " GROUP BY e.".$fields['identifier'];
+		}
+		$newlist = $this->db->get_all($sql);
+		if(!$newlist){
+			return false;
+		}
+		$vals = array();
+		foreach($newlist as $key=>$value){
+			$vals[] = $value['val'];
+		}
+		$vals = array_unique($vals);
+		foreach($rslist as $key=>$value){
+			if(!in_array($value['val'],$vals)){
+				unset($rslist[$key]);
+			}
+		}
+		if(!$rslist){
+			return false;
+		}
+		return $rslist;
+	}
+
+	/**
 	 * 单选，多选，下拉筛选器
 	**/
 	private function filter_options(&$filter,$data,$urlist,$fields)
@@ -470,8 +567,14 @@ class project_control extends phpok_control
 		if(!$fields['ext']){
 			return false;
 		}
+		$dt = $data['dt'];
 		$opt_list = $fields['ext']["option_list"] ? explode(":",$fields['ext']["option_list"]) : array('default','');
 		$rslist = opt_rslist($opt_list[0],$opt_list[1],$fields['ext']['ext_select']);
+		if(!$rslist){
+			return false;
+		}
+		// 进行数据过滤
+		$rslist = $this->_options_clear($rslist,$data,$fields);
 		if(!$rslist){
 			return false;
 		}
@@ -519,15 +622,60 @@ class project_control extends phpok_control
 	private function filter_text(&$filter,$data,$urlist,$fields)
 	{
 		$tbl = $this->db->prefix;
+		$dt = $data['dt'];
+		$mlist = $data['mlist'];
+		$keywords_list = array();
+		if($dt['keywords']){
+			$tmp = str_replace(array("\r","\n","\t","　"," ","&nbsp;","&amp;",'"',"'")," ",$dt['keywords']);
+			$tmp = preg_replace("/(\x20{2,})/"," ",$tmp);# 去除多余空格，只保留一个空格
+			$keywords_list = explode(" ",$tmp);
+		}
 		if($data['module'] && $data['module']['mtype']){
 			$tbl .= $data['module']['id'];
-			$sql = "SELECT count(id) as total,".$fields['identifier']." as title FROM ".$tbl." WHERE project_id='".$data['page_rs']['id']."' GROUP BY ".$fields['identifier'];
+			$sql  = "SELECT count(id) as total,".$fields['identifier']." as title FROM ".$tbl." WHERE project_id='".$data['page_rs']['id']."'";
+			if($mlist && $keywords_list){
+				$orlist = array();
+				foreach($mlist as $key=>$value){
+					if($value['search'] == 1){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = $value['identifier']."='".$v."'";
+						}
+					}
+					if($value['search'] == 2){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = $value['identifier']." LIKE '%".$v."%'";
+						}
+					}
+				}
+				if($orlist && count($orlist)>0){
+					$sql .= " AND (".implode(" OR ",$orlist).")";
+				}
+			}
+			$sql .= " GROUP BY ".$fields['identifier'];
 		}else{
 			$tbl .= 'list_'.$data['module']['id'];
 			$sql  = " SELECT count(l.id) as total,e.".$fields['identifier']." as title FROM ".$this->db->prefix."list l ";
 			$sql .= " LEFT JOIN ".$tbl." e ON(l.id=e.id) ";
 			$sql .= " WHERE l.project_id='".$data['page_rs']['id']."' AND l.site_id='".$data['page_rs']['site_id']."' AND l.status=1 AND l.hidden=0 ";
 			$sql .= " AND e.".$fields['identifier']."!='' AND e.".$fields['identifier']." IS NOT NULL";
+			if($mlist && $keywords_list){
+				$orlist = array();
+				foreach($mlist as $key=>$value){
+					if($value['search'] == 1){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = 'e.'.$value['identifier']."='".$v."'";
+						}
+					}
+					if($value['search'] == 2){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = 'e.'.$value['identifier']." LIKE '%".$v."%'";
+						}
+					}
+				}
+				if($orlist && count($orlist)>0){
+					$sql .= " AND (".implode(" OR ",$orlist).")";
+				}
+			}
 			$sql .= " GROUP BY e.".$fields['identifier'];
 		}
 		$rslist = $this->db->get_all($sql);
@@ -574,10 +722,121 @@ class project_control extends phpok_control
 	}
 
 	/**
+	 * 清除类目中无用数据
+	**/
+	private function _cate_clear($data)
+	{
+		$tbl = $this->db->prefix;
+		$dt = $data['dt'];
+		$mlist = $data['mlist'];
+		$keywords_list = array();
+		if($dt['keywords']){
+			$tmp = str_replace(array("\r","\n","\t","　"," ","&nbsp;","&amp;",'"',"'")," ",$dt['keywords']);
+			$tmp = preg_replace("/(\x20{2,})/"," ",$tmp);# 去除多余空格，只保留一个空格
+			$keywords_list = explode(" ",$tmp);
+		}
+		if($data['module'] && $data['module']['mtype']){
+			$tbl .= $data['module']['id'];
+			$sql  = "SELECT count(id) as total,cate_id as val FROM ".$tbl." WHERE project_id='".$data['page_rs']['id']."'";
+			if($mlist && $keywords_list){
+				$orlist = array();
+				foreach($mlist as $key=>$value){
+					if($value['search'] == 1){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = $value['identifier']."='".$v."'";
+						}
+					}
+					if($value['search'] == 2){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = $value['identifier']." LIKE '%".$v."%'";
+						}
+					}
+				}
+				if($orlist && count($orlist)>0){
+					$sql .= " AND (".implode(" OR ",$orlist).")";
+				}
+			}
+			$sql .= " GROUP BY cate_id";
+		}else{
+			$tbl .= 'list_'.$data['module']['id'];
+			$sql  = " SELECT count(l.id) as total,l.cate_id as val FROM ".$this->db->prefix."list l ";
+			$sql .= " LEFT JOIN ".$tbl." e ON(l.id=e.id) ";
+			$sql .= " WHERE l.project_id='".$data['page_rs']['id']."' AND l.site_id='".$data['page_rs']['site_id']."' AND l.status=1 AND l.hidden=0 ";
+			$sql .= " AND l.cate_id!=0";
+			if($mlist && $keywords_list){
+				$orlist = array();
+				foreach($mlist as $key=>$value){
+					if($value['search'] == 1){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = 'e.'.$value['identifier']."='".$v."'";
+						}
+					}
+					if($value['search'] == 2){
+						foreach($keywords_list as $k=>$v){
+							$orlist[] = 'e.'.$value['identifier']." LIKE '%".$v."%'";
+						}
+					}
+				}
+				if($orlist && count($orlist)>0){
+					$sql .= " AND (".implode(" OR ",$orlist).")";
+				}
+			}
+			$sql .= " GROUP BY l.cate_id";
+		}
+		$newlist = $this->db->get_all($sql);
+		if(!$newlist){
+			return false;
+		}
+		$vals = array();
+		foreach($newlist as $key=>$value){
+			$vals[] = $value['val'];
+		}
+		$vals = array_unique($vals);
+		$rslist = $this->model('cate')->list_ids($vals,$data['page_rs']['identifier']);
+		if(!$rslist){
+			return false;
+		}
+		return $rslist;
+	}
+
+	/**
 	 * 分类筛选器
 	**/
 	private function filter_cate(&$filter,$data,$urlist)
 	{
+		// 如查有关键字搜索，使用最终类目模式
+		if($data['dt'] && $data['dt']['keywords']){
+			$subcatelist = $this->_cate_clear($data);
+			if(!$subcatelist){
+				return false;
+			}
+			$highlight = true;
+			$title = $data['page_rs']['filter_cate'] ? $data['page_rs']['filter_cate'] : $data['cate_root']['title'];
+			$tmplist = array();
+			foreach($subcatelist as $key=>$value){
+				$urldata = $urlist;
+				$tmp = array();
+				$tmp['title'] = $value['title'];
+				$urldata['cate'] = $value['identifier'];
+				$tmp['url'] = $this->_array2url($urldata);
+				$tmp['identifier'] = 'cate';
+				$tmp['val'] = $value['identifier'];
+				$tmp['urlext'] = "cate=".$value['identifier'];
+				$tmp['highlight'] = false;
+				if($data['cate_rs'] && $data['cate_rs']['id'] == $value['id']){
+					$tmp['highlight'] = true;
+					$highlight = false;
+				}
+				$tmplist[] = $tmp;
+			}
+			$rootData = $urlist;
+			if(isset($rootData['cate'])){
+				unset($rootData['cate']);
+			}
+			$tmpdata = array("title"=>$title,"highlight"=>$highlight,'identifier'=>'cate',"join"=>false,"user"=>false,"url"=>$this->_array2url($rootData),"list"=>$tmplist);
+			$filter['catelist'] = $tmpdata;
+			return true;
+		}
 		$subcatelist = phpok("_subcate","cateid=".$data['page_rs']['cate']);
 		if(!$subcatelist){
 			return false;

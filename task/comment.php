@@ -29,13 +29,21 @@ $this->assign('rs',$rs);
 //用户信息
 if($rs['uid']){
 	$user_rs = $this->model('user')->get_one($rs['uid']);
-	$this->assign('user_rs',$user_rs);
+	if($user_rs){
+		$this->assign('user_rs',$user_rs);
+	}
 }
 
 //主题信息
 if($rs['tid']){
 	$title_rs = $this->model('content')->get_one($rs['tid'],false);
 	$this->assign('title_rs',$title_rs);
+	if($title_rs['user_id']){
+		$user_rs = $this->model('user')->get_one($title_rs['user_id']);
+		if($user_rs){
+			$this->assign('user_rs',$user_rs);
+		}
+	}
 }
 
 //订单信息

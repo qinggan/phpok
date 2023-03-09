@@ -176,6 +176,7 @@ class payment_control extends phpok_control
 			$this->error(P_Lang('支付名称不能为空'),$error_url);
 		}
 		$data = array('title'=>$title,'code'=>$code,'gid'=>$gid);
+		$data['admin_note'] = $this->get('admin_note');
 		$data['currency'] = $this->get("currency");
 		$data['logo1'] = $this->get('logo1');
 		$data['logo2'] = $this->get('logo2');

@@ -1,0 +1,32 @@
+<!-- include tpl=usercp/head -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return $.user.info(this)">
+<div class="layui-card">
+	<div class="layui-card-header">
+		个人信息
+	</div>
+	<div class="layui-card-body">
+			<input type="hidden" name="avatar" id="avatar" value="{$rs.avatar}" />
+			<!-- loop from=$extlist key=$key value=$value -->
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					{$value.title}
+				</label>
+				<div class="layui-input-inline default-auto"{if $value.form_type == 'radio' || $value.form_type == 'checkbox'} style="padding-top:10px;"{/if}>
+					{$value.html}
+				</div>
+			</div>
+			<!-- /loop -->		
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-form-item">
+		<label class="layui-form-label"></label>
+		<div>
+			<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+			<input type="button" value="{lang返回}" class="layui-btn layui-btn-primary" onclick="$.phpok.go('{url ctrl=usercp/}')" />
+		</div>
+	</div>
+</div>
+</form>
+<!-- include tpl=usercp/foot -->

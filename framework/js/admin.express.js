@@ -56,7 +56,6 @@
 						$.dialog.tips(p_lang('物流信息保存成功'));
 						var id = $("#id").val();
 						if(!id){
-							$.admin.reload(get_url('express'));
 							$.admin.close(get_url('express'));
 							return true;
 						}

@@ -91,7 +91,7 @@ class wxpay_notify
 				$note = P_Lang('订单支付完成，编号：{sn}',array('sn'=>$order['sn']));
 				$log = array('order_id'=>$order['id'],'addtime'=>$app->time,'who'=>$app->user['user'],'note'=>$note);
 				$app->model('order')->log_save($log);
-				
+
 				/*$payinfo = $app->model('order')->order_payment_notend($order['id']);
 				if($payinfo){
 					$payment_data = array('dateline'=>$mytime,'ext'=>serialize($ext));
@@ -108,7 +108,7 @@ class wxpay_notify
 			$app->model('wealth')->recharge($this->order['id']);
 		}
 		$GLOBALS['app']->plugin('payment-notice',$this->order['id']);
-		$this->ok();		
+		$this->ok();
 	}
 
 	private function error($title)
@@ -131,4 +131,3 @@ class wxpay_notify
 		exit($info);
 	}
 }
-?>

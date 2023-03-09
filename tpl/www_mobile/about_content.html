@@ -1,0 +1,18 @@
+<!-- include tpl=header -->
+<section class="bg-light p-3 bg-default"{if $page_rs.banner} style="background:url('{$page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+	<h1 class="text-center">{$rs.title}</h1>
+</section>
+<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
+<div class="container">
+	<div class="row">
+		<div class="col-sm-9">
+			<div class="content">{$rs.content}</div>
+		</div>
+		<div class="col-sm-3">
+			<div class="mb-3"><!-- include tpl=block/about --></div>
+			<div class="mb-3"><!-- include tpl=block/contact --></div>
+		</div>
+	</div>
+</div>
+
+<!-- include tpl=footer -->

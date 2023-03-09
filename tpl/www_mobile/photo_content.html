@@ -1,0 +1,60 @@
+<!-- include tpl=header menutitle=$page_rs.title -->
+<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+	<h1 class="p-4 text-center">{$rs.title}</h1>
+	<!-- if $rs.note -->
+	<h6 class="text-center">{$rs.note}</h6>
+	<!-- /if -->
+	<div class="container">
+		<div class="text-center d-block m-4">
+			<small class="p-2 bg-light-50 rounded-lg ">
+				发布日期：{func time_format $rs.dateline} &nbsp; &nbsp;
+				浏览次数：{$rs.hits}
+			</small>
+		</div>
+		<!-- if $rs.tag -->
+		<div class="text-center m-3">
+			<small class="p-2 bg-light-50 rounded-lg">
+			标签：
+			<!-- loop from=$rs.tag key=$k value=$v id=$idxx -->
+			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+			<!-- /loop -->
+			</small>
+		</div>
+		<!-- /if -->
+	</div>
+</section>
+<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
+<section class="container p-0">
+	<div id="slider_{$page_rs.id}" class="carousel slide" data-ride="carousel">
+		<ol class="carousel-indicators">
+			<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
+			<li data-target="#slider_{$page_rs.id}" data-slide-to="{$tmpid.index}"{if !$tmpid.index} class="active"{/if}></li>
+			<!-- /loop -->
+		</ol>
+		<div class="carousel-inner">
+			<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
+			<div class="carousel-item text-center{if !$tmpid.index} active{/if}">
+				<img src="{$value.gd.auto}" style="max-width:100%" alt="{$value.title}" />
+			</div>
+			<!-- /loop -->
+		</div>
+		<a class="carousel-control-prev" href="#slider_{$page_rs.id}" role="button" data-slide="prev">
+			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			<span class="sr-only">下一张</span>
+		</a>
+		<a class="carousel-control-next" href="#slider_{$page_rs.id}" role="button" data-slide="next">
+			<span class="carousel-control-next-icon" aria-hidden="true"></span>
+			<span class="sr-only">下一张</span>
+		</a>
+	</div>
+	<!-- if $rs.content -->
+	<div class="p-4">
+		<div class="content">{$rs.content}</div>
+	</div>
+	<!-- /if -->
+	<div class="pl-4 pr-4"><!-- include tpl=block/next_prev --></div>
+	<!-- if $page_rs.comment_status -->
+		<div class="mt-2"><!-- include tpl=block/comment tid=$rs.id --></div>
+	<!-- /if -->
+</section>
+<!-- include tpl=footer -->

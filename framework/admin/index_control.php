@@ -79,7 +79,7 @@ class index_control extends phpok_control
 				$popedom_p[] = $value["id"];
 			}
 		}
-		$popedom = $this->session->val('admin_rs.if_system') ? array("all") : $_SESSION["admin_popedom"];
+		$popedom = $this->session->val('admin_rs.if_system') ? array("all") : $this->session->val('admin_popedom');
 		if(!$popedom){
 			$popedom = array();
 		}
@@ -90,7 +90,7 @@ class index_control extends phpok_control
 			$string = implode("','",$biz_ctrl);
 			$condition = "appfile NOT IN('".$string."')";
 		}
-		$menulist = $this->model('sysmenu')->get_all($_SESSION["admin_site_id"],1,$condition);
+		$menulist = $this->model('sysmenu')->get_all($this->session->val('admin_site_id'),1,$condition);
 		if(!$menulist){
 			$menulist = array();
 		}
@@ -105,7 +105,7 @@ class index_control extends phpok_control
 					unset($value['sublist'][$k]);
 					continue;
 				}
-				if(!in_array($v['appfile'],$ftmp) && !$_SESSION['admin_rs']['if_system'] && $popedom_m[$v['id']]){
+				if(!in_array($v['appfile'],$ftmp) && !$this->session->val('admin_rs.if_system') && $popedom_m[$v['id']]){
 					if(!$popedom_m || !$popedom_m[$v['id']] || !is_array($popedom_m[$v['id']]) || count($popedom_m[$v["id"]])<1){
 						unset($value["sublist"][$k]);
 						continue;
@@ -265,12 +265,8 @@ class index_control extends phpok_control
 
 			if(in_array('safecheck',$setting)){
 				$this->assign('safecheck',true);
-				
 			}
 		}
-		
-		
-		
 		//读取快捷链接
 		$qlink = $this->model('qlink')->get_all();
 		$this->assign('qlink',$qlink);
@@ -299,6 +295,14 @@ class index_control extends phpok_control
 		$this->success();
 	}
 
+	public function download_table_f()
+	{
+		$url = 'https'.'://cdn.phpok.com/tables/'.$this->version.'.txt';
+		$content = $this->lib('curl')->get_content($url);
+		$this->lib('file')->vi($content,$this->dir_data.'table.php');
+		$this->success();
+	}
+
 	public function getlist_f()
 	{
 		$this->config('is_ajax',true);
@@ -320,12 +324,13 @@ class index_control extends phpok_control
 		$length = strlen($this->dir_root);
 		$info = $this->lib('file')->cat($this->dir_data.'ignore.txt');
 		$ignore = $info ? explode("\n",$info) : array();
+		$tables = $this->_tables();
 		foreach($list as $key=>$value){
 			if(is_dir($value)){
 				$dirlist[] = substr($value,$length);
 			}
 			if(is_file($value)){
-				$tmp = $this->file_safe_checking($value,$ignore);
+				$tmp = $this->file_safe_checking($value,$ignore,$tables);
 				if($tmp){
 					$rslist[] = $tmp;
 				}
@@ -342,6 +347,32 @@ class index_control extends phpok_control
 		$this->success($info);
 	}
 
+	private function _tables()
+	{
+		$file = $this->dir_data.'table.php';
+		if(!file_exists($file)){
+			return false;
+		}
+		$list = file($file);
+		if(!$list){
+			return false;
+		}
+		unset($list[0]);
+		if(!$list){
+			return false;
+		}
+		$ids = array();
+		foreach($list as $key=>$value){
+			$tmp = explode("|",$value);
+			$name = trim($tmp[1]);
+			if($name == 'Hash'){
+				continue;
+			}
+			$ids[] = $name;
+		}
+		return $ids;
+	}
+
 	private function _sort($a,$b)
 	{
 		if($a['filesize'] == $b['filesize']){
@@ -353,110 +384,152 @@ class index_control extends phpok_control
 	/**
 	 * 文件安全检测
 	 * 检测深度方法：
-	 *		1、空字符文件返回删除提示
-	 *		2、文件头与后缀不一致检测
-	 *		3、图片超过1M返回报错
-	 *		4、脚本文件超过200K返回报错
-	 *		5、含敏感字符的脚本谁的返回报错
-	 *		6、忽略所有 txt，md，tiff，mp4，mpeg，mp3，wav，wmv，mpg 等附件
+	 *		1、码表对照，一致的文件直接忽略过
+	 *		2、空字符文件返回删除提示
+	 *		3、文件头与后缀不一致检测
+	 *		4、图片超过1M返回报错
+	 *		5、脚本文件超过200K返回报错
+	 *		6、含敏感字符的脚本谁的返回报错
+	 *		7、忽略所有 txt，md，tiff，mp4，mpeg，mp3，wav，wmv，mpg 等附件
 	**/
-	private function file_safe_checking($file,$ignore=array())
+	private function file_safe_checking($file,$ignore=array(),$tables=array())
 	{
 		$t = 'passthru,exec,system,putenv,chroot,chgrp,chown,popen,proc_open,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wifcontinued,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_getpriority,pcntl_setpriority,imap_open,apache_setenv';
-		$tmp = explode(",",$t);
-		$codes = array();
-		foreach($tmp as $key=>$value){
-			$codes[] = $value."(";
-		}
-		$codes[] = "pack(";
-		$codes[] = "dechex(";
-		$codes[] = "hexdec(";
-		$codes[] = "chr(";
-		$codes[] = "str_rot13(";
+		$codes = explode(",",$t);
+		$codes[] = "pack";
+		$codes[] = "dechex";
+		$codes[] = "hexdec";
+		$codes[] = "chr";
+		$codes[] = "str_rot13";
+		$codes[] = "eval";
 		$codes = array_unique($codes);
 		$rs = $this->file2array($file);
 		if(!$rs){
 			return false;
 		}
+
+		if($rs['is_txt']){
+			return false;
+		}
+		
+		if($tables && in_array($rs['hash'],$tables)){
+			return false;
+		}
+		
 		if($ignore && in_array($rs['hash'],$ignore)){
 			return false;
 		}
-		$piclist = array("jpg",'png','jpeg','jpe','gif','ico','css','xml','svg','scss');
-		$exelist = array('php','asp','aspx','jsp','py','phar','js','html');
-		$outlist = array('txt','md','mp4','mp3','rm','wav','wmv','mpg','mpeg','tiff','json','config','conf','lock','ini','htaccess','zh_cn','tpl','time','sql','ttf','zip','rar','woff','eot','woff2','po','mo','map','otf');
+		if($rs['ext'] == $rs['filename'] || $rs['ext'] == '未知'){
+			return false;
+		}
+		//可以放脚本的文件
+		$exelist = array('php','asp','aspx','jsp','py','html','htm','js');
+		
+		//忽略的文件后缀
+		$out_extinfo  = 'doc,docx,xls,xlsx,pdf,ppt,pptx,rtf,txt,md';
+		$out_extinfo .= ',mp4,mp3,rm,wav,wmv,mpg,mpeg';
+		$out_extinfo .= ',tiff,json,config,conf,lock,ini,htaccess,zh_cn,tpl';
+		$out_extinfo .= ',time,sql,ttf,zip,rar,woff,eot,woff2,po,mo,map,otf';
+		$out_extinfo .= ',phar,xdb,db,yml,pem,psd,js,jsx,fon,log,jpg,png,gif,jpe,jpeg,webp,bmp';
+		$out_extinfo .= ',tiff,svg,js,css,xml,scss,ico,css';
+		$outlist = explode(",",$out_extinfo);
+		$outlist = array_unique($outlist);
 		if($rs['ext'] && in_array($rs['ext'],$outlist)){
 			return false;
 		}
-		if($rs['ext'] && in_array($rs['ext'],$piclist)){
-			$handle = fopen($file,'rb');
-			$bin = @fread($handle,128); //只读128字节
-			fclose($handle);
-			if(!$bin){
-				$rs['error'] = '空字节文件，建议删除';
-				$rs['status'] = false;
-				$rs['act'] = "delete";
-				return $rs;
-			}
-			$chk = $this->lib('upload')->bin2ext($bin,$rs['ext']);
-			if(!$chk){
-				$rs['error'] = '系统检测文件类型与文件头不一致';
-				$rs['act'] = "delete";
-				$rs['status'] = false;
-				return $rs;
-			}
-			if($rs['filesize']>=(1024*1024)){
-				$rs['error'] = '图片文件超过1M，影响网络使用，建议压缩';
-				$rs['act'] = "compress";
-				$rs['status'] = false;
-				return $rs;
-			}
-			return false;
-		}
+
+		//检测附件目录禁止脚本
 		//脚本类型检测，超过100K，提示编辑
-		if(in_array($rs['ext'],$exelist)){
-			if($rs['filesize']<10){
-				return false;
+		if(substr($rs['folder'],0,4) == 'res/'){
+			$rs['error'] = ' res 目录禁止脚本文件存在，请检查';
+			$rs['act'] = "edit";
+			$rs['status'] = false;
+			return $rs;
+		}
+		if($rs['filesize']<100){
+			$rs['error'] = '脚本文件小于100字节，请人工检查是否异常';
+			$rs['act'] = "edit";
+			$rs['status'] = false;
+			return $rs;
+		}
+		if($rs['filesize']>=(1024*100)){
+			$rs['error'] = '脚本文件超过100K，请人工检查是否异常';
+			$rs['act'] = "edit";
+			$rs['status'] = false;
+			return $rs;
+		}
+		$tmp = file_get_contents($file);
+		$tmp = str_replace(array(" ","\t","\n","\r"),"",$tmp);
+		$tmp = strtolower($tmp);
+		foreach($codes as $key=>$value){
+			if(strpos($tmp,$value.'(') !== true){
+				continue;
 			}
-			if($rs['filesize']>=(1024*100)){
-				$rs['error'] = '脚本文件超过100K，请人工检查是否异常';
+			preg_match_all('/('.$value.'\()/isU',$tmp,$match_1);
+			preg_match_all('/([>|:|\_|\$]'.$value.'\()/isU',$tmp,$match_2);
+			if($match_1 && $match_2 && $match_1[1] && $match_2 && count($match_1[1]) != count($match_2[2])){
+				$rs['error'] = '脚本文件含有敏感变量 '.$value.'，请人工检查';
 				$rs['act'] = "edit";
 				$rs['status'] = false;
-				return $rs;
+				$isbreak = true;
+				break;
 			}
-			$tmp = file_get_contents($file);
-			$tmp = str_replace(array(" ","\t","\n","\r"),"",$tmp);
-			$tmp = strtolower($tmp);
-			foreach($codes as $key=>$value){
-				if(strpos($tmp,$value) !== false){
-					$rs['error'] = '脚本文件含有敏感变量 '.$value.'，请人工检查';
-					$rs['act'] = "edit";
-					$rs['status'] = false;
-					$isbreak = true;
-					break;
-				}
-			}
-			if($isbreak){
-				return $rs;
-			}
-			return false;
 		}
-		$rs['error'] = '未知文件，请人工核检';
-		$rs['act'] = 'view';
-		$rs['status'] = false;
-		return $rs;
+		if($isbreak){
+			return $rs;
+		}
+		$codelist = array();
+		$codelist[] = '$_=';
+		$codelist[] = '$_[';
+		$codelist[] = '$__}';
+		$codelist[] = '->"_"';
+		foreach($codelist as $key=>$value){
+			if(strpos($tmp,$value) !== false){
+				$rs['error'] = '脚本文件含有敏感 '.$value.' 特征码，请人工检查';
+				$rs['act'] = "edit";
+				$rs['status'] = false;
+				$isbreak = true;
+				break;
+			}
+		}
+		if($isbreak){
+			return $rs;
+		}
+		// 判断是否有类似 \x63\x72\x65\x61\x74 变量名
+		preg_match('/(\\\x[0-9a-z]+)/isU',$tmp,$match);
+		if($match && $match[1]){
+			$rs['error'] = '脚本文件含有敏感十六进 '.$match[1].' 信息，请人工检查';
+			$rs['act'] = "edit";
+			$rs['status'] = false;
+			return $rs;
+		}
+		// 判断是否有非除
+		preg_match('/\$([^0-9a-z\_\'\/\)\"]+)(\)|;|=|\s|\]|\[|\-)/isU',$tmp,$match);
+		if($match && $match[1]){
+			$rs['error'] = '脚本文件含有怪异变量名 '.rawurlencode($match[1]).'，请人工检查';
+			$rs['act'] = "edit";
+			$rs['status'] = false;
+			return $rs;
+		}
+		return false;
 	}
 
 	private function file2array($file)
 	{
 		$f2 = substr($file,strlen($this->dir_root));
 		$filesize = filesize($file);
+		if($filesize>=1024*300){
+			$content = file_get_contents($file,null,null,0,300);
+			$hash = md5($f2.'-'.$content);
+		}else{
+			$hash = md5_file($file);
+		}
 		$mdate = filemtime($file);
 		$rs = array();
 		$rs['name'] = basename($file);
 		$rs['filesize'] = $filesize;
 		$rs['filename'] = $f2;
-		$rs['filesize'].$rs['mdate'];
-		$rs['hash'] = ($filesize >= 1024*300) ? md5($f2.'-'.$mdate.'-'.$filesize) : md5_file($file);
+		$rs['hash'] = $hash;
 		$rs['md5'] = md5($f2); //文件路径MD5
 		$rs['cdate'] = filectime($file);
 		$rs['mdate'] = $mdate;
@@ -467,6 +540,12 @@ class index_control extends phpok_control
 		$rs['mdate_format'] = date("Y-m-d H:i:s",$rs['mdate']);
 		$rs['cdate_format'] = date("Y-m-d H:i:s",$rs['cdate']);
 		$rs['adate_format'] = date("Y-m-d H:i:s",$rs['adate']);
+		$tmp = file_get_contents($file,null,null,0,26);
+		if($tmp == "<?php die('forbidden'); ?>" || $tmp == "<?php exit('--------- STAR"){
+			$rs['is_txt'] = true;
+		}else{
+			$rs['is_txt'] = false;
+		}
 		return $rs;
 	}
 
@@ -609,15 +688,6 @@ class index_control extends phpok_control
 		return true;
 	}
 
-	public function list_setting_f()
-	{
-		$info = $this->list_setting();
-		if(!$info){
-			$this->json(false);
-		}
-		$this->json($info,true);
-	}
-
 	private function list_setting($glist)
 	{
 		$rslist = $this->model('project')->get_all($this->session->val('admin_site_id'),0,"p.status=1 AND p.hidden=0");
@@ -652,10 +722,23 @@ class index_control extends phpok_control
 			}
 		}
 		if($rslist && is_array($rslist)){
+			$groups = $this->model('project')->group();
+			$tmp = array();
+			foreach($groups as $key=>$value){
+				$tmp[$key] = array("title"=>$value,"url"=>$this->url("index","group","id=".$key),"rslist"=>array());
+			}
+			$groups = $tmp;
+			$tmplist = array();
 			foreach($rslist as $key=>$value){
 				$value['url'] = $this->url('list','action','id='.$value['id']);
-				$rslist[$key] = $value;
+				if($value['admin_group'] && $groups && $groups[$value['admin_group']]){
+					$groups[$value['admin_group']]["rslist"][] = $value;
+					$tmplist[$value['admin_group']] = $groups[$value['admin_group']];
+				}else{
+					$tmplist[$key] = $value;
+				}
 			}
+			$rslist = $tmplist;
 		}
 		if($glist && is_array($glist) && count($glist)>0){
 			foreach($glist as $key=>$value){
@@ -668,6 +751,8 @@ class index_control extends phpok_control
 
 	public function cache_f()
 	{
+		$is_opcache = function_exists('opcache_reset');
+		$this->assign('is_opcache',$is_opcache);
 		$this->view('index_cache');
 	}
 
@@ -697,6 +782,11 @@ class index_control extends phpok_control
 						$this->lib('file')->rm($value);
 					}
 				}
+			}
+		}
+		if($type == 'opcache' || $type == 'all'){
+			if(function_exists('opcache_reset')){
+				opcache_reset();
 			}
 		}
 		if($type == 'session' || $type == 'all'){
@@ -780,7 +870,7 @@ class index_control extends phpok_control
 			}
 		}
 		$this->config('is_ajax',true);
-		$list = false;
+		$list = array();
 		//读取未操作的主题
 		$rslist = $this->model('list')->pending_info($this->session->val('admin_site_id'));
 		if($rslist){
@@ -806,13 +896,6 @@ class index_control extends phpok_control
 			$url = $this->url("reply","","status=3");
 			$list['ctrl_reply'] = array("title"=>P_Lang('评论管理'),"total"=>$reply_total,"url"=>$url,'id'=>'reply');
 		}
-		if($this->config['async']['status']){
-			$taskurl = api_url('task','index','',true);
-			if($this->config['async']['type']){
-				$this->lib('async')->loadtype($this->config['async']['type']);
-			}
-			$this->lib('async')->start($taskurl);
-		}
 		//远程检查更新
 		if(file_exists($this->dir_data.'update.php')){
 			include($this->dir_data.'update.php');
@@ -837,7 +920,7 @@ class index_control extends phpok_control
 
 	public function pendding_sublist_f()
 	{
-		$list = false;
+		$list = array();
 		$rslist = $this->model('list')->pending_info($this->session->val('admin_site_id'));
 		if($rslist){
 			foreach($rslist as $key=>$value){
@@ -860,14 +943,14 @@ class index_control extends phpok_control
 		if(function_exists('phpinfo')){
 			$this->assign('showphpinfo',true);
 			if($showphp){
-				phpinfo();
+				$showphpcode = 'phpinfo';
+				$showphpcode();
 				exit;
 			}
 		}else{
 			$this->assign('showphpinfo',false);
 		}
 		$list = $this->_serverInfo();
-		
 		$this->assign('list',$list);
 		$this->view('index_server_info');
 	}
@@ -935,7 +1018,8 @@ class index_control extends phpok_control
 		}
 		$id = $this->get('id','system');
 		if(!$id){
-			$id = 'qlink-'.$this->time.rand(0,999);
+			$rand_string = $this->lib('common')->str_rand(10);
+			$id = 'qlink-'.$this->time.'-'.$rand_string;
 		}
 		$data = array('id'=>$id);
 		$data['title'] = $this->get('title');

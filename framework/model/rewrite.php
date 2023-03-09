@@ -36,7 +36,7 @@ class rewrite_model_base extends phpok_model
 		if(!$rslist){
 			return false;
 		}
-		$rs = false;
+		$rs = array();
 		foreach($rslist as $key=>$value){
 			if($value['id'] == $id){
 				$rs = $value;
@@ -65,10 +65,10 @@ class rewrite_model_base extends phpok_model
 			$uri = str_replace($tmp,'',$uri);
 		}
 		$this->rlist();
-		$rs = false;
+		$rs = array();
 		foreach($this->rlist as $key=>$value){
 			//规则长度是不一致，跳过
-			$matches = false;
+			$matches = array();
 			preg_match_all('/'.$value['rule'].'/isU',$uri,$matches);
 			if($matches !== false && $matches[0] && $matches[0][0] == $uri){
 				$rs = $value;
@@ -111,7 +111,7 @@ class rewrite_model_base extends phpok_model
 		}
 		$list = $this->lib('xml')->read($file);
 		if($list['url'] && $list['url']['title']){
-			$tmp = false;
+			$tmp = array();
 			$tmplist = array();
 			foreach($list['url'] as $key=>$value){
 				if(is_numeric($key)){

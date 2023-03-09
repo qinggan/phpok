@@ -76,6 +76,8 @@ class plugin_control extends phpok_control
 			$rs['param'] = array();
 		}
 		$this->assign("rs",$rs);
+		$project_list = $this->model('project')->get_all_project($this->session->val('admin_site_id'),'');
+		$this->assign('plist',$project_list);
 		if(file_exists($this->dir_root.'plugins/'.$id.'/setting.php')){
 			include_once($this->dir_root.'plugins/'.$id.'/setting.php');
 			$name = 'setting_'.$id;
@@ -86,8 +88,6 @@ class plugin_control extends phpok_control
 				$this->assign('plugin_html',$plugin_html);
 			}
 		}
-		$project_list = $this->model('project')->get_all_project($this->session->val('admin_site_id'),'');
-		$this->assign('plist',$project_list);
 		$this->view("plugin_config");
 	}
 
@@ -105,12 +105,9 @@ class plugin_control extends phpok_control
 		}
 		$this->assign("id",$id);
 		$rs = $this->model('plugin')->get_one($id);
-		if($rs['param']){
-			$rs['param'] = unserialize($rs['param']);
-		}else{
-			$rs['param'] = array();
-		}
 		$this->assign("rs",$rs);
+		$project_list = $this->model('project')->get_all_project($this->session->val('admin_site_id'),'');
+		$this->assign('plist',$project_list);
 		$plugin_html = '';
 		if(file_exists($this->dir_root.'plugins/'.$id.'/setting.php')){
 			include_once($this->dir_root.'plugins/'.$id.'/setting.php');
@@ -122,8 +119,6 @@ class plugin_control extends phpok_control
 				$this->assign('plugin_html',$plugin_html);
 			}
 		}
-		$project_list = $this->model('project')->get_all_project($this->session->val('admin_site_id'),'');
-		$this->assign('plist',$project_list);
 		$this->view('plugin_extconfig');
 	}
 
@@ -280,6 +275,8 @@ class plugin_control extends phpok_control
 		$rs = $this->model('plugin')->get_xml($id);
 		$rs['taxis'] = $this->model('plugin')->get_next_taxis();
 		$this->assign("rs",$rs);
+		$project_list = $this->model('project')->get_all_project($this->session->val('admin_site_id'),'');
+		$this->assign('plist',$project_list);
 		if(file_exists($rs['path'].'install.php')){
 			include_once($rs['path'].'install.php');
 			$name = 'install_'.$id;
@@ -290,8 +287,6 @@ class plugin_control extends phpok_control
 				$this->assign("plugin_html",$info);
 			}
 		}
-		$project_list = $this->model('project')->get_all_project($this->session->val('admin_site_id'),'');
-		$this->assign('plist',$project_list);
 		$this->view("plugin_install");
 	}
 
@@ -427,7 +422,6 @@ class plugin_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('数据记录不存在'));
 		}
-		if($rs['param']) $rs['param'] = unserialize($rs['param']);
 		if(!file_exists($this->dir_root.'plugins/'.$id.'/'.$this->app_id.'.php')){
 			$this->error(P_Lang('插件文件{appid}不存在',array('appid'=>' <span class="red">'.$this->app_id.'.php</span> ')));
 		}

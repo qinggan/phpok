@@ -498,12 +498,8 @@ class payment_control extends phpok_control
 
 	private function _create_sn()
 	{
-		$a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		$rand_str = '';
-		for($i=0;$i<3;$i++){
-			$rand_str .= $a[rand(0,25)];
-		}
-		$rand_str .= rand(1000,9999);
+		$rand_str  = $this->lib('common')->str_rand(3,'letter');
+		$rand_str .= $this->lib('common')->str_rand(4,'number');
 		$rand_str .= date("YmdHis",$this->time);
 		return $rand_str;
 	}

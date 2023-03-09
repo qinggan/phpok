@@ -56,16 +56,15 @@ div[pre-type=toolbar]{
 	left:0;
 	width:100%;
 	height:100%;
-	text-align:center;
 	display:none;
 	z-index:999;
 }
 
 div[pre-type=toolbar-layer]{
 	position: absolute;
-	left:-26px;
+	left:-60px;
 	top:0;
-	width:26px;
+	width:60px;
 	height:100%;
 	text-align:center;
 	display:none;
@@ -73,22 +72,13 @@ div[pre-type=toolbar-layer]{
 }
 
 div[pre-type=toolbar-updown]{
-	position: absolute;
-	right:0px;
-	bottom:0;
-	height:26px;
-	text-align:center;
 	display:none;
-	z-index:999;
-}
-div[pre-type=toolbar-updown] button{
-	width:20px;
 }
 
-div[pre-type=data]:hover div[pre-type=toolbar],div[pre-type=layer]:hover div[pre-type=toolbar-layer],div[pre-type=layer]:hover div[pre-type=toolbar-updown]{
+div[pre-type=data]:hover div[pre-type=toolbar],div[pre-type=layer]:hover div[pre-type=toolbar-layer]{
 	display:block;
 }
-div.active[pre-type=data] div[pre-type=toolbar],div.active[pre-type=layer] div[pre-type=toolbar-layer],div.active[pre-type=layer] div[pre-type=toolbar-updown]{
+div.active[pre-type=data] div[pre-type=toolbar],div.active[pre-type=layer] div[pre-type=toolbar-layer]{
 	display:block;
 }
 

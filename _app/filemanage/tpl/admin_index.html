@@ -43,7 +43,8 @@
 		<!-- loop from=$dirlist key=$key value=$value -->
 		<tr id="{$value.id}">
 			<td align="center"><a href="{$value.url}"><img src="images/filetype/dir.gif" border="0" alt="{lang文件夹}" /></a></td>
-			<td colspan="2"><a href="{$value.url}">{$value.title}</a></td>
+			<td><a href="{$value.url}">{$value.title}</a></td>
+			<td>{$value.date}</td>
 			<td>
 				<div class="layui-btn-group">
 					<!-- if $popedom.edit -->

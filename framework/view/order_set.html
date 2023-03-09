@@ -55,12 +55,22 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
+				{lang联系人}
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="fullname" value="{$rs.fullname}" id="fullname" class="layui-input" />
+			</div>
+			<div class="layui-input-inline auto"><input type="button" value="{lang用户邮箱}" onclick="$.admin_order.user('fullname')" class="layui-btn layui-btn-sm" /></div>
+			<div class="layui-input-inline auto gray lh38">{lang填写联系人称呼}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
 				{lang邮箱Email}
 			</label>
 			<div class="layui-input-inline default-auto">
 				<input type="text" name="email" id="email" value="{$rs.email}" class="layui-input" />
 			</div>
-			<div class="layui-input-inline auto"><input type="button" value="{lang用户邮箱}" onclick="$.admin_order.user('email')" class="layui-btn" /></div>
+			<div class="layui-input-inline auto"><input type="button" value="{lang用户邮箱}" onclick="$.admin_order.user('email')" class="layui-btn layui-btn-sm" /></div>
 			<div class="layui-input-inline auto gray lh38">{lang用于接收邮件通知，为空不发送通知}</div>
 		</div>
 		<div class="layui-form-item">
@@ -70,9 +80,10 @@
 			<div class="layui-input-inline default-auto">
 				<input type="text" name="mobile" value="{$rs.mobile}" id="mobile" class="layui-input" />
 			</div>
-			<div class="layui-input-inline auto"><input type="button" value="{lang用户手机号}" onclick="$.admin_order.user('mobile')" class="layui-btn" /></div>
+			<div class="layui-input-inline auto"><input type="button" value="{lang用户手机号}" onclick="$.admin_order.user('mobile')" class="layui-btn layui-btn-sm" /></div>
 			<div class="layui-input-inline auto gray lh38">{lang用于接收短信通知，为空不发送通知}</div>
 		</div>
+		
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang货币}

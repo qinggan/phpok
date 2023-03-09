@@ -77,10 +77,8 @@
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
-						$.dialog.alert(p_lang('操作成功'),function(){
-							$.admin.reload(get_url('wealth'));
-							$.admin.close(get_url('wealth'));
-						},'succeed');
+						$.dialog.tips(p_lang('操作成功')).lock();
+						$.admin.close(get_url('wealth'));
 						return true;
 					}
 					$.dialog.alert(rs.info);

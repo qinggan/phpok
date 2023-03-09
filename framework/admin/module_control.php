@@ -181,9 +181,6 @@ class module_control extends phpok_control
 			foreach($list AS $key=>$value){
 				unset($value["id"]);
 				$value["ftype"] = $new_id;
-				if($value["ext"]){
-					$value["ext"] = stripslashes($value["ext"]);
-				}
 				$this->model('module')->fields_save($value);
 			}
 		}
@@ -359,9 +356,10 @@ class module_control extends phpok_control
 		$tmp_array["taxis"] = $taxis;
 		$tmp_array['onlyone'] = $this->get('onlyone','int');
 		$tmp_array['group_id'] = $this->get('group_id');
-		$tmp_array["ext"] = "";
-		if($f_rs["ext"]){
-			$tmp_array["ext"] = serialize($f_rs['ext']);
+		if($f_rs["ext"] && is_array($f_rs['ext'])){
+			foreach($f_rs['ext'] as $key=>$value){
+				$tmp_array[$key] = $value;
+			}
 		}
 		$this->model('module')->fields_save($tmp_array);
 
@@ -412,7 +410,7 @@ class module_control extends phpok_control
 		$this->assign('rs',$rs);
 		$this->view('module_field_create');
 	}
-	
+
 	/**
 	 * 删除字段
 	**/
@@ -426,6 +424,37 @@ class module_control extends phpok_control
 			$this->error(P_Lang('未指定要删除的字段'));
 		}
 		$this->model('module')->field_delete($id);
+		$this->success();
+	}
+
+	/**
+	 * 设置横排和竖排
+	**/
+	public function field_hv_f()
+	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get("id","int");
+		if(!$id){
+			$this->error(P_Lang('未指定要设置的字段'));
+		}
+		$type = $this->get('type');
+		if($type){
+			$tmp = explode(",",$id);
+			$parent_id = intval($tmp[0]);
+			$list = array();
+			foreach($tmp as $key=>$value){
+				$data = array('parent_id'=>$parent_id);
+				$this->model('module')->fields_save($data,$value);
+			}
+		}else{
+			$tmp = explode(",",$id);
+			foreach($tmp as $key=>$value){
+				$data = array('parent_id'=>0);
+				$this->model('module')->fields_save($data,$value);
+			}
+		}
 		$this->success();
 	}
 
@@ -552,14 +581,14 @@ class module_control extends phpok_control
 		$ext = array();
 		if($ext_form_id){
 			$list = explode(",",$ext_form_id);
-			foreach($list AS $key=>$value){
+			foreach($list as $key=>$value){
 				$val = explode(':',$value);
 				if($val[1] && $val[1] == "checkbox"){
 					$value = $val[0];
 					$ext[$value] = $this->get($value,"checkbox");
 				}else{
 					$value = $val[0];
-					$ext[$value] = $this->get($value);
+					$ext[$value] = $this->get($value,'html_js');
 				}
 			}
 		}
@@ -573,7 +602,6 @@ class module_control extends phpok_control
 		$array["content"] = $this->get("content");
 		$array["taxis"] = $this->get("taxis","int");
 		$array['is_front'] = $this->get('is_front','int');
-		$array["ext"] = ($ext && count($ext)>0) ? serialize($ext) : "";
 		$array['search'] = $this->get('search','int');
 		$array['search_separator'] = $this->get('search_separator');
 		$array['onlyone'] = $this->get('onlyone','int');
@@ -582,6 +610,16 @@ class module_control extends phpok_control
 		$array['filter_join'] = $this->get('filter_join');
 		$array['filter_content'] = $this->get('filter_content');
 		$array['filter_title'] = $this->get('filter_title');
+		$array['admin-list-width'] = $this->get('admin-list-width','int');
+		$array['admin-list-edit'] = $this->get('admin-list-edit','int');
+		$array['admin-list-sort'] = $this->get('admin-list-sort','int');
+		$array['admin-list-stat'] = $this->get('admin-list-stat','int');
+		$array['admin-history'] = $this->get('admin-history','int');
+		if($ext && count($ext)>0){
+			foreach($ext as $key=>$value){
+				$array[$key] = $value;
+			}
+		}
 		$this->model('module')->fields_save($array,$id);
 		$this->model('module')->update_fields($id);
 		$this->success();
@@ -645,6 +683,11 @@ class module_control extends phpok_control
 		$array['filter_join'] = $this->get('filter_join');
 		$array['filter_content'] = $this->get('filter_content');
 		$array['filter_title'] = $this->get('filter_title');
+		$array['admin-list-width'] = $this->get('admin-list-width','int');
+		$array['admin-list-edit'] = $this->get('admin-list-edit','int');
+		$array['admin-list-sort'] = $this->get('admin-list-sort','int');
+		$array['admin-list-stat'] = $this->get('admin-list-stat','int');
+		$array['admin-history'] = $this->get('admin-history','int');
 		$ext_form_id = $this->get("ext_form_id");
 		$ext = array();
 		if($ext_form_id){
@@ -653,14 +696,13 @@ class module_control extends phpok_control
 				$val = explode(':',$value);
 				if($val[1] && $val[1] == "checkbox"){
 					$value = $val[0];
-					$ext[$value] = $this->get($value,"checkbox");
+					$array[$value] = $this->get($value,"checkbox");
 				}else{
 					$value = $val[0];
-					$ext[$value] = $this->get($value);
+					$array[$value] = $this->get($value,'html_js');
 				}
 			}
 		}
-		$array['ext'] = ($ext && count($ext)>0) ? serialize($ext) : "";
 		$this->model('module')->fields_save($array);
 		$tbl_exists = $this->model('module')->chk_tbl_exists($mid,$rs['mtype'],$rs['tbl']);
 		if(!$tbl_exists){
@@ -702,9 +744,6 @@ class module_control extends phpok_control
 			$tmplist = array();
 			foreach($rslist as $key=>$value){
 				unset($value['id'],$value['module_id']);
-				if($value['ext']){
-					$value['ext'] = unserialize($value['ext']);
-				}
 				$tmplist[$key] = $value;
 			}
 			$rs['_fields'] = $tmplist;

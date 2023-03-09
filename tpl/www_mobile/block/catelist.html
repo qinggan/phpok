@@ -1,0 +1,24 @@
+<!-- catelist pid=$pid -->
+<!-- if $list && $list.tree -->
+<div class="card shadow">
+	<div class="card-header">
+		{$title ? $title : $page_rs.title}
+	</div>
+	<ul class="list-group list-group-flush">
+		<!-- loop from=$list.tree key=$key value=$value id=$tmpid -->
+		<li class="list-group-item{if $cid == $value.id} active{/if}">
+			<a href="{$value.url}" title="{$value.title}"><i class="fa fa-angle-right"></i> {$value.title}</a>
+			<span class="badge badge-light badge-pill float-right">{$value.total}</span>
+		</li>
+			<!-- if $value.id == $cid || $cate_rs.parent_id == $value.id -->
+			<!-- loop from=$value.sublist key=$k value=$v id=$idxx -->
+			<li class="list-group-item{if $cid == $v.id} active{/if}">
+				<a href="{$v.url}" title="{$v.title}" style="padding-left:2em;"><i class='am-icon-angle-right'></i> {$v.title}</a>
+				<span class="badge badge-light badge-pill float-right">{$v.total}</span>
+			</li>
+			<!-- /loop -->
+			<!-- /if -->
+		<!-- /loop -->
+	</ul>
+</div>
+<!-- /if -->

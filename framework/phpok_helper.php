@@ -149,21 +149,22 @@ function array_return($content,$status=false)
 //	error：状态为错误
 function error($tips="",$url="",$type="notice",$time=2)
 {
+	global $app;
 	if(!$tips && !ob_get_contents()){
-		header("Location:".$url);
+		$app->_location($url);
 		exit;
 	}
 	if(!$url && !$tips){
-		$GLOBALS['app']->error("操作异常，没有传递任何有效参数！");
+		$app->error("操作异常，没有传递任何有效参数！");
 	}
 	if($type == 'error'){
-		$GLOBALS['app']->error($tips,$url,$time);
+		$app->error($tips,$url,$time);
 	}else{
 		if($type == 'notice'){
-			$GLOBALS['app']->tip($tips,$url,$time);
+			$app->tip($tips,$url,$time);
 			exit;
 		}
-		$GLOBALS['app']->success($tips,$url,$time);
+		$app->success($tips,$url,$time);
 	}
 	exit;
 }
@@ -184,7 +185,7 @@ function password_create($pass)
  * 密码验证，基于MD5实现，支持三种加密：32位长度，16位长度，32位加盐模式
  * @参数 $pass 原文，即明文密码
  * @参数 $password 要比较的字串，即加密后的密码
- * @参数 
+ * @参数
 **/
 function password_check($pass,$password)
 {
@@ -433,13 +434,54 @@ function ext_save($myid,$is_add=false,$save_id="")
 			$GLOBALS['app']->model("ext")->extc_save($val,$value["id"]);
 		}
 	}
-	return true;	
+	return true;
 }
 
 # 删除扩展字段
 function ext_delete($myid)
 {
 	return $GLOBALS['app']->model("ext")->del($myid);
+}
+
+/**
+ * 输入输出价格信息
+**/
+function __price_format_chk($currency_id=0,$show_id=0,$currency_rate=0,$show_rate=0)
+{
+	global $app;
+	if(!$currency_id && !$show_id){
+		$currency_id = $app->site['currency_id'];
+		if(!$currency_id){
+			return false;
+		}
+	}
+	$data = array();
+	if(!$currency_id){
+		$currency_id = $show_id;
+	}
+	if(is_array($currency_id)){
+		$currency = $currency_id;
+	}else{
+		$currency = $app->model('currency')->get_one($currency_id);
+	}
+	if($currency_rate && $currency_rate>0){
+		$currency['val'] = $currency_rate;
+	}
+	if(!$show_id){
+		$show_id = $currency_id;
+	}
+	if(is_array($show_id)){
+		$show = $show_id;
+	}else{
+		$show = $app->model('currency')->get_one($show_id);
+	}
+	if($app->app_id == 'admin' && $show['id'] != $app->site['currency_id']){
+		$show = $app->model('currency')->get_one($app->site['currency_id']);
+	}
+	if($show_rate && $show_rate>0){
+		$show['val'] = $show_rate;
+	}
+	return array('in'=>$currency,'out'=>$show);
 }
 
 /**
@@ -452,76 +494,16 @@ function ext_delete($myid)
 **/
 function price_format($val='',$currency_id='',$show_id=0,$show_rate=0,$currency_rate=0)
 {
-	global $app;
-	if($currency_id){
-		if(is_array($currency_id)){
-			$currency = $currency_id;
-			$currency_id = $currency['id'];
-			if(!$show_id){
-				$show_id = $currency_id;
-			}
-			if(!$currency_rate || $currency_rate < 0.00000001){
-				$currency_rate = $currency['val'];
-			}
-		}else{
-			if(strpos($currency_id,'.') !== false){
-				if($currency_id>0){
-					$currency_rate = $currency_id;
-				}
-				unset($currency_id);
-			}else{
-				$currency = $app->model('currency')->get_one($currency_id);
-				if(!$currency_rate || $currency_rate < 0.00000001){
-					$currency_rate = $currency['val'];
-				}
-			}
-		}
-	}
-	if($show_id){
-		if(is_array($show_id)){
-			$show = $show_id;
-			$show_id = $show['id'];
-			if(!$show_rate || $show_rate < 0.00000001){
-				$show_rate = $show['val'];
-			}
-		}else{
-			if(strpos($show_id,'.') !== false){
-				$show_rate = $show_id;
-				unset($show_id);
-			}else{
-				$show = $app->model('currency')->get_one($show_id);
-				if(!$show_rate || $show_rate < 0.00000001){
-					$show_rate = $show['val'];
-				}
-			}
-		}
-	}
-	if($app->app_id == 'admin' && !$show_id){
-		$show_id = $currency_id;
-	}else{
-		if(!$show_id){
-			$show_id = $app->site['currency_id'];
-		}
-		if(!$show_id){
-			$show_id = $currency_id;
-		}
-	}
-	if(!$show_id){
+	$data = __price_format_chk($currency_id,$show_id,$currency_rate,$show_rate);
+	if(!$data){
 		return false;
 	}
-	if(!$currency_id){
-		$currency_id = $show_id;
+	$currency = $data['in'];
+	$show = $data['out'];
+	if($show['id'] != $currency['id'] && $currency['val']){
+		$val = ($val/$currency['val']) * $show['val'];
 	}
-	if(!$show){
-		$show = $app->model('currency')->get_one($show_id);
-	}
-	if(!$val){
-		$val = '0';
-	}
-	if($show_id != $currency_id && $currency_rate>0){
-		$val = ($val/$currency_rate) * $show_rate;
-	}
-	$tmp = number_format(abs($val),2,'.',',');
+	$tmp = number_format(abs($val),$show['dpl'],'.',',');
 	$string = $show['symbol_left'].$tmp.$show['symbol_right'];
 	if($val<0){
 		$string = '- '.$string;
@@ -539,71 +521,16 @@ function price_format($val='',$currency_id='',$show_id=0,$show_rate=0,$currency_
 **/
 function price_format_val($val='',$currency_id='',$show_id=0,$show_rate=0,$currency_rate=0)
 {
-	global $app;
-	if($currency_id){
-		if(is_array($currency_id)){
-			$currency = $currency_id;
-			$currency_id = $currency['id'];
-			if(!$show_id){
-				$show_id = $currency_id;
-			}
-			if(!$currency_rate || $currency_rate < 0.00000001){
-				$currency_rate = $currency['val'];
-			}
-		}else{
-			if(strpos($currency_id,'.') !== false){
-				$currency_rate = $currency_id;
-				unset($currency_id);
-			}else{
-				$currency = $app->model('currency')->get_one($currency_id);
-				if(!$currency_rate || $currency_rate < 0.00000001){
-					$currency_rate = $currency['val'];
-				}
-			}
-		}
-	}
-	if($show_id){
-		if(is_array($show_id)){
-			$show = $show_id;
-			$show_id = $show['id'];
-			if(!$show_rate || $show_rate < 0.00000001){
-				$show_rate = $show['val'];
-			}
-		}else{
-			if(strpos($show_id,'.') !== false){
-				$show_rate = $show_id;
-				unset($show_id);
-			}else{
-				$show = $app->model('currency')->get_one($show_id);
-				if(!$show_rate || $show_rate < 0.00000001){
-					$show_rate = $show['val'];
-				}
-			}
-		}
-	}
-	if($app->app_id == 'admin' && !$show_id){
-		$show_id = $currency_id;
-	}else{
-		if(!$show_id){
-			$show_id = $app->site['currency_id'];
-		}
-		if(!$show_id){
-			$show_id = $currency_id;
-		}
-	}
-	if(!$show_id){
+	$data = __price_format_chk($currency_id,$show_id,$currency_rate,$show_rate);
+	if(!$data){
 		return false;
 	}
-	if(!$currency_id){
-		$currency_id = $show_id;
+	$currency = $data['in'];
+	$show = $data['out'];
+	if($show['id'] != $currency['id'] && $currency['val']){
+		$val = ($val/$currency['val']) * $show['val'];
 	}
-	if(!$val){
-		$val = '0';
-	}
-	if($show_id != $currency_id && $currency_rate>0){
-		$val = ($val/$currency_rate) * $show_rate;
-	}
-	$val = number_format($val,2,".","");
+	$val = number_format($val,$show['dpl'],".","");
 	return $val;
 }
 
@@ -672,6 +599,7 @@ function phpok_user_login($id,$pass="",$field='id')
 	$_SESSION["user_id"] = $id;
 	$_SESSION["user_gid"] = $rs['group_id'];
 	$_SESSION["user_name"] = $rs["user"];
+	$_SESSION["user_status"] = $rs["status"];
 	return 'ok';
 }
 
@@ -790,7 +718,7 @@ function tpl_head($array=array())
 	if($array['seo_title']){
 		$seo['title'] = $array['seo_title'];
 	}
-	
+
 	if($app->site['meta']){
 		$app->site['meta'] = trim(str_replace(array("\t","\r"),"",$app->site['meta']));
 		if($app->site['meta']){
@@ -869,8 +797,8 @@ function tpl_head($array=array())
 	$html .= '<base href="'.$app->url.'" />'."\n\t";
 	$cssjs_debug = $app->config['debug'] ? '?_noCache=0.'.rand(1000,9999) : '';
 	$ico = ($array['ico'] && file_exists($app->dir_root.$array['ico'])) ? $array['ico'] : '';
-	if(!$ico && $app->config['favicon']){
-		$ico = $app->config['favicon'];
+	if(!$ico && $app->site['favicon']){
+		$ico = $app->site['favicon'];
 	}
 	if($ico){
 		$html .= '<link rel="shortcut icon" href="'.$app->url.$ico.$cssjs_debug.'" />'."\n\t";
@@ -941,7 +869,7 @@ function tpl_head($array=array())
 		$html .= "\n".'</head>';
 	}
 	$html .= "\n";
-	return $html;	
+	return $html;
 }
 
 /**
@@ -1024,17 +952,19 @@ function license_date()
 /**
  * PHPOK日志存储，可用于调试
 **/
-function phpok_log($info='',$in_db=true)
+function phpok_log($info='',$file='')
 {
 	global $app;
 	if(!$info){
 		$info = '没有提示内容';
 	}
+	$mask = false;
 	if(is_array($info) || is_object($info)){
 		$info = print_r($info,true);
+		$mask = true;
 	}
 	$info = trim($info);
-	$app->model('log')->save($info,true);
+	$app->model('log')->save($info,$mask,$file);
 	return true;
 }
 
@@ -1169,13 +1099,15 @@ function add_js($js)
 
 function phpok_call_api_url($phpok,$param='',$tpl='')
 {
-	if(!$phpok || !$GLOBALS['app']->site['api_code']){
+	global $app;
+	$api_code = $app->model('config')->get_one('api_code',$app->site['id']);
+	if(!$api_code || !$phpok){
 		return false;
 	}
 	$ext = $tpl ? 'tpl='.rawurlencode($tpl) : '';
 	$info = array('id'=>$phpok,'param'=>$param);
-	$GLOBALS['app']->lib('token')->keyid($GLOBALS['app']->site['api_code']);
-	$token = $GLOBALS['app']->lib('token')->encode($info);
+	$app->lib('token')->keyid($api_code);
+	$token = $app->lib('token')->encode($info);
 	if($ext){
 		$ext .= "&";
 	}
@@ -1327,7 +1259,18 @@ function phpok_post_save($data,$pid=0)
 			$array['id'] = $rs['id'];
 		}
 		$array['project_id'] = $project_rs['id'];
-		$array['cate_id'] = $project_rs['cate'] ? $data['cate_id'] : 0;
+		if($data['cate_id']){
+			$array['cate_id'] = $data['cate_id'];
+		}
+		if(isset($data['status'])){
+			$array['status'] = $data['status'];
+		}
+		if(isset($data['hidden'])){
+			$array['hidden'] = $data['hidden'];
+		}
+		if(isset($data['sort'])){
+			$array['sort'] = $data['sort'];
+		}
 		$flist = $app->model('module')->fields_all($module['id']);
 		if($flist){
 			foreach($flist as $key=>$value){

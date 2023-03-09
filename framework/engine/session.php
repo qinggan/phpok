@@ -12,10 +12,15 @@
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class session
 {
-	protected $timeout = 600;
+	protected $timeout = 2000;
 	protected $config;
 	protected $sid = 'PHPSESSION';
 	protected $sessid = '';
+	protected $cache_expire = 30;
+	protected $secure = false;
+	protected $httponly = true;
+	protected $cache_limiter = 'nocache';
+	protected $cookie_domain = '';
 
 	/**
 	 * 构造函数
@@ -37,21 +42,15 @@ class session
 		}
 		if($session_id && preg_match("/^[a-z0-9A-Z\_\-]+$/u",$session_id)){
 			session_id($session_id);
-			$this->sessid($session_id);
-		}else{
-			$this->sessid();
 		}
-		if($this->config['domain']){
-			session_set_cookie_params($this->timeout,'/',$this->config['domain']);
-		}
-		session_cache_expire(intval($this->timeout)/60);
+		session_set_cookie_params($this->timeout,'/',$this->cookie_domain,$this->secure,$this->httponly);
+		session_cache_expire($this->cache_expire);
 		session_cache_limiter('nocache');
 	}
 
 	public function start()
 	{
 		session_start();
-		return true;
 	}
 
 	public function save_path($path='')
@@ -63,16 +62,33 @@ class session
 
 	public function config($config)
 	{
-		if($config){
+		if($config && is_array($config)){
 			$this->config = $config;
-			if($config['timeout']){
-				$this->timeout($config['timeout']);
-			}
-			if($config['id']){
-				$this->sid($config['sid']);
+			$keys = array('cache_expire','cache_limiter','secure','httponly','timeout');
+			foreach($config as $key=>$value){
+				if($key == 'id'){
+					$this->sid($value);
+				}
+				if($key == 'domain'){
+					$this->cookie_domain($value);
+				}
+				if(in_array($key,$keys)){
+					$this->$key($value);
+				}
 			}
 		}
 		return $this->config;
+	}
+
+	public function comment($sessid='')
+	{
+		if(!$sessid){
+			return false;
+		}
+		$this->sessid($sessid);
+		session_commit();
+		session_id($sessid);
+		$this->start();
 	}
 
 	public function sessid($sessid="")
@@ -94,12 +110,58 @@ class session
 		return $this->sid;
 	}
 
-	public function timeout($timeout='')
+	public function timeout($timeout=0)
 	{
-		if($timeout){
+		if(intval($timeout)>600){
 			$this->timeout = $timeout;
 		}
 		return $this->timeout;
+	}
+
+	public function cache_expire($val='')
+	{
+		if(is_numeric($val) && $val && $val>10){
+			$this->cache_expire = $val;
+		}
+		return $this->cache_expire;
+	}
+
+	public function cookie_domain($val='')
+	{
+		if($val){
+			$this->cookie_domain = $val;
+		}
+		return $this->cookie_domain;
+	}
+
+	public function cache_limiter($val='')
+	{
+		if($val && in_array($val,array('nocache','private','public','private_no_expire'))){
+			$this->cache_limiter = $val;
+		}
+		return $this->cache_limiter;
+	}
+
+	/**
+	 * 是否仅在安全下使用
+	**/
+	public function secure($val=false)
+	{
+		if(is_bool($val)){
+			$this->secure = $val;
+		}
+		return $this->secure;
+	}
+
+	/**
+	 * 是否仅使用 httponly 模板
+	**/
+	public function httponly($val=false)
+	{
+		if(is_bool($val)){
+			$this->httponly = $val;
+		}
+		return $this->httponly;
 	}
 
 	/**
@@ -241,6 +303,15 @@ class session
 	public function clean()
 	{
 		return $this->destroy();
+	}
+
+	public function session_newid($newid) {
+	    session_commit();
+
+	    // 使用新的会话 ID 开始会话
+	    session_id($newid);
+	    ini_set('session.use_strict_mode', 0);
+	    session_start();
 	}
 
 	/**

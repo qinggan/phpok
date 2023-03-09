@@ -126,10 +126,11 @@ class upload_form extends _init_auto
 		}
 		$tmplist = array();
 		foreach($list as $key=>$value){
+			$value['_show'] = '<img src="'.$value['ico'].'" width="28px" border="0" class="hand" onclick="window.open(\''.$value['filename'].'\')" style="border:1px solid #dedede;padding:1px;margin-right:10px;" />';
 			$tmplist[$value['id']] = $value;
 		}
 		$tmp = explode(',',$rs['content']);
-		if($rs['ext'] && $rs['ext']['is_multiple']){
+		if($rs['is_multiple']){
 			$rslist = array();
 			foreach($tmp as $key=>$value){
 				$value = trim($value);
@@ -237,7 +238,7 @@ class upload_form extends _init_auto
 		if(!$rs['innerHTML']){
 			$rs['innerHTML'] = '<span class="layui-icon">&#xe67c;</span> '.P_Lang('选择本地文件');
 		}
-		
+
 		$this->assign("_rs",$rs);
 		if($etype_info){
 			$this->gateway('type',$etype_info['type']);

@@ -1,42 +1,30 @@
-<!-- include tpl=header menutitle=$page_rs.title -->
-<section class="bg-light p-5"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+<!-- include tpl=header -->
+<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
 	<h1 class="p-4 text-center">{$rs.title}</h1>
 	<div class="container">
 		<div class="text-center d-block m-4">
-			<span class="p-2 bg-light-50 rounded-lg ">
+			<small class="p-2 bg-light-50 rounded-lg ">
 				发布日期：{func time_format $rs.dateline} &nbsp; &nbsp;
 				浏览次数：{$rs.hits}
-			</span>
+			</small>
 		</div>
 		<!-- if $rs.tag -->
 		<div class="text-center m-3">
-			<span class="p-2 bg-light-50 rounded-lg">
+			<small class="p-2 bg-light-50 rounded-lg">
 			标签：
 			<!-- loop from=$rs.tag key=$k value=$v id=$idxx -->
 			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
 			<!-- /loop -->
-			</span>
+			</small>
 		</div>
 		<!-- /if -->
 	</div>
 </section>
-<section class="container-fluid p-2"><!-- include tpl=block/breadcrumb --></section>
+<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
 <section class="container">
 	<div class="row">
-		<div class="col col-sm-3">
-			<div class="mb-3">
-				<!-- include tpl=block/catelist cid=$cate_rs.id pid=$page_rs.id title=$page_rs.title -->
-			</div>
-			<div class="mb-3">
-				<!-- include tpl=block/contact -->
-			</div>
-			<div class="mb-3">
-				<!-- include tpl=block/hot_products -->
-			</div>
-			<!-- include tpl=block/taglist -->
-		</div>
-		<div class="col col-sm-9">
-			<article class="content p-3 shadow bg-light">
+		<div class="col">
+			<article class="content">
 				<!-- if $rs.note --><blockquote><b>导语</b>：{func nl2br $rs.note}</blockquote><!-- /if -->
 				{$rs.content}
 				<!-- if $session.user_id -->
@@ -44,7 +32,20 @@
 					<input type="button" value="{if fav_check($rs.id) }已收藏{else}加入收藏{/if}" class="btn btn-primary btn-lg" onclick="$.phpok_app_fav.act('{$rs.id}',this)" />
 				</div>
 				<!-- /if -->
+				<!-- if $rs.click_list -->
+				<table>
+				<tr>
+					<!-- loop from=$rs.click_list key=$k value=$v id=$idxx -->
+					<td class="text-nowrap" style="cursor:pointer" onclick="$.comment.click({$rs.id},'{$k}','list')">
+						<span><img id="{$k}-{$rs.id}-img" src="{$v.is_clicked ? $v.icon1 : $v.icon2}" style="width:16px;height:16px;" /></span> {$v.title} <small id="{$k}-{$rs.id}-total">({$v.total})</small>
+					</td>
+					<!-- /loop -->
+				</tr>
+				</table>
+				
+				<!-- /if -->
 			</article>
+			<br />
 			<!-- include tpl=block/next_prev -->
 			
 		</div>

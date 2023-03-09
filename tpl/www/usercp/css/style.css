@@ -1,203 +1,54 @@
 /**
- * 用户中心公共初始化
+ * 会员中心公共页
  * @作者 苏相锟 <admin@phpok.com>
- * @主页 https://www.phpok.com
+ * @主页 www.phpok.com
  * @版本 5.x
- * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
- * @时间 2021年5月13日
+ * @授权 GNU Lesser General Public License (LGPL)
+ * @时间 2022年3月16日
 **/
-html,body{
-	height:100%;
+
+.float-right{
+	float:right;
 }
-.header{
-	padding-left:0;
-	padding-right:0;
-	height:50px;
-	overflow:hidden;
-	line-height:50px;
+.text-center{
+	text-align:center;
 }
-.main{
-	padding-left:0;
-	padding-right:0;
-	display:flex;
-	min-height:100%;
-	height:auto;
-}
-.main-full{
-	
+.text-right{
+	text-align:right;
 }
 
-.hand{
-	cursor: pointer;
+.content{ line-height:170%;font-size:1.2em;font-weight:500;}
+.content p{ margin-bottom:1em;}
+.content table {border: 1px solid #ddd;border-collapse: collapse;display: table;}
+.content table td {border: 1px solid #ddd;padding: 5px 10px;}
+.content table th {border: 1px solid #ddd;background-color: #f7f7f7;padding: 5px 10px;}
+.content blockquote{
+	margin:1em 0;border:1px solid #efefef;background:#fcfcfc;padding:0.5em 1em;
 }
-
-a:hover{
-	text-decoration: none;
+.content ul,.content ol{
+	margin:1em 2em;
 }
-
-.layout-left{
-	width:200px;
+.content ul li,.content ol li{
+	/*margin-left:2em;*/
 }
-
-.layout-title{
-	height:50px;
-	overflow:hidden;
-}
-.layout-left.layout-close{
-	margin-left:-200px;
-}
-
-.layout-right{
-	width:calc(100% - 200px);
-}
-
-.main-full .layout-right{
-	width:100%;
-}
-
-.layout-body{
-	margin:15px;
-}
-
-.bg-black{
-	background:#000;
-}
-
-header ul,.sidebar ul{
-	list-style:none;
+.content li p{
 	margin:0;
-	padding:0;
+}
+.content ul li{
+	list-style-type:disc;
+	line-height:180%;
 }
 
-.menu li a {
-	vertical-align: middle;
-	display: flex;
-	position: relative;
-	align-items: center;
-	transition: color .3s, background-color .3s;
+.bg-gray{
+	background:#f2f2f2;
 }
-.menu-item {
-	padding: 2px 0;
-}
-.menu-sub .menu-item {
-	padding: 1px 0;
-}
-.menu-item.has-sub {
-	position: relative;
-}
-.menu > .menu-item.menu-without-icon > .menu-sub .menu-link {
-	padding-left: 0;
-}
-.menu-link {
-	padding: 0.625rem 40px 0.625rem 24px;
-	color: #CCC;
-	font-weight: 500;
-	font-size: 16px;
-	letter-spacing: 0.01em;
-	text-transform: none;
-	line-height: 1.25rem;
-}
-.menu-link:hover, .active > .menu-link {
-	color: #fff;
-}
-.menu-link:hover .count, .active > .menu-link .count {
-	color: #fff;
-}
-.menu-sub .menu-link {
-	padding: 0.375rem 40px 0.375rem 60px;
-	font-family: Roboto, sans-serif;
-	font-weight: 400;
-	font-size: 14px;
-	letter-spacing: normal;
-	text-transform: none;
-	line-height: 1.25rem;
-	color: #6e82a5;
-}
-.menu-link span.small {
-	color: #8094ae;
-	margin-left: .5rem;
-}
-.menu-icon {
-	font-weight: normal;
-	letter-spacing: normal;
-	width: 36px;
-	line-height: 1;
-	flex-grow: 0;
-	color: #8094ae;
-}
-.menu-icon svg, .menu-icon img {
-	width: 36px;
-}
-.menu-icon .icon {
-	font-size: 24px;
-	letter-spacing: normal;
-	vertical-align: middle;
-	color: currentColor;
-	transition: color .4s, background-color .4s;
-}
-.menu-link:hover .menu-icon, .menu-item.active > .menu-link .menu-icon, .menu-item.current-menu > .menu-link .menu-icon {
-	color: #fff;
-}
-.menu-text {
-	flex-grow: 1;
-	display: inline-block;
-}
-.menu-sub {
-	padding-bottom: .25rem;
-}
-.menu-toggle + .menu-sub {
-	display: none;
-}
-.active > .menu-sub {
-	display: block;
-}
-.menu-sub .menu-link:hover {
-	color: #fff;
-}
-.menu-sub .active > .menu-link {
-	color: #fff;
-}
-.menu-sub .menu-icon {
-	width: 24px;
-	margin-top: -1px;
-}
-.menu-sub .menu-icon .icon {
-	margin-top: -1px;
-	font-size: 1.2em;
-}
-.menu-toggle {
-	position: relative;
-}
-.menu-toggle:after {
-	position: absolute;
-	font-family:"FontAwesome";
-	top: 50%;
-	content:"\f105";
-	right: 1.25rem;
-	transform: translateY(-50%);
-	font-size: 1rem;
-	color: #EEE;
-	transition: transform .3s, color .1s;
-}
-.menu-toggle:after:hover{
-	color:#fff;
-}
-.has-sub.active > .menu-toggle:after {
-	transform: translateY(-50%) rotate(90deg);
-}
-.menu .count {
-	display: inline-block;
-	font-size: 0.85em;
-	margin-left: 0.25rem;
-	color: #8094ae;
-	line-height: 1;
+.text-gray{
+	color:#333;
 }
 
-@media (max-width: 991.98px) {
-	.layout-left{
-		display:none;
-	}
-}
-@media (min-width: 992px) {
-
-}
+ul.layout{list-style:none;margin:0;padding:0;}
+ul.layout li{float:left;margin-right:10px;line-height:24px;margin-bottom:3px;}
+ul.layout li a.active{font-weight:bold;color:#1d5595;}
+ul.layout li label{vertical-align:middle;}
+ul.layout li label input{margin-top:-1px;vertical-align:middle;}
+ul.layout:after{clear:both;content:'.';display:block;visibility:hidden;height:0;overflow:hidden;}

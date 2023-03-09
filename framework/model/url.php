@@ -284,8 +284,11 @@ class url_model_base extends phpok_model
 			$tmp = $this->get_from_id($data['cateid'],'cate');
 			$data['cate'] = $tmp['identifier'];
 		}
-		$rs = false;
+		$rs = array();
 		foreach($this->rule_list as $key=>$value){
+			if(!$value['format'] || !trim($value['format']) || $value['format'] == 'false'){
+				continue;
+			}
 			if(!in_array($rule_id,$value['ctrl'])){
 				continue;
 			}
@@ -310,7 +313,7 @@ class url_model_base extends phpok_model
 			$rs = $value;
 			break;
 		}
-		if(!$rs){
+		if(!$rs && count($rs)<1){
 			return $this->url_default($ctrl,$func,$ext);
 		}
 		$url = $rs['format'];

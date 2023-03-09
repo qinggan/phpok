@@ -48,7 +48,7 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{langSession}
+				{lang会话缓存}
 			</label>
 			<div class="layui-input-inline auto">
 				<input type="button" class="layui-btn layui-btn-sm" data-name="cache" onclick="$.admin_index.clear('session',this)" value="{lang清理用户Session}" />
@@ -57,6 +57,19 @@
 				{lang主要是清理过期Session数据}
 			</div>
 		</div>
+		<!-- if $is_opcache -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{langOP缓存}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="button" class="layui-btn layui-btn-sm" data-name="cache" onclick="$.admin_index.clear('opcache',this)" value="{lang清理PHP的OP缓存}" />
+			</div>
+			<div class="layui-form-mid">
+				{lang主要是清理PHP系统自带的Opache缓存}
+			</div>
+		</div>
+		<!-- /if -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang更新异常}
@@ -124,11 +137,27 @@ function res_compress_act()
 		$.dialog.alert('请设置最小宽度');
 	}
 	if(maxwidth<1000){
-		$.dialog.alert('图片小于1000px宽度不支持压缩');
+		$.dialog.alert('图片小于1000px宽度不支持');
+		return false;
+	}
+	var maxheight = $("#maxheight").val();
+	if(!maxheight){
+		$.dialog.alert('请设置最小高度');
+	}
+	if(maxheight<1000){
+		$.dialog.alert('图片小于1000px高度不支持');
+		return false;
+	}
+	var maxfilesize = $("#maxfilesize").val();
+	if(!maxfilesize){
+		$.dialog.alert('请设置图片只有超出多少才处理');
+	}
+	if(maxfilesize<500){
+		$.dialog.alert('图片小于500KB不执行');
 		return false;
 	}
 	$.dialog.confirm('确定要批量压缩图片吗？压缩后请记得批量更新附件',function(){
-		$.win("批量压缩图片",get_url('res','compress','maxwidth='+maxwidth));
+		$.win("批量压缩图片",get_url('res','compress','maxwidth='+maxwidth+"&maxheight="+maxheight+"&maxfilesize="+maxfilesize));
 		return true;
 	});
 	return false;
@@ -138,16 +167,38 @@ function res_compress_act()
 	<div class="layui-card-header">
 		压缩大图，主要压缩一些超大图，造成页面显示出问题
 	</div>
-	<div class="layui-card-body">
+	<div class="layui-container layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				图片宽度
+				宽度
 			</label>
 			<div class="layui-input-inline short">
 				<input type="number" name="maxwidth" id="maxwidth" value="1920" class="layui-input" />
 			</div>
 			<div class="layui-form-mid">
 				px，单位是像素，设置最大的图片宽度，只有超过这个宽度的才执行处理，不超过不处理
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				高度
+			</label>
+			<div class="layui-input-inline short">
+				<input type="number" name="maxheight" id="maxheight" value="3000" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				px，单位是像素，设置最大的图片高度，只有超过这个高度的才执行处理，不超过不处理
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				大小
+			</label>
+			<div class="layui-input-inline short">
+				<input type="number" name="maxfilesize" id="maxfilesize" value="1024" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				KB，单位是KB，仅处理超过指定值大小的图片，单位KB，小于500KB的不处理，1M=1024KB
 			</div>
 		</div>
 		<div class="layui-form-item">

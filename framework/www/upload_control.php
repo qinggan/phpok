@@ -1,12 +1,10 @@
 <?php
 /**
  * 附件上传相关操作
- * @package phpok\www
  * @作者 qinggan <admin@phpok.com>
- * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @授权 GNU Lesser General Public License
  * @时间 2016年12月08日
 **/
 

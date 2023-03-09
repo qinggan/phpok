@@ -152,6 +152,16 @@ class extitle_form extends _init_auto
 			$rs['content'] = $rs['content']['id'];
 		}
 		$list = explode(",",$rs['content']);
+		if($list){
+			foreach($list as $key=>$value){
+				if(!$value){
+					unset($list[$key]);
+				}
+			}
+		}
+		if(!$list){
+			return false;
+		}
 		$list = array_unique($list);
 		if($module['mtype']){
 			$condition = "id IN(".implode(",",$list).")";
@@ -223,8 +233,14 @@ class extitle_form extends _init_auto
 		}
 		$this->assign("_rs",$field);
 		$this->assign('_true_delete',$ext['form_true_delete']);
+		$list = array();
 		if($content){
 			$list = explode(",",$content);
+			foreach($list as $key=>$value){
+				if(!$value){
+					unset($list[$key]);
+				}
+			}
 			$list = array_unique($list);
 			if($module['mtype']){
 				$condition = "id IN(".implode(",",$list).")";

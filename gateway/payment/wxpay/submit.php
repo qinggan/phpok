@@ -33,11 +33,14 @@ class wxpay_submit
 		if($wxpay->trade_type() == 'jsapi' || $wxpay->trade_type() == 'miniprogram'){
 			if($wxpay->trade_type() == 'miniprogram'){
 				$openid = $app->session->val('wx_openid');
+				if(!$openid){
+					$openid = $app->get('openid');
+				}
 			}else{
 				$openid = $wxpay->get_openid();
 			}
 			if(!$openid){
-				exit('获取OpenId失败，请检查 '.$wxpay->errmsg());
+				$app->error('获取OpenId失败，请检查 '.$wxpay->errmsg());
 			}
 			$data['openid'] = $openid;
 		}else{
@@ -153,7 +156,7 @@ class wxpay_submit
 <html>
 <head>
 	<meta charset="utf-8" />
-	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt"> 
+	<meta http-equiv="expires" content="wed, 26 feb 1997 08:21:57 gmt">
 	<title>{$title}</title>
 	<style type="text/css">
 	body{width:900px;margin:0 auto;}

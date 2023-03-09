@@ -47,6 +47,16 @@ class project_model_base extends phpok_model
 		if(!$rs){
 			return false;
 		}
+		if(file_exists($this->dir_data.'xml/project_'.$rs['id'].'.xml')){
+			$tmp = $this->lib('xml')->read($this->dir_data.'xml/project_'.$rs['id'].'.xml');
+			if($tmp){
+				foreach($tmp as $key=>$value){
+					if(!isset($rs[$key])){
+						$rs[$key] = $value;
+					}
+				}
+			}
+		}
 		if($ext && is_bool($ext)){
 			$ext_rs = $this->model("ext")->get_all("project-".$rs['id']);
 			if($ext_rs){
@@ -57,27 +67,25 @@ class project_model_base extends phpok_model
 	}
 
 	//通过identifier获取项目信息
-	function identifier_one($id,$site_id=0,$ext=true)
+	public function identifier_one($id,$site_id=0,$ext=true)
 	{
-		$site_id = $site_id ? '0,'.intval($site_id) : '0';
-		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE identifier='".$id."' AND site_id IN(".$site_id.")";
+		if(!$id){
+			return false;
+		}
+		if(!$site_id){
+			$site_id = $this->site_id;
+		}
+		$sql = "SELECT id FROM ".$this->db->prefix."project WHERE identifier='".$id."' AND site_id IN(".$site_id.")";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
 		}
-		if(!$ext){
-			return $rs;
-		}
-		$ext_rs = $this->model("ext")->get_all("project-".$rs['id']);
-		if($ext_rs){
-			$rs = array_merge($ext_rs,$rs);
-		}
-		return $rs;
+		return $this->get_one($rs['id'],$ext);
 	}
 
 
 	//前台获取相应的get_one信息
-	function www_one($id)
+	public function www_one($id)
 	{
 		return $this->get_one($id,true);
 	}
@@ -250,7 +258,9 @@ class project_model_base extends phpok_model
 		$sql = "SELECT * FROM ".$this->db->prefix."project WHERE parent_id=".intval($pid)." AND status=1 ";
 		$sql.= "ORDER BY taxis ASC,id DESC";
 		$rslist = $this->db->get_all($sql,"id");
-		if(!$rslist) return false;
+		if(!$rslist){
+			return false;
+		}
 		$idlist = array_keys($rslist);
 		foreach($idlist as $key=>$value){
 			$idlist[$key] = "project-".$value;

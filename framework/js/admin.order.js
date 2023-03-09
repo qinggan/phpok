@@ -139,10 +139,8 @@
 					if ($("#id").length > 0) {
 						tip = p_lang('订单编辑成功');
 					}
-					$.dialog.tips(tip, function () {
-						$.admin.reload(get_url('order'));
-						$.admin.close();
-					}).lock();
+					$.dialog.tips(tip).lock();
+					$.admin.close(get_url('order'));
 				}
 			});
 			return false;
@@ -154,10 +152,10 @@
 				$.phpok.json(url, function (data) {
 					if (data.status) {
 						$.dialog.tips(p_lang('订单删除成功'));
-						$("#edit_"+id).remove();
+						$.phpok.reload();
 						return true;
 					}
-					$.dialog.alert(data.info);
+					$.dialog.tips(data.info);
 					return false;
 				});
 			});

@@ -16,7 +16,7 @@ class usergroup_model extends usergroup_model_base
 	}
 
 	//通过用户取得用户组信息
-	function group_rs($uid=0)
+	public function group_rs($uid=0)
 	{
 		$gid = $this->group_id($uid);
 		if(!$gid)
@@ -26,36 +26,36 @@ class usergroup_model extends usergroup_model_base
 		return $this->one($gid);
 	}
 
-	function get_default($status=0)
+	public function get_default($status=0)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."user_group WHERE is_default=1 AND status=1";
 		return $this->db->get_one($sql);
 	}
 
 	//读取单个用户组信息
-	function one($id)
+	public function one($id)
 	{
 		$rslist = $this->all();
 		if(!$rslist)
 		{
 			return false;
 		}
-		$rs = false;
-		foreach($rslist as $key=>$value)
-		{
-			if($value['id'] == $id)
-			{
+		$rs = array();
+		foreach($rslist as $key=>$value){
+			if($value['id'] == $id){
 				$rs = $value;
 				break;
 			}
 		}
+		if(!$rs || count($rs)<1){
+			return false;
+		}
 		return $rs;
 	}
 
-	function all()
+	public function all()
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."user_group WHERE status=1";
 		return $this->db->get_all($sql);
 	}
 }
-?>

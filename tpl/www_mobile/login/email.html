@@ -1,0 +1,71 @@
+<!-- include tpl=login/header title=邮件登录 -->
+<script type="text/javascript">
+
+function check_input()
+{
+	var email = $("input[name=email]").val();
+	if(!email){
+		$.dialog.alert('邮箱不能为空','','error');
+		return false;
+	}
+	var code = $("input[name=_chkcode]").val();
+	if(!code){
+		$.dialog.alert('验证码不能为空','','error');
+		return false;
+	}
+	var url = api_url('login','email','email='+email+"&_chkcode="+code);
+	$.phpok.json(url,function(rs){
+		if(rs.status){
+			var backurl = $("input[name=_back]").val();
+			if(!backurl){
+				backurl = webroot;
+			}
+			$.phpok.go(backurl);
+			return false;
+		}
+		$.dialog.alert(rs.info,true,'error');
+		return false;
+	});
+	
+	return false;
+}
+
+</script>
+<section class="container">
+	<div class="row justify-content-center">
+		<div class="col col-sm-6 m-4 p-4 bg-white border shadow">
+		<form class="" onsubmit="return $.login.email(this)" method="post">
+			<input type="hidden" name="_back" id="_back" value="{$_back}" />
+			<div class="form-group">
+				<label for="mobile">邮箱 Email</label>
+				<div class="row">
+					<div class="col col-12 col-lg-8"><input type="text" class="form-control" required id="email" name="email" placeholder="请输入邮箱" /></div>
+					<div class="col col-12 col-lg-4"><input type="button" value="发送邮件验证码" onclick="$.vcode.email(this,'email','login')" class="btn btn-primary btn-sm mt-1" id="email_send_status" /></div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="_chkcode">邮件验证码</label>
+				<input type="text" class="form-control" required name="_vcode" id="_vcode" placeholder="请输入邮箱收到的验证码" />
+			</div>
+			<!-- if $is_vcode -->
+			<div class="form-group">
+				<label for="_chkcode">验证码 <img src="{#images#}/blank.gif" border="0" align="absmiddle" id="vcode" class="hand" /></label>
+				<input type="text" class="form-control" required name="_chkcode" id="_chkcode" placeholder="请输入图片上的字符" />
+				
+			</div>
+			<!-- /if -->
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary" id="login_submit">登录</button>
+			</div>
+			<div class="form-group">
+				<a href="{url ctrl=login/}" class="mr-3"><i class="fa fa-user"></i> 账号密码登录</a>
+				<!-- if $login_sms || $login_email -->
+				<a href="{url ctrl=login func=getpass/}"><i class="fa fa-location-arrow"></i> 找回密码</a>
+				<!-- /if -->
+			</div>
+		</form>
+		</div>
+	</div>
+</section>
+
+<!-- include tpl=login/footer -->

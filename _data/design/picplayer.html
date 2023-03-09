@@ -7,8 +7,8 @@
 	</ol>
 	<div class="carousel-inner">
 		<!-- loop from=$info.rslist key=$key value=$value id=$tmpid -->
-		<div class="carousel-item{if !$tmpid.index} active{/if}">
-			<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="d-block w-100" alt="{$value.title}" /></a>
+		<div class="carousel-item animated fadeIn{if !$tmpid.index} active{/if}">
+			<a href="{$value.url}" title="{$value.title}"><img src="{$value.banner.filename}" class="d-block w-100" alt="{$value.title}" /></a>
 		</div>
 		<!-- /loop -->
 	</div>

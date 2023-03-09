@@ -97,7 +97,10 @@ class select_form extends _init_auto
 			$rs['option_list'] = 'default:0';
 		}
 		$opt_list = explode(":",$rs["option_list"]);
-		$rslist = opt_rslist($opt_list[0],$opt_list[1],$rs['ext_select']);
+		$rslist = $this->model('form')->optlist($rs);
+		if(!$rslist){
+			return false;
+		}
 		$group_id = $opt_list[1];
 		if($rs["is_multiple"] && $rs['content']){
 			$content = array();
@@ -113,9 +116,6 @@ class select_form extends _init_auto
 			if(is_array($rs['content']) && $rs['content']){
 				$rs['content'] = $rs['content']['val'];
 			}
-		}
-		if(!$rslist){
-			return false;
 		}
 		$is_step = false;
 		foreach($rslist as $key=>$value){
@@ -189,14 +189,14 @@ class select_form extends _init_auto
 				}
 				$list = array();
 				foreach($info as $key=>$value){
-					$tmp = $this->opt_rs($value,$opt[0],$opt[1]);
+					$tmp = $this->model('form')->optinfo($value,$rs);
 					if($tmp){
 						$list[] = $tmp['title'];
 					}
 				}
 				return implode('<br />',$list);
 			}
-			$info = $this->opt_rs($rs['content'],$opt[0],$opt[1]);
+			$info = $this->model('form')->optinfo($rs['content'],$rs);
 			if($info){
 				if(is_array($info['title'])){
 					return implode(' / ',$info['title']);
@@ -212,116 +212,10 @@ class select_form extends _init_auto
 			}
 			$list = array();
 			foreach($info as $key=>$value){
-				$list[$value] = $this->opt_rs($value,$opt[0],$opt[1]);
+				$list[$key] = $this->model('form')->optinfo($value,$rs);
 			}
 			return $list;
 		}
-		return $this->opt_rs($rs['content'],$opt[0],$opt[1]);
+		return $this->model('form')->optinfo($rs['content'],$rs);
 	}
-	
-	private function opt_rs($val,$type='default',$group_id='')
-	{
-		$rs = array('val'=>$val,'title'=>$val);
-		if($type == 'opt'){
-			$group_rs = $this->model('opt')->group_one($group_id);
-			//检查是否是联动数据
-			if($group_rs && $group_rs['link_symbol'] && strpos($val,$group_rs['link_symbol']) !== false){
-				$list = explode($group_rs['link_symbol'],$val);
-				$list2 = array();
-				$parent_id = 0;
-				foreach( $list as $key => $value ){
-					if(!$value || !trim($value)){
-						continue;
-					}
-					$value = trim($value);
-					$condition = "val='".$value."' AND group_id='".$group_id."' AND parent_id='".$parent_id."'";
-					$opt_data = $this->model('opt')->opt_one_condition($condition);
-					if($opt_data){
-						$list2[$key] = array('val'=>$value,'title'=>$opt_data['title']);
-						$parent_id = $opt_data['id'];
-					}
-				}
-				$tmp = array('title'=>array(),'val'=>array(),'type'=>$type);
-				foreach($list2 as $key=>$value){
-					if($value && is_array($value)){
-						$tmp['title'][$key] = $value['title'];
-						$tmp['val'][$key] = $value['val'];
-					}
-				}
-				return $tmp;
-			}
-			$tmp = $this->model('opt')->opt_val($group_id,$val);
-			if(!$tmp){
-				return false;
-			}
-			$rs['title'] = $tmp['title'];
-		}
-		if($type == 'project'){
-			$tmp = $this->model('project')->get_one($val,false);
-			if(!$tmp || !$tmp['status']){
-				return false;
-			}
-			$rs['title'] = $tmp['title'];
-		}
-		if($type == 'title'){
-			if(!$val){
-				return false;
-			}
-			$project = $this->model('project')->get_one($group_id,false);
-			if(!$project || !$project['module']){
-				$rs['title'] = '未知';
-			}else{
-				$module = $this->model('module')->get_one($project['module']);
-				if($module['mtype']){
-					$tmp = $this->model('list')->single_one($val,$project['module']);
-				}else{
-					$tmp = $this->model('list')->call_one($val);
-				}
-				if(!$tmp){
-					$rs['title'] = '无';
-				}else{
-					$rs['title'] = $tmp['title'] ? $tmp['title'] : $tmp;
-				}
-			}
-		}
-		if($type == 'cate'){
-			//获取分类信息
-			if(strpos($val,',') !== false){
-				$tmplist = $this->model('cate')->catelist_cid($val,false);
-				if(!$tmplist){
-					return false;
-				}
-				$tmp = array('title'=>array(),'val'=>array(),'type'=>$type);
-				foreach($tmplist as $key=>$value){
-					$tmp['title'][$key] = $value['title'];
-					$tmp['val'][$key] = $value['id'];
-				}
-				return $tmp;
-			}
-			$tmp = $this->model('cate')->cate_info($val,false);
-			if(!$tmp || !$tmp['status']){
-				return false;
-			}
-			$rs['title'] = $tmp['title'];
-		}
-		if($type == 'user'){
-			if($group_id == 'grouplist'){
-				$tmp = $this->model('usergroup')->get_one($val);
-				if($tmp){
-					$rs['title'] = $tmp['title'];
-				}
-			}
-		}
-		if($type == 'gateway'){
-			if($group_id == 'express'){
-				$tmp = $this->model('express')->get_one($val);
-				if($tmp){
-					$rs['title'] = $tmp['title'];
-				}
-			}
-		}
-		$rs['type'] = $type;
-		return $rs;
-	}
-
 }

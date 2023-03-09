@@ -1,11 +1,10 @@
 <?php
 /**
  * 读取内容列表，涉及到的主要表有 list及list_数字ID
- * @package phpok\model\list
  * @author qinggan <admin@phpok.com>
  * @copyright 2015-2016 深圳市锟铻科技有限公司
  * @homepage http://www.phpok.com
- * @version 4.x
+ * @version 6.x
  * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
  * @update 2016年06月26日
 **/
@@ -147,9 +146,11 @@ class list_model_base extends phpok_model
 		}
 		$linksql  = " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.project_id=ext.project_id) ";
 		$linksql .= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id) ";
+		$is_biz = false;
 		if($this->is_biz || ($condition && strpos($condition,'b.') !== false) || strpos($orderby,'b.') !== false){
 			$linksql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
-			$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
+			$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit,b.qty";
+			$is_biz = true;
 		}
 		if($this->multiple_cate || ($condition && strpos($condition,'lc.') !== false) || strpos($orderby,'lc.') !== false){
 			$linksql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
@@ -170,12 +171,49 @@ class list_model_base extends phpok_model
 		if(!$rslist){
 			return false;
 		}
-		return $this->_list_format($mid,$rslist);
+		return $this->_list_format($mid,$rslist,$is_biz);
 	}
 
-	private function _list_format($mid,$rslist)
+	private function _list_format($mid,$rslist,$is_biz=false)
 	{
 		$cid_list = array();
+		$pricelist = array();
+		if($is_biz){
+			$ids = array_keys($rslist);
+			$tmplist = $this->model('wholesale')->all($idlist);
+			if($tmplist){
+				$pricelist = array();
+				foreach($tmplist as $key=>$value){
+					if(!isset($pricelist[$value['tid']])){
+						$pricelist[$value['tid']] = array();
+					}
+					$pricelist[$value['tid']][$value['qty']] = $value['price'];
+				}
+				foreach($rslist as $key=>$value){
+					if(!$pricelist[$value['id']]){
+						continue;
+					}
+					$value['wholesale'] = $pricelist[$value['id']];
+					$min = $max = 0;
+					foreach($value['wholesale'] as $k=>$v){
+						if(!$min){
+							$min = $v;
+						}
+						if(!$max){
+							$max = $v;
+						}
+						if($min>$v){
+							$min = $v;
+						}
+						if($max<$v){
+							$max = $v;
+						}
+					}
+					$value['price2'] = $min.'-'.$max;
+					$rslist[$key] = $value;
+				}
+			}
+		}
 		foreach($rslist as $key=>$value){
 			$cid_list[$value["cate_id"]] = $value["cate_id"];
 		}
@@ -254,9 +292,11 @@ class list_model_base extends phpok_model
 		}
 		$linksql  = " LEFT JOIN ".$this->db->prefix."list_".$mid." ext ON(l.id=ext.id AND l.project_id=ext.project_id) ";
 		$linksql .= " LEFT JOIN ".$this->db->prefix."user u ON(l.user_id=u.id) ";
+		$is_biz = false;
 		if($this->is_biz || ($condition && strpos($condition,'b.') !== false) || strpos($orderby,'b.') !== false){
 			$linksql.= " LEFT JOIN ".$this->db->prefix."list_biz b ON(b.id=l.id) ";
-			$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit";
+			$field.= ",b.price,b.currency_id,b.weight,b.volume,b.unit,b.qty";
+			$is_biz = true;
 		}
 		if($this->multiple_cate || ($condition && strpos($condition,'lc.') !== false) || strpos($orderby,'lc.') !== false){
 			$linksql.= " LEFT JOIN ".$this->db->prefix."list_cate lc ON(l.id=lc.id) ";
@@ -273,7 +313,7 @@ class list_model_base extends phpok_model
 		if(!$rslist){
 			return false;
 		}
-		return $this->_list_format($mid,$rslist);
+		return $this->_list_format($mid,$rslist,$is_biz);
 	}
 
 	private function _primary_id_asc_checking($orderby='')
@@ -408,6 +448,8 @@ class list_model_base extends phpok_model
 		if(!$id || !$mid){
 			return false;
 		}
+		$this->model('log')->content_delete($id,$mid);
+		//
 		$sql = "DELETE FROM ".$this->db->prefix.$mid." WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
@@ -435,7 +477,9 @@ class list_model_base extends phpok_model
 		}
 		if($rs['module_id']){
 			$ext_rs = $this->get_ext($rs['module_id'],$id);
-			if(!$ext_rs) return $rs;
+			if(!$ext_rs){
+				return $rs;
+			}
 			if(!$format){
 				$rs = array_merge($ext_rs,$rs);
 				return $rs;
@@ -455,7 +499,9 @@ class list_model_base extends phpok_model
 
 	public function call_one($id)
 	{
-		if(!$id) return false;
+		if(!$id){
+			return false;
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."list l ";
 		$sql.= " WHERE l.id='".$id."'";
 		return $this->db->get_one($sql);
@@ -463,10 +509,14 @@ class list_model_base extends phpok_model
 
 	public function get_ext($mid,$id)
 	{
-		if(!$mid || !$id) return false;
+		if(!$mid || !$id){
+			return false;
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."list_".$mid." WHERE id='".$id."'";
 		$rs = $this->db->get_one($sql);
-		if(!$rs) return false;
+		if(!$rs){
+			return false;
+		}
 		return $rs;
 	}
 
@@ -601,7 +651,7 @@ class list_model_base extends phpok_model
 		$sql = "DELETE FROM ".$this->db->prefix."tag_stat WHERE title_id IN(".$ids.")";
 		$this->db->query($sql);
 		//
-		foreach($rslist AS $key=>$value){
+		foreach($rslist as $key=>$value){
 			if(!$mid && $value['module_id']){
 				$mid = $value['module_id'];
 			}
@@ -713,7 +763,7 @@ class list_model_base extends phpok_model
 			$orderby = "l.sort DESC,l.dateline DESC,l.id DESC";
 		}
 		$tmp = explode(",",$orderby);
-		$list = false;
+		$list = array();
 		foreach($tmp as $key=>$value){
 			$value = trim($value);
 			if(!$value){
@@ -920,6 +970,7 @@ class list_model_base extends phpok_model
 		if(!$pid){
 			return false;
 		}
+		
 		$sql = " SELECT l.*,c.title catename FROM ".$this->db->prefix."list l ";
 		$sql.= " LEFT JOIN ".$this->db->prefix."cate c ON(l.cate_id=c.id) ";
 		$sql.= " WHERE l.project_id IN(".$pid.") AND l.status='1' ";
@@ -1070,7 +1121,7 @@ class list_model_base extends phpok_model
 		if(!$rslist){
 			return false;
 		}
-		return $this->_arc_list_format($rslist,$project);
+		return $this->_arc_list_format($rslist,$project,$project['is_biz']);
 	}
 
 	private function _arc_all($project,$condition='',$field='*',$offset=0,$psize=0,$orderby='')
@@ -1129,22 +1180,60 @@ class list_model_base extends phpok_model
 		if(!$rslist){
 			return false;
 		}
-		return $this->_arc_list_format($rslist,$project);
+		return $this->_arc_list_format($rslist,$project,$project['is_biz']);
 	}
 
-	private function _arc_list_format($rslist,$project)
+	private function _arc_list_format($rslist,$project,$is_biz=false)
 	{
 		//ulist，用户信息
 		//clist，分类信息
 		//elist，扩展主题信息
 		$user_id_list = $idlist = $ulist = $elist = array();
 		foreach($rslist as $key=>$value){
-			$idlist[] = $value['id'];
+			$value['id'] = intval($value['id']);
+			if($value['id']){
+				$idlist[] = $value['id'];
+			}
 			if($project['is_userid'] && $value['user_id']){
 				$ulist[] = intval($value['user_id']);
 				$user_id_list[$value['id']] = $value['user_id']; 
 			}
 			$elist[] = 'list-'.$value['id'];
+		}
+		if($is_biz){
+			$tmplist = $this->model('wholesale')->all($idlist);
+			if($tmplist){
+				$pricelist = array();
+				foreach($tmplist as $key=>$value){
+					if(!isset($pricelist[$value['tid']])){
+						$pricelist[$value['tid']] = array();
+					}
+					$pricelist[$value['tid']][$value['qty']] = $value['price'];
+				}
+				foreach($rslist as $key=>$value){
+					if(!$pricelist[$value['id']]){
+						continue;
+					}
+					$value['wholesale'] = $pricelist[$value['id']];
+					$min = $max = 0;
+					foreach($value['wholesale'] as $k=>$v){
+						if(!$min){
+							$min = $v;
+						}
+						if(!$max){
+							$max = $v;
+						}
+						if($min>$v){
+							$min = $v;
+						}
+						if($max<$v){
+							$max = $v;
+						}
+					}
+					$value['price2'] = $min.'-'.$max;
+					$rslist[$key] = $value;
+				}
+			}
 		}
 		//读取用户信息
 		if($project['is_userid']){
@@ -1239,6 +1328,7 @@ class list_model_base extends phpok_model
 		if($mid){
 			$sql = "DELETE FROM ".$this->db->prefix."list_".$mid." WHERE id='".$id."'";
 			$this->db->query($sql);
+			$this->model('log')->content_delete($id,'list_'.$mid);
 		}
 		$sql = "DELETE FROM ".$this->db->prefix."list WHERE id='".$id."'";
 		$this->db->query($sql);
@@ -1262,6 +1352,7 @@ class list_model_base extends phpok_model
 			$sql = "DELETE FROM ".$this->db->prefix."fields WHERE ftype='list-".$id."'";
 			$this->db->query($sql);
 		}
+		$this->model('log')->content_delete($id,'list');		
 		$this->node("system_admin_title_delete",$id);
 		return true;
 	}
@@ -1329,16 +1420,6 @@ class list_model_base extends phpok_model
 		return array_keys($rslist);
 	}
 
-	public function biz_attrlist($tid,$aid=0)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."list_attr WHERE tid='".$tid."' ";
-		if($aid){
-			$sql .= " AND aid='".$aid."'";
-		}
-		$sql.= " ORDER BY aid ASC,taxis ASC";
-		return $this->db->get_all($sql);
-	}
-
 	/**
 	 * 取得主题的财富基数
 	 * @参数 $id 主题ID，数组或字串或数字
@@ -1402,7 +1483,7 @@ class list_model_base extends phpok_model
 			$id = implode(",",$id);
 		}
 		$list = explode(",",$id);
-		$tmp = false;
+		$tmp = array();
 		foreach($list as $key=>$value){
 			if(!$value || !intval($value)){
 				continue;
@@ -1450,14 +1531,35 @@ class list_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-	public function all_total($condition='')
+	public function all_total($condition='',$status=0)
 	{
 		$sql  = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
 		$sql .= "LEFT JOIN ".$this->db->prefix."project p ON(l.project_id=p.id) ";
-		$sql .= "WHERE l.site_id='".$this->site_id."' AND l.status=1 ";
+		$sql .= "WHERE l.site_id='".$this->site_id."' ";
+		if($status){
+			$sql .= " AND l.status=".($status == 2 ? '0' : '1')." ";
+		}
 		if($condition){
 			$sql .= " AND ".$condition." ";
 		}
 		return $this->db->count($sql);
+	}
+
+	public function cate_total($pid=0)
+	{
+		$pid = intval($pid);
+		if(!$pid){
+			return false;
+		}
+		$sql = "SELECT cate_id,count(cate_id) total FROM ".$this->db->prefix."list WHERE status=1 AND project_id=".$pid." AND hidden=0 GROUP BY cate_id";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$rslist[$value['cate_id']] = $value['total'];
+		}
+		return $rslist;
 	}
 }

@@ -1,9 +1,7 @@
 <?php
 /**
  * 用户相关处理
- * @package phpok\admin
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
@@ -39,14 +37,15 @@ class user_control extends phpok_control
 		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('用户组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'),'code'=>P_Lang('邀请码'));
 		$rslist['introducer'] = P_Lang('推荐人');
 		$rslist['order'] = P_Lang('订单');
-		$rslist['snss'] = P_Lang('社交属性');
 		$rslist['wealth'] = P_Lang('财富');
+		$rslist['regtime'] = P_Lang('注册时间');
 		$flist = $this->model('user')->fields_all();
 		if($flist){
 			foreach($flist as $key=>$value){
 				$rslist[$value['identifier']] = $value['title'];
 			}
 		}
+		$rslist['_action'] = P_Lang('操作');
 		$this->assign('rslist',$rslist);
 		$this->view('user_show_setting');
 	}
@@ -64,14 +63,15 @@ class user_control extends phpok_control
 		$rslist = array('user'=>P_Lang('账号'),'group_id'=>P_Lang('用户组'),'email'=>P_Lang('邮箱'),'mobile'=>P_Lang('手机号'),'code'=>P_Lang('邀请码'));
 		$rslist['introducer'] = P_Lang('推荐人');
 		$rslist['order'] = P_Lang('订单');
-		$rslist['snss'] = P_Lang('社交属性');
 		$rslist['wealth'] = P_Lang('财富');
+		$rslist['regtime'] = P_Lang('注册时间');
 		$flist = $this->model('user')->fields_all();
 		if($flist){
 			foreach($flist as $key=>$value){
 				$rslist[$value['identifier']] = $value['title'];
 			}
 		}
+		$rslist['_action'] = P_Lang('操作');
 		$arealist = array();
 		foreach($rslist as $key=>$value){
 			if(in_array($key,$array)){
@@ -90,12 +90,16 @@ class user_control extends phpok_control
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$flist = array('user'=>P_Lang('账号'),'mobile'=>P_Lang('手机号'),'email'=>P_Lang('邮箱'),'code'=>P_Lang('邀请码'),'introducer'=>P_Lang('推荐人'));
+		$flist['order'] = P_Lang('订单');
+		$flist['wealth'] = P_Lang('财富');
+		$flist['regtime'] = P_Lang('注册时间');
 		$tmplist = $this->model('user')->fields_all("form_type='text'");
 		if($tmplist){
 			foreach($tmplist as $key=>$value){
 				$flist[$value['identifier']] = $value['title'];
 			}
 		}
+		$flist['_action'] = P_Lang('操作');
 		$this->assign('flist',$flist);
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid){
@@ -112,6 +116,17 @@ class user_control extends phpok_control
 		$page_url = $this->url("user",'','psize='.$psize);
 		$condition = "1=1";
 		$keywords = $this->get('keywords');
+		if(!$keywords){
+			$keywords = array();
+		}
+		$key_type = $this->get('key_type');
+		$key_data = $this->get('key_data');
+		if($key_type && $key_data){
+			$page_url .="&key_type=".$key_type."&key_data=".rawurlencode($key_data);
+			$this->assign("key_type",$key_type);
+			$this->assign("key_data",$key_data);
+			$keywords[$key_type] = $key_data;
+		}
 		if($keywords && is_array($keywords)){
 			$tmparray = array('email','user','mobile','code');
 			foreach($keywords as $key=>$value){
@@ -129,10 +144,12 @@ class user_control extends phpok_control
 				}
 				if($key == 'status'){
 					$value = intval($value);
-					if($value>2){
-						$condition .= " AND u.status=0 ";
-					}else{
-						$condition .= " AND u.status='".$value."' ";
+					if($value){
+						if($value==4){
+							$condition .= " AND u.status=0 ";
+						}else{
+							$condition .= " AND u.status='".$value."' ";
+						}
 					}
 					continue;
 				}
@@ -158,7 +175,7 @@ class user_control extends phpok_control
 			$rslist = $this->model('user')->get_list($condition,$offset,$psize);
 			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
 			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-			$pagelist = phpok_page($page_url,$count,$pageid,$psize,$string);
+			
 			//取得订单统计
 			if($this->site['biz_status'] && isset($arealist['order']) && $rslist){
 				$ids = array_keys($rslist);
@@ -169,24 +186,16 @@ class user_control extends phpok_control
 					}
 				}
 			}
-			if(isset($arealist['snss']) && $rslist){
-				$ids = array_keys($rslist);
-				$idol_rslist = $this->model('user')->idol_count($ids);
-				$fans_rslist = $this->model('user')->fans_count($ids);
-				$black_rslist = $this->model('user')->black_count($ids);
-				foreach($rslist as $key=>$value){
-					$value['snss'] = array();
-					$value['snss']['idol'] = ($idol_rslist && $idol_rslist[$value['id']]) ? $idol_rslist[$value['id']]['total'] : 0;
-					$value['snss']['fans'] = ($fans_rslist && $fans_rslist[$value['id']]) ? $fans_rslist[$value['id']]['total'] : 0;
-					$value['snss']['black'] = ($black_rslist && $black_rslist[$value['id']]) ? $black_rslist[$value['id']]['total'] : 0;
-					$rslist[$key] = $value;
-				}
-			}
 			$this->assign("rslist",$rslist);
-			$this->assign("pagelist",$pagelist);
+			if($count>$psize){
+				$pagelist = phpok_page($page_url,$count,$pageid,$psize,$string);
+				$this->assign("pagelist",$pagelist);
+			}
+			
+			$this->assign('psize',$psize);
+			$this->assign('pageid',$pageid);
 		}
 		$this->assign("total",$count);
-		
 		$grouplist = $this->model('usergroup')->get_all("","id");
 		$this->assign("grouplist",$grouplist);
 
@@ -708,12 +717,6 @@ class user_control extends phpok_control
 			$this->assign('address_list',$alist);
 			$this->assign('address_total',count($alist));
 		}
-
-		$idol = $this->model('user')->idol_count($id);
-		$fans = $this->model('user')->fans_count($id);
-		$black = $this->model('user')->black_count($id);
-		$snss = array('idol'=>$idol,'fans'=>$fans,'black'=>$black);
-		$this->assign('snss',$snss);
 		$this->view("user_show");
 	}
 
@@ -729,7 +732,7 @@ class user_control extends phpok_control
 			if(!$rslist){
 				$this->json(P_Lang('该用户未设置发票信息'));
 			}
-			$first = $default = false;
+			$first = $default = array();
 			foreach($rslist as $key=>$value){
 				if($key<1){
 					$first = $value;
@@ -738,7 +741,7 @@ class user_control extends phpok_control
 					$default = $value;
 				}
 			}
-			if(!$default){
+			if(!$default && count($default)<1){
 				$default = $first;
 				unset($first);
 			}
@@ -748,7 +751,7 @@ class user_control extends phpok_control
 			if(!$rslist){
 				$this->json(P_Lang('该用户未设置收件人信息'));
 			}
-			$first = $default = false;
+			$first = $default = array();
 			foreach($rslist as $key=>$value){
 				if($key<1){
 					$first = $value;

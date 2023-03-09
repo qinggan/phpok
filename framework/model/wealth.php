@@ -1,7 +1,6 @@
 <?php
 /**
  * 用户财富管理
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -497,7 +496,7 @@ class wealth_model_base extends phpok_model
 			return false;
 		}
 		if($type == 'comment'){
-			$condition = "tid='".$id."' AND uid='".$uid."' AND status=1";
+			$condition = "r.tid='".$id."' AND r.uid='".$uid."' AND r.status=1";
 			$comment_list = $this->model('reply')->get_list($condition,0,1);
 			if(!$comment_list){
 				return false;

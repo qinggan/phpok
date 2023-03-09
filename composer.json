@@ -3,14 +3,8 @@
 	"config": {
 		"vendor-dir": "extension"
 	},
-	"repositories": {
-		"packagist": {
-			"type": "composer",
-			"url": "https://packagist.phpcomposer.com"
-		}
-	},
 	"require": {
-		"phpmailer/phpmailer": "^6.1",
+		"phpmailer/phpmailer": "^6.6",
 		"mobiledetect/mobiledetectlib": "^2.8"
 	}
 }

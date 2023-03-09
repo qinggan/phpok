@@ -7,7 +7,7 @@ ul.layout:after{clear:both;content:'.';display:block;visibility:hidden;height:0;
 </style>
 <!-- if $_laydate -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="form-control inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="form-control layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}" style="{$_rs.form_style}" value="{$_rs.content}" /></li>
 	<li>
 		<div class="btn-group">
 			<input type="button" value="{$_laydate_button}" class="btn btn-primary" id="btn_{$_rs.identifier}_{$_rs.form_btn}" onclick="$.phpokform.laydate_button('{$_rs.identifier}','{$_rs.form_btn}')" />
@@ -17,9 +17,9 @@ ul.layout:after{clear:both;content:'.';display:block;visibility:hidden;height:0;
 </ul>
 <!-- else -->
 	<!-- if $_rs.form_btn == 'color' -->
-		<input type="text" id="{$_rs.identifier}" class="jscolor {required:false{if $_rs.ext_include_3},hash:true{/if}}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" />
+		<input type="text" id="{$_rs.identifier}" class="form-control layui-input jscolor {required:false{if $_rs.ext_include_3},hash:true{/if}}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" />
 	<!-- else -->
-		<input type="text" id="{$_rs.identifier}" class="form-control inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" />
+		<input type="text" id="{$_rs.identifier}" class="form-control layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" />
 		<!-- if $_rs.ext_quick_words -->
 		<div style="margin-top:3px;" id="ext_quick_btns_{$_rs.identifier}">
 			<!-- loop from=$_rs.ext_quick_words key=$key value=$value id=$tmpid -->
@@ -29,4 +29,11 @@ ul.layout:after{clear:both;content:'.';display:block;visibility:hidden;height:0;
 		</div>
 		<!-- /if -->
 	<!-- /if -->
+<!-- /if -->
+<!-- if $_rs.js_www -->
+<script type="text/javascript">
+$(document).ready(function(){
+	{$_rs.js_www}
+});
+</script>
 <!-- /if -->

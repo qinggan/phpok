@@ -238,4 +238,26 @@ class res_model extends res_model_base
 		}
 		return $this->get_one($rs['id'],true);
 	}
+
+	public function admin_get_list($condition='',$offset=0,$psize=20,$orderby='')
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."res ";
+		if($condition){
+			$sql .= " WHERE ".$condition;
+		}
+		$sql .= " ORDER BY ";
+		if($orderby){
+			$sql .= " ".$orderby." ";
+		}else{
+			$sql .= " addtime DESC,id DESC ";
+		}
+		if($psize){
+			$sql .= " LIMIT ".$offset.",".$psize;
+		}
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		return $rslist;
+	}
 }

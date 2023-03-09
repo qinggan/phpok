@@ -57,7 +57,7 @@ class open_control extends phpok_control
 		if(!$pageid){
 			$pageid = 1;
 		}
-		$psize = $this->config['psize'];
+		$psize = 60;
 		$offset = ($pageid - 1) * $psize;
 		$condition = "1=1";
 		$selected = $this->get('selected');
@@ -72,52 +72,72 @@ class open_control extends phpok_control
 			$condition .= " AND id NOT IN(".implode(",",$olist).")";
 		}
 		$keywords = $this->get("keywords");
-		$keytype = $this->get('keytype');
-		if(!$keytype){
-			$keytype = 'title';
+		if($keywords){
+			$keywords = trim($keywords);
 		}
 		if($keywords){
-			if($keytype == 'title' || $keytype == 'name'){
-				$condition .= " AND ".$keytype." LIKE '%".$keywords."%' ";
-			}elseif($keytype == 'id'){
-				$condition .= " AND id='".$keywords."' ";
-			}elseif($keytype == 'ext'){
-				$keywords = str_replace(",",' ',$keywords);
-				$extlist = explode(" ",$keywords);
-				$extlist = array_unique($extlist);
-				$ext_string = implode("','",$extlist);
-			}elseif($keytype == 'start_date'){
-				$condition .= " AND addtime>=".strtotime($keywords)." ";
-			}elseif($keytype == 'stop_date'){
-				$condition .= " AND addtime<=".strtotime($keywords)." ";
+			$keywords = preg_replace("/(\x20{2,})/"," ",$keywords);
+		}
+		if($keywords){
+			$kwlist = explode(" ",$keywords);
+			$tmplist = array();
+			foreach($kwlist as $key=>$value){
+				if(is_numeric($value)){
+					$tmplist[] = "id='".$value."'";
+					$tmplist[] = "attr LIKE '%".$value."%'";
+				}
+				$tmplist[] = "title LIKE '%".$value."%'";
+				$tmplist[] = "name LIKE '%".$value."%'";
+				if(!is_numeric($value) && strlen($value)<5){
+					$tmplist[] = "ext LIKE '%".$value."%'";
+				}
+				$tmplist[] = "note LIKE '%".$value."%'";
 			}
-			$pageurl .= "&keywords=".rawurlencode($keywords).'&keytype='.$keytype;
+			$condition .= " AND (".implode(" OR ",$tmplist).")";
+			$pageurl .= "&keywords=".rawurlencode($keywords);
 			$this->assign("keywords",$keywords);
 		}
-		$this->assign("keytype",$keytype);
-		
 		$cate_id = $this->get("cate_id","int");
 		if($cate_id){
 			$condition .= " AND cate_id='".$cate_id."' ";
 			$pageurl .= "&cate_id=".$cate_id;
 			$this->assign("cate_id",$cate_id);
 		}
+		$daylist = array();
+		$daylist[] = array('value'=>1,"title"=>P_Lang('一天内'));
+		$daylist[] = array('value'=>7,"title"=>P_Lang('一周内'));
+		$daylist[] = array('value'=>15,"title"=>P_Lang('半个月内'));
+		$daylist[] = array('value'=>31,"title"=>P_Lang('一个月内'));
+		$daylist[] = array('value'=>183,"title"=>P_Lang('半年内'));
+		$daylist[] = array('value'=>366,"title"=>P_Lang('一年内'));
+		$this->assign('daylist',$daylist);
+		$day = $this->get('day','int');
+		if($day){
+			$stime = strtotime(date("Y-m-d",$this->time)) - $day*24*3600;
+			$condition .= " AND addtime>=".$stime;
+			$pageurl .= "&day=".$$day;
+			$this->assign("day",$day);
+		}
 		$rslist = $this->model('res')->get_list($condition,$offset,$psize);
 		$total = $this->model('res')->get_count($condition);
-		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
-		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+		if($total>$psize){
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+		}
 		$this->assign("rslist",$rslist);
 		$this->assign("total",$total);
 		$this->assign("pagelist",$pagelist);
 		$this->assign("pageurl",$pageurl);
+		$this->assign('pageid',$pageid);
+		$this->assign('psize',$psize);
 		$this->lib('form')->cssjs(array('form_type'=>'upload'));
 		$this->addjs('js/webuploader/admin.upload.js');
 		$btns = form_edit('upload','','upload','cate_id='.$cate_id.'&manage_forbid=1&auto_forbid=0&is_multiple=1&is_refresh=1');
 		$this->assign('upload_buttons',$btns);
 		$this->view('open_upload');
 	}
-	
+
 
 	/**
 	 * 附件选择器
@@ -152,30 +172,31 @@ class open_control extends phpok_control
 		$offset = ($pageid - 1) * $psize;
 		$condition = "1=1";
 		$keywords = $this->get("keywords");
-		$keytype = $this->get('keytype');
-		if(!$keytype){
-			$keytype = 'title';
+		if($keywords){
+			$keywords = trim($keywords);
 		}
 		if($keywords){
-			if($keytype == 'title' || $keytype == 'name'){
-				$condition .= " AND ".$keytype." LIKE '%".$keywords."%' ";
-			}elseif($keytype == 'id'){
-				$condition .= " AND id='".$keywords."' ";
-			}elseif($keytype == 'ext'){
-				$keywords = str_replace(",",' ',$keywords);
-				$extlist = explode(" ",$keywords);
-				$extlist = array_unique($extlist);
-				$ext_string = implode("','",$extlist);
-			}elseif($keytype == 'start_date'){
-				$condition .= " AND addtime>=".strtotime($keywords)." ";
-			}elseif($keytype == 'stop_date'){
-				$condition .= " AND addtime<=".strtotime($keywords)." ";
+			$keywords = preg_replace("/(\x20{2,})/"," ",$keywords);
+		}
+		if($keywords){
+			$kwlist = explode(" ",$keywords);
+			$tmplist = array();
+			foreach($kwlist as $key=>$value){
+				if(is_numeric($value)){
+					$tmplist[] = "id='".$value."'";
+					$tmplist[] = "attr LIKE '%".$value."%'";
+				}
+				$tmplist[] = "title LIKE '%".$value."%'";
+				$tmplist[] = "name LIKE '%".$value."%'";
+				if(!is_numeric($value) && strlen($value)<5){
+					$tmplist[] = "ext LIKE '%".$value."%'";
+				}
+				$tmplist[] = "note LIKE '%".$value."%'";
 			}
-			$pageurl .= "&keywords=".rawurlencode($keywords).'&keytype='.$keytype;
+			$condition .= " AND (".implode(" OR ",$tmplist).")";
+			$pageurl .= "&keywords=".rawurlencode($keywords);
 			$this->assign("keywords",$keywords);
 		}
-		$this->assign("keytype",$keytype);
-		
 		$cate_id = $this->get("cate_id","int");
 		if($cate_id){
 			$condition .= " AND cate_id='".$cate_id."' ";
@@ -186,10 +207,12 @@ class open_control extends phpok_control
 		$this->assign("rslist",$rslist);
 		$total = $this->model('res')->get_count($condition);
 		$this->assign("total",$total);
-		$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
-		$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
-		$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-		$this->assign("pagelist",$pagelist);
+		if($total>$psize){
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3';
+			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+			$this->assign("pagelist",$pagelist);
+		}
 		$this->assign("pageurl",$pageurl);
 		$this->lib('form')->cssjs(array('form_type'=>'upload'));
 		$this->addjs('js/webuploader/admin.upload.js');
@@ -270,7 +293,7 @@ class open_control extends phpok_control
 			$showid = $field;
 		}
 		//
-		
+
 		$url = $this->url('open','title','id='.$id.'&pid='.$pid.'&field='.$field.'&showid='.$showid);
 		$project = $this->model('project')->get_one($pid);
 		if(!$project){
@@ -402,7 +425,7 @@ class open_control extends phpok_control
 				$this->assign("pagelist",$pagelist);
 				$this->assign("p_rs",$p_rs);
 				$this->assign("rslist",$rslist);
-				$this->view("open_url_list");				
+				$this->view("open_url_list");
 			}
 		}else{
 			$condition = " p.status='1' ";

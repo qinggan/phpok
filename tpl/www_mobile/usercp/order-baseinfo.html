@@ -1,0 +1,35 @@
+<div class="layui-card">
+	<div class="layui-card-header">
+		订单基本信息
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-row">
+			<div class="layui-col-xs4">订单编号：</div>
+			<div class="layui-col-xs8 text-right">{$rs.sn}</div>
+			<div class="layui-col-xs4">下单时间：</div>
+			<div class="layui-col-xs8 text-right">{func time_format $rs.addtime}</div>
+			<div class="layui-col-xs4">订单金额：</div>
+			<div class="layui-col-xs8 text-right">{func price_format $rs.price $rs.currency_id}</div>
+			<div class="layui-col-xs4 ">订单状态：</div>
+			<div class="layui-col-xs8 text-right">{$rs.status_info ? $rs.status_info : '-'}</div>
+			<!-- if $rs.email -->
+			<div class="layui-col-xs4">收件人邮箱：</div>
+			<div class="layui-col-xs8 text-right">{$rs.email}</div>
+			<!-- /if -->
+			<!-- if $rs.mobile -->
+			<div class="layui-col-xs4">手机号：</div>
+			<div class="layui-col-xs8 text-right">{$rs.mobile}</div>
+			<!-- /if -->
+			<!-- loop from=$rs.ext key=$key value=$value id=$tmpid -->
+			<div class="layui-col-xs4">{$key}：</div>
+			<div class="layui-col-xs8 text-right">{$value}</div>
+			<!-- /loop -->
+		</div>
+		<!-- if $rs.note -->
+		<div class="layui-row">
+			<div class="layui-col-xs4 text-right">备注：</div>
+			<div class="layui-col-xs8">{func nl2br $rs.note}</div>
+		</div>
+		<!-- /if -->
+	</div>
+</div>

@@ -37,17 +37,17 @@ class reply_control extends phpok_control
 		}
 		$pageurl = $this->url("reply");
 		$status = $this->get("status","int");
-		$condition = "admin_id=0 ";
+		$condition = "r.admin_id=0 ";
 		if($status){
 			$n_status = $status == 1 ? "1" : "0";
-			$condition .= "AND status=".$n_status." ";
+			$condition .= "AND r.status=".$n_status." ";
 			$pageurl .= "&status=".$status; 
 			$this->assign("status",$status);
 		}
 		//关键字
 		$keywords = $this->get("keywords");
 		if($keywords){
-			$condition .= "AND (title LIKE '%".$keywords."%' OR content LIKE '%".$keywords."%') ";
+			$condition .= "AND (r.title LIKE '%".$keywords."%' OR r.content LIKE '%".$keywords."%') ";
 			$pageurl .= "&keywords=".rawurlencode($keywords);
 			$this->assign("keywords",$keywords);
 		}
@@ -60,6 +60,24 @@ class reply_control extends phpok_control
 		if($total>0){
 			$offset = ($pageid-1) * $psize;
 			$rslist = $this->model('reply')->get_all($condition,$offset,$psize);
+			if(!isset($rslist)){
+				$rslist = array();
+			}
+			$ids = array_keys($rslist);
+			if(isset($ids)){
+				//输出评论的点赞信息
+				$clicklist = $this->model('click')->get_all($ids,'reply');
+				if(isset($clicklist)){
+					foreach($rslist as $key=>$value){
+						if(!isset($clicklist[$value['id']])){
+							continue;
+						}
+						$value['click_list'] = $clicklist[$value['id']];
+						$rslist[$key] = $value;
+					}
+				}
+			}
+			
 			$this->assign("rslist",$rslist);
 			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
 			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
@@ -93,13 +111,13 @@ class reply_control extends phpok_control
 		$condition = "tid='".$tid."' AND parent_id=0";
 		if($status){
 			$n_status = $status == 1 ? "1" : "0";
-			$condition .= " AND status='".$n_status."'";
+			$condition .= " AND r.status='".$n_status."'";
 			$pageurl .= "&status=".$status; 
 			$this->assign("status",$status);
 		}
 		$keywords = $this->get("keywords");
 		if($keywords){
-			$condition .= " AND (content LIKE '%".$keywords."%' OR adm_content LIKE '%".$keywords."%') ";
+			$condition .= " AND (r.content LIKE '%".$keywords."%' OR r.title LIKE '%".$keywords."%') ";
 			$pageurl .= "&keywords=".rawurlencode($keywords);
 			$this->assign("keywords",$keywords);
 		}
@@ -111,34 +129,46 @@ class reply_control extends phpok_control
 			$this->error(P_Lang('没有评论内容'));
 		}
 		$offset = ($pageid-1) * $psize;
-		$rslist = $this->model('reply')->get_list($condition,$offset,$psize,"id");
+		$rslist = $this->model('reply')->get_list($condition,$offset,$psize,"id DESC");
 		if(!$rslist){
 			$this->error(P_Lang('没有找到评论内容'));
 		}
 		$uidlist = array();
-		foreach($rslist AS $key=>$value){
+		$ids = array();
+		foreach($rslist as $key=>$value){
+			$ids[] = $value['id'];
 			if($value["uid"]){
 				$uidlist[] = $value["uid"];
 			}
 		}
-		$idlist = array_keys($rslist);
-		$condition = "tid='".$tid."' AND parent_id IN(".implode(",",$idlist).")";
+		$clicklist = $this->model('click')->get_all($ids,'reply');
+		if(isset($clicklist)){
+			foreach($rslist as $key=>$value){
+				if(!isset($clicklist[$value['id']])){
+					continue;
+				}
+				$value['click_list'] = $clicklist[$value['id']];
+				$rslist[$key] = $value;
+			}
+		}
+		$condition = "tid='".$tid."' AND parent_id IN(".implode(",",$ids).")";
 		$sublist = $this->model('reply')->get_list($condition,0,0);
 		if($sublist){
-			foreach($sublist AS $key=>$value){
+			foreach($sublist as $key=>$value){
 				if($value["uid"]){
 					$uidlist[] = $value["uid"];
 				}
 				$rslist[$value["parent_id"]]["sublist"][$value["id"]] = $value;
 			}
 		}
+		
 		if($uidlist && count($uidlist)>0){
 			$uidlist = array_unique($uidlist);
 			$ulist = $this->model('user')->get_all_from_uid(implode(",",$uidlist),'id');
 			if(!$ulist){
 				$ulist = array();
 			}
-			foreach($rslist AS $key=>$value){
+			foreach($rslist as $key=>$value){
 				if($value["uid"]){
 					$value["uid"] = $ulist[$value["uid"]];
 				}
@@ -189,6 +219,36 @@ class reply_control extends phpok_control
 	}
 
 	/**
+	 * 批量处理评论的状态
+	 * @参数 status 要变更的状态
+	 * @参数 id 评论ID
+	**/
+	public function status_pl_f()
+	{
+		if(!$this->popedom['status']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get("id","int");
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$status = $this->get('status','int');
+		$list = explode(",",$id);
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				continue;
+			}
+			$array = array("status"=>$status);
+			$this->model('reply')->save($array,$value);
+			if($status && $rs['tid'] && $rs['uid'] && ($rs['vtype'] == 'title' || $rs['vtype'] == 'order')){
+				$this->model('wealth')->add_integral($rs['tid'],$rs['uid'],'comment',P_Lang('管理员审核评论#{id}',array('id'=>$id)));
+			}
+		}
+		$this->success();
+	}
+
+	/**
 	 * 删除回复
 	 * @参数 
 	 * @返回 
@@ -203,7 +263,14 @@ class reply_control extends phpok_control
 		if(!$id){
 			$this->error(P_Lang('未指定ID'));
 		}
-		$this->model('reply')->delete($id);
+		$list = explode(",",$id);
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				continue;
+			}
+			$this->model('reply')->delete($value);
+		}
 		$this->success();
 	}
 
@@ -254,6 +321,7 @@ class reply_control extends phpok_control
 		$array["content"] = $this->get("content",'html');
 		$array["status"] = $this->get("status","int");
 		$array['res'] = $this->get('pictures');
+		$array['vouch'] = $this->get('vouch','int');
 		$this->model('reply')->save($array,$id);
 		$rs = $this->model('reply')->get_one($id);
 		if($array["status"] && $rs['tid'] && $rs['uid']){

@@ -14,13 +14,13 @@
 			<thead>
 			<tr>
 				<th>ID</th>
-				<th></th>
+				<th style="width:30px"></th>
 				<th>{lang名称}</th>
 				<th>{lang类型}</th>
-				<th>{lang关联的项目}</th>
-				<th>{lang关联的分类}</th>
 				<th>{lang参数变量}</th>
+				<!-- if $popedom.modify || $popedom.delete -->
 				<th width="150">{lang操作}</th>
+				<!-- /if -->
 			</tr>
 			</thead>
 			<tbody>
@@ -28,17 +28,29 @@
 			<tr id="edit_{$value.id}">
 				<td>{$value.id}</td>
 				<td class="center"><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.modify}onclick="$.admin_call.status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
-				<td>{$value.title}<!-- if $value.is_api --> <i class="red"><small>{lang远程}</small></i><!-- /if --></td>
+				<td>
+					<div>{$value.title}<!-- if $value.is_api --> <i class="red"><small>{lang远程}</small></i><!-- /if --></div>
+					<!-- if $value.project -->
+					<div class="gray">
+						<hr />
+						{$value.project}
+						<!-- if $value.cate --> / {$value.cate}<!-- /if -->
+					</div>
+					<!-- /if -->
+				</td>
 				<td>{$phpok_type_list[$value.type_id][title]}</td>
-				<td>{$value.project ? $value.project : '-'}</td>
-				<td>{$value.cate ? $value.cate : '-'}</td>
-				<td>{$value.identifier}</td>
+				<td>
+					{$value.identifier}
+					<i class="phpok-copy hand layui-icon layui-icon-templeate-1" style="font-size:10px;" title="复制" data-clipboard-text="{$value.identifier}"></i>
+				</td>
+				<!-- if $popedom.modify || $popedom.delete -->
 				<td>
 					<div class="layui-btn-group">
-						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.win('{lang编辑调用}','{url ctrl=call func=set id=$value.id/}')" class="layui-btn  layui-btn-sm" /><!-- /if -->
-						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_call.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" /><!-- /if -->
+						<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.win('{lang编辑调用}','{url ctrl=call func=set id=$value.id/}')" class="layui-btn  layui-btn-xs" /><!-- /if -->
+						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_call.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-xs layui-btn-danger" /><!-- /if -->
 					</div>
 				</td>
+				<!-- /if -->
 			</tr>
 			<!-- /loop -->
 			</tbody>

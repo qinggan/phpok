@@ -1,5 +1,5 @@
-<!-- include tpl=head_lay nopadding=true -->
-<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_reply.adm_save(this)">
 <input type="hidden" name="id" value="{$rs.id}" />
 <div class="layui-card">
 	<div class="layui-card-body">
@@ -31,6 +31,13 @@
 				{$edit_content}
 			</div>
 		</div>
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
 	</div>
 </div>
 </form>

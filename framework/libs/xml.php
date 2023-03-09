@@ -47,7 +47,26 @@ class xml_lib
 		if($isfile && !file_exists($info)){
 			return false;
 		}
-		return $this->$func($info,$isfile);
+		$info = $this->$func($info,$isfile);
+		/*if($info && is_array($info)){
+			$list = array();
+			$this->_stripslashes($list,$info);
+			return $list;
+		}*/
+		return $info;
+	}
+
+	private function _stripslashes(&$list,$info)
+	{
+		foreach($info as $key=>$value){
+			if($value && is_array($value)){
+				$this->_stripslashes($list[$key],$value);
+			}else{
+				if($value != ''){
+					$list[$key] = stripslashes($value);
+				}
+			}
+		}
 	}
 
 	public function save($data,$file='',$ekey='')
@@ -117,7 +136,9 @@ class xml_lib
 			$info = file_get_contents($info);
 		}
 		$info = trim($info);
-		libxml_disable_entity_loader(true);
+		if(PHP_VERSION_ID && PHP_VERSION_ID < 80000 && function_exists('libxml_disable_entity_loader')){
+			libxml_disable_entity_loader(true);
+		}
 		$xml = simplexml_load_string($info);
 		$info = $this->simplexml_obj_to_array($xml);
 		if(!$info){
@@ -131,7 +152,7 @@ class xml_lib
 
 	private function simplexml_obj_to_array($xml)
 	{
-		$list = false;
+		$list = array();
 		if(!is_object($xml) && !is_array($xml)){
 			return $xml;
 		}
@@ -150,15 +171,17 @@ class xml_lib
 					$val = $tmp;
 				}
 			}
+			$info = (isset($attr) && $attr) ? array('attr'=>$attr,'val'=>$val) : $val;
 			if(isset($list[$key])){
 				if(!is_array($list[$key]) || (isset($list[$key]['attr']) && $list[$key]['attr']) || (isset($list[$key]['val']) && $list[$key]['val'])){
 					$tmp = $list[$key];
 					unset($list[$key]);
-					$list[$key][] = $tmp;
+					$list[$key] = array();
+					array_push($list[$key],$tmp);
 				}
-				$list[$key][] = (isset($attr) && $attr) ? array('attr'=>$attr,'val'=>$val) : $val;
+				array_push($list[$key],$info);
 			}else{
-				$list[$key] = (isset($attr) && $attr) ? array('attr'=>$attr,'val'=>$val) : $val;
+				$list[$key] = $info;
 			}
 		}
 		return $list;

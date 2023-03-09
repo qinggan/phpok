@@ -19,7 +19,7 @@
 		</appid>
 		<app_secret>
 			<title>AppSecert</title>
-			<note>仅使用公众号或小程序支付密钥</note>
+			<note>仅使用公众号或小程序通迅密钥</note>
 			<type>text</type>
 		</app_secret>
 		<device_info>

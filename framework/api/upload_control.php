@@ -18,7 +18,11 @@ class upload_control extends phpok_control
 		parent::control();
 		$token = $this->get('token');
 		if($token){
-			$this->lib('token')->keyid($this->site['api_code']);
+			$api_code = $this->model('config')->get_one('api_code',$this->site['id']);
+			if(!$api_code){
+				$this->error(P_Lang("系统未启用接口功能"));
+			}
+			$this->lib('token')->keyid($api_code);
 			$info = $this->lib('token')->decode($token);
 			if(!$info || !$info['user_id'] || !$info['user_name']){
 				$this->json(P_Lang('您还没有登录，请先登录或注册'));
@@ -32,6 +36,120 @@ class upload_control extends phpok_control
 				$this->u_name = $this->session->val('user_name');
 			}
 		}
+	}
+
+	/**
+	 * 新的上传方式，返回 json，status 为 true 表示上传成功，false 表示上传失败
+	 * 参数 cateid 附件分类ID
+	 * 参数 type 上传方式，指定 base64 ，则传参数 data
+	 * 参数 data 上传内容，仅限 type 为 base64 时有效
+	**/
+	public function ok_f()
+	{
+		if($this->u_id){
+			if(!$this->site['upload_user']){
+				$this->error(P_Lang('你没有上传权限'));
+			}
+		}else{
+			if(!$this->site['upload_guest']){
+				$this->error(P_Lang('游客没有上传权限'));
+			}
+		}
+		$cateid = $this->get('cateid','int');
+		if($cateid){
+			$cate_rs = $this->model('rescate')->get_one($cateid);
+		}
+		if(!$cate_rs){
+			$cate_rs = $this->model('rescate')->get_default();
+			if(!$cate_rs){
+				$this->error(P_Lang('未配置附件存储方式'));
+			}
+		}
+		$type = $this->get('type');
+		if($type == 'base64'){
+			$data = $this->get('data');
+			if(!$data){
+				$this->error(P_Lang('Base64 内容不能为空'));
+			}
+			if(strpos($data,',') === false){
+				$this->error(P_Lang('附片格式不正确'));
+			}
+			$tmp = explode(",",$data);
+			$tmpinfo = substr($data,strlen($tmp[0]));
+			$content = base64_decode($tmpinfo);
+			if($content == $tmpinfo){
+				$this->error(P_Lang('不是合法的附件'));
+			}
+			$info = explode(";",$tmp[0]);
+			if(!$info[0]){
+				$this->error(P_Lang('不是合法的 Base64 文件'));
+			}
+			$mime_type = $info[0];
+			$tmp = explode("/",$mime_type);
+			if(!$tmp[1]){
+				$this->error(P_Lang('不是合法的 Base64 文件'));
+			}
+			$ext = $this->lib('upload')->type2ext($mime_type);
+			$name = $this->time.'_'.$this->u_id.'.'.$ext;
+			$folder = $cate_rs["root"];
+			if($cate_rs["folder"] && $cate_rs["folder"] != "/"){
+				$folder .= date($cate_rs["folder"],$this->time);
+			}
+			$filename = $folder.$name;
+			$title = $this->get('title');
+			if(!$title){
+				$title = $name;
+			}
+			$this->lib('file')->save_pic($content,$this->dir_root.$folder.$name);
+			if(!file_exists($this->dir_root.$folder.$name)){
+				$this->error(P_Lang('文件保存失败，请检查'));
+			}
+		}else{
+			$filetypes = $this->u_id ? $cate_rs['filetypes'] : 'jpg,png,gif,rar,zip';
+			$this->lib('upload')->set_type($filetypes);
+			$this->lib('upload')->set_cate($cate_rs);
+			$upload = $this->lib('upload')->upload('upfile');
+			if(!$upload || !$upload['status']){
+				$this->error(P_Lang('附件上传失败'));
+			}
+			if($upload['status'] != 'ok'){
+				$tip = $upload['error'] ? $upload['error'] : $upload['content'];
+				$this->error('上传失败，'.$tip);
+			}
+			$foder = $this->lib('upload')->get_folder();
+			$name = $upload['name'];
+			$ext = $upload['ext'];
+			$filename = $upload['filename'];
+			$title = $upload['title'];
+			$mime_type = $upload['mime_type'];
+		}
+		$array = array();
+		$array["cate_id"] = $cate_rs['id'];
+		$array["folder"] = $folder;
+		$array["name"] = $name;
+		$array["ext"] = $ext;
+		$array["filename"] = $filename;
+		$array["addtime"] = $this->time;
+		$array['title'] = $title;
+		$array["mime_type"] = $mime_type;
+		$arraylist = array("jpg","gif","png","jpeg");
+		if(in_array($ext,$arraylist)){
+			$img_ext = getimagesize($this->dir_root.$filename);
+			$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
+			$array["attr"] = serialize($my_ext);
+		}
+		if(!$this->is_client){
+			$array["session_id"] = $this->session->sessid();
+		}
+		$array['user_id'] = $this->u_id;
+		$id = $this->model('res')->save($array);
+		if(!$id){
+			$this->lib('file')->rm($this->dir_root.$filename);
+			$this->error(P_Lang('图片存储失败'));
+		}
+		$this->model('res')->gd_update($id);
+		$rs = $this->model('res')->get_one($id);
+		$this->success($rs);
 	}
 
 	//存储上传的数据，游客仅能上传jpg,png,gif,jpeg附件
@@ -66,7 +184,7 @@ class upload_control extends phpok_control
 		}
 		if($upload['status'] != 'ok'){
 			$tip = $upload['error'] ? $upload['error'] : $upload['content'];
-			$this->json($tip);
+			$this->json('上传失败，'.$tip);
 		}
 		$array = array();
 		$array["cate_id"] = $this->lib('upload')->get_cate();

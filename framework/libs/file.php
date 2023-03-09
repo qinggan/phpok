@@ -197,15 +197,15 @@ class file_lib
 		if($type == "dir"){
 			for($i=0;$i<$count;$i++){
 				$msg .= $array[$i];
-				if(!file_exists($msg) && ($array[$i])){
-					mkdir($msg,0777);
+				if($array[$i] && !file_exists($msg)){
+					@mkdir($msg,0777);
 				}
 				$msg .= "/";
 			}
 		}else{
 			for($i=0;$i<($count-1);$i++){
 				$msg .= $array[$i];
-				if(!file_exists($msg) && ($array[$i])){
+				if($array[$i] && !file_exists($msg)){
 					mkdir($msg,0777);
 				}
 				$msg .= "/";
@@ -393,6 +393,9 @@ class file_lib
 	**/
 	private function _write($content,$file,$type="wb")
 	{
+		if(is_array($content)){
+			$content = print_r($content,true);
+		}
 		if($content){
 			$content = stripslashes($content);
 		}
@@ -416,11 +419,23 @@ class file_lib
 	 * 附件下载
 	 * @参数 $file 要下载的文件地址
 	 * @参数 $title 下载后的文件名
+	 * @参数 $isfile 是否文件
 	**/
-	public function download($file,$title='')
+	public function download($file,$title='',$isfile=true)
 	{
 		if(!$file){
 			return false;
+		}
+		if(!$isfile){
+			set_time_limit(0);
+			header("Content-type: applicatoin/octet-stream");
+			header("Date: ".gmdate("D, d M Y H:i:s",time())." GMT");
+			header("Last-Modified: ".gmdate("D, d M Y H:i:s",time())." GMT");
+			header("Content-Encoding: none");
+			header("Content-Disposition: attachment; filename=".rawurlencode($title)."; filename*=utf-8''".rawurlencode($title));
+			header("Accept-Ranges: bytes");
+			echo $file;
+			exit;
 		}
 		if(!file_exists($file)){
 			return false;

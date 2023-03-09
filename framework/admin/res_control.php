@@ -154,9 +154,18 @@ class res_control extends phpok_control
 	{
 		$maxwidth = $this->get('maxwidth','int');
 		if(!$maxwidth){
-			$this->error(P_Lang('未设置最大宽度限制'));
+			$this->error(P_Lang('未设置最小宽度限制'));
 		}
-		$condition  = "ext IN('jpg','gif','png','jpeg','bmp','webp') ";
+		$maxheight = $this->get('maxheight','int');
+		if(!$maxheight){
+			$this->error(P_Lang('未设置最小高度限制'));
+		}
+		$maxfilesize = $this->get('maxfilesize','int');
+		if(!$maxfilesize){
+			$this->error(P_Lang('未设置文件大小限制'));
+		}
+		$maxfilesize_bit = $maxfilesize * 1000;
+		$condition  = "ext IN('jpg','gif','png','jpeg','bmp','webp','tiff','exif') ";
 		$condition .= "AND filename NOT LIKE 'https://%' AND filename NOT LIKE 'http://%' AND filename NOT LIKE '//%'";
 		$id = $this->get('id','int');
 		if($id){
@@ -166,12 +175,24 @@ class res_control extends phpok_control
 		if(!$rslist){
 			$this->success(P_Lang('批量压缩操作完成，请关闭窗口'));
 		}
-		$rs = array();
+		$rs_width = $rs_height = $rs_compress = array();
 		foreach($rslist as $key=>$value){
 			$imginfo = getimagesize($this->dir_root.$value['filename']);
 			$img_x = $imginfo[0];
 			$img_y = $imginfo[1];
 			if($img_x > $maxwidth){
+				$rs_width = $value;
+				$rs = $value;
+				break;
+			}
+			if($img_y > $maxheight){
+				$rs_height = $value;
+				$rs = $value;
+				break;
+			}
+			$filesize = filesize($this->dir_root.$value['filename']);
+			if($filesize > $maxfilesize_bit){
+				$rs_compress = $value;
 				$rs = $value;
 				break;
 			}
@@ -181,13 +202,21 @@ class res_control extends phpok_control
 			$next_id = $next_rs['id'];
 		}else{
 			$next_id = $rs['id'];
-			$this->compress_pic($rs,$maxwidth);
+			if($rs_width){
+				$this->compress_pic_width($rs,$maxwidth);
+			}
+			if($rs_height){
+				$this->compress_pic_height($rs,$maxheight);
+			}
+			if($rs_compress){
+				$this->compress_pic($rs,100);
+			}
 		}
-		$linkurl = $this->url('res','compress','id='.$next_id.'&maxwidth='.$maxwidth);
+		$linkurl = $this->url('res','compress','id='.$next_id.'&maxwidth='.$maxwidth.'&maxheight='.$maxheight.'&maxfilesize='.$maxfilesize);
 		$this->success(P_Lang('已更新图片ID #{id}，正在执行下一张图片处理',array('id'=>$next_id)),$linkurl);
 	}
 
-	private function compress_pic($rs,$width=0){
+	private function compress_pic_width($rs,$width=0){
 		if(!$rs || !$width){
 			return false;
 		}
@@ -195,17 +224,48 @@ class res_control extends phpok_control
 		$img_x = $imginfo[0];
 		$img_y = $imginfo[1];
 		$height = intval(($width * $img_y) / $img_x);
+		$this->_compress($rs,$width,$height);
+		return true;
+	}
+
+	private function compress_pic_height($rs,$height=0){
+		if(!$rs || !$height){
+			return false;
+		}
+		$imginfo = getimagesize($this->dir_root.$rs['filename']);
+		$img_x = $imginfo[0];
+		$img_y = $imginfo[1];
+		$width = intval(($height * $img_x) / $img_y);
+		$this->_compress($rs,$width,$height);
+		return true;
+	}
+
+	private function compress_pic($rs,$quality=100){
+		if(!$rs || !$quality){
+			return false;
+		}
+		$imginfo = getimagesize($this->dir_root.$rs['filename']);
+		$img_x = $imginfo[0];
+		$img_y = $imginfo[1];
+		$this->_compress($rs,$img_x,$img_y,$quality);
+		return true;
+	}
+
+	private function _compress($rs,$width=0,$height=0,$quality=100)
+	{
+		if(!$width || !$height){
+			return false;
+		}
 		$this->lib('gd')->isgd(true);
 		$this->lib('gd')->filename($this->dir_root.$rs['filename']);
 		$this->lib('gd')->SetCut(false);
 		$this->lib('gd')->SetWH($width,$height);
-		$this->lib('gd')->Set('quality',100);
+		$this->lib('gd')->Set('quality',$quality);
 		$picfile = $this->lib('gd')->Create($rs['filename'],$rs['id']);
 		$this->lib('file')->mv($this->dir_root.$rs['folder'].$picfile,$this->dir_root.$rs['filename']);
 		$array = array('width'=>$width,'height'=>$height);
 		$data = array('attr'=>serialize($array));
 		$this->model('res')->save($data,$rs['id']);
-		return true;
 	}
 
 	public function resize_f()
@@ -379,58 +439,95 @@ class res_control extends phpok_control
 		if(!$this->popedom["pl"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
+		@set_time_limit(60);
+		//设置内存 128M
+		@ini_set('memory_limit', '128M');
 		$id = $this->get("id");
 		if(!$id){
 			$this->error(P_Lang('未指定要操作的附件'));
 		}
-		$psize = 1;
+		$psize = 20;
 		$pageid = $this->get("pageid","int");
-		$pageid = intval($pageid);
+		if(!$pageid){
+			$pageid = 1;
+		}
 		$ext_list = array("jpg","gif","png","jpeg");
 		if($id == 'all'){
 			$start_id = $this->get('start_id','int');
-			if($start_id && !$pageid){
-				$total = $this->model('res')->get_count("id>='".$start_id."'");
-				if($total){
-					$pageid = $total;
-				}
+			$next_id = $this->get('next_id','int');
+			$total_condition = $condition = "filename NOT LIKE 'http%//%' AND ext IN('".implode("','",$ext_list)."')";
+			if($start_id){
+				$total_condition .= " AND id>".$start_id;
 			}
-			$reslist = $this->model('res')->get_list("filename NOT LIKE 'http%//%'",$pageid,8);
+			if(!$next_id){
+				$next_id = $start_id ? $start_id : 0;
+			}
+			$condition .= " AND id>".$next_id;
+			$total = $this->model('res')->get_count($total_condition);
+			if(!$total){
+				$this->success(P_Lang('附件中没有涉及到图片信息，请关闭窗口'));
+			}
+			$num = $this->get('num','int');
+			if(!$num){
+				$num = 0;
+			}
+			$reslist = $this->model('res')->admin_get_list($condition,0,$psize,'id ASC');
 			if(!$reslist){
-				$this->success(P_Lang('附件信息更新完毕，共更新数量：{pageid}，点击右上角关闭窗口^_^',array('pageid'=>"<span class='red'>".$pageid."</span>")));
+				$this->success(P_Lang('附件信息更新完毕，共更新数量：{total}，请关闭窗口',array('total'=>"<span class='red'>".$total."</span>")));
 			}
 			$tmplist = array();
-			$filesize = 0;
+			$memsize = 0;
 			foreach($reslist as $key=>$value){
-				if(file_exists($this->dir_root.$value['filename'])){
-					$filesize += filesize($this->dir_root.$value['filename']);
-					$tmplist[$key] = $value;
-					if($filesize >= (2 * 1024 * 1024)){
-						break;
-					}
+				$next_id = $value['id'];
+				//删除无效文件
+				if(!$value['filename'] || !file_exists($this->dir_root.$value['filename'])){
+					$this->model('res')->delete($value['id']);
+					continue;
 				}
-			}
-			if(!$tmplist || count($tmplist)<1){
-				$this->success(P_Lang('附件信息更新完毕，共更新数量：{pageid}，点击右上角关闭窗口^_^',array('pageid'=>"<span class='red'>".$pageid."</span>")));
-			}
-			foreach($tmplist as $key=>$value){
+				$tmpsize = 0;
+				$tmp_attr = $value['attr'] ? unserialize($value['attr']) : array();
+				if($tmp_attr && $tmp_attr['width'] && $tmp_attr['height'] && is_numeric($tmp_attr['width']) && is_numeric($tmp_attr['height'])){
+					$tmpsize = $tmp_attr['width'] * $tmp_attr['height'] * 4;
+				}else{
+					$infos = getimagesize($this->dir_root.$value['filename']);
+					$tmpsize = $infos[0] * $infos[1] * 4;
+				}
+				if($tmpsize && $tmpsize >= (16 * 1024 * 1024)){
+					continue;
+				}
+				$num++;
 				$this->model('res')->gd_update($value['id']);
-				$pageid++;
 			}
-			$myurl = $this->url("res","update_pl") ."&id=all&pageid=".$pageid;
-		}else{
-			$myurl = $this->url("res","update_pl") ."&id=".rawurlencode($id)."&pageid=".($pageid+1);
-			$list = explode(",",$id);
-			if(!$list[$pageid]){
-				$this->success(P_Lang('附件信息更新完毕，共更新数量：{pageid}，点击右上角关闭窗口^_^',array('pageid'=>"<span class='red'>".count($list)."</span>")));
+			$myurl = $this->url("res","update_pl") ."&id=all&next_id=".$next_id;
+			if($start_id){
+				$myurl .= "&start_id=".$start_id;
 			}
-			$rs = $this->model('res')->get_one($list[$pageid]);
-			if(!$rs){
-				$this->error(P_Lang("附件更新中，当前ID：{pageid} 不存在附件",array('pageid'=>$list[$pageid])),$myurl);
-			}
-			$this->model('res')->gd_update($rs['id']);
+			$myurl.= "&num=".$num;
+			$this->tip(P_Lang('附件信息正更新，共有数量：{total}，已更新数量：{num}，请耐心等候…',array('total'=>"<span class='red'>".$total."</span>",'num'=>"<span class='red'>".$num."</span>")),$myurl,0.5);
 		}
-		
+		$myurl = $this->url("res","update_pl") ."&id=".rawurlencode($id)."&pageid=".($pageid+1);
+		$list = explode(",",$id);
+		if(!$list[$pageid]){
+			$this->success(P_Lang('附件信息更新完毕，共更新数量：{pageid}，点击右上角关闭窗口^_^',array('pageid'=>"<span class='red'>".count($list)."</span>")));
+		}
+		$rs = $this->model('res')->get_one($list[$pageid]);
+		if(!$rs){
+			$this->error(P_Lang("附件更新中，当前ID：{pageid} 不存在附件",array('pageid'=>$list[$pageid])),$myurl);
+		}
+		if(!$rs['filename'] || !file_exists($this->dir_root.$rs['filename'])){
+			$this->error(P_Lang("附件更新中，当前ID：{pageid} 不存在附件",array('pageid'=>$list[$pageid])),$myurl);
+		}
+		$tmpsize = 0;
+		if($rs['attr'] && $rs['attr']['width'] && $rs['attr']['height']){
+			$tmpsize = $rs['attr']['width'] * $rs['attr']['height'] * 4;
+		}else{
+			$infos = getimagesize($this->dir_root.$rs['filename']);
+			$tmpsize = $infos[0] * $infos[1] * 4;
+		}
+		if($tmpsize && $tmpsize >= (16 * 1024 * 1024)){
+			$this->error(P_Lang("附件更新中，当前ID：{pageid} 文件太大，不支持生成小图",array('pageid'=>$list[$pageid])),$myurl);
+		}
+		$this->model('res')->gd_update($rs['id']);
 		$total = $pageid+1;
 		$this->tip(P_Lang('附件更新中，当前已更新数量：{total}',array('total'=>"<span class='red'><strong>".$total."</strong></span>")),$myurl,0.3);
 	}
@@ -575,6 +672,7 @@ class res_control extends phpok_control
 
 	public function editor_update_all_f()
 	{
+		$this->config('is_ajax',false);
 		$pageid = $this->get('pageid','int');
 		if(!$pageid){
 			$pageid = 1;

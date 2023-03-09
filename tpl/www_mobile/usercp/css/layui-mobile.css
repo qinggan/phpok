@@ -1,0 +1,36 @@
+/* 手机版 LayUI CSS 优化处理 */
+.layui-side-scroll{
+	width:100%;
+}
+.layui-layout-admin .layui-logo{
+	position: relative;
+	width:100%;
+}
+.layui-nav-tree{
+	width:100%;
+}
+div.submit-info{
+	margin:0;
+}
+
+.layui-form-label{
+	display: block;
+	width:100%;
+	text-align:left;
+}
+
+.layui-form-item .layui-input-inline{
+	margin-left:0;
+}
+
+.layui-form .layui-form-item .layui-input-inline.short{
+	width:auto;
+}
+
+@media screen and (max-width: 375px){
+	.layui-fluid {
+		width: 100%;
+		margin:0;
+		padding:0;
+	}
+}

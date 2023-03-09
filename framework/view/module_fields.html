@@ -43,38 +43,58 @@ $(document).ready(function(){
 		<table class="layui-table">
 		<thead>
 			<tr>
-				<th class="id">ID</th>
+				<th colspan="2" class="id">ID</th>
 				<th>{lang字段名}</th>
-				<th>{lang名称}</th>
+				<th>{lang名称}/{lang备注}</th>
 				<th>{lang组}</th>
-				<th>{lang备注}</th>
 				<th>{lang字段类型}</th>
 				<th>{lang表单}</th>
 				<th>{lang格式化}</th>
+				<th>{lang排列}</th>
 				<th class="center">{lang排序}</th>
-				<th></th>
+				<th width="70px"></th>
 			</tr>
 		</thead>
 		<!-- loop from=$used_list key=$key value=$value id=$tmpid -->
 		<tr>
+			<td>
+				<input type="checkbox" value="{$value.id}" />
+			</td>
 			<td class="center">{$value.id}</td>
 			<td>{$value.identifier}</td>
-			<td>{$value.title}</td>
+			<td>{$value.title}<!-- if $value.note --><div class="gray small">{$value.note}</div><!-- /if --></td>
 			<td>{$value.group_title}</td>
-			<td>{$value.note}</td>
 			<td>{$value.field_type_name}</td>
 			<td>{$value.form_type_name}</td>
 			<td>{$value.format_type_name}</td>
+			<td><!-- if $value.parent_id -->横排 {$value.parent_id}<!-- else -->竖排<!-- /if --></td>
 			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 			<td>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang编辑}" onclick="$.admin_module.field_edit('{$value.id}')" class="layui-btn  layui-btn-sm" />
-					<input type="button" value="{lang删除}" onclick="$.admin_module.field_del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+					<input type="button" value="{lang编辑}" onclick="$.admin_module.field_edit('{$value.id}')" class="layui-btn  layui-btn-xs" />
+					<input type="button" value="{lang删除}" onclick="$.admin_module.field_del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-xs layui-btn-danger" />
 				</div>
 			</td>
 		</tr>
 		<!-- /loop -->
 		</table>
+		<div style="margin-top:10px;" phpok-id="JS_BATCH">
+		<ul class="layout">
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.all()" />
+					<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.none()" />
+					<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.anti()" />
+				</div>
+			</li>
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang横排}" class="layui-btn layui-btn-sm" onclick="$.admin_module.toH()" />
+					<input type="button" value="{lang竖排}" class="layui-btn layui-btn-sm" onclick="$.admin_module.toV()" />
+				</div>
+			</li>
+		</ul>
+		</div>
 	</div>
 </div>
 <!-- if $fields_list -->
@@ -83,7 +103,7 @@ $(document).ready(function(){
 	<div class="layui-col-md3">
       <div class="layui-card color-hover">
         <div class="layui-card-body ">
-          {$value.title}<br />{$value.identifier}<span class=" layuiadmin-badge"> <input type="button" value="{lang添加}" onclick="$.admin_module.field_add('{$id}','{$value.identifier}')" class="layui-btn  layui-btn-sm" /></span> 
+          {$value.title}<br />{$value.identifier}<span class="layuiadmin-badge"> <input type="button" value="{lang添加}" onclick="$.admin_module.field_add('{$id}','{$value.identifier}')" class="layui-btn  layui-btn-sm" /></span> 
         </div>
       </div>
     </div>

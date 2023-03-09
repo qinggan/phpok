@@ -118,7 +118,7 @@ function set_status(id)
 //批量排序
 function set_sort()
 {
-	var ids = $.checkbox.join();
+	var ids = $.checkbox.join('.ids');
 	if(!ids)
 	{
 		$.dialog.alert("未指定要排序的ID");
@@ -146,24 +146,20 @@ function set_sort()
 //批量删除
 function set_delete()
 {
-	var ids = $.checkbox.join();
-	if(!ids)
-	{
-		$.dialog.alert("未指定要删除的主题");
+	var ids = $.checkbox.join('.ids');
+	if(!ids){
+		$.dialog.tips("未指定要删除的主题");
 		return false;
 	}
 	$.dialog.confirm("确定要删除选定的主题吗？<br />删除后是不能恢复的？",function(){
 		var url = get_url("list","del") +"&id="+$.str.encode(ids);
 		var rs = json_ajax(url);
-		if(rs.status == "ok")
-		{
-			$.dialog.alert("主题删除成功",function(){
-				window.location.reload();
-			});
-		}
-		else
-		{
-			$.dialog.alert(rs.content);
+		if(rs.status == "ok"){
+			$.dialog.tips(p_lang('主题删除成功'),function(){
+				$.phpok.reload();
+			}).lock();
+		}else{
+			$.dialog.tips(rs.content);
 			return false;
 		}
 	});
@@ -183,7 +179,7 @@ function show_order()
 
 function page_sort()
 {
-	var ids = $.checkbox.join();
+	var ids = $.checkbox.join('.ids');
 	if(!ids)
 	{
 		$.dialog.alert("未指定要排序的ID");
@@ -270,7 +266,7 @@ function set_admin_id(id)
 
 function set_parent()
 {
-	var ids = $.checkbox.join();
+	var ids = $.checkbox.join('.ids');
 	if(!ids){
 		$.dialog.alert(p_lang('未指定要操作的主题'));
 		return false;
@@ -304,7 +300,7 @@ function set_parent()
 
 function unset_parent()
 {
-	var ids = $.checkbox.join();
+	var ids = $.checkbox.join('.ids');
 	if(!ids){
 		$.dialog.alert(p_lang('未指定要操作的主题'));
 		return false;
@@ -321,10 +317,28 @@ function unset_parent()
 	})
 }
 
+function copy_title(ids)
+{
+	var pid = $("#pid").val();
+	$.dialog.confirm('确定要复制选中的主题吗？'+ids,function(){
+		var url = get_url('list','copy','ids='+ids+"&pid="+pid);
+		$.phpok.json(url,function(rs){
+			if(rs.status){
+				$.dialog.tips('复制操作成功',function(){
+					$.phpok.reload();
+				}).lock();
+				return true;
+			}
+			$.dialog.tips(rs.info);
+			return false;
+		})
+	})
+}
+
 
 function list_action_exec()
 {
-	var ids = $.checkbox.join();
+	var ids = $.checkbox.join('.ids');
 	if(!ids){
 		$.dialog.alert(p_lang('未指定要操作的主题'));
 		return false;
@@ -354,6 +368,10 @@ function list_action_exec()
 		unset_parent();
 		return false;
 	}
+	if(val == 'copy'){
+		copy_title(ids);
+		return false;
+	}
 	//执行批量审核通过
 	if(val == 'status' || val == 'unstatus' || val == 'show' || val == 'hidden'){
 		var url = get_url('list','execute','ids='+$.str.encode(ids)+"&title="+val);
@@ -361,18 +379,19 @@ function list_action_exec()
 		var tmp = val.split(':');
 		if(tmp[1] && tmp[0] == 'attr'){
 			var type = $("#attr_set_val").val();
-			url = get_url('list','attr_set','ids='+$.str.encode(ids)+'&val='+tmp[1]+'&type='+type);
+			var url = get_url('list','attr_set','ids='+$.str.encode(ids)+'&val='+tmp[1]+'&type='+type);
 		}else{
 			var type = $("#cate_set_val").val();
 			var url = get_url('list',"move_cate")+"&ids="+$.str.encode(ids)+"&cate_id="+tmp[1]+"&type="+type;
 		}
 	}
 	$.dialog.tips('正在执行操作，请稍候…');
-	var rs = $.phpok.json(url);
-	if(rs.status == 'ok'){
-		$.phpok.reload();
-	}else{
-		$.dialog.alert(rs.content);
-		return false;
-	}
+	$.phpok.json(url,function(rs){
+		if(rs.status == 'ok'){
+			$.phpok.reload();
+		}else{
+			$.dialog.alert(rs.content);
+			return false;
+		}
+	});
 }

@@ -95,39 +95,37 @@ function save_thumb()
 	});
 }
 </script>
-<div class="container-fluid no-gutters main layout-main">
-	<!-- include tpl=usercp/sidebar -->
-	<div class="layout-right">
-		<!-- include tpl=usercp/header -->
-		<div class="layout-body">
-			<div class="card">
-				<div class="card-header">
-					头像修改
-				</div>
-				<div class="card-body">
-					<div style="margin:10px;">
-						<div id="thelist" class="uploader-list"></div>
-						<div class="_progress" id="upload_progress"></div>
-						<div class="btns">
-							<div id="btn_picture"></div>
-						</div>
-					</div>
-					<div style="display:none;margin:10px;padding:10px;border:1px solid #ccc;background:#efefef;" id="show_cut">
-						<div><img src="" width="500" alt="原图" id="thumbnail" /></div>
-						<div style="padding:10px"><input type="button" class="am-btn am-btn-primary" onclick="save_thumb()" value=" 保存图片 " /></div>
-					</div>
-					<input type="hidden" name="thumb_id" value="" id="thumb_id" />
-					<input type="hidden" name="x1" value="" id="x1" />
-					<input type="hidden" name="y1" value="" id="y1" />
-					<input type="hidden" name="x2" value="" id="x2" />
-					<input type="hidden" name="y2" value="" id="y2" />
-					<input type="hidden" name="w" value="" id="w" />
-					<input type="hidden" name="h" value="" id="h" />
-				</div>
+<div class="layui-card">
+	<div class="layui-card-header">
+		头像修改
+		<!-- if $me.avatar -->
+		<div class="float-right">
+			<img src="{$me.avatar}" style="width:30px;height:30px;border-radius:50%" alt="用户当前头像" />
+		</div>
+		<!-- /if -->
+	</div>
+	<div class="layui-card-body">
+		<div style="margin:10px;">
+			<div id="thelist" class="uploader-list"></div>
+			<div class="_progress" id="upload_progress"></div>
+			<div class="btns">
+				<div id="btn_picture"></div>
 			</div>
 		</div>
+		<div style="display:none;margin:10px;padding:10px;border:1px solid #ccc;background:#efefef;" id="show_cut">
+			<div><img src="" width="500" alt="原图" id="thumbnail" /></div>
+			<div style="padding:10px"><input type="button" class="am-btn am-btn-primary" onclick="save_thumb()" value=" 保存图片 " /></div>
+		</div>
+		<input type="hidden" name="thumb_id" value="" id="thumb_id" />
+		<input type="hidden" name="x1" value="" id="x1" />
+		<input type="hidden" name="y1" value="" id="y1" />
+		<input type="hidden" name="x2" value="" id="x2" />
+		<input type="hidden" name="y2" value="" id="y2" />
+		<input type="hidden" name="w" value="" id="w" />
+		<input type="hidden" name="h" value="" id="h" />
 	</div>
 </div>
+
 <script type="text/javascript">
 $(document).ready(function(){
 	var uploader = WebUploader.create({

@@ -17,7 +17,7 @@ class cart_control extends phpok_control
 	 * 购物车ID，该ID将贯穿整个购物过程
 	**/
 	private $cart_id = 0;
-	
+
 	/**
 	 * 构造函数
 	**/
@@ -46,7 +46,7 @@ class cart_control extends phpok_control
 		$totalprice = 0;
 		$_date = date("Ymd",$this->time);
 		foreach($rslist as $key=>$value){
-			$totalprice += price_format_val($value['price'] * $value['qty'],$this->site['currency_id']);
+			$totalprice += $value['price_total'];
 			$value['_checked'] = ($value['dateline'] && date("Ymd",$value['dateline']) == $_date) ? true : false;
 			$rslist[$key] = $value;
 		}
@@ -56,6 +56,18 @@ class cart_control extends phpok_control
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
 			$tplfile = 'cart_index';
+		}
+		$this->view($tplfile);
+	}
+
+	/**
+	 * 快速添加订单
+	**/
+	public function quick_f()
+	{
+		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
+		if(!$tplfile){
+			$tplfile = 'cart_quick';
 		}
 		$this->view($tplfile);
 	}
@@ -108,7 +120,7 @@ class cart_control extends phpok_control
 		}
 		$totalprice = 0;
 		foreach($rslist as $key=>$value){
-			$totalprice += price_format_val($value['price'] * $value['qty']);
+			$totalprice += $value['price_total'];
 		}
 		$this->assign('product_price',price_format($totalprice,$this->site['currency_id']));
 		$this->assign("rslist",$rslist);
@@ -120,7 +132,7 @@ class cart_control extends phpok_control
 			}
 		}
 		$this->assign('is_virtual',$is_virtual);
-		
+
 		if($is_virtual && $user_rs){
 			$address = array('mobile'=>$user_rs['mobile'],'email'=>$user_rs['email']);
 			$this->assign('address',$address);
@@ -164,7 +176,7 @@ class cart_control extends phpok_control
 					$tmp = $this->data('cart_coupon');
 					if($tmp){
 						$value['price'] = price_format(-$tmp['price'],$this->site['currency_id']);
-						$value['price_val'] = -$tmp['price'];	
+						$value['price_val'] = -$tmp['price'];
 					}else{
 						$value['price'] = price_format('0',$this->site['currency_id']);
 						$vlaue['price_val'] = '0.00';
@@ -192,8 +204,47 @@ class cart_control extends phpok_control
 		$this->assign('price',$price);
 		$this->assign('price_val',$price_val);
 		//支付方式
-		$paylist = $this->model('payment')->get_all($this->site['id'],1,($this->is_mobile ? 1 : 0));
-		$this->assign("paylist",$paylist);
+		$user_agent = $_SERVER['HTTP_USER_AGENT'];
+		$weixin_client = false;
+		$miniprogram_client = false;
+		if($user_agent && strpos(strtolower($user_agent),'micromessenger') !== false){
+			$weixin_client = true;
+		}
+		if($user_agent && strpos(strtolower($user_agent),'miniprogram') !== false){
+			$miniprogram_client = true;
+		}
+		$is_mobile = ($this->is_mobile() || $weixin_client || $miniprogram_client) ? true : false;
+		$paylist = $this->model('payment')->get_all($this->site['id'],1,$is_mobile);
+		if($paylist){
+			foreach($paylist as $key=>$value){
+				if(!$value['paylist']){
+					unset($paylist[$key]);
+					continue;
+				}
+				if($weixin_client || $miniprogram_client){
+					foreach($value['paylist'] as $k=>$v){
+						if($v['code'] != 'wxpay'){
+							unset($value['paylist'][$k]);
+							continue;
+						}
+						$t = array();
+						if($v['param'] && is_string($v['param'])){
+							$t = unserialize($v['param']);
+						}
+						if($miniprogram_client && $t['trade_type'] != 'miniprogram'){
+							unset($value['paylist'][$k]);
+							continue;
+						}
+						if(!$miniprogram_client && $t['trade_type'] == 'miniprogram'){
+							unset($value['paylist'][$k]);
+							continue;
+						}
+					}
+					$paylist[$key] = $value;
+				}
+			}
+			$this->assign('paylist',$paylist);
+		}
 		if($this->session->val('user_id')){
 			$wlist = $this->model('order')->balance($this->session->val('user_id'));
 			if($wlist){
@@ -240,7 +291,7 @@ class cart_control extends phpok_control
 		$totalprice = 0;
 		$qty = 0;
 		foreach($rslist as $key=>$value){
-			$totalprice += price_format_val($value['price'] * $value['qty']);
+			$totalprice += $value['price_total'];
 			$qty += $value['qty'];
 		}
 		$this->assign('product_price',price_format($totalprice,$this->site['currency_id']));
@@ -254,7 +305,7 @@ class cart_control extends phpok_control
 			}
 		}
 		$this->assign('is_virtual',$is_virtual);
-		
+
 		if($is_virtual && $user_rs){
 			$address = array('mobile'=>$user_rs['mobile'],'email'=>$user_rs['email']);
 			$this->assign('address',$address);
@@ -325,8 +376,47 @@ class cart_control extends phpok_control
 		$this->assign('price',$price);
 		$this->assign('price_val',$price_val);
 		//支付方式
-		$paylist = $this->model('payment')->get_all($this->site['id'],1,($this->is_mobile ? 1 : 0));
-		$this->assign("paylist",$paylist);
+		$user_agent = $_SERVER['HTTP_USER_AGENT'];
+		$weixin_client = false;
+		$miniprogram_client = false;
+		if($user_agent && strpos(strtolower($user_agent),'micromessenger') !== false){
+			$weixin_client = true;
+		}
+		if($user_agent && strpos(strtolower($user_agent),'miniprogram') !== false){
+			$miniprogram_client = true;
+		}
+		$is_mobile = ($this->is_mobile() || $weixin_client || $miniprogram_client) ? true : false;
+		$paylist = $this->model('payment')->get_all($this->site['id'],1,$is_mobile);
+		if($paylist){
+			foreach($paylist as $key=>$value){
+				if(!$value['paylist']){
+					unset($paylist[$key]);
+					continue;
+				}
+				if($weixin_client || $miniprogram_client){
+					foreach($value['paylist'] as $k=>$v){
+						if($v['code'] != 'wxpay'){
+							unset($value['paylist'][$k]);
+							continue;
+						}
+						$t = array();
+						if($v['param'] && is_string($v['param'])){
+							$t = unserialize($v['param']);
+						}
+						if($miniprogram_client && $t['trade_type'] != 'miniprogram'){
+							unset($value['paylist'][$k]);
+							continue;
+						}
+						if(!$miniprogram_client && $t['trade_type'] == 'miniprogram'){
+							unset($value['paylist'][$k]);
+							continue;
+						}
+					}
+					$paylist[$key] = $value;
+				}
+			}
+			$this->assign('paylist',$paylist);
+		}
 		if($this->session->val('user_id')){
 			$wlist = $this->model('order')->balance($this->session->val('user_id'));
 			if($wlist){
@@ -402,7 +492,7 @@ class cart_control extends phpok_control
 			}
 		}
 		$this->assign('is_virtual',$is_virtual);
-		
+
 		if($is_virtual && $user_rs){
 			$address = array('mobile'=>$user_rs['mobile'],'email'=>$user_rs['email']);
 			$this->assign('address',$address);
@@ -489,7 +579,18 @@ class cart_control extends phpok_control
 		$this->assign('price',$price);
 		$this->assign('price_val',$price_val);
 		//支付方式
-		$paylist = $this->model('payment')->get_all($this->site['id'],1,($this->is_mobile ? 1 : 0));
+		//支付方式
+		$user_agent = $_SERVER['HTTP_USER_AGENT'];
+		$weixin_client = false;
+		$miniprogram_client = false;
+		if($user_agent && strpos(strtolower($user_agent),'micromessenger') !== false){
+			$weixin_client = true;
+		}
+		if($user_agent && strpos(strtolower($user_agent),'miniprogram') !== false){
+			$miniprogram_client = true;
+		}
+		$is_mobile = ($this->is_mobile() || $weixin_client || $miniprogram_client) ? true : false;
+		$paylist = $this->model('payment')->get_all($this->site['id'],1,$is_mobile);
 		$array = array('type'=>'order','price'=>price_format_val($price_unpaid,$rs['currency_id'],$rs['currency_id']),'currency_id'=>$rs['currency_id'],'sn'=>$rs['sn']);
 		$array['content'] = $array['title'] = P_Lang('订单：{sn}',array('sn'=>$rs['sn']));
 		$array['dateline'] = $this->time;
@@ -556,7 +657,7 @@ class cart_control extends phpok_control
 		}
 		$this->view($tplfile);
 	}
-	
+
 	private function addr_info()
 	{
 		$addressconfig = $this->config['order']['address'] ? explode(",",$this->config['order']['address']) : array('shipping');

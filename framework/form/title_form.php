@@ -29,6 +29,10 @@ class title_form extends _init_auto
 
 	public function phpok_format($rs,$appid="admin")
 	{
+		if($rs['ext'] && is_string($rs['ext'])){
+			$ext = unserialize($rs['ext']);
+			$rs = array_merge($ext,$rs);
+		}
 		if(!$rs["optlist_id"]){
 			return P_Lang('未指定选项组');
 		}
@@ -73,12 +77,16 @@ class title_form extends _init_auto
 			return false;
 		}
 		$list = explode(',',$rs['content']);
+		$tmplist = array();
 		foreach($list as $key=>$value){
-			if(!$value || !trim($value) || !intval($value)){
-				unset($list[$key]);
+			$tmp = intval($value);
+			if(!$tmp){
+				continue;
 			}
+			$tmplist[] = $tmp;
 		}
-		$rs['content'] = implode(",",$list);
+		$list = $tmplist;
+		$rs['content'] = implode(",",$tmplist);
 		if(!$rs['content']){
 			return false;
 		}
@@ -97,7 +105,7 @@ class title_form extends _init_auto
 		if($ext['is_multiple']){
 			$condition = "l.id IN(".$rs['content'].") AND status=1";
 			$orderby = "SUBSTRING_INDEX('".implode(",",$list)."',l.id,1)";
-			return $this->model('list')->get_all($condition,0,999,$orderby);
+			return $this->model('list')->get_all($condition,0,999,"",$orderby);
 		}
 		return $this->model('list')->simple_one($rs['content']);
 	}

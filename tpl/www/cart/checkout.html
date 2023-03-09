@@ -1,125 +1,4 @@
 <!-- include tpl=cart/header title=结算信息 -->
-<script type="text/javascript">
-var user_id = '{$session.user_id ? $session.user_id : 0}';
-function check_it()
-{
-	var act = $.dialog.tips('正在创建订单，请稍候…',100);
-	$("#saveorder").ajaxSubmit({
-		'url':api_url('order','create'),
-		'type':'post',
-		'dataType':'json',
-		'success':function(rs){
-			if(rs.status){
-				act.content('订单创建成功，订单号是：'+rs.info.sn);
-				var ext = parseInt(user_id) > 0 ? 'id='+rs.info.id : 'sn='+rs.info.sn+"&passwd="+rs.info.passwd;
-				var extOrder = ext;
-				var payment = $("input[name=payment]:checked").val();
-				if(payment){
-					ext += '&payment='+payment.toString();
-					$("input[data-name=integral]").each(function(i){
-						var name = $(this).attr('data-key');
-						var val = $(this).val();
-						if(parseInt(val) > 0){
-							ext += "&integral_val["+name+"]="+val;
-						}
-					});
-					url = api_url('payment','create',ext);
-					$.phpok.json(url,function(rs){
-						if(!rs.status){
-							$.dialog.alert(rs.info,function(){
-								$.phpok.go(get_url('order','payment',extOrder));
-							});
-							return false;
-						}
-						if(!rs.info){
-							$.phpok.go(get_url('order','info',extOrder));
-							return false;
-						}
-						url = get_url('payment','action','id='+rs.info);
-						$.phpok.go(url);
-					});
-					return true;
-				}
-				var url = get_url('order','payment',ext);
-				$.phpok.go(url);
-				return true;
-			}
-			act.close();
-			$.dialog.alert(rs.info);
-			return false;
-		}
-	});
-	return false;
-}
-function load_freight()
-{
-	var id = new Array();
-	$("input[data-name=product]").each(function(i){
-		id.push($(this).val());
-	});
-	var url = api_url('cart','pricelist','ids='+id.join(","));
-	if($("input[name=address_id]").length > 0){
-		var address_id = $("input[name=address_id]:checked").val();
-		if(address_id){
-			url += "&address_id="+address_id;
-		}
-	}else{
-		var province = $("#pca_p").val();
-		var city = $("#pca_c").val();
-		if(province && city){
-			url += "&province="+$.str.encode(province)+"&city="+$.str.encode(city);
-		}
-	}
-	$.phpok.json(url,function(rs){
-		if(rs.status){
-			var list = rs.info;
-			var html = '<table class="am-table am-table-centered">';
-			var total = 0;
-			for(var i in list){
-				html += '<tr>';
-				html += '<td class="am-text-right">';
-				html += '<input type="hidden" name="ext_price['+list[i].identifier+']" id="ext_price_'+list[i].identifier+'" value="'+list[i].price_val+'" />';
-				html += list[i].title+'：</td>';
-				html += '<td id="'+list[i].identifier+'_price" class="am-text-danger am-text-left">'+list[i].price+'</td>';
-				html += '</tr>';
-				total += parseFloat(list[i].price_val);
-			}
-			html += '<tr>';
-			html += '<td class="am-text-right">总价：</td>';
-			html += '<td id="all_price" class="am-text-danger am-text-left" style="width:150px;">'+total.toFixed(2)+'元</td>';
-			html += '</tr>';
-			html += '</table>';
-			$("#price_info").html(html);
-			$("#price_info_panel").show();
-			return true;
-		}
-		$("#price_info_panel").hide();
-		$.dialog.alert(rs.info);
-		return false;
-	})
-}
-function update_coupon()
-{
-	var code = $("#coupon").val();
-	if(!code){
-		$.dialog.alert('优惠码不能为空');
-		return false;
-	}
-	var url = api_url('coupon','use','code='+$.str.encode(code));
-	var tip = $.dialog.tips('正在检测优惠码，请稍候…',100).lock();
-	$.phpok.json(url,function(rs){
-		tip.close();
-		if(!rs.status){
-			$.dialog.alert(rs.info);
-			return false;
-		}
-		$.dialog.tips('请稍候，正在刷新页面…',function(){
-			$.phpok.reload();
-		}).lock().time(2);
-		return true;
-	})
-}
-</script>
 <section class="container pt-4">
 	<input type="hidden" name="is_virtual" id="is_virtual" value="{$is_virtual ? 1 : 0}" />
 	<!-- if !$session.user_id -->
@@ -180,7 +59,15 @@ function update_coupon()
 						<div>单价：{func price_format $value.price $value.currency_id}</div>
 					</td>
 					<td>{$value.qty}</td>
-					<td class="text-danger">{func price_format $value.price*$value.qty $value.currency_id}</td>
+					<td>
+						<!-- if $value.discount -->
+						<div class="text-muted"><del>{func price_format $value.price*$value.qty $value.currency_id}</del></div>
+						<!-- /if -->
+						<div class="text-danger">{func price_format $value.price_total $value.currency_id}</div>
+						<!-- loop from=$value.appslist key=$k value=$v id=$idxx -->
+						<div class="text-muted"><small>{$v.title}</small></div>
+						<!-- /loop -->
+					</td>
 				</tr>
 				<!-- /loop -->
 			</tbody>
@@ -207,12 +94,12 @@ function update_coupon()
 			<textarea name="note" id="note" class="form-control" style="resize:none;"></textarea>
 		</div>
 	</div>
-	<div class="card mt-3">
+	<div class="card mt-3" id="price_info_panel">
 		<div class="card-header">
 			信息汇总
 		</div>
-		<table class="table am-table-centered">
-			<tbody>
+		<div class="card-body p-0" id="price_info">
+			<table class="table">
 				<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
 				<tr>
 					<td class="text-right">
@@ -225,8 +112,8 @@ function update_coupon()
 					<td class="text-right">总价：</td>
 					<td id="all_price" class="text-danger" width="150px">{$price}</td>
 				</tr>
-			</tbody>
-		</table>
+			</table>
+		</div>
 	</div>
 	<!-- if $integral -->
 	<div class="card mt-3">
@@ -287,6 +174,17 @@ function update_coupon()
 		</div>
 	</div>
 	<!-- /loop -->
+	<div class="card mt-3">
+		<div class="card-header">仅下单</div>
+		<div class="card-body">
+			<div class="form-check">
+				<label class="form-check-label mb-2">
+			    	<input type="radio" class="form-check-input" name="payment" value="0" checked />
+			    	仅下单
+				</label>
+			</div>
+		</div>
+	</div>
 	<div class="m-3 text-center">
 		<input type="submit" value="提交订单" class="btn btn-primary btn-lg" />
 	</div>

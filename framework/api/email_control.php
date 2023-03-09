@@ -1,13 +1,11 @@
 <?php
 /**
  * 邮件相关操作
- * @package phpok\api
  * @作者 qinggan <admin@phpok.com>
- * @版权 2015-2016 深圳市锟铻科技有限公司
- * @主页 http://www.phpok.com
- * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @版本 6.x
+ * @授权 GNU Lesser General Public License (LGPL)
  * @时间 2016年07月30日
+ * @更新 2023年2月8日
 **/
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
@@ -34,39 +32,39 @@ class email_control extends phpok_control
 		if($this->session->val('admin_id')){
 			$email = $this->get('email');
 			if(!$email){
-				$this->json(P_Lang('Email不能为空'));
+				$this->error(P_Lang('Email不能为空'));
 			}
 		}else{
 			$token = $this->get('token');
 			if(!$token){
-				$this->json(P_Lang('Email获取异常，未指定Token信息'));
+				$this->error(P_Lang('Email获取异常，未指定Token信息'));
 			}
 			$info = $this->lib('token')->decode($token);
 			if(!$info || !$info['email']){
-				$this->json(P_Lang('异常，内容不能为空'));
+				$this->error(P_Lang('异常，内容不能为空'));
 			}
 			$email = $info['email'];
 			if(!$email){
-				$this->json(P_Lang('Token中没有Email，请检查'));
+				$this->error(P_Lang('Token中没有Email，请检查'));
 			}
 		}
 		$title = $this->get('title');
 		$content = $this->get('content','html');
 		if(!$content){
-			$this->json(P_Lang('邮件内容不能为空'));
+			$this->error(P_Lang('邮件内容不能为空'));
 		}
 		if(!$title){
 			$title = phpok_cut($content,50,'…');
 		}
 		$email_server = $this->model('gateway')->get_default('email');
 		if(!$email_server){
-			$this->json(P_Lang('SMTP未配置好'));
+			$this->error(P_Lang('SMTP未配置好'));
 		}
 		$list = explode(',',$email);
 		//如果仅只有一个Email时
 		if(count($list) == 1){
 			if(!$this->lib('common')->email_check($email)){
-				$this->json(P_Lang('Email邮箱不符合要求'));
+				$this->error(P_Lang('Email邮箱不符合要求'));
 			}
 			$fullname = $this->get('fullname');
 			if(!$fullname){
@@ -74,9 +72,9 @@ class email_control extends phpok_control
 			}
 			$info = $this->lib('email')->send_mail($email,$title,$content,$fullname);
 			if(!$info){
-				$this->json($this->lib('email')->error());
+				$this->error($this->lib('email')->error());
 			}
-			$this->json(true);
+			$this->success();
 		}
 		foreach($list as $key=>$value){
 			$value = trim($value);
@@ -89,10 +87,19 @@ class email_control extends phpok_control
 			$value_name = str_replace(strstr($value,'@'),'',$value);
 			$info = $this->lib('email')->send_mail($value,$title,$content,$value_name);
 			if(!$info){
-				$this->json($this->lib('email')->error());
+				phpok_log($this->lib('email')->error());
 			}
 		}
-		$this->json(true);		
+		$this->success();		
 	}
 
+	public function chk_f()
+	{
+		$email = false;
+		$server = $this->model('gateway')->get_default('email');
+		if($server){
+			$email = true;
+		}
+		$this->success($email);
+	}
 }

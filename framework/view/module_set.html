@@ -50,11 +50,13 @@
 				{lang后台字段布局}
 			</label>
 			<div class="layui-input-block">
-				<!-- if !$rs.mtype && $tblid != 'cate' -->
+				<!-- if $tblid != 'cate' -->
 				<input type="checkbox" name="layout[]" value="hits"{if in_array("hits",$layout)} checked{/if} title="{lang查看次数}" />
 				<input type="checkbox" name="layout[]" value="dateline"{if in_array("dateline",$layout)} checked{/if} title="{lang发布时间}" />
-				<input type="checkbox" name="layout[]" value="user_id"{if in_array("user_id",$layout)} checked{/if} title="{lang用户账号}" />
 				<input type="checkbox" name="layout[]" value="sort"{if in_array("sort",$layout)} checked{/if} title="{lang排序}" />
+					<!-- if !$rs.mtype -->
+					<input type="checkbox" name="layout[]" value="user_id"{if in_array("user_id",$layout)} checked{/if} title="{lang用户账号}" />
+					<!-- /if -->
 				<!-- /if -->
 				<!-- loop from=$used_list key=$key value=$value -->
 				<input type="checkbox" name="layout[]" id="layout_{$value.identifier}" value="{$value.identifier}"{if in_array($value[identifier],$layout)} checked{/if} title="{$value.title}" />

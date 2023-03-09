@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height,mode,theme" />
 <div class="layui-form-item">
 	<label class="layui-form-label">
 		{lang宽高：}
@@ -7,12 +7,38 @@
 		<input type="text" name="width" id="width" class="layui-input" value="{$rs.width}" placeholder="{lang宽度}" />
 	</div>
 	<div class="layui-form-mid">
-		x
+		×
 	</div>
 	<div class="layui-input-inline short">
 		<input type="text" name="height" id="height" class="layui-input" value="{$rs.height}" placeholder="{lang高度}" />
 	</div>
 	<div class="layui-form-mid">
 		{lang支持填写 px em % 等单位符号}
+	</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label mt10">{lang脚本语言}</label>
+	<div class="layui-input-block">
+		<ul class="layout">
+			<!-- loop from=$attrs key=$key value=$value id=$tmpid -->
+			<li style="width:120px;"><input type="checkbox" name="mode[{$value}]" lay-skin="primary" title="{func ucwords $value}" {if $rs.mode && $rs[mode][$value]} checked{/if} /></li>
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang编辑器风格：}
+	</label>
+	<div class="layui-input-inline default-auto">
+		<select name="theme">
+			<option value="default">{lang默认风格}</option>
+			<!-- loop from=$theme_list key=$key value=$value id=$tmpid -->
+			<option value="{$value}"{if $rs.theme && $rs.theme == $value} selected{/if}>{func ucwords $value}</option>
+			<!-- /loop -->
+		</select>
+	</div>
+	<div class="layui-form-mid">
+		{lang请选择编辑器的风格}
 	</div>
 </div>

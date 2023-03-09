@@ -24,8 +24,8 @@ class token_model_base extends phpok_model
 
 	public function action()
 	{
-		$token_id = ($this->config['token'] && $this->config['token']['id']) ? $this->config['token']['id'] : 'token';
-		$token_time = ($this->config['token'] && $this->config['token']['time']) ? $this->config['token']['time'] : '7200';
+		$token_id = ($this->config['token'] && $this->config['token']['id']) ? $this->config['token']['id'] : 'userToken';
+		$token_time = ($this->config['token'] && $this->config['token']['time']) ? $this->config['token']['time'] : 7200;
 		$token = isset($_SERVER[$token_id]) ? $_SERVER[$token_id] : (isset($_SERVER['HTTP_'.$token_id]) ? $_SERVER['HTTP_'.$token_id] : $this->get($token_id));
 		if(!$token){
 			return false;
@@ -37,18 +37,25 @@ class token_model_base extends phpok_model
 		if(!$info){
 			return false;
 		}
-		$api_code = $this->model('config')->get_one('api_code');
-		if(!$api_code){
+		$config = $this->model('config')->get_all();
+		if(!$config || !$config['private_key'] || !$config['public_key']){
 			return false;
 		}
-		//对 token 数据进行解密
-		$this->lib('token')->etype('api_code');
-		$this->lib('token')->keyid($api_code);
+		//进行解密处理
+		$this->lib("token")->etype("public_key");
+		$this->lib('token')->public_key($config['public_key']);
+		$this->lib('token')->private_key($config['private_key']);
 		$this->lib('token')->expiry($token_time);
 		$data = $this->lib('token')->decode($info);
 		if($data['id'] && $data['chk'] && $data['time']){
-			$this->check($data['id'],$data['chk']);
+			$rs = $this->model('user')->get_one($data['id'],'id',false,false);
+			$sign = md5($rs['id'].'-'.$rs['user'].'-'.$rs['regtime'].'-'.$data['time']);
+			if($sign == $data['chk']){
+				$this->model('user')->login($rs,false);
+				return true;
+			}
 		}
+		return true;
 	}
 
 	/**
@@ -56,7 +63,7 @@ class token_model_base extends phpok_model
 	 * @参数 $uid 用户ID 或 用户数组
 	 * @参数 $sign 验证串
 	**/
-	public function check($uid,$sign)
+	public function check($uid,$time,$sign)
 	{
 		if(!$sign || !$uid){
 			return false;
@@ -69,15 +76,14 @@ class token_model_base extends phpok_model
 		if(!$rs){
 			return false;
 		}
-		$code = md5($rs['id'].'-'.$rs['user'].'-'.$rs['regtime']);
+		$code = md5($rs['id'].'-'.$rs['user'].'-'.$rs['regtime'].'-'.$time);
 		if(strtolower($code) == strtolower($sign)){
-			$this->model('user')->login($rs);
-			return true;
+			return $this->model('user')->login($rs,false);
 		}
 		return false;
 	}
 
-	public function create($uid)
+	public function create($uid=0)
 	{
 		if(!$uid){
 			return false;
@@ -90,29 +96,42 @@ class token_model_base extends phpok_model
 		}else{
 			$rs = $uid;
 		}
-		
-		$api_code = $this->model('config')->get_one('api_code');
-		if(!$api_code){
+		$config = $this->model('config')->get_all();
+		if(!$config){
 			return false;
 		}
-		$token_time = ($this->config['token'] && $this->config['token']['time']) ? $this->config['token']['time'] : '7200';
+		if(!$config['chktype']){
+			$config['chktype'] = 'rsa';
+		}
+		if($config['chktype'] == 'code' && !$config['api_code']){
+			return false;
+		}
+		if($config['chktype'] == 'rsa' && (!$config['private_key'] || !$config['public_key'])){
+			return false;
+		}
+		$token_time = ($this->config['token'] && $this->config['token']['time']) ? $this->config['token']['time'] : 7200;
 		$data = array('expire_time'=>($token_time+$this->time));
 		$tmp = array();
 		$tmp['id'] = $rs['id'];
-		$tmp['chk'] = md5($rs['id'].'-'.$rs['user'].'-'.$rs['regtime']);
 		$tmp['time'] = $this->time;
-		
-		$this->lib('token')->etype('api_code');
-		$this->lib('token')->keyid($api_code);
+		$tmp['chk'] = md5($rs['id'].'-'.$rs['user'].'-'.$rs['regtime'].'-'.$tmp['time']);
+		if($config['chktype'] == 'code'){
+			$this->lib("token")->etype("api_code");
+			$this->lib("token")->keyid($config['api_code']);
+		}
+		if($config['chktype'] == 'rsa'){
+			$this->lib("token")->etype("public_key");
+			$this->lib('token')->public_key($config['public_key']);
+			$this->lib('token')->private_key($config['private_key']);
+		}		
+		//生成 Token
 		$this->lib('token')->expiry($token_time);
 		$data['token'] = $this->lib('token')->encode($tmp);
-		
+		//生成 refreshToken
 		$day = ($this->config['token'] && $this->config['token']['refresh_day']) ? $this->config['token']['refresh_day'] : 30;
-		$this->lib('token')->etype('api_code');
-		$this->lib('token')->keyid($api_code);
 		$this->lib('token')->expiry($day*24*60*60);
 		$data['refresh_token'] = $this->lib('token')->encode($tmp);
-		$data['expire_day'] = $day;
+		$data['expire_day'] = $day*24*60*60 + $this->time;
 		return $data;
 	}
 
@@ -122,5 +141,19 @@ class token_model_base extends phpok_model
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * 保存数据
+	**/
+	public function save($data,$id=0)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		if($id){
+			return $this->db->update($data,'token',array('id'=>$id));
+		}
+		$this->db->insert($data,'token');
 	}
 }

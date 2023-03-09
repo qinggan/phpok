@@ -49,6 +49,16 @@
 					}
 				})
 			});
+		},
+		filetoinput:function(val,input)
+		{
+			if(val.substr(0,1) == '/'){
+				val = val.substr(1);
+			}
+			var opener = $.dialog.opener;
+			opener.$("#"+input).val(val);
+			$.dialog.close();
+			return true;
 		}
 	}
 })(jQuery);

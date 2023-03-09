@@ -39,6 +39,8 @@ input[name=identifier]{ime-mode:disabled;}
 .hidden{display:none;}
 .mb3{margin-bottom:3px;}
 .mtop{margin-top:3px;}
+.mt5{margin-top:5px}
+.mt10{margin-top:10px;}
 .mr10{margin-right:10px;}
 .w33{width:33px;}
 .w50{width:50px;}
@@ -53,6 +55,7 @@ input[name=identifier]{ime-mode:disabled;}
 .extcate{line-height:180%;color:gray;}
 .extcate a{color:gray;}
 .mysoft-copy{cursor:default;}
+.small{font-size:0.8em;}
 
 .welcome{padding:10px;line-height:25px;}
 .welcome p{text-indent:24px;line-height:25px;}
@@ -490,3 +493,10 @@ ul.fields_quick_add li .left{float:left;}
 ul.fields_quick_add li .right{float:right;}
 ul.fields_quick_add li:after{clear:both;content:'.';display:block;visibility:hidden;height:0;overflow:hidden;}
 ul.fields_quick_add li:hover{background:#f1f1f1;}
+
+
+.line1{
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

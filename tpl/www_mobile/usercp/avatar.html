@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Expires" content="wed, 26 feb 1997 08:21:57 gmt" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <title>头像修改 - 个人中心</title>
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="system-copyright" content="{$license}" />
+    <meta name="system-version" content="{$version}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <base href="{$sys.url}" />
+    <!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
+    <link rel="stylesheet" href="{$sys.webroot}static/admin/layui/{#css#}/layui.css" media="all" />
+	<link rel="stylesheet" href="{#css#}/extadmin.css" />
+	<link rel="stylesheet" href="{#css#}/artdialog.css" />
+	<link rel="stylesheet" href="{$config.tpl_id.dir_tpl}usercp/{#css#}/layui-mobile.css" />
+    <link rel="stylesheet" href="{$config.tpl_id.dir_tpl}usercp/{#css#}/style.css" media="all" />
+    <script type="text/javascript" src="static/admin/layui/layui.all.js"></script>
+    <script type="text/javascript" src="{url ctrl=js ext=jquery.artdialog/}"></script>
+	<link rel="stylesheet" type="text/css" href="{#js#}/webuploader/webuploader.css" />
+	<link rel="stylesheet" type="text/css" href="{$config.tpl_id.dir_tpl}usercp/{#css#}/jcrop.css" />
+	<script type="text/javascript" src="{#js#}/webuploader/webuploader.min.js"></script>
+	<script type="text/javascript" src="{$config.tpl_id.dir_tpl}usercp/{#js#}/jquery.jcrop.js"></script>
+    <!-- plugin head -->
+</head>
+<body>
+<script type="text/javascript">
+var jcrop_api;
+var rate = 1; //默认是一倍
+//附件上传后执行的JS动作
+function update_avatar(rs)
+{
+	if(!rs || rs.status != 'ok'){
+		alert(rs.content);
+		return false;
+	}
+	//$("#avatar").val(rs.content.filename);
+	//$("#avatar_view").attr('src',rs.content.filename);
+	//更新头像ID
+	$.ajax({
+		'url': api_url('usercp','avatar','data='+$.str.encode(rs.content.filename)),
+		'dataType': 'json',
+		'success': function(rs) {
+			return true;
+		}
+	});
+}
+
+function ready_cut(width,height)
+{
+	var max_wh = width > height ? height : width;
+	$('#thumbnail').Jcrop({
+		onChange:    showCoords,
+		onSelect:    showCoords,
+		setSelect:   [0,0,100,100],
+		aspectRatio: 1,
+		minSize:     [ 100, 100 ],
+		maxSize:     [ max_wh, max_wh ],
+		allowMove:   true,
+		allowResize: true,
+		allowSelect: true
+    },function(){
+	    jcrop_api = this;
+	    //jcrop_api.focus();
+    });
+}
+function showCoords(c)
+{
+	$('#x1').val(c.x);
+	$('#y1').val(c.y);
+	$('#x2').val(c.x2);
+	$('#y2').val(c.y2);
+	$('#w').val(c.w);
+	$('#h').val(c.h);
+}
+
+function save_thumb()
+{
+	var x1 = $('#x1').val();
+	var y1 = $('#y1').val();
+	var x2 = $('#x2').val();
+	var y2 = $('#y2').val();
+	var w = $('#w').val();
+	var h = $('#h').val();
+	var thumb_id = $("#thumb_id").val();
+	if(!thumb_id){
+		$.dialog.alert('未上传图片');
+		return false;
+	}
+	if(x1=="" || y1=="" || x2=="" || y2=="" || w=="" || h==""){
+		$.dialog.alert("未设置裁剪框！");
+		return false;
+	}
+	var url = get_url('usercp','avatar_cut');
+	url += "&thumb_id="+thumb_id;
+	url += "&x1="+x1;
+	url += "&y1="+y1;
+	url += "&x2="+x2;
+	url += "&y2="+y2;
+	url += "&w="+w;
+	url += "&h="+h;
+	url += "&rate="+rate;
+	//存储并更新图片
+	$.phpok.json(url,function(rs){
+		if(rs.status == "ok"){
+			$.dialog.tips('头像更新成功',function(){
+				$.phpok.go(get_url('usercp'));
+			});
+			return true;
+		}
+		$.dialog.alert(rs.content);
+		return false;
+	});
+}
+</script>
+<div class="layui-card">
+	<div class="layui-card-header">
+		头像修改
+		<!-- if $me.avatar -->
+		<div class="float-right">
+			<img src="{$me.avatar}" style="width:30px;height:30px;border-radius:50%" alt="用户当前头像" />
+		</div>
+		<!-- /if -->
+	</div>
+	<div class="layui-card-body">
+		<div style="margin:10px;">
+			<div id="thelist" class="uploader-list"></div>
+			<div class="_progress" id="upload_progress"></div>
+			<div class="btns">
+				<div id="btn_picture"></div>
+			</div>
+		</div>
+		
+		<div style="display:none;margin:0;padding:0;position: relative;" id="show_cut">
+			<img src="" width="300" alt="原图" id="thumbnail" />
+			<div style="padding:10px;text-align:center;">
+				<input type="button" class="layui-btn layui-btn-sm" onclick="save_thumb()" value=" 保存图片 " />
+			</div>
+		</div>
+		<input type="hidden" name="thumb_id" value="" id="thumb_id" />
+		<input type="hidden" name="x1" value="" id="x1" />
+		<input type="hidden" name="y1" value="" id="y1" />
+		<input type="hidden" name="x2" value="" id="x2" />
+		<input type="hidden" name="y2" value="" id="y2" />
+		<input type="hidden" name="w" value="" id="w" />
+		<input type="hidden" name="h" value="" id="h" />
+		<input type="hidden" value="" id="src_width" />
+		<input type="hidden" value="" id="src_height" />
+	</div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	var uploader = WebUploader.create({
+		auto: true,
+		server: api_url('upload','save'),
+		compress: {width:800,height:800,quality:90,compressSize:200},
+		pick: {'id':'#btn_picture','innerHTML':'选择本地图片'},
+		fileVal: 'upfile',
+		formdata:{
+			'{func session_name}':'{func session_id}'
+		},
+		accept: {
+			title: '图片',
+			extensions: 'gif,jpg,jpeg,bmp,png',
+			mimeTypes: 'image/*'
+		},
+		resize: false
+	});
+	uploader.on('fileQueued',function(file){
+		$("#upload_progress").append('<div id="phpok-upfile-' + file.id + '" class="phpok-upfile-list">' +
+			'<div class="title">' + file.name + ' <span class="status">等待上传…</span></div>' +
+			'<div class="progress"><span>&nbsp;</span></div>' +
+			'<div class="cancel" id="phpok-upfile-cancel-'+file.id+'"></div>' + 
+		'</div>' );
+		$("#phpok-upfile-"+file.id+" .cancel").click(function(){
+			uploader.removeFile(file,true);
+			$("#phpok-upfile-"+file.id).remove();
+		});
+	});
+	uploader.on('uploadProgress',function(file,percent){
+		var $li = $('#phpok-upfile-'+file.id),
+		$percent = $li.find('.progress span');
+		var width = $li.find('.progress').width();
+		$percent.css( 'width', parseInt(width * percent, 10) + 'px' );
+		$li.find('span.status').html('正在上传…');
+		self.upload_state = 'running';
+	});
+	uploader.on('uploadComplete',function(file){
+		$("#phpok-upfile-"+file.id).fadeOut();
+	});
+	uploader.on('uploadSuccess',function(file,data){
+		if(data.status == 'ok'){
+			var info = data.content;
+			if(info.attr.width && info.attr.width > 300){
+				var width = 300;
+				rate = info.attr.width/width;
+				var height = parseInt((width * info.attr.height)/info.attr.width);
+			}else{
+				var width = info.attr.width;
+				rate = 1;
+				var height = info.attr.height;
+			}
+			$("#show_cut").show();
+			$("#thumbnail").attr('src',info.filename).css({"width":width+"px","height":"auto","max-width":"100%"});
+			$("#thumb_id").val(info.id);
+			$("#src_width").val(info.attr.width);
+			$("#src_height").val(info.attr.height);
+			ready_cut(width,height);
+		}else{
+			$.dialog.alert(data.content,function(){
+				$("#show_cut").hide();
+			});
+		}
+	});
+	//jcrop_api = $.Jcrop("#thumbnail");
+});
+</script>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-form-item" style="text-align:center;">
+		<input type="button" value="{lang返回}" class="layui-btn layui-btn-primary" onclick="$.phpok.go('{url ctrl=usercp/}')" />
+	</div>
+</div>
+</body>
+</html>

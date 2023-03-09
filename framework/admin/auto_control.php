@@ -27,7 +27,6 @@ class auto_control extends phpok_control
 		if(!$str){
 			$this->json(P_Lang('没有自动存储的表单数据'),true);
 		}
-		$rs = $this->model('temp')->chk($type,$_SESSION["admin_id"]);
 		if($rs){
 			$id = $rs["id"];
 			unset($rs["id"]);
@@ -37,7 +36,6 @@ class auto_control extends phpok_control
 			$rs["tbl"] = $type;
 			$rs["admin_id"] = $_SESSION["admin_id"];
 		}
-		$this->model('temp')->save($rs,$id);
 		$this->json(P_Lang('数据存储成功'),true);
 	}
 
@@ -45,7 +43,6 @@ class auto_control extends phpok_control
 	{
 		$type = $this->get("__type");
 		if(!$type) $type = "list";
-		$rs = $this->model('temp')->chk($type,$_SESSION["admin_id"]);
 		if($rs){
 			$content = unserialize($rs["content"]);
 			$this->json($content,true);

@@ -102,13 +102,25 @@
 			if(sub && sub != 'undefined'){
 				url += "&sub="+(sub ? 1 : 0);
 			}
+			$.dialog.tips('正在导出，请稍候…').lock();
+			$.phpok.go(url);
+		},
+		opt_export_csv:function(id,pid)
+		{
+			var url = get_url('opt','csv','id='+id);
+			if(pid && pid != 'undefined'){
+				url += "&pid="+pid;
+			}
+			$.dialog.tips('正在导出，请稍候…').lock();
 			$.phpok.go(url);
 		},
 		opt_import:function(id,pid)
 		{
 			var url = get_url('opt','import');
+			var title = '数据导入';
 			if(id && id != 'undefined'){
 				url += '&id='+id;
+				title="项目导入";
 			}
 			if(pid && pid != 'undefined'){
 				url += "&pid="+pid;

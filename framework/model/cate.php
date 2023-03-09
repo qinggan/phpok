@@ -435,6 +435,10 @@ class cate_model_base extends phpok_model
 	**/
 	public function get_sonlist($id=0,$status=0)
 	{
+		$id = $this->_ids($id);
+		if(!$id){
+			return false;
+		}
 		$list = array();
 		$sql  = "SELECT id FROM ".$this->db->prefix."cate WHERE parent_id IN(".$id.") ";
 		if($status){
@@ -479,6 +483,7 @@ class cate_model_base extends phpok_model
 	**/
 	public function get_sonlist_id(&$list,$id=0,$status=0)
 	{
+		$id = $this->_ids($id);
 		if(!$id){
 			return false;
 		}

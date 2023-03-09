@@ -27,7 +27,7 @@ class form_lib
 	public function __construct()
 	{
 		$this->dir_form = $GLOBALS['app']->dir_phpok.'form/';
-		$appid = $GLOBALS['app']->appid;
+		$appid = isset($GLOBALS['app']->appid) ? $GLOBALS['app']->appid : false;
 		$this->appid = $appid == 'admin' ? 'admin' : 'www';
 	}
 
@@ -43,7 +43,7 @@ class form_lib
 	public function cls($name)
 	{
 		$class_name = $name.'_form';
-		if($this->$class_name){
+		if(isset($this->$class_name)){
 			return $this->$class_name;
 		}
 		if(!file_exists($this->dir_form.$class_name.'.php')){

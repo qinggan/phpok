@@ -107,7 +107,7 @@ class vcode_lib
 				$leftx = $i<1 ? 5 : $i*$bx+rand(1,5);
 				imagestring($aimg,5,$leftx,$hy,$rndtxt,$color_id);
 			}
-		}		
+		}
 		header("Pragma:no-cache");
 		header("Cache-Control: no-cache, no-store, must-revalidate"); 
 		header("Content-type: image/png");

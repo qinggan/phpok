@@ -175,7 +175,9 @@ class editor_form extends _init_auto
 		if($appid == 'admin'){
 			return $this->lib('string')->cut($rs['content'],10000);
 		}else{
-			if(!$rs['pageid']) $rs['pageid'] = 1;
+			if(!isset($rs['pageid'])){
+				$rs['pageid'] = 1;
+			}
 			$rs['content'] = $this->lib('ubb')->to_html($rs['content'],false);
 			$rs['content'] = preg_replace("/<div[^>]*page-break-after:always[^>]*>\s*<span[^>]*>\s*\[:page:\]\s*<\/span>\s*<\/div>/isU",'[:page:]',$rs['content']);
 			//$rs['content'] = str_replace('<span style="display:none">[:page:]</span>',"[:page:]",$rs['content']);

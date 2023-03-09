@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta name="renderer" content="webkit" />
+	<title>预览</title>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	{$rs.cssfile}
+</head>
+<body style="margin:0;padding:0">
+<div id="content"></div>
+<div id="content_tpl" style="display:none">{$content_tpl}</div>
+<div style="position: absolute;width:100%;height:100%;left:0;top:0;">
+<script type="text/javascript">
+function resize_height()
+{
+	$(window.parent.document).find("#iframe_{$rs.identifier}").load(function(){
+		var main = $(window.parent.document).find("#iframe_{$rs.identifier}");
+		var thisheight = $("#content").height();
+		main.height(thisheight);
+	});
+}
+function listion_form()
+{
+	var obj = $(window.parent.document).find("input[data-name={$rs.identifier}]");
+	var obj_tpl = $("#content_tpl");
+	//var html = $("#content_tpl").html();
+	var refresh = false;
+	var list = new Array();
+	obj.each(function(i){
+		var val = $(this).val();
+		var name = $(this).attr("data-id");
+		if(val == ''){
+			val = $(this).attr("data-default");
+		}
+		if(!val || val == 'undefined'){
+			val = '{'+'$info.'+name+'}';
+		}
+		obj_tpl.find(["blockhtml-name="+name]).attr("blockhtml-value",val);
+		list.push({'id':name,'val':val});
+	});
+	var html = $("#content_tpl").html();
+	for(var i in list){
+		html = html.replace('{'+'$info.'+list[i].id+'}',list[i].val);
+	}
+	$("#content").html(html);
+	resize_height();
+}
+$(document).ready(function(){
+	//自适应高度
+	resize_height();
+	$(window).resize(function(){
+		resize_height();
+	});
+	listion_form();
+	var obj = $(window.parent.document).find("input[data-name={$rs.identifier}]");
+	/*obj.on('change',function(){
+		listion_form();
+	});*/
+	obj.on('keyup',function(){
+		listion_form();
+	});
+	obj.on('keydown',function(){
+		listion_form();
+	});
+});
+</script>
+</body>
+</html>

@@ -20,3 +20,10 @@ $(document).ready(function(){
 	<input type="button" value="无链接" class="layui-btn layui-btn-sm" onclick="$('#{$_rs.identifier}_default').val('javascript:void(0);');$('#{$_rs.identifier}_rewrite').val('javascript:void(0);');" />
 	<input type="button" value="清除" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$('#{$_rs.identifier}_default').val('');$('#{$_rs.identifier}_rewrite').val('');" />
 </div>
+<!-- if $_rs.js_admin -->
+<script type="text/javascript">
+$(document).ready(function(){
+	{$_rs.js_admin}
+});
+</script>
+<!-- /if -->

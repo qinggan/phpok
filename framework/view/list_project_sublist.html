@@ -12,16 +12,11 @@ function pendding_info()
 				$("li[id=project_"+list[key]['id']+"] em").remove();
 				$("li[id=project_"+list[key]['id']+"]").append(html.replace('{total}',list[key]['total']));
 			}
-			//每隔一分钟检测一次
-			window.setTimeout("pendding_info()", 60000);
-		}else{
-			window.setTimeout("pendding_info()", 180000);
 		}
 	});
 }
 
 $(document).ready(function(){
-	pendding_info();
 	$("#project li").mouseover(function(){
 		$(this).addClass("hover");
 	}).mouseout(function(){
@@ -39,6 +34,9 @@ $(document).ready(function(){
 		$.dialog.alert(p_lang('未指定动作'));
 		return false;
 	});
+	setTimeout(function(){
+		pendding_info();
+	}, 1000);
 });
 </script>
 <ul class="project" id="project">

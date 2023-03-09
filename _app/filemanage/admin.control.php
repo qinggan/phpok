@@ -72,12 +72,13 @@ class admin_control extends \phpok_control
 		foreach($tpl_list as $key=>$value){
 			$bname = basename($value);
 			$type = is_dir($value) ? "dir" : "file";
+			$date = date("Y-m-d H:i:s",filemtime($value));
+			
 			if(is_dir($value)){
 				$url = $this->url("filemanage","folder=".rawurlencode($folder.$bname."/"));
-				$dirlist[] = array("filename"=>$value,"title"=>$bname,"data"=>"","type"=>"dir","url"=>$url,'id'=>'ok_'.md5($folder.$bname));
+				$dirlist[] = array("filename"=>$value,"title"=>$bname,"date"=>$date,"type"=>"dir","url"=>$url,'id'=>'ok_'.md5($folder.$bname));
 				$dir_i++;
 			}else{
-				$date = date("Y-m-d H:i:s",filemtime($value));
 				$type = "html";
 				if(substr($bname,-$ext_length) != $rs["ext"]){
 					$tmp = explode(".",$bname);
@@ -102,6 +103,150 @@ class admin_control extends \phpok_control
 		}
 		$this->display('admin_index');
 	}
+
+	/**
+	 * 仅供CSS操作
+	**/
+	public function css_f()
+	{
+		$input = $this->get('input');
+		if(!$input){
+			$input = 'css';
+		}
+		$folder = $this->get("folder");
+		if(!$folder){
+			$folder = "/";
+		}
+		if(substr($folder,-1) != '/'){
+			$folder .= "/";
+		}
+		$tmplist = explode("/",$folder);
+		$leadlist = array();
+		$leadlist[0] = array('title'=>P_Lang('根目录'),'url'=>$this->url('filemanage','css','input='.$input));
+		$tmplist = explode("/",$folder);
+		$str = '';
+		foreach($tmplist as $key=>$value){
+			if(!$value || !trim($value)){
+				continue;
+			}
+			$str .= $value."/";
+			$leadurl = $this->url('filemanage','css','input='.$input.'&folder='.rawurlencode($str));
+			$leadlist[] = array('title'=>basename($value),'url'=>$leadurl);
+		}
+		$this->assign('leadlist',$leadlist);
+		$this->assign("folder",$folder);
+		//绑定目录
+		$tpl_dir = $this->dir_root.$folder;
+		$tpl_list = $this->lib('file')->ls($tpl_dir);
+		$ext_length = strlen($rs["ext"]);
+		if(!$tpl_list){
+			$tpl_list = array();
+		}
+		$myurl = $this->url('filemanage');
+		$rslist = $dirlist = array();
+		$rs_i = $dir_i = 0;
+		foreach($tpl_list as $key=>$value){
+			$bname = basename($value);
+			$type = is_dir($value) ? "dir" : "file";
+			$date = date("Y-m-d H:i:s",filemtime($value));
+			
+			if(is_dir($value)){
+				$url = $this->url("filemanage","css","input=".$input."&folder=".rawurlencode($folder.$bname."/"));
+				$dirlist[] = array("filename"=>$value,"title"=>$bname,"date"=>$date,"type"=>"dir","url"=>$url,'id'=>'ok_'.md5($folder.$bname));
+				$dir_i++;
+			}else{
+				if(substr($bname,-3) != 'css'){
+					continue;
+				}
+				$tmp = array("filename"=>$value,"title"=>$bname,"date"=>$date,"type"=>'css','id'=>'ok_'.md5($folder.$bname));
+				$rslist[] = $tmp;
+				$rs_i++;
+			}
+		}
+		if($dir_i> 0){
+			$this->assign("dirlist",$dirlist);
+		}
+		if($rs_i > 0){
+			$this->assign("rslist",$rslist);
+		}
+		$this->assign('input',$input);
+		$this->display('admin_css');
+	}
+
+	/**
+	 * 仅供文件选择操作
+	**/
+	public function file_f()
+	{
+		$input = $this->get('input');
+		if(!$input){
+			$input = 'tplfile';
+		}
+		$folder = $this->get("folder");
+		if(!$folder){
+			$folder = "/";
+		}
+		if(substr($folder,-1) != '/'){
+			$folder .= "/";
+		}
+		$tmplist = explode("/",$folder);
+		$leadlist = array();
+		$leadlist[0] = array('title'=>P_Lang('根目录'),'url'=>$this->url('filemanage','file','input='.$input));
+		$tmplist = explode("/",$folder);
+		$str = '';
+		foreach($tmplist as $key=>$value){
+			if(!$value || !trim($value)){
+				continue;
+			}
+			$str .= $value."/";
+			$leadurl = $this->url('filemanage','file','input='.$input.'&folder='.rawurlencode($str));
+			$leadlist[] = array('title'=>basename($value),'url'=>$leadurl);
+		}
+		$this->assign('leadlist',$leadlist);
+		$this->assign("folder",$folder);
+		//绑定目录
+		$tpl_dir = $this->dir_root.$folder;
+		$tpl_list = $this->lib('file')->ls($tpl_dir);
+		$ext_length = strlen($rs["ext"]);
+		if(!$tpl_list){
+			$tpl_list = array();
+		}
+		$myurl = $this->url('filemanage');
+		$rslist = $dirlist = array();
+		$rs_i = $dir_i = 0;
+		$extlist = array('.php','.html','.htm','.asp','.aspx','.xhtml','.jsp','.jspx');
+		foreach($tpl_list as $key=>$value){
+			$bname = basename($value);
+			$type = is_dir($value) ? "dir" : "file";
+			$date = date("Y-m-d H:i:s",filemtime($value));
+			if(is_dir($value)){
+				$url = $this->url("filemanage","file","input=".$input."&folder=".rawurlencode($folder.$bname."/"));
+				$dirlist[] = array("filename"=>$value,"title"=>$bname,"date"=>$date,"type"=>"dir","url"=>$url,'id'=>'ok_'.md5($folder.$bname));
+				$dir_i++;
+			}else{
+				$tmpext = strstr($bname,'.');
+				if(!$tmpext){
+					continue;
+				}
+				$tmpext = strtolower($tmpext);
+				if(!in_array($tmpext,$extlist)){
+					continue;
+				}
+				$tmp = array("filename"=>$value,"title"=>$bname,"date"=>$date,"type"=>'html','id'=>'ok_'.md5($folder.$bname));
+				$rslist[] = $tmp;
+				$rs_i++;
+			}
+		}
+		if($dir_i> 0){
+			$this->assign("dirlist",$dirlist);
+		}
+		if($rs_i > 0){
+			$this->assign("rslist",$rslist);
+		}
+		$this->assign('input',$input);
+		$this->display('admin_html');
+	}
+
 
 	/**
 	 * 内容编辑器

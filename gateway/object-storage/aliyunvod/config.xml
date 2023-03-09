@@ -31,15 +31,9 @@
 		</account>
 		<storage-location>
 			<title>存储地址</title>
-			<note><![CDATA[当不为空时，会使用该指定的存储地址上传视频文件。登录点播控制台，选择配置管理 > 媒资管理配置 > 存储管理查看存储地址。]]></note>
+			<note><![CDATA[当不为空时，会使用该指定的存储地址。登录点播控制台，选择配置管理 > 媒资管理配置 > 存储管理查看存储地址。]]></note>
 			<type>text</type>
 		</storage-location>
-		<end_point>
-			<title>访问地址</title>
-			<note><![CDATA[即阿里云 End Point，阿里云 VOD 服务器节点]]></note>
-			<type>text</type>
-			<required>true</required>
-		</end_point>
 		<vtype>
 			<title>类型</title>
 			<note><![CDATA[请选择要上传的附件类型，仅支持音视频及图片]]></note>

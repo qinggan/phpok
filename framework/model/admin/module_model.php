@@ -74,6 +74,34 @@ class module_model extends module_model_base
 				$data['comment'] = '主分类ID';
 				$this->db->update_table_fields($tblname,$data);
 			}
+			//独立表创建状态，隐藏，排序及发布时间
+			if($rs['mtype']){
+				if(!in_array('status',$fields)){
+					$data = array('id'=>'status','type'=>'TINYINT','unsigned'=>true,'notnull'=>true,'default'=>'0');
+					$data['comment'] = '状态';
+					$this->db->update_table_fields($tblname,$data);
+				}
+				if(!in_array('hidden',$fields)){
+					$data = array('id'=>'hidden','type'=>'TINYINT','unsigned'=>true,'notnull'=>true,'default'=>'0');
+					$data['comment'] = '隐藏';
+					$this->db->update_table_fields($tblname,$data);
+				}
+				if(!in_array('sort',$fields)){
+					$data = array('id'=>'sort','type'=>'INT','unsigned'=>true,'notnull'=>true,'default'=>'0');
+					$data['comment'] = '排序';
+					$this->db->update_table_fields($tblname,$data);
+				}
+				if(!in_array('dateline',$fields)){
+					$data = array('id'=>'dateline','type'=>'INT','unsigned'=>true,'notnull'=>true,'default'=>'0');
+					$data['comment'] = '发布时间';
+					$this->db->update_table_fields($tblname,$data);
+				}
+				if(!in_array('hits',$fields)){
+					$data = array('id'=>'hits','type'=>'INT','unsigned'=>true,'notnull'=>true,'default'=>'0');
+					$data['comment'] = '查看次数';
+					$this->db->update_table_fields($tblname,$data);
+				}
+			}
 		}
 		//检查索引是否有建
 		$keys = $this->db->list_keys($tblname,false);
@@ -190,9 +218,8 @@ class module_model extends module_model_base
 					//删除主题电商相关
 					$sql = "DELETE FROM ".$this->db->prefix."list_biz WHERE id='".$value['id']."'";
 					$this->db->query($sql);
-					//删除主题相关属性
-					$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE tid='".$value['id']."'";
-					$this->db->query($sql);
+					//删除库存
+					$this->model('stock')->clean($value['id']);
 				}
 				$sql = "DELETE FROM ".$this->db->prefix."list WHERE module_id='".$id."'";
 				$this->db->query($sql);
@@ -238,22 +265,7 @@ class module_model extends module_model_base
 	**/
 	public function fields_save($data,$id=0)
 	{
-		if(!$data || !is_array($data)){
-			return false;
-		}
-		if($data['module_id'] && !isset($data['ftype'])){
-			$data['ftype'] = $data['module_id'];
-		}
-		if(isset($data['module_id'])){
-			unset($data['module_id']);
-		}
-		if($data['ext'] && is_array($data['ext'])){
-			$data['ext'] = serialize($data['ext']);
-		}
-		if($id){
-			return $this->db->update_array($data,"fields",array("id"=>$id));
-		}
-		return $this->db->insert_array($data,"fields");
+		return $this->model('fields')->save($data,$id);
 	}
 
 	/**

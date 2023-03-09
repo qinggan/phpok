@@ -25,60 +25,54 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang公钥}
+				{lang公钥1}<br />
+				<input type="button" value="{lang生成}" onclick="$.admin_all.rsa_create()" class="layui-btn layui-btn-xs" />
 			</label>
-			<div class="layui-input-block gray" style="line-height:38px;">{lang可用于APP或小程序开发，数据传输前进行公钥加密}</div>
+			<div class="layui-input-block gray">
+				{lang可用于APP或小程序开发，数据传输前进行公钥加密}
+				
+			</div>
 			<div class="layui-input-block">
 				<textarea name="public_key" id="public_key" class="layui-textarea">{$rs.public_key}</textarea>
 			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang私钥}
+				{lang私钥1}
 			</label>
-			<div class="layui-input-block gray" style="line-height:38px;">{lang可用于用于APP或小程序开发，数据服务端数据进行解密}</div>
+			<div class="layui-input-block gray">{lang可用于用于APP或小程序开发，数据服务端数据进行解密}</div>
 			<div class="layui-input-block">
 				<textarea name="private_key" id="private_key" class="layui-textarea">{$rs.private_key}</textarea>
 			</div>
 		</div>
-	</div>
-</div>
-<div class="layui-card">
-	<div class="layui-card-header">
-		阿里云系统参数（主要用于各类云服务的账号接口，如果使用子账号，需要注意子账号的权限配置）
-	</div>
-	<div class="layui-card-body">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				账号 ID
+				{lang公钥2}<br />
+				<input type="button" value="{lang生成}" onclick="$.admin_all.rsa_create2()" class="layui-btn layui-btn-xs" />
 			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" name="aliyun_account_id" id="aliyun_account_id" value="{$rs.aliyun_account_id}" class="layui-input" />
+			<div class="layui-input-block gray">
+				{lang可用于APP或小程序开发，数据传输前进行公钥加密}
 			</div>
-			<div class="layui-form-mid">
-				填写阿里云的账号ID，线数字
+			<div class="layui-input-block">
+				<textarea name="public_key2" id="public_key2" class="layui-textarea">{$rs.public_key2}</textarea>
 			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{langAK 账号}
+				{lang私钥2}
 			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" name="aliyun_ak_id" id="aliyun_ak_id" value="{$rs.aliyun_ak_id}" class="layui-input" />
-			</div>
-			<div class="layui-form-mid">
-				即 AccessKey ID
+			<div class="layui-input-block gray">{lang可用于用于APP或小程序开发，数据服务端数据进行解密}</div>
+			<div class="layui-input-block">
+				<textarea name="private_key2" id="private_key2" class="layui-textarea">{$rs.private_key2}</textarea>
 			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{langAK 密钥}
+				默认模式
 			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" name="aliyun_ak_secret" id="aliyun_ak_secret" value="{$rs.aliyun_ak_secret}" class="layui-input" />
-			</div>
-			<div class="layui-form-mid">
-				即 AccessKey Secret 
+			<div class="layui-input-block">
+				<input type="radio" name="chktype" value="code" title="API验证串" lay-skin="primary"{if $rs.chktype == 'code'} checked{/if} />
+				<input type="radio" name="chktype" value="rsa" title="RSA证书" lay-skin="primary"{if $rs.chktype == 'rsa'} checked{/if} />
 			</div>
 		</div>
 	</div>
@@ -86,38 +80,61 @@
 
 <div class="layui-card">
 	<div class="layui-card-header">
-		腾迅云系统参数（主要用于各类云服务的账号接口，如果使用子账号，需要注意子账号的权限配置）
+		OK 官网接口参数
 	</div>
 	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				状态
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="ok_status" value="1" title="启用" lay-skin="primary"{if $rs.ok_status} checked{/if} />
+				<input type="radio" name="ok_status" value="0" title="禁用" lay-skin="primary"{if !$rs.ok_status} checked{/if} />
+			</div>
+		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				APPID
 			</label>
 			<div class="layui-input-inline default-auto">
-				<input type="text" name="tencent_appid" id="tencent_appid" value="{$rs.tencent_appid}" class="layui-input" />
+				<input type="text" name="ok_appid" id="ok_appid" value="{$rs.ok_appid}" class="layui-input" />
 			</div>
 			<div class="layui-form-mid">
-				填写腾迅云API管理里的APPID
+				填写官方的APPID，不清楚可以点【<a href="//www.phpok.com/?id=24920" target="_blank" title="">这里查看，仅限官网已登录会员</a>】
 			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{langSecretId}
+				APPKey
 			</label>
 			<div class="layui-input-inline default-auto">
-				<input type="text" name="tencent_ak_id" id="tencent_ak_id" value="{$rs.tencent_ak_id}" class="layui-input" />
+				<input type="text" name="ok_appkey" id="ok_appkey" value="{$rs.ok_appkey}" class="layui-input" />
 			</div>
 			<div class="layui-form-mid">
-				即 AccessKey ID
+				同上
 			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{langSecretKey}
+				<div style="margin-top:15px">域名</div>
 			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" name="tencent_ak_secret" id="tencent_ak_secret" value="{$rs.tencent_ak_secret}" class="layui-input" />
+			<div class="layui-input-block">
+				<div class="layui-tab layui-tab-brief">
+					<ul class="layui-tab-title">
+						<li class="layui-this">IP转城市</li>
+						<li>翻译API</li>
+					</ul>
+					<div class="layui-tab-content">
+						<div class="layui-tab-item layui-show">
+							<input type="text" name="links[ip2city]" value="{$links.ip2city}" placeholder="IP转城市" title="IP转城市" class="layui-input" />
+						</div>
+						<div class="layui-tab-item">
+							<input type="text" name="links[translate]" value="{$links.translate}" placeholder="翻译API" title="翻译API" class="layui-input" />
+						</div>
+					</div>
+				</div>
 			</div>
+			<div class="layui-input-block mtop">请填写完整的接口地址，如 https://域名/apix-24920</div>
 		</div>
 	</div>
 </div>
@@ -132,7 +149,6 @@
 				显示项
 			</label>
 			<div class="layui-input-block">
-				<input type="checkbox" name="admin_homepage_setting[]" value="stat" title="统计报表" lay-skin="primary"{if in_array('stat',$rs.admin_homepage_setting)} checked{/if} />
 				<input type="checkbox" name="admin_homepage_setting[]" value="content" title="内容统计" lay-skin="primary"{if in_array('content',$rs.admin_homepage_setting)} checked{/if} />
 				<input type="checkbox" name="admin_homepage_setting[]" value="safecheck" title="安全检查" lay-skin="primary"{if in_array('safecheck',$rs.admin_homepage_setting)} checked{/if} />
 				<input type="checkbox" name="admin_homepage_setting[]" value="env" title="主机环境" lay-skin="primary"{if in_array('env',$rs.admin_homepage_setting)} checked{/if} />

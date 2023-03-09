@@ -1,0 +1,38 @@
+<!-- include tpl=head title=$title -->
+<header>
+	<section class="headnav">
+		<div class="container">
+			<div class="row mt-2 mb-2">
+				<div class="col-9">
+					<a href="{$sys.url}" title="{$config.title}"><img src="{$config.logo}" alt="{$config.title}" class="logo" /></a>
+				</div>
+				<div class="col-3 text-right pt-2">
+					<i class="fa fa-bars" id="menu-toggle"></i>
+				</div>
+			</div>
+		</div>
+		<div class="bg-nav"></div>
+	</section>
+</header>
+<div class="sidebar-bg"></div>
+<div class="bg-light border-right vh-100 sidebar">
+	<ul class="list-group list-group-flush">
+		<!-- php:$list = menu("top") -->
+		<!-- loop from=$list key=$key value=$value id=$tmpid -->
+		<!-- if $value.sublist -->
+		<li class="list-group-item">
+			<a data-toggle="collapse" class="d-block" href="#menu-{$value.id}" role="button" aria-expanded="false" aria-controls="{$value.title}">{$value.title}</a>
+			<div class="collapse" id="menu-{$value.id}">
+				<!-- loop from=$value.sublist key=$k value=$v id=$idxx -->
+				<a class="nav-link" href="{$v.url}" target="{$v.target}">{$v.title}</a>
+				<!-- /loop -->
+			</div>
+		</li>
+		<!-- else -->
+		<li class="list-group-item{if $value.lighlight} active{/if}">
+			<a class="d-block" href="{$value.url}">{$value.title}</a>
+		</li>
+		<!-- /if -->
+		<!-- /loop -->
+	</ul>
+</div>

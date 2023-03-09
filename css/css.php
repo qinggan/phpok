@@ -27,6 +27,7 @@ if($type == 'admin'){
 	$file[] = 'icomoon.css';
 	$file[] = 'smartmenu.css';
 	$file[] = 'admin.css';
+	$file[] = 'selectpage.css';
 }
 
 //后台弹窗口

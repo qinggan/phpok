@@ -23,3 +23,10 @@ ul.radio_{$_rs.identifier} li{float:left;margin-right:15px;}
 	<li id="{$_rs.identifier}_extadd_html"><label for="{$_rs.identifier}_extadd_radio"><input type="text" name="{$_rs.identifier}_extadd"{if !$tmp_checked} value="{$_rs.content}"{/if} id="{$_rs.identifier}_extadd" class="layui-input inp inp_{$_rs.identifier}" style="border-bottom:1px solid #ccc;margin-top:2px;"{if $tmp_checked} disabled{/if} /></label></li>
 	<!-- /if -->
 </ul>
+<!-- if $_rs.js_admin -->
+<script type="text/javascript">
+$(document).ready(function(){
+	{$_rs.js_admin}
+});
+</script>
+<!-- /if -->

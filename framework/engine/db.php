@@ -39,10 +39,15 @@ class db
 	//保留字转义符，用于转义数据库保留字的转义
 	protected $kec_left = '`';
 	protected $kec_right = '`';
-	
+	protected $checkcmd = array('UPDATE', 'INSERT', 'REPLAC', 'DELETE');
+	protected $disable = array(
+		'function' => array('load_file', 'floor', 'hex', 'substring', 'ord', 'char', 'benchmark', 'reverse', 'strcmp', 'datadir', 'updatexml', 'extractvalue', 'name_const', 'multipoint', 'database', 'user'),
+		'action' => array('@', 'intooutfile', 'intodumpfile', 'unionselect', 'uniondistinct', 'information_schema', 'current_user', 'current_date'),
+		'note' => array('/*', '*/', '#', '--'),
+	);
+
 
 	//使用远程链接
-	protected $client_url = '';
 	private $time = 0;
 	private $count = 0;
 	private $time_tmp = 0;
@@ -51,13 +56,14 @@ class db
 	private $slow_status = false;
 	private $slow_time = 1;
 	public $prefix = 'qinggan_';
-	public $error_type = 'exit';
-	
+	public $error_type = 'json';
+
+
 	public function __construct($config=array())
 	{
 		$this->config($config);
 	}
-	
+
 	//写入调试日志
 	public function __destruct()
 	{
@@ -91,6 +97,45 @@ class db
 		}
 	}
 
+	public function checkquery($sql) {
+		$cmd = strtoupper(substr(trim($sql), 0, 6));
+		if (in_array($cmd, $this->checkcmd)) {
+			$mark = $clean = '';
+			$sql = str_replace(array('\\\\', '\\\'', '\\"', '\'\''), '', $sql);
+			if (false === strpos($sql, '/') && false === strpos($sql, '#') && false === strpos($sql, '-- ') && false === strpos($sql, '@') && false === strpos($sql, '`')) {
+				$cleansql = preg_replace("/'(.+?)'/s", '', $sql);
+			} else {
+				$cleansql = $this->stripSafeChar($sql);
+			}
+
+			$clean_function_sql = preg_replace("/\s+/", '', strtolower($cleansql));
+			if (is_array($this->disable['function'])) {
+				foreach ($this->disable['function'] as $fun) {
+					if (false !== strpos($clean_function_sql, $fun . '(')) {
+						return $this->error('SQL中包含禁用函数 - ' . $fun);
+					}
+				}
+			}
+
+			$cleansql = preg_replace("/[^a-z0-9_\-\(\)#\*\/\"]+/is", '', strtolower($cleansql));
+			if (is_array($this->disable['action'])) {
+				foreach ($this->disable['action'] as $action) {
+					if (false !== strpos($cleansql, $action)) {
+						return $this->error('SQL中包含禁用操作符 - ' . $action);
+					}
+				}
+			}
+
+			if (is_array($this->disable['note'])) {
+				foreach ($this->disable['note'] as $note) {
+					if (false !== strpos($cleansql, $note)) {
+						return $this->error('SQL中包含注释信息');
+					}
+				}
+			}
+		}
+	}
+
 	public function config($config)
 	{
 		$this->database($config['data']);
@@ -106,9 +151,6 @@ class db
 		$this->slow_time = $config['slow_time'] ? floatval($config['slow_time']) : 1;
 		if($config['charset'] == 'utf8mb4'){
 			$this->charset = 'utf8mb4';
-		}
-		if($config['client_url']){
-			$this->client_url = $config['client_url'];
 		}
 	}
 
@@ -610,5 +652,55 @@ class db
 		}
 		$sql .= " WHERE ".implode(" AND ",$sql_fields);
 		return $this->query($sql);
+	}
+
+	private function stripSafeChar($sql) {
+		$len = strlen($sql);
+		$mark = $clean = '';
+		for ($i = 0; $i < $len; ++$i) {
+			$str = $sql[$i];
+			switch ($str) {
+				case '\'':
+					if (!$mark) {
+						$mark = '\'';
+						$clean .= $str;
+					} elseif ('\'' == $mark) {
+						$mark = '';
+					}
+					break;
+				case '/':
+					if (empty($mark) && '*' == $sql[$i + 1]) {
+						$mark = '/*';
+						$clean .= $mark;
+						++$i;
+					} elseif ('/*' == $mark && '*' == $sql[$i - 1]) {
+						$mark = '';
+						$clean .= '*';
+					}
+					break;
+				case '#':
+					if (empty($mark)) {
+						$mark = $str;
+						$clean .= $str;
+					}
+					break;
+				case "\n":
+					if ('#' == $mark || '--' == $mark) {
+						$mark = '';
+					}
+					break;
+				case '-':
+					if (empty($mark) && '-- ' == substr($sql, $i, 3)) {
+						$mark = '-- ';
+						$clean .= $mark;
+					}
+					break;
+				default:
+					break;
+			}
+			$clean .= $mark ? '' : $str;
+		}
+
+		return $clean;
 	}
 }

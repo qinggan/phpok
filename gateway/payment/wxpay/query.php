@@ -27,6 +27,13 @@ class wxpay_query
 	public function submit()
 	{
 		global $app;
+		$rs = $app->model('payment')->log_one($this->order['id']);
+		if(!$rs){
+			$this->json('订单信息不存在');
+		}
+		if($rs['status']){
+			$this->json(true);
+		}
 		$data = $this->obj->query($this->order['sn'].'-'.$this->order['id']);
 		if(!$data){
 			$this->json('查询失败');

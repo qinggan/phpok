@@ -97,31 +97,35 @@
 		</div>
 	</div>
 	<div class="layui-card-body">
-		<table class="layui-table">
+		<table id="tablelist" lay-filter="tablelist">
 		<thead>
 		<tr>
-			<th>ID / {lang订单号}</th>
-			<th>{lang用户}</th>
-			<th>{lang金额}</th>
-			<th>{lang已付}</th>
-			<th>{lang未付}</th>
-			<th>{lang产品数}</th>
-			<th>{lang状态}</th>
-			<th>{lang支付方式}</th>
-			<th>{lang下单时间}</th>
-			<th>{lang操作}</th>
+			<th lay-data="{field:'id', width:80,fixed:'left',sort:true}">ID</th>
+			<th lay-data="{field:'sn', width:240,fixed:'left',sort:true}">订单号</th>
+			<th lay-data="{field:'fullname',minWidth:120,sort:true}">联系人</th>
+			<th lay-data="{field:'user', minWidth:60}">{lang用户}</th>
+			<th lay-data="{field:'price', minWidth:110,sort:true,totalRow:true}">{lang价格}</th>
+			<th lay-data="{field:'paid', minWidth:120,totalRow:true}">{lang已付}</th>
+			<th lay-data="{field:'unpaid', minWidth:120,totalRow:true}">{lang未付}</th>
+			<th lay-data="{field:'qty', minWidth:80,totalRow:true}">{lang产品数}</th>
+			<th lay-data="{field:'status', minWidth:80}">{lang状态}</th>
+			<th lay-data="{field:'pay_title', minWidth:80}">{lang支付方式}</th>
+			<th lay-data="{field:'addtime', minWidth:80}">{lang下单时间}</th>
+			<th lay-data="{field:'_action', width:250,fixed:'right',unresize:true}">{lang操作}</th>
 		</tr>
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value -->
 		<tr id="edit_{$value.id}">
-			<td data-id="{$value.id}" data-sn="{$value.sn}" data-unpaid="{$value.unpaid}" data-status="{$value.status}">{$value.id} / {$value.sn}</td>
-			<td><!-- if $value.user -->{$value.user}<!-- else --><span class="red">{lang访客}</span><!-- /if --></td>
+			<td data-id="{$value.id}" data-sn="{$value.sn}" data-unpaid="{$value.unpaid}" data-status="{$value.status}">{$value.id}</td>
+			<td>{$value.sn}</td>
+			<td><div title="{if $value.mobile}手机：{$value.mobile}{/if}{if $value.mobile && $value.email}&#10;{/if}{if $value.email}邮箱：{$value.email}{/if}">{$value.fullname ? $value.fullname : '-'}</div></td>
+			<td><!-- if $value.user --><a href="javascript:$.win('查看用户_#{$value.user.id}','{url ctrl=user func=show id=$value.user.id/}');void(0)">{$value.user}</a><!-- else --><span class="red">{lang游客}</span><!-- /if --></td>
 			<td>{func price_format $value.price $value.currency_id $value.currency_id}</td>
 			<td>{func price_format $value.paid $value.currency_id $value.currency_id}</td>
 			<td{if $value.unpaid} class="red"{/if} data-unpaid-text="{$value.id}"><!-- if $value.unpaid -->{func price_format $value.unpaid $value.currency_id $value.currency_id}<!-- /if --></td>
 			<td>{$value.qty}</td>
 			<td class="status">
-				<input type="button" value="{$value.status_title}" onclick="$.admin_order.set_order('{$value.id}','{$value.status}')" class="layui-btn  layui-btn-xs" />
+				<input type="button" value="{$value.status_title}" onclick="$.admin_order.set_order('{$value.id}','{$value.status}')" class="layui-btn layui-btn-primary layui-btn-xs" />
 			</td>
 			<td><!-- if $value.pay_title -->{$value.pay_title}<!-- else --><span class="gray">{lang未设置}</span><!-- /if --></td>
 			<td>{func time_format $value.addtime}</td>
@@ -147,4 +151,12 @@
 		<div align="center"><!-- include tpl=pagelist --></div>
 	</div>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+	//渲染表头
+	var opt = {};
+	opt['totalRow'] = true;
+	layui.table.init("tablelist",opt);
+});
+</script>
 <!-- include tpl=foot_lay -->

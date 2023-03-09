@@ -35,11 +35,16 @@ class options_model extends options_model_base
 		//删除主表
 		$sql = "DELETE FROM ".$this->db->prefix."attr WHERE id='".$id."'";
 		$this->db->query($sql);
+		//删除已经使用的
+		$rslist = $this->values_list("aid='".$id."'",0,99999);
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				$sql = "DELETE FROM ".$this->db->prefix."stock WHERE FIND_IN_SET(".$value['id'].",attr)";
+				$this->db->query($sql);
+			}
+		}
 		//删除参数表
 		$sql = "DELETE FROM ".$this->db->prefix."attr_values WHERE aid='".$id."'";
-		$this->db->query($sql);
-		//删除已经使用的
-		$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE aid='".$id."'";
 		$this->db->query($sql);
 		return true;
 	}
@@ -60,7 +65,7 @@ class options_model extends options_model_base
 	{
 		$sql = "DELETE FROM ".$this->db->prefix."attr_values WHERE id='".$id."'";
 		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."list_attr WHERE vid='".$id."'";
+		$sql = "DELETE FROM ".$this->db->prefix."stock WHERE FIND_IN_SET(".$id.",attr)";
 		$this->db->query($sql);
 		return true;
 	}

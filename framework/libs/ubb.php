@@ -129,7 +129,6 @@ class ubb_lib
 	private function _video($Text)
 	{
 		//格式化视频链接地址，主要是格式化FLV格式的转换
-		$list = false;
 		preg_match_all("/<embed(.+)src=[\"|'](.+)[\"|'](.*)>/isU",$Text,$list);
 		if($list && $list[2] && $list[0]){
 			foreach($list[2] as $key=>$value){

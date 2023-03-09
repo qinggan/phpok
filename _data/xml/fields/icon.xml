@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<title><![CDATA[字体图标]]></title>
+	<identifier><![CDATA[icon]]></identifier>
+	<field_type><![CDATA[varchar]]></field_type>
+	<note><![CDATA[]]></note>
+	<form_type><![CDATA[fonticon]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[safe]]></format>
+	<content><![CDATA[]]></content>
+	<group_id><![CDATA[main]]></group_id>
+	<ext>
+		<ext_cssfile><![CDATA[static/fontawesome/css/font-awesome.css]]></ext_cssfile>
+		<ext_prefix><![CDATA[fa]]></ext_prefix>
+	</ext>
+</root>

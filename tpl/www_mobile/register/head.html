@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta name="renderer" content="webkit" />
+	<title><!-- if $title -->{$title} - <!-- /if -->{$config.title}</title>
+	<meta name="toTop" content="true" />
+	<base href="{$sys.url}" />
+	<!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
+	<link rel="stylesheet" href="static/bootstrap/{#css#}/bootstrap.css" />
+	<link rel="stylesheet" href="static/fontawesome/{#css#}/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="{#css#}/artdialog.css" />
+	<link rel="stylesheet" href="{$config.tpl_id.dir_tpl}register/{#css#}/style.css">
+	<!-- if $css -->
+	<!-- php:$csslist = explode(",",$css) -->
+	<!-- loop from=$csslist key=$key value=$value id=$tmpid -->
+	<link rel="stylesheet" type="text/css" href="{$value}" />
+	<!-- /loop -->
+	<!-- /if -->
+	<script type="text/javascript" src="{url ctrl=js ext=jquery.artdialog/}" charset="utf-8"></script>
+	<!-- if $js -->
+	<!-- php:$jslist = explode(",",$js) -->
+	<!-- loop from=$jslist key=$key value=$value id=$tmpid -->
+	<script type="text/javascript" src="{$value}" charset="utf-8"></script>
+	<!-- /loop -->
+	<!-- /if -->
+</head>
+<body class="bg-light">

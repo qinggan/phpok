@@ -1,0 +1,36 @@
+<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<script type="text/javascript">
+function save()
+{
+	var opener = $.dialog.opener;
+	$("#post_save").ajaxSubmit({
+		'url':get_url('tag','save_pl'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				$.dialog.tips('标签提交成功',function(){
+					opener.$.phpok.reload();
+				});
+				return true;
+			}
+			opener.$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return true;
+}
+</script>
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<div class="layui-input-block" style="margin-left:0;">
+				<textarea class="layui-textarea" name="content" style="width:100%;height:350px;resize: none"></textarea>
+			</div>
+			<div class="layui-input-block gray" style="line-height:38px;margin-left:0;">一行一个标签</div>
+		</div>
+	</div>
+</div>
+</form>
+<!-- include tpl=foot_lay is_open=true -->

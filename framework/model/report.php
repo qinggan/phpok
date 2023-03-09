@@ -159,8 +159,6 @@ class report_model_base extends phpok_model
 		return $this->db->get_all($sql);
 	}
 
-	//public function title_stat($x='date',$)
-
 	/**
 	 * 主题统计数据
 	 * @参数 $x X轴数据

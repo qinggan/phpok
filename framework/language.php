@@ -40,10 +40,10 @@ class phpok_language
 		if(!$this->_status || $this->_method == 'gettext'){
 			return false;
 		}
-		if(!file_exists($folder.'/pomo/mo.php')){
+		if(!file_exists($folder.'pomo.phar')){
 			return false;
 		}
-		include_once($folder.'pomo/mo.php');
+		include_once($folder.'pomo.phar');
 	}
 
 	/**

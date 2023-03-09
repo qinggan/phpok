@@ -521,8 +521,8 @@ class ckeditor_control extends phpok_control
 			}
 			$mime_type = 'image/'.$ext;
 		}
-
-		$name = $this->time.'-'.rand(1000,9999).'.'.$ext;
+		$rand_string = $this->lib('common')->str_rand(10);
+		$name = $this->time.'-'.$rand_string.'.'.$ext;
 		$filetypes = 'jpeg,jpg,png,gif,webp';
 		$ft_list = explode(",",$filetypes);
 		if(!in_array($ext,$ft_list)){

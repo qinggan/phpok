@@ -61,4 +61,16 @@
 		<title>自定义SQL</title>
 		<showid>is_list,sqlinfo</showid>
 	</sql>
+	<menu>
+		<title>导航菜单</title>
+		<showid>menu</showid>
+	</menu>
+	<keywords_search>
+		<title>搜索关键字</title>
+		<showid>psize,keywords_type,keywords_sign</showid>
+	</keywords_search>
+	<options>
+		<title>表单选项</title>
+		<showid>offset,psize,options_select</showid>
+	</options>
 </root>

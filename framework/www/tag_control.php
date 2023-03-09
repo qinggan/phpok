@@ -89,7 +89,7 @@ class tag_control extends phpok_control
 			$this->view($tplfile);
 			exit;
 		}
-		$rslist = false;
+		$rslist = array();
 		foreach($idlist as $key=>$value){
 			if(substr($value['id'],0,1) == 'p'){
 				$tmp = substr($value['id'],1);

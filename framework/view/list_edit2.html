@@ -1,15 +1,53 @@
-<!-- include tpl=head_lay -->
+<!-- include tpl=head_lay nopadding=$isopen -->
+<form method="post" id="_listedit" class="layui-form"{if $isopen} onsubmit="return false"{else} onsubmit="return $.admin_list.single_save()"{/if}>
 <div class="layui-card">
 	<div class="layui-card-body">
-		<form method="post" id="_listedit" class="layui-form" onsubmit="return $.admin_list.single_save()">
 		<input type="hidden" name="id" id="id" value="{$id}" />
 		<input type="hidden" name="pid" id="project_id" value="{$pid}" />
-		<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
+		<!-- if $p_rs.cate -->
 		<div class="layui-form-item">
+			<label class="layui-form-label">{lang主分类}<small style="color:#ccc;display:block;">cate_id</small></label>
+			<div class="layui-input-inline default-auto">
+				<select name="cate_id" id="cate_id">
+					<option value="">{lang请选择…}</option>
+					<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+					<option value="{$value.id}"{if $value.id == $rs.cate_id} selected{/if} data-isend="{$value._is_end}" data-layer="{$value._layer}">{$value._space}{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-form-mid">{lang主分类不能为空}</div>
+		</div>
+		<!-- /if -->
+		<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
+		<!-- if $value.sublist -->
+		<div class="layui-row layui-col-space10">
+			<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg3">
+		    	<label class="layui-form-label">
+					<!-- if $value.note --><i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i> <!-- /if --> {$value.title}
+					<small style="color:#ccc;display:block;">{$value.identifier}</small>
+				</label>
+				<div class="layui-input-block">
+					{$value.html}
+				</div>
+			</div>
+			<!-- loop from=$value.sublist key=$k value=$v id=$idxx -->
+			<div class="layui-col-xs12 layui-col-sm6 {$value.css_cls}">
+				<label class="layui-form-label">
+					<!-- if $v.note --><i class="layui-icon layui-tips" lay-tips="{$v.note}">&#xe702;</i> <!-- /if --> {$v.title}
+					<small style="color:#ccc;display:block;">{$v.identifier}</small>
+				</label>
+				<div class="layui-input-block">
+					{$v.html}
+				</div>
+			</div>
+			<!-- /loop -->
+		</div>
+		<!-- else -->
+		<div class="layui-form-item" data-id="{$value.identifier}">
 			<label class="layui-form-label">
-				{$value.title}
+				<!-- if $value.note --><i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i> <!-- /if --> {$value.title}
+				<small style="color:#ccc;display:block;">{$value.identifier}</small>
 			</label>
-			<!-- if $value.note --><div class="layui-input-block gray" style="line-height:38px;">{$value.note}</div><!-- /if -->
 			<div class="layui-input-block">
 				{$value.html}
 				<!-- if $popedom.ext && $value.is_edit && $session.adm_develop -->
@@ -22,15 +60,115 @@
 				<!-- /if -->
 			</div>
 		</div>
+		<!-- /if -->
 		<!-- /loop -->
-		<div class="layui-form-item">
-			<label class="layui-form-label">&nbsp;</label>
-			<div class="layui-input-inline default-auto">
-				<input type="submit" value="{lang提交保存}" class="layui-btn layui-btn-danger" />
-			</div>
-			<div class="layui-input-inline auto gray"></div>
-		</div>
-		</form>
 	</div>
 </div>
-<!-- include tpl=foot_lay -->
+<div class="layui-card">
+	<div class="layui-card-header layuiadmin-card-header-auto hand" onclick="$.admin.card(this)">
+		{lang扩展信息}
+		<i class="layui-icon layui-icon-right"></i>
+	</div>
+	<div class="layui-card-body hide">
+		<!-- loop from=$e_sublist key=$key value=$value id=$tmpid -->
+		<!-- if $value.sublist -->
+		<div class="layui-row layui-col-space10">
+			<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg3">
+		    	<label class="layui-form-label">
+					<!-- if $value.note --><i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i> <!-- /if --> {$value.title}
+					<small style="color:#ccc;display:block;">{$value.identifier}</small>
+				</label>
+				<div class="layui-input-block">
+					{$value.html}
+				</div>
+			</div>
+			<!-- loop from=$value.sublist key=$k value=$v id=$idxx -->
+			<div class="layui-col-xs12 layui-col-sm6 {$value.css_cls}">
+				<label class="layui-form-label">
+					<!-- if $v.note --><i class="layui-icon layui-tips" lay-tips="{$v.note}">&#xe702;</i> <!-- /if --> {$v.title}
+					<small style="color:#ccc;display:block;">{$v.identifier}</small>
+				</label>
+				<div class="layui-input-block">
+					{$v.html}
+				</div>
+			</div>
+			<!-- /loop -->
+		</div>
+		<!-- else -->
+		<div class="layui-form-item" data-id="{$value.identifier}">
+			<label class="layui-form-label">
+				<!-- if $value.note --><i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i> <!-- /if --> {$value.title}
+			</label>
+			<div class="layui-input-block">
+				{$value.html}
+			</div>
+		</div>
+		<!-- /if -->
+		<!-- /loop -->
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang状态}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" title="{lang未审核}" name="status" id="status_0" value="0"{if $id && !$rs[status]} checked{/if} />
+				<input type="radio" name="status" title="{lang已审核}" id="status_1" value="1"{if !$id || $rs[status]} checked{/if} />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang未审核主题前台不可用，不可访问}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang是否隐藏}
+			</label>
+			<div class="layui-input-inline auto">
+				<input type="radio" title="{lang显示}" name="hidden" id="hidden_0" value="0"{if !$rs[hidden]} checked{/if} />
+				<input type="radio" title="{lang隐藏}" name="hidden" id="hidden_1" value="1"{if $rs.hidden} checked{/if} />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang隐藏的主题在列表中不可见，但可以手工输网址访问}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang发布时间}
+			</label>
+			<div class="layui-input-inline">
+				<input type="text" id="dateline" name="dateline" class="layui-input" value="{if $rs.dateline}{func date 'Y-m-d H:i:s' $rs.dateline}{/if}" />
+			</div>
+			<div class="layui-input-inline auto">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang时间选择}" onclick="$.phpokform.laydate_button('dateline','datetime')" class="layui-btn layui-btn-sm" id="btn_dateline_datetime" />
+					<input type="button" value="{lang清空}" onclick="$.phpokform.clear('dateline')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang阅读次数}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" id="hits" name="hits" class="layui-input" value="{$rs.hits}" />
+			</div>
+			<div class="layui-input-inline auto gray lh30">{lang正常情况不要设置，仅支持正整数}</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" id="sort" name="sort" class="layui-input" value="{$rs.sort}" />
+			</div>
+			<div class="layui-input-inline auto gray lh38">{lang只支持数字，不清楚请留空}</div>
+		</div>
+	</div>
+</div>
+
+<!-- if !$isopen -->
+<div class="submit-info">
+	<div class="layui-container">
+		<input type="submit" value="{lang保存}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang关闭}" title="此操作不会保存数据" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<!-- /if -->
+
+</form>
+<!-- include tpl=foot_lay is_open=$isopen -->

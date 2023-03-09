@@ -22,7 +22,7 @@ $(document).ready(function(){
 	<div class="_select">
 		<table>
 		<tr>
-			<td><a href="javascript:void(0);" class="btn btn-sm btn-primary" style="position: relative;z-index:2;overflow:hidden;">上传{$_rs.upload_type.title}<input type="file" name="file_{$_rs.identifier}" id="file_{$_rs.identifier}" style="z-index:3;position: absolute;left:0;top:0;width:100%;height:100%;opacity:0;" onchange="$.phpok_aliyunvod_gateway.act(this,'{$_rs.identifier}')"/></a></td>
+			<td><a href="javascript:void(0);" class="btn btn-sm btn-primary" style="position: relative;z-index:2;overflow:hidden;">上传{$_rs.upload_type.title}<input type="file" name="file_{$_rs.identifier}" id="file_{$_rs.identifier}" style="z-index:3;position: absolute;left:0;top:0;width:100%;height:100%;opacity:0;"{if $_rs.is_multiple} multiple="multiple"{/if} onchange="$.phpok_aliyunvod_gateway.act(this,'{$_rs.identifier}')"/></a></td>
 			<td id="{$_rs.identifier}_sort" style="display:none">
 				<div class="layui-btn-group">
 					<input type="button" value="{lang排序}" class="layui-btn layui-btn-sm" onclick="$.phpokform.upload_sort('{$_rs.identifier}')" />

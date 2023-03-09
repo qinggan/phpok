@@ -106,21 +106,17 @@ class ulang_control extends phpok_control
 		foreach($list as $key=>$value){
 			$handle = fopen($value,'rb');
 			if($handle) {
-				$matches = false;
 				while(($buffer = fgets($handle,4096)) !== false){
 					preg_match_all("/\{lang([^\}]+)\}/isU",$buffer,$matches);
 					if($matches && $matches[1]){
 						foreach($matches[1] as $k=>$v){
 							$v = str_replace(array("'",'"'),'',$v);
 							$lst = explode("|",$v);
-							$param = false;
+							$param = array();
 							if($lst[1]){
 								$tmp = explode(",",$lst[1]);
 								foreach($tmp as $key2=>$value2){
 									$tmp2 = explode(":",$value2);
-									if(!$param){
-										$param = array();
-									}
 									$param[$tmp2[0]] = '<span style="color:red">'.$tmp2[1].'</span>';
 								}
 							}

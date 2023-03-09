@@ -97,17 +97,17 @@ function debug_time()
 	global $app;
 	$time = run_time(true);
 	$memory = run_memory(true);
-	$sql_db_count = $app->db->sql_count();
-	$sql_db_time = $app->db->sql_time();
-	$cache_count = $app->cache->count();
-	$cache_time = $app->cache->time();
+	$sql_db_count = $app->db()->sql_count();
+	$sql_db_time = $app->db()->sql_time();
+	$cache_count = $app->cache()->count();
+	$cache_time = $app->cache()->time();
 	$string = '运行 {total} 秒，内存使用 {mem_total}，数据库执行 {sql_count} 次，';
 	$string.= '用时 {sql_time} 秒，缓存执行 {cache_count} 次，用时 {cache_time} 秒';
 	$array = array('total'=>$time,'mem_total'=>$memory);
-	$array['sql_count']= $app->db->sql_count();
-	$array['sql_time'] = $app->db->sql_time();
-	$array['cache_count'] = $app->cache->count();
-	$array['cache_time'] = $app->cache->time();
+	$array['sql_count']= $app->db()->sql_count();
+	$array['sql_time'] = $app->db()->sql_time();
+	$array['cache_count'] = $app->cache()->count();
+	$array['cache_time'] = $app->cache()->time();
 	$string = P_Lang($string,$array);
 	return $string;
 }
@@ -124,24 +124,6 @@ unset($_ENV, $_SERVER['MIBDIRS'],$_SERVER['MYSQL_HOME'],$_SERVER['OPENSSL_CONF']
 if(function_exists('mb_internal_encoding')){
 	mb_internal_encoding("UTF-8");
 }
-
-$sapi_type = php_sapi_name();
-if(isset($sapi_type) && substr($sapi_type, 0, 3) == 'cli'){
-	$app = new _init_phpok(true);
-	$tmp = $argv;
-	unset($tmp[0]);
-	if(!$tmp){
-		echo 'no control'.PHP_EOL;
-		exit;
-	}
-	$string = implode("&",$tmp);
-	parse_str($string,$_POST);
-}else{
-	$app = new _init_phpok(false);
-	$app->init_site();
-}
-include_once($app->dir_phpok."phpok_helper.php");
-$app->init_view();
 
 /**
  * 引用全局 app
@@ -235,4 +217,20 @@ function phpok_add_js($file='')
 /**
  * 执行动作
 **/
+$sapi_type = php_sapi_name();
+$is_cmd = false;
+if(isset($sapi_type) && substr($sapi_type, 0, 3) == 'cli'){
+	$is_cmd = true;
+}
+$app = new _init_phpok($is_cmd);
+include_once($app->dir_phpok."phpok_helper.php");
+if($is_cmd){
+	$tmp = $argv;
+	unset($tmp[0]);
+	if(!$tmp){
+		$tmp = array($app->config['ctrl'].'=index');
+	}
+	$string = implode("&",$tmp);
+	parse_str($string,$_POST);
+}
 $app->action();

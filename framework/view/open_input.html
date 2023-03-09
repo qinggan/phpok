@@ -76,11 +76,6 @@ $(document).ready(function(){
 			<option value="{$value.id}"{if $value.id == $cate_id} selected{/if}>{$value.title}</option>
 			<!-- /loop -->
 		</select></div></td>
-		<td><div style="margin-right:10px;"><select name="keytype" id="keytype" onchange="update_select(this.value)" lay-ignore>
-			<!-- loop from=$keytype_list key=$key value=$value id=$tmpid -->
-			<option value="{$key}"{if $key == $keytype} selected{/if}>{$value}</option>
-			<!-- /loop -->
-		</select></div></td>
 		<td><div style="margin-right:10px;"><input type="text" name="keywords" id="keywords" value="{$keywords}" class="keywords" /></div></td>
 		<td><div style="margin-right:10px;"><input type="submit" value="{lang搜索}" /></div></td>
 		<!-- /if -->

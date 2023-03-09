@@ -29,6 +29,7 @@ if(!$extinfo['content'] || !$extinfo['mobile']){
 	}
 	return false;
 }
+
 $this->lib('phpok')->server_url($rs['ext']['server']);
 if($rs['ext'] && $rs['ext']['ip']){
 	$this->lib('phpok')->ip($rs['ext']['ip']);

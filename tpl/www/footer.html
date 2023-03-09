@@ -66,15 +66,57 @@
 			</div>
 		</div>
 	</div>
-	<!-- if $config.copyright && $config.copyright.content -->
+	<!-- if $config.foot && $config.foot.content -->
 	<hr />
 	<div class="container">
 		<div class="row">
 			<div class="col">
-				{$config.copyright.content}
+				{$config.foot.content}
 			</div>
 		</div>
 	</div>
 	<!-- /if -->
 </footer>
+<!-- php:$list = phpok('kfonline') -->
+<!-- if $list && $list.total -->
+<div class="kfonline-icon">
+	<i class="fa fa-phone" style="font-size:20px;"></i>
+</div>
+<div class="kfonline">
+	<div class="card">
+		<div class="card-header">
+			{$list.project.title}
+			<div class="float-right">
+				<i class="fa fa-chevron-circle-right" onclick=""></i>
+			</div>
+		</div>
+		<ul class="list-group list-group-flush">
+			<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+			<!-- if $value.qtype && $value.qtype.val == 'qq' -->
+			<li class="list-group-item text-center">
+				<a href="//wpa.qq.com/msgrd?v=3&uni={$value.qq}&site=qq&menu=yes" target="_blank">{$value.title}</a>
+			</li>
+			<!-- elseif $value.qtype && $value.qtype.val == 'weixin' && $value.qrcode -->
+			<li class="list-group-item text-center">
+				<div><img src="{$value.qrcode.filename}" style="max-width:100%;" /></div>
+				<div style="line-height:180%;">{$value.title}</div>
+			</li>
+			<!-- /if -->
+			<!-- /loop -->
+		</ul>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$(".kfonline-icon").click(function(){
+		$('.kfonline-icon').hide();
+		$('.kfonline').show();
+	});
+	$('.kfonline .card-header').click(function(){
+		$('.kfonline').hide();
+		$('.kfonline-icon').show();
+	});
+});
+</script>
+<!-- /if -->
 <!-- include tpl=foot -->

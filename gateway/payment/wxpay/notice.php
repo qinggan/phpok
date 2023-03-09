@@ -39,7 +39,7 @@ class wxpay_notice
 		$data = $_GET;
 		$sign = $wxpay->create_sign($_GET);
 		if($sign != $data['sign']){
-			$this->error('签名验证不通过');
+			$app->error('签名验证不通过');
 		}
 		//保存订单信息
 		$ext = $this->order['ext'] ? unserialize($this->order['ext']) : array();

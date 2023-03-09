@@ -22,6 +22,79 @@ class design_model_base extends phpok_model
 		parent::model();
 	}
 
+	public function get_all()
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."design ORDER BY code ASC,id DESC";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			if(!$value['ext']){
+				$value['ext'] = array();
+			}else{
+				$value['ext'] = unserialize($value['ext']);
+			}
+			$rslist[$key] = $value;
+		}
+		return $rslist;
+	}
+
+	public function get_one($id,$type='id')
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."design WHERE ".$type."='".$id."'";
+		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
+		if($rs['ext']){
+			$rs['ext'] = unserialize($rs['ext']);
+		}
+		return $rs;
+	}
+
+	public function save($data,$id=0)
+	{
+		if($data['ext'] && is_array($data['ext'])){
+			$data['ext'] = serialize($data['ext']);
+		}
+		if($id){
+			return $this->db->update($data,'design',array('id'=>$id));
+		}
+		return $this->db->insert($data,'design');
+	}
+
+	public function delete($id=0)
+	{
+		if(!$id){
+			return false;
+		}
+		$rs = $this->get_one($id);
+		if(!$rs){
+			return false;
+		}
+		$code = $rs['code'] ? $rs['code'] : $rs['id'];
+		if(file_exists($this->dir_data.'design/'.$code.'.html')){
+			$this->lib('file')->rm($this->dir_data.'design/'.$code.'.html');
+		}
+		$sql = "DELETE FROM ".$this->db->prefix."design WHERE id='".$id."'";
+		$this->db->query($sql);
+		return true;
+	}
+
+	public function typelist()
+	{
+		$type = array();
+		$type['editor'] = '内容编辑器';
+		$type['code'] = '代码编辑器';
+		$type['textarea'] = '文本区';
+		$type['image'] = '图片附件';
+		$type['video'] = '视频链接';
+		$type['iframe'] = 'Iframe 框架';
+		$type['calldata'] = '数据调用';
+		return $type;
+	}
+
 	public function tplist($basedir='')
 	{
 		$syslist = array();
@@ -71,6 +144,33 @@ class design_model_base extends phpok_model
 			$tplist[$tplfile] = $data;
 		}
 		return $tplist;
+	}
+
+	/**
+	 * 保存代码内容
+	 * @参数 $id 模板ID
+	 * @参数 $content 保存的内容
+	 * @参数 $delcode 要删除的文件
+	**/
+	public function content($id,$content='',$delcode='')
+	{
+		if($content && $id && $delcode && $delcode != $id){
+			$this->lib('file')->rm($this->dir_data.'design/'.$delcode.'.html');
+		}
+		if($content && $id){
+			$this->lib('file')->vim($content,$this->dir_data.'design/'.$id.'.html');
+			return true;
+		}
+		return $this->lib('file')->cat($this->dir_data.'design/'.$id.'.html');
+	}
+
+	public function code_check($code,$id=0)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."design WHERE code='".$code."'";
+		if($id){
+			$sql .= " AND id!='".$id."'";
+		}
+		return $this->db->get_one($sql);
 	}
 
 	public function tpl_info($id='')

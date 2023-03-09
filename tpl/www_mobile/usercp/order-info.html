@@ -1,0 +1,159 @@
+<!-- include tpl=usercp/head title=订单明细 -->
+<!-- include tpl=usercp/order-baseinfo -->
+<!-- if $billing -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		账单地址<small style="font-weight:normal;color:gray;float:right;"><small>非收货地址</small></small>
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-row">
+			<div class="layui-col-md4 text-right">姓名：</div>
+			<div class="layui-col-md8"><!-- if $billing.fullname -->{$billing.fullname}<!-- else -->{$billing.lastname}{$billing.firstname}<!-- /if --></div>
+			<div class="layui-col-md4 text-right">联系方式：</div>
+			<div class="layui-col-md8">
+				{$billing.tel}<!-- if $billing.tel && $billing.mobile --> / <!-- /if -->{$billinbilling.mobile}
+				<!-- if $billing.email --> / {$billing.email}<!-- /if -->
+			</div>
+		</div>
+		<div class="layui-row">
+			<div class="layui-col-md4 text-right">地址：</div>
+			<div class="col-8 col-md-10 p-1">
+				{$billing.province}
+				<!-- if $billing.province != $billing.city -->
+				{$billing.city}
+				<!-- /if -->
+				{$billing.county}
+				{$billing.address}
+				<!-- if $billing.address2 -->{$billing.address2}<!-- /if -->
+				<!-- if $billing.zipcode --><i>（邮编：{$billing.zipcode}）</i><!-- /if -->
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /if -->
+<!-- if $address && $address.fullname -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		收货人信息
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-row">
+			<div class="layui-col-xs12"><b>收件人：</b><!-- if $address.fullname -->{$address.fullname}<!-- else -->{$address.lastname}{$address.firstname}<!-- /if --></div>
+			<div class="layui-col-xs12">
+				<b>联系方式：</b>{$address.tel}<!-- if $address.tel && $address.mobile --> / <!-- /if -->{$address.mobile}
+				<!-- if $address.email --> / {$address.email}<!-- /if -->
+			</div>
+			<div class="layui-col-xs12">
+				<b>收件地址：</b>
+				{$address.province}
+				<!-- if $address.province != $address.city -->
+				{$address.city}
+				<!-- /if -->
+				{$address.county}
+				{$address.address}
+				<!-- if $address.address2 -->{$address.address2}<!-- /if -->
+				<!-- if $address.zipcode --><i>（邮编：{$address.zipcode}）</i><!-- /if -->
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		产品信息
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+			<tr>
+				<th colspan="2">信息</th>
+				<th>数量</th>
+				<th>价格</th>
+			</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value -->
+		<tr>
+			<td colspan="2">
+				<div><b>{$value.title}</b></div>
+				<!-- loop from=$value.ext key=$k value=$v id=$tmpid -->
+				<div>{$v.title}：{$v.content}</div>
+				<!-- /loop -->
+				<div>售价：{func price_format $value.price $rs.currency_id $rs.currency_id}</div>
+			</td>
+			<td>{$value.qty}</td>
+			<td>{func price_format $value.price*$value.qty $rs.currency_id $rs.currency_id}</td>
+		</tr>
+		<!-- /loop -->
+		<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td colspan="3" class="text-right">{$value.title}：</td>
+			<td>{$value.price}</td>
+		</tr>
+		<!-- /loop -->
+		<!-- if $paid_price -->
+		<tr>
+			<td colspan="3" class="text-right">已付款：</td>
+			<td>{func price_format $paid_price $rs.currency_id $rs.currency_id}</td>
+		</tr>
+		<tr>
+			<td colspan="3" class="text-right">还需付款：</td>
+			<td>{func price_format $unpaid_price $rs.currency_id $rs.currency_id}</td>
+		</tr>
+		<!-- /if -->
+		<tr>
+			<td colspan="3" class="text-right">订单总价：</td>
+			<td>{func price_format $rs.price $rs.currency_id $rs.currency_id}</td>
+		</tr>
+		</table>
+	</div>
+</div>
+<!-- if $invoice -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		发票信息
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-row">
+			<div class="layui-col-md4 text-right">类型：</div>
+			<div class="layui-col-md8">{$invoice.type}</div>
+			<div class="layui-col-md4 border-bottom text-right">抬头：</div>
+			<div class="layui-col-md8">{$invoice.title}</div>
+			<div class="layui-col-md4 border-bottom text-right">内容：</div>
+			<div class="layui-col-md8">{$invoice.content}</div>
+		</div>
+	</div>
+</div>
+<!-- /if -->
+<!-- if $pay_end -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		友情说明
+	</div>
+	<div class="layui-card-body">
+		<p class="mb-0">您的订单 <span style="color:red">{$rs.status_info}</span>，我们律师会尽快与您联系。</p>
+		<!-- if $config.zxonline.tel --><p>您也可以拨打热线电话：<a href="tel:{$config.zxonline.tel}" style="font-size:18px;font-weight:bold;color:red;">{$config.zxonline.tel}</a> 进行咨询</p><!-- /if -->
+	</div>
+</div>
+<!-- /if -->
+<!-- if !$pay_end -->
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div style="margin: 0 20px;">
+		<!-- if $session.user_id -->
+		<a href="{url ctrl=order func=payment id=$rs.id/}" target="_blank" class="layui-btn">在线支付</a>
+		<!-- else -->
+		<a href="{url ctrl=order func=payment sn=$rs.sn passwd=$rs.passwd/}" target="_blank" class="layui-btn">在线支付</a>
+		<!-- /if -->
+		<input type="button" value="{lang返回}" class="layui-btn layui-btn-primary" onclick="$.phpok.go('{url ctrl=usercp/}')" />
+	</div>
+</div>
+<!-- else -->
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div style="text-align:center">
+		<input type="button" value="{lang返回}" class="layui-btn layui-btn-primary" onclick="$.phpok.go('{url ctrl=usercp/}')" />
+	</div>
+</div>
+<!-- /if -->
+
+<!-- include tpl=usercp/foot -->

@@ -50,7 +50,7 @@ class plugin_model extends plugin_model_base
 			return false;
 		}
 		if($list['plugin'] && $list['plugin']['title']){
-			$tmp = false;
+			$tmp = array();
 			$tmplist = array();
 			foreach($list['plugin'] as $key=>$value){
 				if(is_numeric($key)){
@@ -87,12 +87,15 @@ class plugin_model extends plugin_model_base
 		}
 		$iconlist = $this->iconlist($id);
 		if($iconlist){
-			$rs = false;
+			$rs = array();
 			foreach($iconlist as $key=>$value){
 				if($value['id'] == $vid){
 					$rs = $value;
 					break;
 				}
+			}
+			if(!$rs || count($rs)<1){
+				return false;
 			}
 			return $rs;
 		}

@@ -1,0 +1,20 @@
+<!-- include tpl=usercp/head -->
+<div class="layui-row layui-col-space15">
+	<div class="layui-col-xs12">
+    	<div class="layui-card">
+    		<div class="layui-card-header">
+    			个人信息
+				<div class="float-right">
+					<a href="{url ctrl=user uid=$me.id/}" target="_blank">访问</a>
+				</div>
+    		</div>
+    		<div class="layui-card-body">
+    			<div class="text-center"><img src="{$me.avatar ? $me.avatar : $config.tpl_id.dir_tpl.'usercp/'.'images'.'/avatar.png'}" style="width:80px;border-radius:100%" /></div>
+				<div class="user-name text-center">{$me.user}</div>
+				<div class="user-name text-center">注册时间：{func date Y-m-d $me.regtime}</div>
+    		</div>
+    	</div>
+	</div>
+</div>
+
+<!-- include tpl=usercp/foot -->

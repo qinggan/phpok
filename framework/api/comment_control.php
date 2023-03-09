@@ -51,31 +51,6 @@ class comment_control extends phpok_control
 	}
 
 
-	/**
-	 * 删除评论信息
-	 * @参数 $id 要删除的评论ID
-	**/
-	public function delete_f()
-	{
-		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非用户不能执行此操作'));
-		}
-		$id = $this->get('id','int');
-		if(!$id){
-			$this->error(P_Lang('未指定要删除的回复ID'));
-		}
-		$rs = $this->model('reply')->get_one($id);
-		if(!$rs){
-			$this->error(P_Lang('回复信息不存在'));
-		}
-		if(!$rs['uid'] || $rs['uid'] != $this->session->val('user_id')){
-			$this->error(P_Lang('您没有权限删除此数据'));
-		}
-		$this->model('reply')->delete($id);
-		$this->model('log')->save(P_Lang('删除回复操作'));
-		$this->success();
-	}
-
 	//获取评论信息
 	public function index_f()
 	{
@@ -184,6 +159,13 @@ class comment_control extends phpok_control
 		$uid = $this->session->val('user_id');
 		if($uid){
 			$data['uid'] = $uid;
+			$me = $this->model('user')->get_one($this->session->val('user_id'));
+			if($me['status'] == '2'){
+				$this->error(P_Lang('您的账号被锁定，请与管理员联系'));
+			}
+			if($me['status'] == '3'){
+				$this->error(P_Lang('您的账号被禁言，请与管理员联系'));
+			}
 		}
 		$user_groupid = $this->model('usergroup')->group_id($uid);
 		if(!$user_groupid){
@@ -220,6 +202,10 @@ class comment_control extends phpok_control
 			$project_rs = $this->model('project')->get_one($rs['project_id'],false);
 			if(!$project_rs['comment_status']){
 				$this->error(P_Lang('未启用评论功能'));
+			}
+			// 增加权限判断
+			if(!$this->model('popedom')->check($project_rs['id'],$user_groupid,'reply')){
+				$this->error(P_Lang('您没有权限执行评论'));
 			}
 			$data['tid'] = $rs['id'];
 			$data['title'] = $rs['title'];
@@ -350,6 +336,114 @@ class comment_control extends phpok_control
 			$param = 'id='.$insert_id;
 			$this->model('task')->add_once('comment',$param);
 		}
+		$this->success();
+	}
+
+	/**
+	 * 回复点击事件
+	 * @参数 id 评论ID
+	 * @参数 code 动作标识，点赞用 zan，差评用 cha
+	**/
+	public function click_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定回复ID'));
+		}
+		$code = $this->get('code');
+		if(!$code){
+			$this->error(P_Lang('未指定动作标识'));
+		}
+		$chk = $this->model('click')->events($code);
+		if(!$chk){
+			$this->error(P_Lang('动作标识不正确'));
+		}
+		$t = $this->model('click')->save_reply($id,$code,$this->session->val('user_id'));
+		if(!$t){
+			$this->error(P_Lang('动作执行失败，请检查'));
+		}
+		$data = $chk;
+		if(is_bool($t)){
+			$data['tip'] = P_Lang('取消 [title] 操作成功',array('title'=>$chk['title']));
+			$data['action'] = 'delete';
+			$data['total'] = $this->model('click')->get_one($id,$code,'reply');
+			$this->success($data);
+		}
+		$data['tip'] = P_Lang('[title] 操作成功',array('title'=>$chk['title']));
+		$data['action'] = 'add';
+		$data['total'] = $this->model('click')->get_one($id,$code,'reply');
+		$this->success($data);
+	}
+
+	public function delete_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('您没有权限操作此功能'));
+		}
+		$uid = $this->session->val('user_id');
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定回复ID'));
+		}
+		$comment = $this->model('reply')->get_one($id);
+		if(!$comment['tid']){
+			$this->error(P_Lang('未指定主题ID'));
+		}
+		$rs = $this->model('list')->call_one($comment['tid']);
+		if(!$rs || !$rs['status']){
+			$this->error(P_Lang('主题不存在'));
+		}
+		if(!$rs['user_id']){
+			$this->error(P_Lang('您没有权限操作此功能(2)'));
+		}
+		if($rs['user_id'] != $uid && $comment['uid'] != $uid){
+			$this->error(P_Lang('您没有权限操作此功能(3)'));			
+		}
+		$this->model('reply')->delete($id);
+		$this->model('log')->save(P_Lang('删除回复操作'));
+		$this->success();
+	}
+
+	/**
+	 * 设为推荐或取消推荐
+	 * @参数 id 评论ID
+	 * @参数 vouch 为0表示取消，为1表示推荐
+	 * @返回 Json 
+	**/
+	public function vouch_f()
+	{
+		if(!$this->session->val('user_id')){
+			$this->error(P_Lang('您没有权限操作此功能'));
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定回复ID'));
+		}
+		$comment = $this->model('reply')->get_one($id);
+		if(!$comment['tid']){
+			$this->error(P_Lang('未指定主题ID'));
+		}
+		$rs = $this->model('list')->call_one($comment['tid']);
+		if(!$rs || !$rs['status']){
+			$this->error(P_Lang('主题不存在'));
+		}
+		if(!$rs['user_id']){
+			$this->error(P_Lang('您没有权限操作此功能'));
+		}
+		if($rs['user_id'] != $this->session->val('user_id')){
+			$this->error(P_Lang('您没有权限操作此功能'));
+		}
+		$vouch = $this->get('vouch','int');
+		if($vouch>1){
+			$vouch = 1;
+		}
+		if($vouch<0){
+			$vouch = 0;
+		}
+		$data = array('vouch'=>$vouch);
+		$this->model('reply')->save($data,$id);
+		$tip = $vouch ? P_Lang('设置为推荐评论') : P_Lang('取消推荐评论');
+		$this->model('log')->save($tip);
 		$this->success();
 	}
 }

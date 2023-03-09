@@ -9,9 +9,9 @@ function save()
 		'dataType':'json',
 		'success':function(rs){
 			if(rs.status){
-				$.dialog.alert('标签提交成功',function(){
+				$.dialog.tips('标签提交成功',function(){
 					opener.$.phpok.reload();
-				},'succeed');
+				});
 				return true;
 			}
 			opener.$.dialog.alert(rs.info);

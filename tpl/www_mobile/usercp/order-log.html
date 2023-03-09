@@ -1,0 +1,25 @@
+<!-- include tpl=usercp/head title=订单日志 -->
+<!-- include tpl=usercp/order-baseinfo -->
+
+
+<!-- loop from=$loglist key=$key value=$value id=$tmpid -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		日志：#{$value.id}
+		<div class="float-right">{func time_format $value.addtime}</div>
+	</div>
+	<div class="layui-card-body">
+		<blockquote class="layui-elem-quote layui-quote-nm">{$value.note}</blockquote>
+		<div>创建人：{$value.who}</div>
+	</div>
+</div>
+<!-- /loop -->
+
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div style="text-align:center">
+		<input type="button" value="{lang返回}" class="layui-btn layui-btn-primary" onclick="$.phpok.go('{url ctrl=usercp/}')" />
+	</div>
+</div>
+
+<!-- include tpl=usercp/foot -->

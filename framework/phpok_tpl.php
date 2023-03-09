@@ -34,6 +34,7 @@ class phpok_template
 	private $cache_config;
 	private $web_folder;
 	private $is_mobile = false;
+	private $debug = false;
 
 	public function __construct($config=array())
 	{
@@ -46,9 +47,9 @@ class phpok_template
 	**/
 	public function config($config=array())
 	{
-		if($config["id"]){
+		if(isset($config["id"])){
 			$this->tpl_id = $config["id"];
-			if(!$this->cache_config[$config['id']]){
+			if(!isset($this->cache_config[$config['id']])){
 				$this->cache_config[$config['id']] = $config;
 			}
 		}
@@ -75,6 +76,9 @@ class phpok_template
 		}
 		if($config["path_change"]){
 			$this->path_change = $config["path_change"];
+		}
+		if($config['debug']){
+			$this->debug = true;
 		}
 		$this->refresh_auto = $config["refresh_auto"] ? true : false;
 		$this->refresh = $config["refresh"] ? true : false;
@@ -114,8 +118,11 @@ class phpok_template
 	 * 读取变量名内容
 	 * @参数 $var 变量名
 	**/
-	public function val($var)
+	public function val($var='')
 	{
+		if(!$var){
+			return $this->tpl_value;
+		}
 		return $this->tpl_value[$var];
 	}
 
@@ -126,7 +133,7 @@ class phpok_template
 	public function unassign($var='')
 	{
 		if(!$var){
-			unset($this->tpl_value);
+			$this->tpl_value = array();
 			return false;
 		}
 		if(!is_array($var) && $this->tpl_value[$var]){
@@ -294,7 +301,11 @@ class phpok_template
 			$html_content = $tpl;
 		}
 		if(!$html_content){
-			$this->error(P_Lang('不支持空内容是模板，请检查'));
+			$tip = P_Lang('不支持空内容是模板，请检查');
+			if($this->debug){
+				$tip .= $tplfile;
+			}
+			$this->error($tip);
 		}
 		$php_content = $this->html_to_php($html_content,$path_format);
 		$newarray = array('<?php echo $app->_node_html("before");$app->plugin_html_ap("phpokhead");?></head>','<?php echo $app->_node_html("after");$app->plugin_html_ap("phpokbody");?></body>');
@@ -374,14 +385,11 @@ class phpok_template
 		$info = $info[1];
 		$info = trim(str_replace(array("'",'"'),'',$info));
 		$lst = explode("|",$info);
-		$param = false;
+		$param = array();
 		if($lst[1]){
 			$tmp = explode(",",$lst[1]);
 			foreach($tmp as $key=>$value){
 				$tmp2 = explode(":",$value);
-				if(!$param){
-					$param = array();
-				}
 				if(substr($tmp2[1],0,1) == '$'){
 					$tmp2[1] = '\'.'.$this->str_format($tmp2[1],false,false).'.\'';
 				}
@@ -428,17 +436,17 @@ class phpok_template
 		//正则替换内容问题
 		$content = preg_replace_callback('/<!--\s+head\s+(.+)\s+-->/isU',array($this,'head_php'),$content);
 		$content = preg_replace_callback('/<!--\s+plugin\s*(.*)\s+-->/isU',array($this,'plugin_php'),$content);
-		$content = preg_replace('/(\{|<!--)\s*(\/if|end|\/foreach|\/for|\/while|\/loop)\s*(\}|-->)/isU','<?php } ?>',$content);
-		$content = preg_replace('/(\{|<!--)\s*(else)\s*(\}|-->)/isU','<?php } else { ?>',$content);
-		$content = preg_replace('/<!--\s*php\s*-->/isU','<?php',$content);
-		$content = preg_replace('/<!--\s*\/\s*php\s*-->/isU','?>',$content);
+		$content = preg_replace('/(\{|<!--|<)\s*(\/if|end|\/foreach|\/for|\/while|\/loop)\s*(\}|-->|>)/isU','<?php } ?>',$content);
+		$content = preg_replace('/(\{|<!--|<)\s*(else)\s*(\}|-->|>)/isU','<?php } else { ?>',$content);
+		$content = preg_replace('/(<!--|<)\s*php\s*(-->|>)/isU','<?php',$content);
+		$content = preg_replace('/(<!--|<)\s*\/\s*php\s*(-->|>)/isU','?>',$content);
 		$content = preg_replace_callback('/\{debug\s+\$(.+)\}/isU',array($this,'html_debug'),$content);
 		//语言包替换
 		$content = preg_replace_callback('/\{lang\s*(.+)\}/isU',array($this,'lang_replace'),$content);
 		//内置标签替换
-		$content = preg_replace_callback('/(\{|<!--\s*)(arclist|arc|subcate|catelist|cate|project|sublist|parent|plist|fields|user|userlist)[:]*([\w\$]*)\s+(.+)\s*(\}|-->)/isU',array($this,'data_php'),$content);
-		$content = preg_replace_callback('/(\{|<!--\s*)\/(arclist|arc|catelist|cateinfo|subcate|project|sublist)[:]*([a-zA-Z\_0-9\$]*)\s*(\}|-->)/isU',array($this,'undata_php'),$content);
-		$content = preg_replace_callback('/(\{|<!--\s*)unset\s*(:|\(|=)\s*([^\)]+)[\)]*\s*(\}|-->)/isU',array($this,'undata_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*|<data\s+)(arclist|arc|subcate|catelist|cate|project|sublist|parent|plist|fields|user|userlist)[:]*([\w\$]*)\s+(.+)\s*(\}|-->|\/>)/isU',array($this,'data_php'),$content);
+		$content = preg_replace_callback('/(\{\/|<!--\s*\/|<\/data\-)(arclist|arc|subcate|catelist|cate|project|sublist|parent|plist|fields|user|userlist)[:]*([a-zA-Z\_0-9\$]*)\s*(\}|-->|>)/isU',array($this,'undata_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*|<)unset\s*(:|\(|=)\s*([^\)]+)[\)]*\s*(\}|-->|\/>)/isU',array($this,'undata_php'),$content);
 		//循环语法
 		$content = preg_replace_callback('/(\{|<!--\s*)\$([a-zA-Z0-9_\$\[\]\'\\\"\.\-]{1,60})\s+AS\s+(.+)\s*(\}|-->)/isU',array($this,'_foreach_php_ex_doller'),$content);
 		$content = preg_replace_callback('/(\{|<!--\s*)foreach\s*\(\s*(.+)\s+AS\s+(.+)\s*\)\s*(\}|-->)/isU',array($this,'_foreach_php_in_doller'),$content);
@@ -449,10 +457,10 @@ class phpok_template
 		$content = preg_replace_callback('/(\{|<!--\s*)(if|else\s*if)\s*\(\s*(.+)\s*\)\s*(\}|-->)/isU',array($this,'_if_php'),$content);
 		$content = preg_replace_callback('/(\{|<!--\s*)(if|else\s*if)\s+(.+)\s*(\}|-->)/isU',array($this,'_if_php'),$content);
 		//文件包含
-		$content = preg_replace_callback('/(\{|<!--\s*)include\s+(.+)\s*(\}|-->)/isU',array($this,'_include_php'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*|<)include\s+(.+)\s*(\}|-->|\/>)/isU',array($this,'_include_php'),$content);
 		$content = preg_replace_callback('/(\{|<!--\s*)inc\s*(:|=)\s*(.+)\s*(\}|-->)/isU',array($this,'_inc_php'),$content);
 		//单行PHP代码
-		$content = preg_replace_callback('/(\{|<!--)\s*(run|php)\s*(:|\s+)\s*(.+)\s*(\}|-->)/isU',array($this,'_php_runing'),$content);
+		$content = preg_replace_callback('/(\{|<!--\s*|<)(run|php)\s*(:|\s+)\s*(.+)\s*(\}|-->|\/>)/isU',array($this,'_php_runing'),$content);
 		//PHPOK4的网址写法
 		$content = preg_replace_callback('/\{url\s+(.+)\/\}/isU',array($this,'_url_php'),$content);
 		$content = preg_replace_callback('/\{ajaxurl\s+(.+)\/\}/isU',array($this,'_ajaxurl_php'),$content);
@@ -592,20 +600,19 @@ class phpok_template
 		if(!$b) $b = '$list';
 		if(substr($b,0,1) != '$') $b = '$'.$b;
 		$tmp_c = 'array()';
-		if($c)
-		{
+		if($c){
 			$c = preg_replace("/(\x20{2,})/"," ",$c);
 			//处理引号里的空格
 			$c = preg_replace("/[\"|']([a-zA-Z\_\-\.,]*)(\s+)([a-zA-Z\_\-\.,]*)[\"|']/isU",'\\1:_:_:-phpok-:_:_:\\3',$c);
 			$c = str_replace(" ","&",$c);
 			$c = $this->str_format($c);
 			parse_str($c,$list);
-			if($list)
-			{
+			if($list){
 				$tmp = array();
-				foreach($list AS $key=>$value)
-				{
-					if(!$value) continue;
+				foreach($list as $key=>$value){
+					if($value == ''){
+						continue;
+					}
 					$t = substr($value,0,1) == '$' ? $value : '"'.$value.'"';
 					$tmp[] = "'".$key."'=>".$t;
 				}
@@ -643,10 +650,10 @@ class phpok_template
 	private function include_php($string)
 	{
 		$rs = $this->str_to_list($string);
-		if(!$rs){
+		if(!isset($rs)){
 			return false;
 		}
-		if(!$rs["tpl"] && !$rs["file"] && !$rs["php"]){
+		if(!isset($rs["tpl"]) && !isset($rs["file"]) && !isset($rs["php"])){
 			return false;
 		}
 		$string = "";
@@ -658,7 +665,7 @@ class phpok_template
 				$string .= '<?php $this->assign("'.$key.'",'.$value.'); ?>';
 			}
 		}
-		if($rs['file']){
+		if(isset($rs['file'])){
 			if(strtolower(substr($rs['file'],-4)) != '.php'){
 				$rs['file'] .= '.php';
 			}
@@ -668,10 +675,10 @@ class phpok_template
 			}
 		}
 		$type = 'file';
-		if($rs['_type'] && in_array($rs['_type'],array('file','file-ext','content','msg','abs-file'))){
+		if(isset($rs['_type']) && in_array($rs['_type'],array('file','file-ext','content','msg','abs-file'))){
 			$type = $rs['_type'];
 		}
-		if($rs["tpl"]){
+		if(isset($rs["tpl"])){
 			$string .= '<?php $this->output("'.$rs["tpl"].'","'.$type.'",true,false); ?>';
 		}
 		return $string;
@@ -890,7 +897,7 @@ class phpok_template
 		if(!$rs || !is_array($rs) || count($rs)<1 || !$rs["from"]){
 			return false;
 		}
-		if(!$rs["id"]){
+		if(!isset($rs["id"])){
 			$rs["id"] = $this->get_loop_id($rs["from"]);
 		}
 		$id = $rs["id"];

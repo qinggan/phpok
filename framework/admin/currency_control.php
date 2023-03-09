@@ -25,6 +25,15 @@ class currency_control extends phpok_control
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$rslist = $this->model('currency')->get_list();
+		if($rslist){
+			foreach($rslist as $key=>$value){
+				if($value['dpl']){
+					$rand = $this->lib('common')->str_rand($value['dpl'],'number');
+					$value['rand'] = $rand;
+				}
+				$rslist[$key] = $value;
+			}
+		}
 		$this->assign("rslist",$rslist);
 		$this->view("currency_list");
 	}
@@ -61,6 +70,7 @@ class currency_control extends phpok_control
 		$array["taxis"] = $this->get("taxis","int");
 		$array["status"] = $this->get("status","int");
 		$array["hidden"] = $this->get("hidden","int");
+		$array['dpl'] = $this->get('dpl','int');
 		$error_url = $this->url('currency','set');
 		if($id) $error_url = $this->url('currency','set','id='.$id);
 		if(!$array["title"]){

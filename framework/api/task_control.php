@@ -68,8 +68,6 @@ class task_control extends phpok_control
 			$this->model('task')->exec_start($_id);
 			$file = $this->dir_root.'task/'.$rs['action'].'.php';
 			if(file_exists($file)){
-				echo "<pre>".print_r($file,true)."</pre>";
-				exit;
 				if($rs['param']){
 					parse_str($rs['param'],$param);
 				}

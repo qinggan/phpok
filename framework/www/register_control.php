@@ -72,7 +72,7 @@ class register_control extends phpok_control
 		$this->assign("group_rs",$group_rs);
 		//取得当前组的扩展字段
 		$ext_list = $this->model("user")->fields_all("is_front=1");
-		$extlist = false;
+		$extlist = array();
 		if(!$ext_list){
 			$ext_list = array();
 		}

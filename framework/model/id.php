@@ -86,11 +86,11 @@ class id_model_base extends phpok_model
 	{
 		$site_id = intval($site_id);
 		$plist = $this->id_project($site_id,$status);
-		if($plist && $plist[$identifier]){
+		if(isset($plist) && isset($plist[$identifier])){
 			return $plist[$identifier];
 		}
 		$clist = $this->id_cate($site_id,$status);
-		if($clist && $clist[$identifier]){
+		if(isset($clist) && isset($clist[$identifier])){
 			return $clist[$identifier];
 		}
 		$sql = "SELECT id FROM ".$this->db->prefix."list WHERE site_id='".$site_id."' AND identifier='".$identifier."'";

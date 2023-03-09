@@ -452,7 +452,7 @@ class site_model_base extends phpok_model
 	public function reserved()
 	{
 		$reserved = array('js','ajax','inp');
-		if($this->config['reserved']){
+		if(isset($this->config['reserved'])){
 			$tmp = explode(",",$this->config['reserved']);
 			$reserved = array_merge($reserved,$tmp);
 		}

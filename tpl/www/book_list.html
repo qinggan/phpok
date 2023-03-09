@@ -1,71 +1,60 @@
 <!-- include tpl=header menutitle=$page_rs.title -->
-<section class="bg-light p-5"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
 	<h1 class="p-4 text-center">{$cate_rs ? $cate_rs.title : $page_rs.title}</h1>
 	<!-- php:$taglist = $cate_rs.tag ? $cate_rs.tag : $page_rs.tag -->
 	<!-- if $taglist -->
 	<div class="container">
 		<div class="text-center m-3">
-			<span class="p-2 bg-light-50 rounded-lg">
+			<small class="p-2 bg-light-50 rounded-lg">
 			标签：
 			<!-- loop from=$taglist key=$k value=$v id=$idxx -->
 			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
 			<!-- /loop -->
-			</span>
+			</small>
 		</div>
 	</div>
 	<!-- /if -->
 </section>
 <script type="text/javascript">
-$(document).ready(function(){
-	$("#book_post").submit(function(){
-		//提交表单
-		if(!$('#title').val()){
-			$.dialog.alert("留言主题不能为空");
-			return false;
-		}
-		if(!$('#fullname').val()){
-			$.dialog.alert('留言人姓名不能为空');
-			return false;
-		}
-		if(!$('#email').val()){
-			$.dialog.alert('邮箱不能为空');
-			return false;
-		}
-		var content = $("#content").val();
-		if(!content){
-			$.dialog.alert('留言内容不能为空');
-			return false;
-		}
-		$(this).ajaxSubmit({
-			'url':api_url('post','save'),
-			'type':'post',
-			'dataType':'json',
-			'success':function(rs){
-				if(rs.status == 'ok'){
-					$.dialog.alert('您的留言信息已发布，请耐心等候管理员审核，感谢您的提交',function(){
-						$.phpok.reload();
-					},'succeed');
-				}else{
-					$.dialog.alert(rs.content,function(){
-						$("#update_vcode").phpok_vcode();
-						$("#_chkcode").val('');
-					});
-					return false;
-				}
-			}
-		});
+function book_save(obj)
+{
+	if(!$('#title').val()){
+		$.dialog.tips("留言主题不能为空").lock();
 		return false;
+	}
+	if(!$('#fullname').val()){
+		$.dialog.tips('留言人姓名不能为空').lock();
+		return false;
+	}
+	if(!$('#email').val()){
+		$.dialog.tips('邮箱不能为空').lock();
+		return false;
+	}
+	var act = $.dialog.tips('正在提交中，请稍候…',100).lock();
+	$.phpok.submit(obj,api_url('post','ok'),function(rs){
+		if(!rs.status){
+			act.content(rs.info).time(1.5);
+			return false;
+		}
+		$("#update_vcode").phpok_vcode();
+		$("#_chkcode").val('');
+		act.setting('close',function(){
+			$.phpok.reload();
+		});
+		act.content('您的留言信息已发布，我们会尽快处理…').time(1.5);
+		return true;
 	});
-});
+	return false;
+}
 </script>
-<section class="container"><div class="mt-3"><!-- include tpl=block/breadcrumb --></div></section>
+<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
 <section class="container">
 	<div class="card">
 		<div class="card-header">
 			发布新留言
 		</div>
 		<div class="card-body">
-			<form method="post" id="book_post">
+			<form method="post" id="book_post" onsubmit="return book_save(this)">
 			<input type="hidden" name="id" id="id" value="{$page_rs.identifier}" />
 			<!-- fields pid=$page_rs.id fields_format=1 in_title=1 -->
 			<!-- loop from=$list key=$key value=$value -->

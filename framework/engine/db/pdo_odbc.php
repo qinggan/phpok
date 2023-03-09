@@ -91,6 +91,7 @@ class db_pdo_odbc extends db
 
 	public function query($sql,$loadcache=true)
 	{
+		$this->checkquery($sql);
 		$this->cache_update($sql);
 		$this->check_connect();
 		$this->_time();
@@ -131,7 +132,7 @@ class db_pdo_odbc extends db
 			}
 			$this->query($sql);
 		}
-		
+
 		if(!$this->query || !is_object($this->query)){
 			return false;
 		}

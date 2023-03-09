@@ -85,13 +85,12 @@
 					if(rs.status){
 						var id = $("#id").val();
 						var tip = (id && id != 'undefined') ? p_lang('编辑网关信息成功') : p_lang('添加网关信息成功');
-						$.dialog.alert(tip,function(){
-							$.admin.reload(get_url('gateway'));
+						$.dialog.tips(tip,function(){
 							$.admin.close(get_url('gateway'));
-						},'succeed');
+						}).lock();
 						return true;
 					}
-					$.dialog.alert(rs.info);
+					$.dialog.tips(rs.info);
 					return false;
 				}
 			});

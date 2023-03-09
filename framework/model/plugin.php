@@ -1,7 +1,6 @@
 <?php
 /**
  * 插件中心
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
  * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -62,6 +61,9 @@ class plugin_model_base extends phpok_model
 			$rs['pids'] = explode(",",$rs['pids']);
 		}else{
 			$rs['pids'] = array();
+		}
+		if($rs['param'] && is_string($rs['param'])){
+			$rs['param'] = unserialize($rs['param']);
 		}
 		return $rs;
 	}
@@ -133,8 +135,8 @@ class plugin_model_base extends phpok_model
 		if(!$data || !$id || !is_array($data)){
 			return false;
 		}
-		if($rs['pids'] && is_array($rs['pids'])){
-			$rs['pids'] = implode(',',$rs['pids']);
+		if($data['pids'] && is_array($data['pids'])){
+			$data['pids'] = implode(',',$data['pids']);
 		}
 		$this->db->update_array($data,'plugins',array('id'=>$id));
 	}

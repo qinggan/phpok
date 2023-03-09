@@ -27,18 +27,18 @@
 		{
 			var id = $.checkbox.join();
 			if(!id){
-				$.dialog.alert(p_lang('请选择数据表'));
+				$.dialog.tips(p_lang('请选择数据表'));
 				return false;
 			}
 			var url = get_url('sql','optimize','id='+$.str.encode(id));
 			$.phpok.json(url,function(rs){
 				if(rs.status){
-					$.dialog.alert(p_lang('数据优化成功'),function(){
+					$.dialog.tips(p_lang('数据优化成功'),function(){
 						$.phpok.reload();
-					},'succeed');
+					}).lock();
 					return true;
 				}
-				$.dialog.alert(rs.info);
+				$.dialog.tips(rs.info);
 				return false;
 			})
 		},
@@ -50,15 +50,15 @@
 		{
 			var id = $.checkbox.join();
 			if(!id){
-				$.dialog.alert(p_lang('请选择数据表'));
+				$.dialog.tips(p_lang('请选择数据表'));
 				return false;
 			}
 			var url = get_url('sql','repair','id='+$.str.encode(id));
 			$.phpok.json(url,function(rs){
 				if(rs.status){
-					$.dialog.alert(p_lang('数据表修复成功'),function(){
+					$.dialog.tips(p_lang('数据表修复成功'),function(){
 						$.phpok.reload();
-					},'succeed');
+					}).lock();
 					return true;
 				}
 				$.dialog.alert(rs.info);
@@ -71,13 +71,25 @@
 		**/
 		backup:function()
 		{
-			$.dialog.confirm(p_lang('确定要执行备份操作吗？未选定表将备份全部！'),function(){
-				var id = $.checkbox.join();
-				if(!id){
-					id = 'all';
-				}
+			var id = $.checkbox.join();
+			if(!id){
+				$.dialog.tips(p_lang('请选择要备份的表'));
+				return false;
+			}
+			$.dialog.confirm(p_lang('确定要执行选择的表进行备份操作吗？'),function(){
 				var url = get_url('sql','backup','id='+$.str.encode(id));
-				$.phpok.go(url);
+				$.win(p_lang('选定表备份'),url);
+			});
+		},
+
+		/**
+		 * 备份全部表
+		**/
+		backup_all:function()
+		{
+			$.dialog.confirm(p_lang('确定要执行数据库备份操作吗？'),function(){
+				var url = get_url('sql','backup','id=all');
+				$.win(p_lang('数据库备份'),url);
 			});
 		},
 
@@ -146,6 +158,22 @@
 					return false;
 				});
 			});
+		},
+
+		/**
+		 * 导入表结构信息
+		**/
+		tbl_export:function(id)
+		{
+			if(!id || id == 'undefined'){
+				var id = $.checkbox.join();
+				if(!id){
+					$.dialog.tips(p_lang('请选择数据表'));
+					return false;
+				}
+			}
+			var url = get_url('sql','export','id='+$.str.encode(id));
+			$.phpok.go(url);
 		}
 	}
 })(jQuery);

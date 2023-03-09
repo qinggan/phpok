@@ -90,11 +90,7 @@ class ext_model extends ext_model_base
 		if(isset($data['module'])){
 			unset($data['module']);
 		}
-		if($id){
-			return $this->db->update_array($data,"fields",array("id"=>$id));
-		}else{
-			return $this->db->insert_array($data,"fields");
-		}
+		return $this->model('fields')->save($data,$id);
 	}
 
 	/**
@@ -103,27 +99,23 @@ class ext_model extends ext_model_base
 	**/
 	public function del($module)
 	{
-		$sql = "SELECT id FROM ".$this->db->prefix."fields WHERE ftype='".$module."'";
-		$rslist = $this->db->get_all($sql);
-		if(!$rslist) return true;
-		foreach($rslist as $key=>$value){
-			$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$value["id"]."'";
-			$this->db->query($sql);
+		$rslist = $this->model('fields')->flist($module);
+		if(!$rslist){
+			return true;
 		}
-		$sql = "DELETE FROM ".$this->db->prefix."fields WHERE ftype='".$module."'";
-		return $this->db->query($sql);
+		foreach($rslist as $key=>$value){
+			$this->model('fields')->del($value);
+		}
+		return true;
 	}
 
 	public function get_from_identifier($identifier,$module)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE identifier='".$identifier."' AND ftype='".$module."'";
-		return $this->db->get_one($sql);
+		return $this->model('fields')->get_from_identifier($identifier,$module);
 	}
 
 	public function ext_next_taxis($module)
 	{
-		$sql = "SELECT max(taxis) as taxis FROM ".$this->db->prefix."fields WHERE ftype='".$module."' AND taxis<255";
-		$rs = $this->db->get_one($sql);
-		return $this->return_next_taxis($rs);
+		return $this->model('fields')->next_taxis($module);
 	}
 }

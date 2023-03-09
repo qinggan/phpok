@@ -1,0 +1,98 @@
+<!-- if $report -->
+<script type="text/javascript">
+var myChart;
+function update_stat(obj){
+	var count = 0;
+	$("input[data-name=stat_type]").each(function(i){
+		var t = $(this).is(":checked");
+		if(t){
+			count++;
+		}
+	});
+	if(count<1){
+		$.dialog.alert('报表统计数量不能小于1');
+		$(obj).prop("checked",true);
+		return false;
+	}
+	loadStat();
+}
+function update_vtype(val){
+	loadStat();
+}
+function loadStat(){
+	var url = get_url('report','site');
+	var tmp = new Array();
+	$("input[data-name=stat_type]").each(function(i){
+		var t = $(this).is(":checked");
+		if(t){
+			tmp.push($(this).val());
+		}
+	});
+	url += "&ids="+$.str.encode(tmp.join(','));
+	url += "&type="+$("select[name=vtype]").val();
+	myChart.showLoading();  // 开启 loading 效果
+	$.phpok.json(url,function(rs){
+		myChart.hideLoading();  // 隐藏 loading 效果
+		if(!rs.status){
+			myChart.clear();
+			$("#stat_site").hide();
+			return false;
+		}
+		var t = rs.info.x;
+		if(t.length<2){
+			myChart.clear();
+			$("#stat_site").hide();
+			return false;
+		}
+        var option = {
+            legend: {data:rs.info.y},
+            xAxis: {data: rs.info.x},
+            yAxis: {},
+            series: rs.info.rslist
+        };
+        myChart.clear();
+        myChart.setOption(option);
+	});
+}
+</script>
+<div class="layui-card" id="stat_site">
+	<div class="layui-card-header">
+		<div class="layui-row">
+			<div class="layui-col-md2">
+		    	{lang报表统计}
+			</div>
+			<div class="layui-col-md10 layui-form" style="text-align:right;">
+				<div class="fr">
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="title"{if in_array('title',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang主题数量}</label>
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="hits"{if in_array('hits',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang阅读率}</label>
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="reply"{if in_array('reply',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang评论数量}</label>
+					<!-- if $site_popedom.order && $config.biz_status -->
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="order"{if in_array('order',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang订单数量}</label>
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="price"{if in_array('price',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang订单价格}</label>
+					<!-- /if -->
+					<label style="margin-right:10px;"><input type="checkbox" data-name="stat_type" value="user"{if in_array('user',$report.ids)} checked{/if} onchange="update_stat(this)" lay-ignore /> {lang用户数量}</label>
+				</div>
+				<div class="fr" style="margin-right:20px;">
+					<select name="vtype" style="width:80px" onchange="update_vtype(this)" lay-ignore>
+						<option value="date"{if $report.type == 'date'} selected{/if}>{lang每天}</option>
+						<option value="week"{if $report.type == 'week'} selected{/if}>{lang每周}</option>
+						<option value="month"{if $report.type == 'month'} selected{/if}>{lang每月}</option>
+						<option value="quarter"{if $report.type == 'quarter'} selected{/if}>{lang季度}</option>
+						<option value="year"{if $report.type == 'year'} selected{/if}>{lang每年}</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	<div class="layui-card-body">
+		<div id="chart_main" class="layui-carousel" data-anim="fade" lay-filter="LAY-index-normcol" lay-anim="fade" style="width: 100%; height:550px;text-align:center;">数据加载中，请稍候…</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	myChart = echarts.init(document.getElementById('chart_main'));
+	loadStat();
+});
+</script>
+<!-- /if -->

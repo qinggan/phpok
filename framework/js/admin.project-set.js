@@ -76,7 +76,7 @@ function refresh_catelist()
 			for(var i in lst){
 				info += '<option value="'+lst[i]['id']+'">'+lst[i]['title']+'</option>';
 			}
-			$("#cate").html(info);
+			$("#cate,#cate2").html(info);
 		}
 	});
 }
@@ -117,5 +117,5 @@ $(document).ready(function(){
 		form.on('select(module)',function(data){
 			$.admin_project.module_change(data.elem);
 		});
-	})
+	});
 });

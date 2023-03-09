@@ -245,3 +245,34 @@ pre{
 	padding:1em;
 	margin:0.5em 0.2em;
 }
+
+.cke_editable table{
+	border-collapse:collapse;
+}
+.cke_editable p{
+	margin-bottom:1em;
+}
+.cke_editable table {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+	display: table;
+	margin:auto;
+}
+.cke_editable table td {
+	border: 1px solid #ddd;
+	padding: 5px 10px;
+}
+.cke_editable table th {
+	border: 1px solid #ddd;
+	background-color: #f7f7f7;
+	padding: 5px 10px;
+}
+.cke_editable blockquote {
+	margin:1em 0;
+	border:1px solid #efefef;
+	background:#fcfcfc;
+	padding:0.5em 1em;
+}
+.cke_editable table th p,.cke_editable table td p{
+	margin:0;
+}

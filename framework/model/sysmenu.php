@@ -137,7 +137,7 @@ class sysmenu_model_base extends phpok_model
 		if(!$tmplist) return false;
 		# 最接近
 		$first = $second = $third = false;
-		foreach($tmplist AS $key=>$value){
+		foreach($tmplist as $key=>$value){
 			if($value["identifier"] && $value["identifier"] == $identifer && $value["func"] && $value["func"] == $func && $value["appfile"] == $ctrl){
 				if(!$third){
 					$third = true;

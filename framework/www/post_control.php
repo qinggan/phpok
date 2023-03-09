@@ -29,6 +29,19 @@ class post_control extends phpok_control
 	**/
 	public function index_f()
 	{
+		if($this->session->val('user_id')){
+			$me = $this->model('user')->get_one($this->session->val('user_id'));
+			if(!$me){
+				$this->error(P_Lang('未找到用户信息'));
+			}
+			if($me['status'] == '2'){
+				$this->error(P_Lang('您的账号被锁定，请与管理员联系'));
+			}
+			if($me['status'] == '3'){
+				$this->error(P_Lang('您的账号被禁言，请与管理员联系'));
+			}
+		}
+
 		$id = $this->get("id");
 		$pid = $this->get('pid','int');
 		if(!$id && !$pid){
@@ -66,7 +79,7 @@ class post_control extends phpok_control
 				$this->assign("cate_rs",$cate_rs);
 			}
 		}
-		
+
 		//扩展字段
 		$ext_list = $this->model('module')->fields_all($project_rs["module"],"identifier");
 		$extlist = array();
@@ -88,6 +101,7 @@ class post_control extends phpok_control
 		if($project_rs['post_tpl']){
 			$vfile[] = $project_rs['post_tpl'];
 		}
+		$vfile[] = 'usercp/'.$project_rs['identifier'].'-add';
 		$vfile[] = 'usercp/post-add-'.$project_rs['identifier'];
 		$vfile[] = 'usercp/post-add';
 		$vfile[] = $project_rs['identifier'].'_post';
@@ -126,9 +140,6 @@ class post_control extends phpok_control
 		$_back = $this->get("_back");
 		if(!$_back){
 			$_back = $this->lib('server')->referer();
-			if(!$_back){
-				$_back = $this->url;
-			}
 		}
 		$id = $this->get('id','int');
 		if(!$id){
@@ -140,12 +151,12 @@ class post_control extends phpok_control
 			$this->error(P_Lang('内容信息不存在'),$_back);
 		}
 		if($rs['user_id'] != $this->session->val('user_id')){
-			$this->error(P_Lang('您没有修改此内容权限'),$_back);
+			$this->error(P_Lang('您没有修改此内容权限'));
 		}
 		//获取项目信息
 		$project_rs = $this->call->phpok('_project','pid='.$rs['project_id']);
 		if(!$project_rs || !$project_rs['module']){
-			$this->error(P_Lang('项目不符合要求'),$_back);
+			$this->error(P_Lang('项目不符合要求'));
 		}
 		$project_rs['url'] = $this->url('usercp','list','id='.$project_rs['identifier']);
 		$this->assign("page_rs",$project_rs);
@@ -161,19 +172,13 @@ class post_control extends phpok_control
 			$cate_rs = $this->model("cate")->get_one($rs['cate_id'],"id",$project_rs['site_id']);
 			$this->assign("cate_rs",$cate_rs);
 		}
-	
+
 		//扩展字段
 		$ext_list = $this->model('module')->fields_all($project_rs["module"],"identifier");
 		$extlist = array();
 		foreach(($ext_list ? $ext_list : array()) AS $key=>$value){
 			if(!$value['is_front']){
 				continue;
-			}
-			if($value["ext"]){
-				$ext = unserialize($value["ext"]);
-				foreach($ext AS $k=>$v){
-					$value[$k] = $v;
-				}
 			}
 			$value['content'] = $rs[$value['identifier']];
 			$extlist[] = $this->lib('form')->format($value);
@@ -184,6 +189,7 @@ class post_control extends phpok_control
 		if($project_rs['post_tpl']){
 			$vfile[] = $project_rs['post_tpl'].'_edit';
 		}
+		$vfile[] = 'usercp/'.$project_rs['identifier'].'-edit';
 		$vfile[] = 'usercp/post-edit-'.$project_rs['identifier'];
 		$vfile[] = 'usercp/post-edit';
 		$vfile[] = $project_rs['identifier'].'_post_edit';

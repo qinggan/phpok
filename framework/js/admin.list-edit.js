@@ -100,16 +100,19 @@ var autosave_handle;
 			return this.save(false);
 		},
 
+		save2add:function(obj)
+		{
+			return this.save(2);
+		},
+
 		save2close:function(obj)
 		{
 			return this.save(true);
 		},
 
-		/**
-		 * 保存数据
-		**/
-		save:function(close)
+		save_open:function()
 		{
+			var opener = $.dialog.opener;
 			var loading_action;
 			var id = $("#id").val();
 			var pcate = $("#_root_cate").val();
@@ -136,15 +139,66 @@ var autosave_handle;
 					}
 					if(id){
 						$.dialog.tips(p_lang('内容信息修改成功'));
-						if(close){
-							$.admin.reload(url);
-							$.admin.close(url);
-						}
+						opener.$.phpok.reload();
 						return true;
 					}
 					$.dialog.tips(p_lang('内容信息添加成功'));
-					if(close){
+					opener.$.phpok.reload();
+					return true;
+				}
+			});
+			return false;
+		},
+
+		/**
+		 * 保存数据
+		**/
+		save:function(close,isadd)
+		{
+			var loading_action;
+			var id = $("#id").val();
+			var pcate = $("#_root_cate").val();
+			var pcate_multiple = $("#_root_cate_multiple").val();
+			$("#_listedit").ajaxSubmit({
+				'url':get_url('list','ok'),
+				'type':'post',
+				'dataType':'json',
+				'beforeSubmit':function(){
+					loading_action = $.dialog.tips(p_lang('正在保存数据，请稍候…')).time(3000).lock();
+				},
+				'success':function(rs){
+					if(rs.status != 'ok'){
+						loading_action.content(rs.content).time(1.5);
+						return false;
+					}
+					var url = get_url('list','action','id='+$("#pid").val());
+					if(pcate>0){
+						var cateid = $("#cate_id").val();
+						url += "&keywords[cateid]="+cateid;
+					}
+					if(id){
+						console.log('id:'+id);
 						$.admin.reload(url);
+						if(close){
+							loading_action.setting('close',function(){
+								$.admin.close(url);
+							})
+						}
+						loading_action.content(p_lang('内容信息修改成功')).time(1.5);
+						return true;
+					}
+					$.dialog.tips(p_lang('内容信息添加成功'));
+					if(close == 2){
+						$.admin.reload(url);
+						var add_url = get_url('list','edit','pid='+$("#pid").val());
+						if(pcate>0){
+							var cateid = $("#cate_id").val();
+							add_url += "&cateid="+cateid;
+						}
+						$.phpok.go(add_url);
+						return true;
+					}
+					if(close == true){
 						$.admin.close(url);
 						return true;
 					}
@@ -190,6 +244,7 @@ var autosave_handle;
 			if(!val){
 				return false;
 			}
+			$("#biz_attr_id").val('');//复位
 			var old = $("#_biz_attr").val();
 			if(old){
 				if(old == val){
@@ -211,16 +266,12 @@ var autosave_handle;
 				var ncontent = old+","+val;
 				//写入新值
 				$("#_biz_attr").val(ncontent);
-				//创建HTML
-				var html = '<li id="_biz_attr_'+val+'"><li>';
-				$("#biz_attr_options").append(html);
-				//异步加载HTML
-			}else{
-				$("#_biz_attr").val(val);
-				var html = '<li id="_biz_attr_'+val+'"><li>';
-				$("#biz_attr_options").html(html);
+				this.attr_info_product(ncontent);
+				return true;
 			}
+			$("#_biz_attr").val(val);
 			this.attr_info_product(val);
+			return true;
 		},
 
 		/**
@@ -233,68 +284,71 @@ var autosave_handle;
 				return false;
 			}
 			var old = $("#_biz_attr").val();
-			if(!old || old == 'undefined' || old == '0'){
-				return false;
-			}
-			if(old == val){
+			if(!old || old == 'undefined' || old == '0' || old == val){
 				$("#_biz_attr").val('');
+				$("#_biz_attr_value").val('');
 				$("#biz_attr_options").html('');
 				return false;
 			}
 			var list = old.split(",");
 			var nlist = new Array();
-			var m = 0;
 			for(var i in list){
 				if(list[i] != val){
-					nlist[m] = list[i];
-					m++;
+					nlist.push(list[i]);
 				}
 			}
-			var ncontent = nlist.join(",");
-			$("#_biz_attr").val(ncontent);
-			//删除HTML
-			var html = '<li id="_biz_attr_'+val+'"><li>';
-			$("#_biz_attr_"+val).remove();
+			$("#_biz_attr").val(nlist.join(","));
+			var vals = $("#_biz_attr_value").val();
+			if(vals && vals != ''){
+				var t = vals.split(",");
+				var l = new Array();
+				for(var i in t){
+					var tmp = (t[i]).split("_");
+					if(tmp[0] != val){
+						l.push(t[i]);
+					}
+				}
+				$("#_biz_attr_value").val(l.join(","));
+			}
+			this.attr_info_product();
 		},
 
 		/**
-		 * 异步加载属性
+		 * 
+		 * @参数 
+		 * @参数 
 		**/
-		attr_load:function()
+		attr_delete:function(obj)
 		{
-			var bizinfo = $("#_biz_attr").val();
-			if(bizinfo && bizinfo != 'undefined' && bizinfo != '0'){
-				var list = bizinfo.split(",");
-				var html = '';
-				for(var i in list){
-					html += '<li id="_biz_attr_'+list[i]+'"><li>';
-				}
-				$("#biz_attr_options").html(html);
-				for(var i in list){
-					this.attr_info_product(list[i]);
-				}
-			}
+			$(obj).parent().parent().remove();
 		},
 
 		/**
 		 * 读取属性及内容信息
 		 * @参数 id 属性ID
 		**/
-		attr_info_product:function(id)
+		attr_info_product:function()
 		{
-			//执行属性添加
+			var id = $("#_biz_attr").val();
+			if(!id){
+				return false;
+			}
 			var url = get_url('list','attr','aid='+id);
+			var vals = $("#_biz_attr_value").val();
+			if(vals){
+				url += "&vals="+vals;
+			}
 			var tid = $("#id").val();
 			if(tid){
 				url += "&tid="+tid;
 			}
 			$.phpok.json(url,function(data){
 				if(data.status){
-					$("#_biz_attr_"+id).html(data.info);
+					$("#biz_attr_options").html(data.info);
 					layui.form.render();
 					return true;
 				}
-				$.dialog.alert(data.info);
+				$.dialog.tips(data.info);
 				return false;
 			});
 		},
@@ -338,35 +392,29 @@ var autosave_handle;
 			if(!id || !val || val == 'undefined' || val == '0' || val == ''){
 				return false;
 			}
-			var text = $("#attr_"+id+"_opt").find("option:selected").text();
-			$("#attr_"+id+"_opt option[value="+val+"]").remove();
-			this.attr_option_html(id,val,text);
-		},
-
-		/**
-		 * 输出HTML
-		 * @参数 id 属性ID
-		 * @参数 val 参数ID
-		 * @参数 text 显示名称
-		**/
-		attr_option_html:function(id,val,text)
-		{
-			var count = $("tr[name=attr_"+id+"]").length;
-			var taxis = count > 0 ? parseInt(count+1) * 5 : 5;
-			var html = '<tr name="attr_'+id+'" id="attr_'+id+'_'+val+'" data-name="'+text+'">';
-			html += '<td class="center"><input type="hidden" name="_attr_'+id+'[]" value="'+val+'" />'+text+'</td>';
-			html += '<td class="center"><input type="text" name="_attr_weight_'+id+'['+val+']" value="0" class="layui-input" /></td>';
-			html += '<td class="center"><input type="text" name="_attr_volume_'+id+'['+val+']" value="0" class="layui-input" /></td>';
-			html += '<td class="center"><input type="text" name="_attr_price_'+id+'['+val+']" value="" class="layui-input" /></td>';
-			html += '<td class="center"><input type="text" name="_attr_taxis_'+id+'['+val+']" value="'+taxis+'" class="layui-input" /></td>'
-			html += '<td class="center"><input type="button" value="'+p_lang('删除')+'" onclick="$.admin_list_edit.attr_option_delete(\''+id+'\',\''+val+'\')" class="layui-btn layui-btn-sm" /></td>';
-			html += '</tr>';
-			if($("tr[name=attr_"+id+"]").length > 0){
-				$("tr[name=attr_"+id+"]").last().after(html);
-			}else{
-				$("tr[name=attr_"+id+"_thead]").after(html);
+			$("#attr_"+id+"_opt").val('');
+			var chk = id+"_"+val;
+			var old = $("#_biz_attr_value").val();
+			if(!old || old == '' || old == 'undefined'){
+				$("#_biz_attr_value").val(chk);
+				this.attr_info_product();
+				return true;
 			}
-			return true;
+			var list = old.split(",");
+			var is_append = true;
+			for(var i in list){
+				if(list[i] == chk){
+					is_append = false;
+					break;
+				}
+			}
+			if(!is_append){
+				$.dialog.tips("值已存在");
+				return false;
+			}
+			var n = old+","+chk;
+			$("#_biz_attr_value").val(n);
+			this.attr_info_product();
 		},
 
 		/**
@@ -384,12 +432,12 @@ var autosave_handle;
 				var url = get_url('options','save_values','aid='+id+'&title='+$.str.encode(name));
 				$.phpok.json(url,function(data){
 					if(data.status){
-						self.attr_option_html(id,data.info,name);
+						self.attr_option_quickadd(id,data.info);
 						return true;
 					}
-					$.dialog.alert(data.info);
+					$.dialog.tips(data.info);
 					return false;
-				})
+				});
 			});
 		},
 
@@ -421,6 +469,16 @@ var autosave_handle;
 		{
 			$("#country_"+country_id).remove();
 			return true;
+		},
+		wholesale_add:function()
+		{
+			var html = '<tr><td><input type="text" name="_wholesale_qty[]" value="" class="layui-input" /></td><td><input type="text" name="_wholesale_price[]" value="" class="layui-input" /></td><td><input type="button" value="删除" onclick="$.admin_list_edit.wholesale_delete(this)" class="layui-btn layui-btn-xs layui-btn-danger" /></td></tr>';
+			$("#tradeprice").append(html);
+		},
+		wholesale_delete:function(obj)
+		{
+			$(obj).parent().parent().remove();
+			return true;
 		}
 	}
 
@@ -446,8 +504,6 @@ $(document).ready(function(){
 
 	//加载产品属性
 	if($("#_biz_attr").length > 0){
-		$.admin_list_edit.attr_load();
+		$.admin_list_edit.attr_info_product();
 	}
-
-
 });

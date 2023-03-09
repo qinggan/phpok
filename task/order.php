@@ -42,7 +42,7 @@ $status = $status_list[$param['status']];
 $this->assign('status',$status);
 
 //订单物流信息
-$express_list = $this->model('order')->express_info_all($order['id']);
+$express_list = $this->model('order')->express_all($order['id']);
 $this->assign('express_list',$express_list);
 
 //通知用户

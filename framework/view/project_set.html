@@ -1,813 +1,862 @@
 <!-- include tpl=head_lay -->
 <form method="post" id="{$ext_module}" class="layui-form" onsubmit="return $.admin_project.save('{$ext_module}')">
 <!-- if $id --><input type="hidden" id="id" name="id" value="{$id}" /><!-- /if -->
-<div class="layui-row layui-col-space10">
-	<div class="layui-col-xs12 layui-col-lg6">
-		<div class="layui-card">
-			<div class="layui-card-header">{lang基本信息}</div>
-			<div class="layui-card-body">
-				<input type="hidden" name="style" id="style" value="{$rs.style}" />
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang项目名称}
-					</label>
-					<div class="layui-input-block">
-						<div class="layui-input-inline default-auto">
-							<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" style="{$rs.style}" />
-						</div>
-						<div class="layui-input-inline auto">
-							<button type="button" class="layui-btn" onclick="$.admin_project.style_setting('style','title')">
-								<i class="layui-icon">&#xe64e;</i> {lang样式}
-							</button>
-						</div>
-					</div>
-				</div>
-
-				
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang属性}</label>
-					<div class="layui-input-inline auto">
-						<input type="checkbox" name="lock"{if !$rs.status} checked{/if} title="{lang停用}" class="layui-tips" lay-tips="{lang勾选此项后，前台将停用}" />
-						<input type="checkbox" name="hidden"{if $rs.hidden} checked{/if} title="{lang隐藏}" />
-					</div>
-					<div class="layui-form-mid">{lang停用前端无效，隐藏不影响}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang父级栏目}</label>
-					<div class="layui-input-inline">
-						<select id="parent_id" name="parent_id">
-						<option value="0">{lang设为父栏目}</option>
-						<!-- loop from=$parent_list key=$key value=$value -->
-						<!-- if $rs.id != $value.id -->
-						<option value="{$value.id}"{if $rs.parent_id == $value.id} selected{/if}>{$value.title}</option>
-						<!-- /if -->
-						<!-- /loop -->
-						</select>
-					</div>
-					<div class="layui-form-mid">{lang实现父子栏目可以实现数据交叉使用}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang标识}</label>
-					<div class="layui-input-inline">
-						<input type="text" id="identifier" name="identifier" class="layui-input" value="{$rs.identifier}" />
-					</div>
-					<div class="layui-input-inline auto" id="HTML-POINT-PHPOK-IDENTIFIER"></div>
-					<div class="clear"></div>
-					<div class="layui-input-block mtop">{lang限}<span class="red">{lang字母、数字、下划线或中划线且必须是字母开头，}</span>{lang首页专用请设置为}<span class="red">index</span></div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label title">{lang绑定模块}</label>
-					<div class="layui-input-inline auto">
-						<select id="module" name="module" lay-filter="module">
-						<option value="0">{lang不关联模块}</option>
-						<!-- loop from=$module_list key=$key value=$value id=module_list_id -->
-						<option value="{$value.id}"{if $value.id == $rs.module} selected{/if} data-mtype="{$value.mtype}">{$value.title}</option>
-						<!-- /loop -->
-						</select>
-					</div>
-					<div class="layui-form-mid">{lang实现类似新闻，产品等多条项目信息}</div>
-				</div>
-				<div id="module_set2" class="hidden">
-					<div class="layui-form-item">
-						<label class="layui-form-label">{lang默认主题数}</label>
-						<div class="layui-input-inline short">
-							<input type="text" id="psize2" name="psize2" value="{$rs.psize ? $rs.psize : 30}" class="layui-input" />
-						</div>
-						<div class="layui-form-mid">{lang设置每页默认的主题数量}</div>
-					</div>
-					<div class="layui-form-item">
-						<label class="layui-form-label">{langAPI 默认数}</label>
-						<div class="layui-input-inline short">
-							<input type="text" id="psize2_api" name="psize2_api" value="{$rs.psize_api ? $rs.psize_api : 10}" class="layui-input" />
-						</div>
-						<div class="layui-form-mid">{lang设置 API 默认数量}</div>
-					</div>
-					<div class="layui-form-item">
-						<label class="layui-form-label">
-							{lang数据排序}
-						</label>
-						<div class="layui-input-block">
-							<ul class="layout">
-								<li class="long"><input type="text" id="orderby2" name="orderby2" class="layui-input" value="{$rs.orderby ? $rs.orderby : 'id DESC'}" /></li>
-								<li><input type="button" value="{lang清空}" class="layui-btn layui-btn-danger" onclick="$('input[name=orderby2]').val('')" /></li>
-							</ul>
-						</div>
-						<div class="layui-input-block mtop">
-							<div class="layui-btn-group" id="tmp_orderby_btn2">
-								<input type="button" value="ID" onclick="phpok_admin_orderby('orderby2','id')" class="layui-btn layui-btn-sm" />
-							</div>
-						</div>
-						<div class="layui-input-block">{lang设置好默认排序，有利于网站的管理（前后台一致）}</div>
-					</div>
-				</div>
-
-				<div id="module_set" class="hidden">
-					<div class="layui-form-item">
-						<label class="layui-form-label">{lang主题名称}</label>
-						<div class="layui-input-inline">
-							<input type="text" id="alias_title" name="alias_title" class="layui-input" value="{$rs.alias_title}" />
-						</div>
-						<div class="layui-form-mid">{lang留空使用【主题】}</div>
-					</div>
-					<div class="layui-form-item">
-						<label class="layui-form-label">{lang主题提示}</label>
-						<div class="layui-input-inline long">
-							<input type="text" id="alias_note" name="alias_note" class="layui-input" value="{$rs.alias_note}" />
-						</div>
-					</div>
-					<div class="layui-form-item">
-						<div id="ext_help" class="hide">
-							<table class="layui-table">
-								<thead>
-								<tr>
-									<th>扩展项</th>
-									<th>备注</th>
-								</tr>
-								</thead>
-								<tr>
-									<td>{lang主题属性}</td>
-									<td>{lang相当于给主题增加标签，如精华，推荐，热荐等}</td>
-								</tr>
-								<tr>
-									<td>{lang搜索}</td>
-									<td>{lang勾选此项后，该项目在前台将支持搜索}</td>
-								</tr>
-								<tr>
-									<td>{lang下级主题}</td>
-									<td>{lang启用此项，主题将支持二级，多用于二级导航}</td>
-								</tr>
-								<tr>
-									<td>{lang发布}</td>
-									<td>{lang勾选此项，被授权的用户可以在前台有发布权限}</td>
-								</tr>
-								<tr>
-									<td>{lang评论}</td>
-									<td>{lang即回复功能，勾选后被授权的用户将支持回复，静态页无效}</td>
-								</tr>
-								<!-- if $config.biz_status -->
-								<tr>
-									<td>{lang电子商务}</td>
-									<td>{lang启用此项，该主题将支持交易功能}</td>
-								</tr>
-								<!-- /if -->
-								<tr>
-									<td>{lang前台访问}</td>
-									<td>{lang启用后，可直接在后台里点击进入前台，使用动态地址}</td>
-								</tr>
-								<tr>
-									<td>{langAPI访问}</td>
-									<td>{lang启用后，可通过接口获取数据}</td>
-								</tr>
-							</table>
-						</div>
-						<label class="layui-form-label"><i class="layui-icon hand" onclick="$.admin_project.ext_help()">&#xe702;</i> {lang扩展项}</label>
-						<div class="layui-input-inline" style="width:80%;">
-							<ul class="layout">
-								<li><input type="checkbox" name="is_attr" title="{lang主题属性}" class="layui-tips" id="is_attr"{if $rs.is_attr} checked{/if} /></li>
-								<li><input type="checkbox" name="is_search" title="{lang搜索}" id="is_search"{if $rs.is_search} checked{/if} /></li>
-								<li><input type="checkbox" name="subtopics" title="{lang下级主题}" id="subtopics"{if $rs.subtopics} checked{/if} /></li>
-								<li><input type="checkbox" name="post_status" title="{lang发布}" id="post_status"{if $rs.post_status} checked{/if} /></li>
-								<li><input type="checkbox" name="comment_status" title="{lang评论}" id="comment_status"{if $rs.comment_status} checked{/if} /></li>
-								<!-- if $config.biz_status -->
-								<li><input type="checkbox" name="is_biz" title="{lang电子商务}" id="is_biz"{if $rs.is_biz} checked{/if} /></li>
-								<!-- /if -->
-								<li><input type="checkbox" name="is_front" title="{lang前台访问}" id="is_front"{if $rs.is_front} checked{/if} /></li>
-								<li><input type="checkbox" name="is_api" title="{langAPI访问}" id="is_api"{if $rs.is_api} checked{/if} /></li>
-							</ul>
-							<div class="clear"></div>
-						</div>
-					</div>
-
-					<div id="is_attr_status"{if !$rs.is_attr} style="display:none"{/if}>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-tab" lay-filter="project">
+			<ul class="layui-tab-title">
+				<li class="layui-this">{lang基本信息}</li>
+				<li>{lang扩展信息}</li>
+				<li>{lang模板设置}</li>
+				<li>{lang权限设置}</li>
+				<li>{langSEO优化}</li>
+				<li id="email_set_post_status"{if !$rs.post_status} style="display:none"{/if}>{lang发布设置}</li>
+				<li id="email_set_comment_status"{if !$rs.comment_status} style="display:none"{/if}>{lang评论设置}</li>
+				<li id="use_biz_setting"{if !$rs.is_biz || !$config.biz_status} style="display:none"{/if}>{lang电商属性}</li>
+				<li id="use_filter_setting"{if !$rs.module} style="display:none"{/if}>{lang筛选器}</li>
+				<li id="admin-other-setting"{if !$rs.module} style="display:none"{/if}>{lang其他设置}</li>
+			</ul>
+			<div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+					<div class="layui-container">
+						<input type="hidden" name="style" id="style" value="{$rs.style}" />
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								可选属性
+								{lang项目名称}
+							</label>
+							<div class="layui-input-inline default-auto">
+								<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" style="{$rs.style}" />
+							</div>
+							<div class="layui-input-inline auto gray lh38">
+								<button type="button" class="layui-btn" onclick="$.admin_project.style_setting('style','title')">
+									<i class="layui-icon">&#xe64e;</i> {lang样式}
+								</button>
+							</div>
+						</div>
+
+						
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang属性}</label>
+							<div class="layui-input-inline auto">
+								<input type="checkbox" name="lock"{if !$rs.status} checked{/if} title="{lang停用}" class="layui-tips" lay-tips="{lang勾选此项后，前台将停用}" />
+								<input type="checkbox" name="hidden"{if $rs.hidden} checked{/if} title="{lang隐藏}" />
+								<input type="checkbox" name="is_front" title="{lang前台访问}" id="is_front"{if $rs.is_front} checked{/if} />
+								<input type="checkbox" name="is_api" title="{langAPI访问}" id="is_api"{if $rs.is_api} checked{/if} />
+							</div>
+							<div class="layui-form-mid">{lang停用前端无效，隐藏不影响}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang父级栏目}</label>
+							<div class="layui-input-inline">
+								<select id="parent_id" name="parent_id">
+								<option value="0">{lang设为父栏目}</option>
+								<!-- loop from=$parent_list key=$key value=$value -->
+								<!-- if $rs.id != $value.id -->
+								<option value="{$value.id}"{if $rs.parent_id == $value.id} selected{/if}>{$value.title}</option>
+								<!-- /if -->
+								<!-- /loop -->
+								</select>
+							</div>
+							<div class="layui-form-mid">{lang实现父子栏目可以实现数据交叉使用}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang标识}</label>
+							<div class="layui-input-inline">
+								<input type="text" id="identifier" name="identifier" class="layui-input" value="{$rs.identifier}" />
+							</div>
+							<div class="layui-input-inline auto" id="HTML-POINT-PHPOK-IDENTIFIER"></div>
+							<div class="clear"></div>
+							<div class="layui-input-block mtop">{lang限}<span class="red">{lang字母、数字、下划线或中划线且必须是字母开头，}</span>{lang首页专用请设置为}<span class="red">index</span></div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label title">{lang绑定模块}</label>
+							<div class="layui-input-inline auto">
+								<select id="module" name="module" lay-filter="module">
+								<option value="0">{lang不关联模块}</option>
+								<!-- loop from=$module_list key=$key value=$value id=module_list_id -->
+								<option data-layout="{$value.layout}" value="{$value.id}"{if $value.id == $rs.module} selected{/if} data-mtype="{$value.mtype}">{$value.title}</option>
+								<!-- /loop -->
+								</select>
+							</div>
+							<div class="layui-form-mid">{lang实现类似新闻，产品等多条项目信息}</div>
+						</div>
+						<div id="module_set2" class="hidden">
+							<div class="layui-form-item">
+								<label class="layui-form-label">{lang默认主题数}</label>
+								<div class="layui-input-inline short">
+									<input type="text" id="psize2" name="psize2" value="{$rs.psize ? $rs.psize : 30}" class="layui-input" />
+								</div>
+								<div class="layui-form-mid">{lang设置每页默认的主题数量}</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">{langAPI 默认数}</label>
+								<div class="layui-input-inline short">
+									<input type="text" id="psize2_api" name="psize2_api" value="{$rs.psize_api ? $rs.psize_api : 10}" class="layui-input" />
+								</div>
+								<div class="layui-form-mid">{lang设置 API 默认数量}</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">
+									{lang数据排序}
+								</label>
+								<div class="layui-input-block">
+									<ul class="layout">
+										<li class="long"><input type="text" id="orderby2" name="orderby2" class="layui-input" value="{$rs.orderby ? $rs.orderby : 'id DESC'}" /></li>
+										<li><input type="button" value="{lang清空}" class="layui-btn layui-btn-danger" onclick="$('input[name=orderby2]').val('')" /></li>
+									</ul>
+								</div>
+								<div class="layui-input-block mtop">
+									<div class="layui-btn-group" id="tmp_orderby_btn2">
+										<input type="button" value="ID" onclick="phpok_admin_orderby('orderby2','id')" class="layui-btn layui-btn-sm" />
+									</div>
+								</div>
+								<div class="layui-input-block">{lang设置好默认排序，有利于网站的管理（前后台一致）}</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">{lang关联根分类}</label>
+								<div class="layui-input-inline auto">
+									<select id="cate2" name="cate2">
+									<option value="0">{lang不关联分类}</option>
+									<!-- loop from=$catelist key=$key value=$value id=catelist_id -->
+									<option value="{$value.id}"{if $value.id == $rs.cate} selected{/if}>{$value.title}</option>
+									<!-- /loop -->
+									</select>
+								</div>
+								<div class="layui-form-mid">{lang启用此项后，添加内容时，需要选对相对应的分类，且不能为空}</div>
+							</div>
+						</div>
+
+						<div id="module_set" class="hidden">
+							<div class="layui-form-item">
+								<label class="layui-form-label">{lang主题名称}</label>
+								<div class="layui-input-inline">
+									<input type="text" id="alias_title" name="alias_title" class="layui-input" value="{$rs.alias_title}" />
+								</div>
+								<div class="layui-form-mid">{lang留空使用【主题】}</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">{lang主题提示}</label>
+								<div class="layui-input-inline long">
+									<input type="text" id="alias_note" name="alias_note" class="layui-input" value="{$rs.alias_note}" />
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div id="ext_help" class="hide">
+									<table class="layui-table">
+										<thead>
+										<tr>
+											<th>扩展项</th>
+											<th>备注</th>
+										</tr>
+										</thead>
+										<tr>
+											<td>{lang主题属性}</td>
+											<td>{lang相当于给主题增加标签，如精华，推荐，热荐等}</td>
+										</tr>
+										<tr>
+											<td>{lang搜索}</td>
+											<td>{lang勾选此项后，该项目在前台将支持搜索}</td>
+										</tr>
+										<tr>
+											<td>{lang下级主题}</td>
+											<td>{lang启用此项，主题将支持二级，多用于二级导航}</td>
+										</tr>
+										<tr>
+											<td>{lang发布}</td>
+											<td>{lang勾选此项，被授权的用户可以在前台有发布权限}</td>
+										</tr>
+										<tr>
+											<td>{lang评论}</td>
+											<td>{lang即回复功能，勾选后被授权的用户将支持回复，静态页无效}</td>
+										</tr>
+										<!-- if $config.biz_status -->
+										<tr>
+											<td>{lang电子商务}</td>
+											<td>{lang启用此项，该主题将支持交易功能}</td>
+										</tr>
+										<!-- /if -->
+									</table>
+								</div>
+								<label class="layui-form-label"><i class="layui-icon hand" onclick="$.admin_project.ext_help()">&#xe702;</i> {lang扩展项}</label>
+								<div class="layui-input-inline" style="width:80%;">
+									<ul class="layout">
+										<li><input type="checkbox" name="is_attr" title="{lang主题属性}" class="layui-tips" id="is_attr"{if $rs.is_attr} checked{/if} /></li>
+										<li><input type="checkbox" name="is_search" title="{lang搜索}" id="is_search"{if $rs.is_search} checked{/if} /></li>
+										<li><input type="checkbox" name="subtopics" title="{lang下级主题}" id="subtopics"{if $rs.subtopics} checked{/if} /></li>
+										<li><input type="checkbox" name="post_status" title="{lang发布}" id="post_status"{if $rs.post_status} checked{/if} /></li>
+										<li><input type="checkbox" name="comment_status" title="{lang评论}" id="comment_status"{if $rs.comment_status} checked{/if} /></li>
+										<!-- if $config.biz_status -->
+										<li><input type="checkbox" name="is_biz" title="{lang电子商务}" id="is_biz"{if $rs.is_biz} checked{/if} /></li>
+										<!-- /if -->
+									</ul>
+									<div class="clear"></div>
+								</div>
+							</div>
+
+							<div id="is_attr_status"{if !$rs.is_attr} style="display:none"{/if}>
+								<div class="layui-form-item">
+									<label class="layui-form-label">
+										可选属性
+									</label>
+									<div class="layui-input-block">
+										<!-- loop from=$attrlist key=$key value=$value id=$tmpid -->
+										<input type="checkbox" name="attrs[]" id="attrs_{$key}" value="{$key}" title="{$value}" lay-skin="primary" {if $attrs && in_array($key,$attrs)} checked{/if} />
+										<!-- /loop -->
+									</div>
+								</div>
+							</div>
+
+							<div class="layui-form-item">
+								<label class="layui-form-label">{lang默认主题数}</label>
+								<div class="layui-input-inline short">
+									<input type="text" id="psize" name="psize" value="{$rs.psize ? $rs.psize : 30}" class="layui-input" />
+								</div>
+								<div class="layui-form-mid">{lang设置每页默认的主题数量}</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">{lang接口默认数}</label>
+								<div class="layui-input-inline short">
+									<input type="text" id="psize_api" name="psize_api" value="{$rs.psize_api ? $rs.psize_api : 10}" class="layui-input" />
+								</div>
+								<div class="layui-form-mid">{lang设置 API 接口读取的主题数量，仅限接口开启有效}</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">{lang数据排序}</label>
+								<div class="layui-input-block">
+									<input type="text" id="orderby" name="orderby" class="layui-input" value="{$rs.orderby ? $rs.orderby : 'l.sort ASC,l.dateline DESC,l.id DESC'}" />
+								</div>
+								<div class="layui-input-block">
+									<div class="layui-btn-group" style="margin-top:10px;">
+										<input type="button" value="{lang清空}" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$('#orderby').val('')" />
+										<input type="button" value="{lang点击}" onclick="phpok_admin_orderby('orderby','l.hits')" class="layui-btn layui-btn-sm" />
+										<input type="button" value="{lang时间}" onclick="phpok_admin_orderby('orderby','l.dateline')" class="layui-btn layui-btn-sm" />
+										<input type="button" value="{lang回复时间}" onclick="phpok_admin_orderby('orderby','l.replydate')" class="layui-btn layui-btn-sm" />
+										<input type="button" value="ID" onclick="phpok_admin_orderby('orderby','l.id')" class="layui-btn layui-btn-sm" />
+										<input type="button" value="{lang人工}" onclick="phpok_admin_orderby('orderby','l.sort')" class="layui-btn layui-btn-sm" />
+									</div>
+									<div id="tmp_orderby_btn" class="layui-btn-group" style="margin-top:10px;"></div>
+								</div>
+								<div class="layui-input-block auto">{lang设置好默认排序，有利于网站的管理/前后台一致}</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">{lang列表读取}</label>
+								<div class="layui-input-block">
+									<input type="text" id="list_fields" name="list_fields" class="layui-input" value="{$rs.list_fields}" />
+								</div>
+								<div class="layui-input-block" style="margin-top:10px;">
+									<div class="layui-btn-group" id="tmp_fields_btn">
+										<input type="button" value="{lang清空}" class="layui-btn layui-btn-sm layui-btn-normal" onclick="$('#list_fields').val('')" />
+									</div>
+								</div>
+								<div class="layui-input-block auto">{lang当绑定了模块后，读取列表的数据默认为全部，请根据实际情况来设置，最多不能超过200字符}</div>
+							</div>
+							<div class="layui-form-item">
+								<label class="layui-form-label">{lang关联根分类}</label>
+								<div class="layui-input-inline auto">
+									<select id="cate" name="cate" onchange="update_show_select(this.value)" lay-ignore>
+									<option value="0">{lang不关联分类}</option>
+									<!-- loop from=$catelist key=$key value=$value id=catelist_id -->
+									<option value="{$value.id}"{if $value.id == $rs.cate} selected{/if}>{$value.title}</option>
+									<!-- /loop -->
+									</select>
+									<input type="button" value="{lang添加根分类}" onclick="cate_add(this.value)" class="phpok-btn" />
+								</div>
+								<div class="layui-form-mid">{lang启用此项后，添加内容时，需要选对相对应的分类，且不能为空}</div>
+							</div>
+
+							<div id="cate_multiple_set"{if !$rs.cate} class="hide"{/if}>
+								<div class="layui-form-item">
+									<label class="layui-form-label">{lang分类选项}</label>
+									<div class="layui-input-inline auto">
+										<input type="radio" name="cate_multiple" value="0"{if !$rs.cate_multiple} checked{/if} title="{lang单选}" />
+										<input type="radio" name="cate_multiple" value="1"{if $rs.cate_multiple} checked{/if} title="{lang多选}" />
+									</div>
+									<div class="layui-form-mid">{lang设置分类是单选模式还是多选模式}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-tab-item">
+					<div class="layui-container">
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang项目别名}</label>
+							<div class="layui-input-inline">
+								<input type="text" id="nick_title" name="nick_title" class="layui-input" value="{$rs.nick_title}" />
+							</div>
+							<div class="layui-form-mid">{lang仅限在后台使用，一般不要超过6个汉字}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang排序}</label>
+							<div class="layui-input-inline short">
+								<input type="text" id="taxis" name="taxis" class="layui-input" value="{$rs.taxis ? $rs.taxis : '255'}" />
+							</div>
+							<div class="layui-form-mid">{lang自定义排序，值越小越往前靠}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang主题标识}
+							</label>
+							<div class="layui-input-inline default-auto">
+								<select id="is_identifier" name="is_identifier">
+								<option value="0">{lang不使用}</option>
+								<option value="1"{if $rs.is_identifier == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
+								<option value="3"{if $rs.is_identifier == 3} selected{/if}>{lang启用非必填，默认显示}</option>
+								<option value="2"{if $rs.is_identifier == 2} selected{/if}>{lang启用且必填}</option>
+								</select>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang内容模板}
+							</label>
+							<div class="layui-input-inline">
+								<select id="is_tpl_content" name="is_tpl_content">
+								<option value="0">{lang不使用}</option>
+								<option value="1"{if $rs.is_tpl_content == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
+								<option value="3"{if $rs.is_tpl_content == 3} selected{/if}>{lang启用非必填，默认显示}</option>
+								<option value="2"{if $rs.is_tpl_content == 2} selected{/if}>{lang启用且必填}</option>
+								</select>
+							</div>
+							<div class="layui-form-mid">
+								{lang即是否启用自定义的内容模板}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang绑定用户}
+							</label>
+							<div class="layui-input-inline">
+								<select id="is_userid" name="is_userid">
+								<option value="0">{lang不使用}</option>
+								<option value="1"{if $rs.is_userid == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
+								<option value="3"{if $rs.is_userid == 3} selected{/if}>{lang启用非必填，默认显示}</option>
+								<option value="2"{if $rs.is_userid == 2} selected{/if}>{lang启用且必填}</option>
+								</select>
+							</div>
+							<div class="layui-form-mid">
+								{lang允许主题绑定相应的用户}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang用户别名}</label>
+							<div class="layui-input-inline">
+								<input type="text" id="user_alias" name="user_alias" class="layui-input" value="{$rs.user_alias}" />
+							</div>
+							<div class="layui-form-mid">{lang留空使用默认}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang用户备注}</label>
+							<div class="layui-input-inline default-auto">
+								<input type="text" id="user_note" name="user_note" class="layui-input" value="{$rs.user_note}" />
+							</div>
+							<div class="layui-form-mid">{lang简要说明选择注意事项}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang用户中心}
+							</label>
+							<div class="layui-input-inline">
+								<select id="group_id" name="group_id">
+									<option value="">{lang不使用}</option>
+									<!-- loop from=$groups key=$key value=$value id=$tmpid -->
+									<option value="{$key}"{if $rs.group_id && $rs.group_id == $key} selected{/if}>{$value}</option>
+									<!-- /loop -->
+								</select>
+							</div>
+							<div class="layui-form-mid">
+								{lang即前台用户中心左侧显示，请注意相应权限}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang后台分组}
+							</label>
+							<div class="layui-input-inline">
+								<select id="admin_group" name="admin_group">
+									<option value="">{lang不使用}</option>
+									<!-- loop from=$groups key=$key value=$value id=$tmpid -->
+									<option value="{$key}"{if $rs.admin_group && $rs.admin_group == $key} selected{/if}>{$value}</option>
+									<!-- /loop -->
+								</select>
+							</div>
+							<div class="layui-form-mid">
+								<i class="layui-icon layui-tips" lay-tips="{lang用于合并后台项目，没有层级管理，类似手机的多个应用合并放在一个文件夹一样}">&#xe702;</i>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{langTag标签}
+							</label>
+							<div class="layui-input-inline">
+								<select id="is_tag" name="is_tag">
+								<option value="0">{lang不使用}</option>
+								<option value="1"{if $rs.is_tag == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
+								<option value="3"{if $rs.is_tag == 3} selected{/if}>{lang启用非必填，默认显示}</option>
+								<option value="2"{if $rs.is_tag == 2} selected{/if}>{lang启用且必填}</option>
+								</select>
+							</div>
+							<div class="layui-form-mid">
+								{lang允许自定义标签内容}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{langSEO}
+							</label>
+							<div class="layui-input-inline">
+								<select id="is_seo" name="is_seo">
+								<option value="0">{lang不使用}</option>
+								<option value="1"{if $rs.is_seo == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
+								<option value="2"{if $rs.is_seo == 2} selected{/if}>{lang启用非必填，默认显示}</option>
+								<option value="3"{if $rs.is_seo == 3} selected{/if}>{lang启用且必填}</option>
+								</select>
+							</div>
+							<div class="layui-form-mid">
+								{lang允许主题自定义相关的SEO信息}
+							</div>
+						</div>
+						
+
+						
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								<i class="layui-icon layui-tips" lay-tips="{lang请选择一个直观的图标，大小为：48x48，建议使用PNG格式}">&#xe702;</i> {lang图标}
+							</label>
+							<div class="layui-input-inline default-auto">
+								<input type="text" name="ico" id="ico" value="{$rs.ico}" class="layui-input" />
+							</div>
+							<div class="layui-input-inline auto gray lh38">
+								<div class="layui-btn-group">
+									<input type="button" value="{lang选择图标}" onclick="$.admin_project.icolist()" class="layui-btn layui-btn-sm" />
+									<input type="button" value="{lang预览}" onclick="$.phpokform.text_button_image_preview('ico')" class="layui-btn layui-btn-sm" />
+									<input type="button" value="{lang清空}" onclick="$('#ico').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+								</div>
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label layui-tips" lay-tips="{lang将显示在内容管理布局区那里，用于提示编辑人员注意事项}">{lang后台备注}</label>
+							<div class="layui-input-block">
+								{$note_content}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-tab-item">
+					<div class="layui-container">
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang封面模板}</label>
+							<div class="layui-input-inline">
+								<input type="text" id="tpl_index" name="tpl_index" class="layui-input" value="{$rs.tpl_index}" />
+							</div>
+							<div class="layui-form-mid">
+								<div class="layui-btn-group">
+									<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_index')" class="layui-btn layui-btn-sm" />
+									<input type="button" value="{lang清空}" onclick="$('#tpl_index').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+								</div>
+							</div>
+							<div class="layui-form-mid">{lang不启用请留空}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang列表模板}</label>
+							<div class="layui-input-inline">
+								<input type="text" id="tpl_list" name="tpl_list" class="layui-input" value="{$rs.tpl_list}" />
+							</div>
+							<div class="layui-input-inline auto">
+								<div class="layui-btn-group">
+									<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_list')" class="layui-btn layui-btn-sm" />
+									<input type="button" value="{lang清空}" onclick="$('#tpl_list').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+								</div>
+							</div>
+							<div class="layui-form-mid">{lang绑定模块才能生效}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang内容模板}</label>
+							<div class="layui-input-inline">
+								<input type="text" id="tpl_content" name="tpl_content" class="layui-input" value="{$rs.tpl_content}" />
+							</div>
+							<div class="layui-input-inline auto">
+								<div class="layui-btn-group">
+									<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_content')" class="layui-btn layui-btn-sm" />
+									<input type="button" value="{lang清空}" onclick="$('#tpl_content').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+								</div>
+							</div>
+							<div class="layui-form-mid">{lang绑定模块才能生效}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang发布模板}</label>
+							<div class="layui-input-inline">
+								<input type="text" id="post_tpl" name="post_tpl" class="layui-input" value="{$rs.post_tpl}" />
+							</div>
+							<div class="layui-input-inline auto">
+								<div class="layui-btn-group">
+									<input type="button" value="{lang选择}" onclick="phpok_tpl_open('post_tpl')" class="layui-btn layui-btn-sm" />
+									<input type="button" value="{lang清空}" onclick="$('#post_tpl').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+								</div>
+							</div>
+							<div class="layui-input-inline auto">{lang绑定模块且发布启用有效}</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="layui-tab-item">
+					<div class="layui-container">
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang后台权限}</label>
+							<div class="layui-input-block">
+								<ul class="layout" id="mylayout">
+									<!-- loop from=$popedom_list key=$kk value=$vv -->
+									<li><input type="checkbox" name="_popedom[]" lay-skin="primary" title="{$vv.title}" value="{$vv.id}"{if $popedom_list2 && in_array($vv.identifier,$popedom_list2)} checked{/if} /></li>
+									<!-- /loop -->
+								</ul>
+							</div>
+							<div class="layui-input-block mtop">
+								<div class="layui-btn-group">
+									<input type="button" value="{lang全选}" onclick="$.checkbox.all('mylayout')" class="layui-btn layui-btn-sm" />
+									<input type="button" value="{lang全不选}" onclick="$.checkbox.none('mylayout')" class="layui-btn layui-btn-sm" />
+									<input type="button" value="{lang反选}" onclick="$.checkbox.anti('mylayout')" class="layui-btn layui-btn-sm" />
+								</div>
+							</div>
+						</div>
+						<!-- loop from=$grouplist key=$key value=$value id=$idx -->
+						
+						<div class="layui-form-item">
+							<label class="layui-form-label">{$value.title}</label>
+							
+							<div class="layui-input-block{if $idx.index} mtop{/if}" id="group_{$value.id}">
+								<ul class="layout">
+									<li><input type="checkbox" lay-skin="primary" name="p_read_{$value.id}"{if $value.popedom.read} checked{/if} title="{lang阅读}" /></li>
+									<li><input type="checkbox" lay-skin="primary" name="p_usercp_{$value.id}"{if $value.popedom.usercp} checked{/if} title="{lang会员中心可见}" /></li>
+									<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><input type="checkbox" lay-skin="primary" name="p_post_{$value.id}"{if $value.popedom.post} checked{/if} title="{lang发布}" /></li>
+									<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><input type="checkbox" lay-skin="primary" name="p_post1_{$value.id}"{if $value.popedom.post1} checked{/if} title="{lang发布免审核}" /></li>
+									<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><input type="checkbox" lay-skin="primary" name="p_reply_{$value.id}"{if $value.popedom.reply} checked{/if} title="{lang回复}" /></li>
+									<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><input type="checkbox" lay-skin="primary" name="p_reply1_{$value.id}"{if $value.popedom.reply1} checked{/if} title="{lang回复免审核}" /></li>
+								</ul>
+							</div>
+							
+						</div>
+						<!-- /loop -->
+					</div>
+				</div>
+				<div class="layui-tab-item">
+					<div class="layui-container">
+						<div class="layui-form-item">
+							<label class="layui-form-label">{langSEO标题}</label>
+							<div class="layui-input-block">
+								<input type="text" id="seo_title" name="seo_title" class="layui-input" value="{$rs.seo_title}" />
+							</div>
+							<div class="layui-input-block mtop">{lang设置此标题后，网站 Title 将会替代默认定义的，不能超过85个汉字}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{langSEO关键字}</label>
+							<div class="layui-input-block">
+								<input type="text" id="seo_keywords" name="seo_keywords" class="layui-input" value="{$rs.seo_keywords}" />
+							</div>
+							<div class="layui-input-block mtop">{lang多个关键字用英文逗号或英文竖线隔开}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{langSEO描述}</label>
+							<div class="layui-input-block">
+								<textarea name="seo_desc" id="seo_desc" class="layui-textarea">{$rs.seo_desc}</textarea>
+							</div>
+							<div class="layui-input-block mtop">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang标签}</label>
+							<div class="layui-input-block">
+								<input type="text" id="tag" name="tag" class="layui-input" value="{$rs.tag}" />
+							</div>
+							<div class="layui-input-block mtop">
+								{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-tab-item">
+					<div class="layui-container">
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang管理员模板}
+							</label>
+							<div class="layui-input-block gray">{lang设置相应的通知模板，用户发布信息后会以邮件告知管理员}</div>
+							<div class="layui-input-block">
+								<select id="etpl_admin" name="etpl_admin">
+									<option value="">{lang不通知}</option>
+									<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
+									<option value="{$value.identifier}"{if $rs.etpl_admin == $value.identifier} selected{/if}>{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
+									<!-- /loop -->
+								</select>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang用户模板}
+							</label>
+							<div class="layui-input-block gray">{lang设置相应的通知模板，用户发布信息后会以邮件知会发布者}</div>
+							<div class="layui-input-block">
+								<select id="etpl_user" name="etpl_user">
+									<option value="">{lang不通知}</option>
+									<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
+									<option value="{$value.identifier}"{if $rs.etpl_user == $value.identifier} selected{/if}>{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
+									<!-- /loop -->
+								</select>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang发布间隔}
+							</label>
+							<div class="layui-input-inline short">
+								<input type="text" name="limit_times" value="{$rs.limit_times}" class="layui-input" />
+							</div>
+							<div class="layui-form-mid">
+								{lang单位是秒，不限制请设置0，建议不能低于 10 秒}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang相似度}
+							</label>
+							<div class="layui-input-inline short">
+								<select id="limit_similar" name="limit_similar">
+									<option value="0">{lang不限制}</option>
+									<option value="60"{if $rs.limit_similar == 60} selected{/if}>60%</option>
+									<option value="70"{if $rs.limit_similar == 70} selected{/if}>70%</option>
+									<option value="80"{if $rs.limit_similar == 80} selected{/if}>80%</option>
+									<option value="90"{if $rs.limit_similar == 90} selected{/if}>90%</option>
+									<option value="95"{if $rs.limit_similar == 95} selected{/if}>95%</option>
+								</select>
+							</div>
+							<div class="layui-form-mid">
+								{lang系统匹配最新 10 条信息，符合相似即禁止}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-tab-item">
+					<div class="layui-container">
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang管理员模板}
+							</label>
+							<div class="layui-input-block gray">{lang设置相应的通知模板，用户评论后会以邮件告知管理员}</div>
+							<div class="layui-input-block">
+								<select id="etpl_comment_admin" name="etpl_comment_admin">
+									<option value="">{lang不通知}</option>
+									<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
+									<option value="{$value.identifier}"{if $rs.etpl_comment_admin == $value.identifier} selected{/if}>{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
+									<!-- /loop -->
+								</select>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang用户模板}
+							</label>
+							<div class="layui-input-block gray">{lang设置相应的通知模板，用户评论信息后会以邮件知会发布者}</div>
+							<div class="layui-input-block">
+								<select id="etpl_comment_user" name="etpl_comment_user">
+									<option value="">{lang不通知}</option>
+									<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
+									<option value="{$value.identifier}"{if $rs.etpl_comment_user == $value.identifier} selected{/if}>{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
+									<!-- /loop -->
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-tab-item">
+					<div class="layui-container">
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang电商特点}</label>
+							<div class="layui-input-inline auto">
+								<input type="radio" name="biz_service" value="1" title="{lang服务}" {if $rs.biz_service == 1} checked{/if}>
+								<input type="radio" name="biz_service" value="0" title="{lang实物}" {if !$rs.biz_service} checked{/if}>
+								<input type="radio" name="biz_service" value="2" title="{lang仅服务}" {if $rs.biz_service == 2} checked{/if}>
+								<input type="radio" name="biz_service" value="3" title="{lang仅实物}" {if $rs.biz_service == 3} checked{/if}>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang默认货币}</label>
+							<div class="layui-input-inline auto">
+								<select name="currency_id" id="currency_id">
+									<option value="">{lang请选择……}</option>
+									<!-- loop from=$currency_list key=$key value=$value -->
+									<option value="{$value.id}"{if $rs.currency_id == $value.id} selected{/if}>{$value.title}/{lang标识：}{$value.code}/{lang汇率：}{$value.val}</option>
+									<!-- /loop -->
+								</select>
+							</div>
+							<div class="layui-form-mid">{lang此项主要是方便后台管理员添加产品时，默认使用的货币}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang运费模板}</label>
+							<div class="layui-input-inline default-auto">
+								<select name="freight" id="freight">
+									<option value="">{lang请选择运费计算方式……}</option>
+									<!-- loop from=$freight key=$key value=$value -->
+									<option value="{$value.id}"{if $rs.freight == $value.id} selected{/if}>{$value.title}</option>
+									<!-- /loop -->
+								</select>
+							</div>
+							<div class="layui-form-mid">{lang请选择这个项目的运费计算方式}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang电商属性}</label>
+							<div class="layui-input-inline auto">
+								<input type="radio" name="biz_attr" value="0"{if !$rs.biz_attr} checked{/if} title="{lang不使用}" />
+								<input type="radio" name="biz_attr" value="1"{if $rs.biz_attr} checked{/if} title="{lang使用}" />
+							</div>
+							<div class="layui-form-mid">{lang启用此项后，将允许设定可选产品的一些属性，如颜色，款式，支持价格浮动}</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">{lang全球电商}</label>
+							<div class="layui-input-inline auto">
+								<input type="radio" name="world_location" value="0"{if !$rs.world_location} checked{/if} title="{lang不使用}" />
+								<input type="radio" name="world_location" value="1"{if $rs.world_location} checked{/if} title="{lang使用}" />
+							</div>
+							<div class="layui-form-mid">{lang启用后可以针对全球范围设置价格，注意电商属性不支持}</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-tab-item">
+					<div class="layui-container">
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang筛选状态}
+							</label>
+							<div class="layui-input-inline auto">
+								<input type="radio" name="filter_status" value="0"{if !$rs.filter_status} checked{/if} title="{lang禁用}" />
+								<input type="radio" name="filter_status" value="1"{if $rs.filter_status} checked{/if} title="{lang启用}" />
+							</div>
+							<div class="layui-form-mid">
+								{lang启用此项，前台将执行出现筛选选项}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang筛选分类}
+							</label>
+							<div class="layui-input-inline auto">
+								<input type="radio" name="filter_cate_status" value="0"{if !$rs.filter_cate_status} checked{/if} title="{lang禁用}" />
+								<input type="radio" name="filter_cate_status" value="1"{if $rs.filter_cate_status} checked{/if} title="{lang启用}" />
+							</div>
+							<div class="layui-form-mid">
+								{lang禁用后，分类筛选将不包含}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang分类标题}
+							</label>
+							<div class="layui-input-inline">
+								<input type="text" name="filter_cate" class="layui-input" value="{$rs.filter_cate}" />
+							</div>
+							<div class="layui-form-mid">
+								{lang仅限启用分类后有效}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang价格筛选}
+							</label>
+							<div class="layui-input-inline auto">
+								<input type="radio" name="filter_price" value="0"{if !$rs.filter_price} checked{/if} title="{lang禁用}" />
+								<input type="radio" name="filter_price" value="1"{if $rs.filter_price} checked{/if} title="{lang启用}" />
+							</div>
+							<div class="layui-form-mid">
+								{lang仅限电商模式有效，启用此项，价格将显示相应的筛选，支持自定义范围}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang价格标题}
+							</label>
+							<div class="layui-input-inline">
+								<input type="text" name="filter_price_title" class="layui-input" value="{$rs.filter_price_title}" />
+							</div>
+							<div class="layui-form-mid">
+								{lang仅限启用价格筛选后有效}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang价格内容}
 							</label>
 							<div class="layui-input-block">
-								<!-- loop from=$attrlist key=$key value=$value id=$tmpid -->
-								<input type="checkbox" name="attrs[]" id="attrs_{$key}" value="{$key}" title="{$value}" lay-skin="primary" {if $attrs && in_array($key,$attrs)} checked{/if} />
-								<!-- /loop -->
+								<textarea name="filter_price_info" id="filter_price_info" class="layui-textarea" style="height:180px;">{$rs.filter_price_info}</textarea>
+							</div>
+							<div class="layui-input-block mtop">
+								{lang一行一个，价格区间用英文连字符，值与显示用英文冒号分隔}<br />
+								{lang注意，系统不会自动范围价格范围，因此需要人工设定，无设定不显示}<br />
+								{lang示例：10-100:10元-1000元}
 							</div>
 						</div>
 					</div>
-
-					<div class="layui-form-item">
-						<label class="layui-form-label">{lang默认主题数}</label>
-						<div class="layui-input-inline short">
-							<input type="text" id="psize" name="psize" value="{$rs.psize ? $rs.psize : 30}" class="layui-input" />
-						</div>
-						<div class="layui-form-mid">{lang设置每页默认的主题数量}</div>
-					</div>
-					<div class="layui-form-item">
-						<label class="layui-form-label">{lang接口默认数}</label>
-						<div class="layui-input-inline short">
-							<input type="text" id="psize_api" name="psize_api" value="{$rs.psize_api ? $rs.psize_api : 10}" class="layui-input" />
-						</div>
-						<div class="layui-form-mid">{lang设置 API 接口读取的主题数量，仅限接口开启有效}</div>
-					</div>
-					<div class="layui-form-item">
-						<label class="layui-form-label">{lang数据排序}</label>
-						<div class="layui-input-block">
-							<input type="text" id="orderby" name="orderby" class="layui-input" value="{$rs.orderby ? $rs.orderby : 'l.sort ASC,l.dateline DESC,l.id DESC'}" />
-						</div>
-						<div class="layui-input-block">
-							<div class="layui-btn-group" style="margin-top:10px;">
-								<input type="button" value="{lang清空}" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$('#orderby').val('')" />
-								<input type="button" value="{lang点击}" onclick="phpok_admin_orderby('orderby','l.hits')" class="layui-btn layui-btn-sm" />
-								<input type="button" value="{lang时间}" onclick="phpok_admin_orderby('orderby','l.dateline')" class="layui-btn layui-btn-sm" />
-								<input type="button" value="{lang回复时间}" onclick="phpok_admin_orderby('orderby','l.replydate')" class="layui-btn layui-btn-sm" />
-								<input type="button" value="ID" onclick="phpok_admin_orderby('orderby','l.id')" class="layui-btn layui-btn-sm" />
-								<input type="button" value="{lang人工}" onclick="phpok_admin_orderby('orderby','l.sort')" class="layui-btn layui-btn-sm" />
-							</div>
-							<div id="tmp_orderby_btn" class="layui-btn-group" style="margin-top:10px;"></div>
-						</div>
-						<div class="layui-input-block auto">{lang设置好默认排序，有利于网站的管理/前后台一致}</div>
-					</div>
-					<div class="layui-form-item">
-						<label class="layui-form-label">{lang列表读取}</label>
-						<div class="layui-input-block">
-							<input type="text" id="list_fields" name="list_fields" class="layui-input" value="{$rs.list_fields}" />
-						</div>
-						<div class="layui-input-block" style="margin-top:10px;">
-							<div class="layui-btn-group" id="tmp_fields_btn">
-								<input type="button" value="{lang清空}" class="layui-btn layui-btn-sm layui-btn-normal" onclick="$('#list_fields').val('')" />
-							</div>
-						</div>
-						<div class="layui-input-block auto">{lang当绑定了模块后，读取列表的数据默认为全部，请根据实际情况来设置，最多不能超过200字符}</div>
-					</div>
-					<div class="layui-form-item">
-						<label class="layui-form-label">{lang关联根分类}</label>
-						<div class="layui-input-inline auto">
-							<select id="cate" name="cate" onchange="update_show_select(this.value)" lay-ignore>
-							<option value="0">{lang不关联分类}</option>
-							<!-- loop from=$catelist key=$key value=$value id=catelist_id -->
-							<option value="{$value.id}"{if $value.id == $rs.cate} selected{/if}>{$value.title}</option>
-							<!-- /loop -->
-							</select>
-							<input type="button" value="{lang添加根分类}" onclick="cate_add(this.value)" class="phpok-btn" />
-						</div>
-						<div class="layui-form-mid">{lang启用此项后，添加内容时，需要选对相对应的分类，且不能为空}</div>
-					</div>
-
-					<div id="cate_multiple_set"{if !$rs.cate} class="hide"{/if}>
+				</div>
+				<div class="layui-tab-item">
+					<div class="layui-container">
 						<div class="layui-form-item">
-							<label class="layui-form-label">{lang分类选项}</label>
+							<label class="layui-form-label">
+								{lang添加模式}
+							</label>
 							<div class="layui-input-inline auto">
-								<input type="radio" name="cate_multiple" value="0"{if !$rs.cate_multiple} checked{/if} title="{lang单选}" />
-								<input type="radio" name="cate_multiple" value="1"{if $rs.cate_multiple} checked{/if} title="{lang多选}" />
+								<input type="radio" name="admin-post-style" value="0"{if !$rs.admin-post-style} checked{/if} title="{lang页签模式}" />
+								<input type="radio" name="admin-post-style" value="1"{if $rs.admin-post-style} checked{/if} title="{lang虚弹模式}" />
 							</div>
-							<div class="layui-form-mid">{lang设置分类是单选模式还是多选模式}</div>
+							<div class="layui-form-mid">
+								{lang仅后台有效，用于添加和编辑时窗口展示模式}
+							</div>
 						</div>
-					</div>
-				</div>
-				
-			</div>
-		</div>
-	</div>
-	<div class="layui-col-xs12 layui-col-lg6">
-		<div class="layui-card">
-			<div class="layui-card-header hand" onclick="$.admin.card(this)">
-				{lang权限}
-				<i class="layui-icon layui-icon-right"></i>
-			</div>
-			<div class="layui-card-body hide">
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang后台权限}</label>
-					<div class="layui-input-block">
-						<ul class="layout" id="mylayout">
-							<!-- loop from=$popedom_list key=$kk value=$vv -->
-							<li><input type="checkbox" name="_popedom[]" lay-skin="primary" title="{$vv.title}" value="{$vv.id}"{if $popedom_list2 && in_array($vv.identifier,$popedom_list2)} checked{/if} /></li>
-							<!-- /loop -->
-						</ul>
-					</div>
-					<div class="layui-input-block mtop">
-						<div class="layui-btn-group">
-							<input type="button" value="{lang全选}" onclick="$.checkbox.all('mylayout')" class="layui-btn layui-btn-sm" />
-							<input type="button" value="{lang全不选}" onclick="$.checkbox.none('mylayout')" class="layui-btn layui-btn-sm" />
-							<input type="button" value="{lang反选}" onclick="$.checkbox.anti('mylayout')" class="layui-btn layui-btn-sm" />
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang虚弹宽高}
+							</label>
+							<div class="layui-input-inline short">
+								<input type="text" name="admin-post-width" id="admin-post-width" value="{$rs.admin-post-width}" class="layui-input" />
+							</div>
+							<div class="layui-form-mid">
+								 -
+							</div>
+							<div class="layui-input-inline short">
+								<input type="text" name="admin-post-height" id="admin-post-height" value="{$rs.admin-post-height}" class="layui-input" />
+							</div>
+							<div class="layui-form-mid">
+								{lang仅限使用【虚弹模式】时有效，支持百分比和像素}
+							</div>
 						</div>
-					</div>
-				</div>
-				<!-- loop from=$grouplist key=$key value=$value id=$idx -->
-				
-				<div class="layui-form-item">
-					<label class="layui-form-label">{$value.title}</label>
-					
-					<div class="layui-input-block{if $idx.index} mtop{/if}" id="group_{$value.id}">
-						<ul class="layout">
-							<li><input type="checkbox" lay-skin="primary" name="p_read_{$value.id}"{if $value.popedom.read} checked{/if} title="{lang阅读}" /></li>
-							<li><input type="checkbox" lay-skin="primary" name="p_usercp_{$value.id}"{if $value.popedom.usercp} checked{/if} title="{lang会员中心可见}" /></li>
-							<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><input type="checkbox" lay-skin="primary" name="p_post_{$value.id}"{if $value.popedom.post} checked{/if} title="{lang发布}" /></li>
-							<li name="f_post"{if !$id || !$rs.module || ($rs.module && !$rs.post_status)} style="display:none"{/if}><input type="checkbox" lay-skin="primary" name="p_post1_{$value.id}"{if $value.popedom.post1} checked{/if} title="{lang发布免审核}" /></li>
-							<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><input type="checkbox" lay-skin="primary" name="p_reply_{$value.id}"{if $value.popedom.reply} checked{/if} title="{lang回复}" /></li>
-							<li name="f_reply"{if !$id || !$rs.module || ($rs.module && !$rs.comment_status)} style="display:none"{/if}><input type="checkbox" lay-skin="primary" name="p_reply1_{$value.id}"{if $value.popedom.reply1} checked{/if} title="{lang回复免审核}" /></li>
-						</ul>
-					</div>
-					
-				</div>
-				<!-- /loop -->
-			</div>
-		</div>
-	</div>
-	<div class="layui-col-xs12 layui-col-lg6" id="use_biz_setting"{if !$rs.is_biz || !$config.biz_status} style="display:none"{/if}>
-		<div class="layui-card">
-			<div class="layui-card-header hand" onclick="$.admin.card(this)">
-				{lang电商属性}
-				<i class="layui-icon layui-icon-down"></i>
-			</div>
-			<div class="layui-card-body">
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang电商特点}</label>
-					<div class="layui-input-inline auto">
-						<input type="radio" name="biz_service" value="1" title="{lang服务}" {if $rs.biz_service == 1} checked{/if}>
-						<input type="radio" name="biz_service" value="0" title="{lang实物}" {if !$rs.biz_service} checked{/if}>
-						<input type="radio" name="biz_service" value="2" title="{lang仅服务}" {if $rs.biz_service == 2} checked{/if}>
-						<input type="radio" name="biz_service" value="3" title="{lang仅实物}" {if $rs.biz_service == 3} checked{/if}>
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang默认货币}</label>
-					<div class="layui-input-inline auto">
-						<select name="currency_id" id="currency_id">
-							<option value="">{lang请选择……}</option>
-							<!-- loop from=$currency_list key=$key value=$value -->
-							<option value="{$value.id}"{if $rs.currency_id == $value.id} selected{/if}>{$value.title}/{lang标识：}{$value.code}/{lang汇率：}{$value.val}</option>
-							<!-- /loop -->
-						</select>
-					</div>
-					<div class="layui-form-mid">{lang此项主要是方便后台管理员添加产品时，默认使用的货币}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang运费模板}</label>
-					<div class="layui-input-inline default-auto">
-						<select name="freight" id="freight">
-							<option value="">{lang请选择运费计算方式……}</option>
-							<!-- loop from=$freight key=$key value=$value -->
-							<option value="{$value.id}"{if $rs.freight == $value.id} selected{/if}>{$value.title}</option>
-							<!-- /loop -->
-						</select>
-					</div>
-					<div class="layui-form-mid">{lang请选择这个项目的运费计算方式}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang电商属性}</label>
-					<div class="layui-input-inline auto">
-						<input type="radio" name="biz_attr" value="0"{if !$rs.biz_attr} checked{/if} title="{lang不使用}" />
-						<input type="radio" name="biz_attr" value="1"{if $rs.biz_attr} checked{/if} title="{lang使用}" />
-					</div>
-					<div class="layui-form-mid">{lang启用此项后，将允许设定可选产品的一些属性，如颜色，款式，支持价格浮动}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang全球电商}</label>
-					<div class="layui-input-inline auto">
-						<input type="radio" name="world_location" value="0"{if !$rs.world_location} checked{/if} title="{lang不使用}" />
-						<input type="radio" name="world_location" value="1"{if $rs.world_location} checked{/if} title="{lang使用}" />
-					</div>
-					<div class="layui-form-mid">{lang启用后可以针对全球范围设置价格，注意电商属性不支持}</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="layui-col-xs12 layui-col-lg6" id="email_set_post_status"{if !$rs.post_status} style="display:none"{/if}>
-		<div class="layui-card">
-			<div class="layui-card-header hand" onclick="$.admin.card(this)">
-				{lang发布设置}
-				<i class="layui-icon layui-icon-down"></i>
-			</div>
-			<div class="layui-card-body">
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang管理员模板}
-					</label>
-					<div class="layui-input-block gray" style="line-height:38px;">{lang设置相应的通知模板，用户发布信息后会以邮件告知管理员}</div>
-					<div class="layui-input-block">
-						<select id="etpl_admin" name="etpl_admin">
-							<option value="">{lang不通知}</option>
-							<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
-							<option value="{$value.identifier}"{if $rs.etpl_admin == $value.identifier} selected{/if}>{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
-							<!-- /loop -->
-						</select>
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang用户模板}
-					</label>
-					<div class="layui-input-block gray" style="line-height:38px;">{lang设置相应的通知模板，用户发布信息后会以邮件知会发布者}</div>
-					<div class="layui-input-block">
-						<select id="etpl_user" name="etpl_user">
-							<option value="">{lang不通知}</option>
-							<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
-							<option value="{$value.identifier}"{if $rs.etpl_user == $value.identifier} selected{/if}>{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
-							<!-- /loop -->
-						</select>
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang发布间隔}
-					</label>
-					<div class="layui-input-inline short">
-						<input type="text" name="limit_times" value="{$rs.limit_times}" class="layui-input" />
-					</div>
-					<div class="layui-form-mid">
-						{lang单位是秒，不限制请设置0，建议不能低于 10 秒}
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang相似度}
-					</label>
-					<div class="layui-input-inline short">
-						<select id="limit_similar" name="limit_similar">
-							<option value="0">{lang不限制}</option>
-							<option value="60"{if $rs.limit_similar == 60} selected{/if}>60%</option>
-							<option value="70"{if $rs.limit_similar == 70} selected{/if}>70%</option>
-							<option value="80"{if $rs.limit_similar == 80} selected{/if}>80%</option>
-							<option value="90"{if $rs.limit_similar == 90} selected{/if}>90%</option>
-							<option value="95"{if $rs.limit_similar == 95} selected{/if}>95%</option>
-						</select>
-					</div>
-					<div class="layui-form-mid">
-						{lang系统匹配最新 10 条信息，符合相似即禁止}
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="layui-col-xs12 layui-col-lg6" id="email_set_comment_status"{if !$rs.comment_status} style="display:none"{/if}>
-		<div class="layui-card">
-			<div class="layui-card-header hand" onclick="$.admin.card(this)">
-				{lang评论设置}
-				<i class="layui-icon layui-icon-down"></i>
-			</div>
-			<div class="layui-card-body">
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang管理员模板}
-					</label>
-					<div class="layui-input-block gray" style="line-height:38px;">{lang设置相应的通知模板，用户评论后会以邮件告知管理员}</div>
-					<div class="layui-input-block">
-						<select id="etpl_comment_admin" name="etpl_comment_admin">
-							<option value="">{lang不通知}</option>
-							<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
-							<option value="{$value.identifier}"{if $rs.etpl_comment_admin == $value.identifier} selected{/if}>{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
-							<!-- /loop -->
-						</select>
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang用户模板}
-					</label>
-					<div class="layui-input-block gray" style="line-height:38px;">{lang设置相应的通知模板，用户评论信息后会以邮件知会发布者}</div>
-					<div class="layui-input-block">
-						<select id="etpl_comment_user" name="etpl_comment_user">
-							<option value="">{lang不通知}</option>
-							<!-- loop from=$emailtpl key=$key value=$value id=$tmpid -->
-							<option value="{$value.identifier}"{if $rs.etpl_comment_user == $value.identifier} selected{/if}>{$value.title}_{$value.identifier}<!-- if $value.note -->_{$value.note}<!-- /if --></option>
-							<!-- /loop -->
-						</select>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-
-	<div class="layui-col-xs12 layui-col-lg6">
-		<div class="layui-card">
-			<div class="layui-card-header hand" onclick="$.admin.card(this)">{lang扩展信息}<i class="layui-icon layui-icon-right"></i></div>
-			<div class="layui-card-body hide">
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang项目别名}</label>
-					<div class="layui-input-inline">
-						<input type="text" id="nick_title" name="nick_title" class="layui-input" value="{$rs.nick_title}" />
-					</div>
-					<div class="layui-form-mid">{lang仅限在后台使用，一般不要超过6个汉字}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang排序}</label>
-					<div class="layui-input-inline short">
-						<input type="text" id="taxis" name="taxis" class="layui-input" value="{$rs.taxis ? $rs.taxis : '255'}" />
-					</div>
-					<div class="layui-form-mid">{lang自定义排序，值越小越往前靠}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang主题标识}
-					</label>
-					<div class="layui-input-inline default-auto">
-						<select id="is_identifier" name="is_identifier">
-						<option value="0">{lang不使用}</option>
-						<option value="1"{if $rs.is_identifier == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
-						<option value="3"{if $rs.is_identifier == 3} selected{/if}>{lang启用非必填，默认显示}</option>
-						<option value="2"{if $rs.is_identifier == 2} selected{/if}>{lang启用且必填}</option>
-						</select>
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang内容模板}
-					</label>
-					<div class="layui-input-inline">
-						<select id="is_tpl_content" name="is_tpl_content">
-						<option value="0">{lang不使用}</option>
-						<option value="1"{if $rs.is_tpl_content == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
-						<option value="3"{if $rs.is_tpl_content == 3} selected{/if}>{lang启用非必填，默认显示}</option>
-						<option value="2"{if $rs.is_tpl_content == 2} selected{/if}>{lang启用且必填}</option>
-						</select>
-					</div>
-					<div class="layui-form-mid">
-						{lang即是否启用自定义的内容模板}
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang绑定用户}
-					</label>
-					<div class="layui-input-inline">
-						<select id="is_userid" name="is_userid">
-						<option value="0">{lang不使用}</option>
-						<option value="1"{if $rs.is_userid == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
-						<option value="3"{if $rs.is_userid == 3} selected{/if}>{lang启用非必填，默认显示}</option>
-						<option value="2"{if $rs.is_userid == 2} selected{/if}>{lang启用且必填}</option>
-						</select>
-					</div>
-					<div class="layui-form-mid">
-						{lang允许主题绑定相应的用户}
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang用户别名}</label>
-					<div class="layui-input-inline">
-						<input type="text" id="user_alias" name="user_alias" class="layui-input" value="{$rs.user_alias}" />
-					</div>
-					<div class="layui-form-mid">{lang留空使用默认}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang用户备注}</label>
-					<div class="layui-input-inline default-auto">
-						<input type="text" id="user_note" name="user_note" class="layui-input" value="{$rs.user_note}" />
-					</div>
-					<div class="layui-form-mid">{lang简要说明选择注意事项}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang用户中心}
-					</label>
-					<div class="layui-input-inline">
-						<select id="group_id" name="group_id">
-							<option value="">{lang不使用}</option>
-							<!-- loop from=$groups key=$key value=$value id=$tmpid -->
-							<option value="{$key}"{if $rs.group_id && $rs.group_id == $key} selected{/if}>{$value}</option>
-							<!-- /loop -->
-						</select>
-					</div>
-					<div class="layui-form-mid">
-						{lang即在在用户中心体现列表信息}
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{langTag标签}
-					</label>
-					<div class="layui-input-inline">
-						<select id="is_tag" name="is_tag">
-						<option value="0">{lang不使用}</option>
-						<option value="1"{if $rs.is_tag == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
-						<option value="3"{if $rs.is_tag == 3} selected{/if}>{lang启用非必填，默认显示}</option>
-						<option value="2"{if $rs.is_tag == 2} selected{/if}>{lang启用且必填}</option>
-						</select>
-					</div>
-					<div class="layui-form-mid">
-						{lang允许自定义标签内容}
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{langSEO}
-					</label>
-					<div class="layui-input-inline">
-						<select id="is_seo" name="is_seo">
-						<option value="0">{lang不使用}</option>
-						<option value="1"{if $rs.is_seo == 1} selected{/if}>{lang启用非必填，默认隐藏}</option>
-						<option value="2"{if $rs.is_seo == 2} selected{/if}>{lang启用非必填，默认显示}</option>
-						<option value="3"{if $rs.is_seo == 3} selected{/if}>{lang启用且必填}</option>
-						</select>
-					</div>
-					<div class="layui-form-mid">
-						{lang允许主题自定义相关的SEO信息}
-					</div>
-				</div>
-				
-
-				
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						<i class="layui-icon layui-tips" lay-tips="{lang请选择一个直观的图标，大小为：48x48，建议使用PNG格式}">&#xe702;</i> {lang图标}
-					</label>
-					<div class="layui-input-inline">
-						<input type="text" name="ico" id="ico" value="{$rs.ico}" class="layui-input" />
-					</div>
-					<div class="layui-input-inline auto gray lh38">
-						<div class="layui-btn-group">
-							<input type="button" value="{lang选择图标}" onclick="$.admin_project.icolist()" class="layui-btn layui-btn-sm" />
-							<input type="button" value="{lang预览}" onclick="$.phpokform.text_button_image_preview('ico')" class="layui-btn layui-btn-sm" />
-							<input type="button" value="{lang清空}" onclick="$('#ico').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang列布局}
+							</label>
+							<div class="layui-input-block" id="admin-field-setting" data-value="{$rs.layout}">
+							</div>
+							<div class="layui-input-block mtop">{lang在这里设置项目下后台要显示的字段}</div>
 						</div>
-					</div>
-				</div>
-
-				<div class="layui-form-item">
-					<label class="layui-form-label layui-tips" lay-tips="{lang将显示在内容管理布局区那里，用于提示编辑人员注意事项}">{lang后台备注}</label>
-					<div class="layui-input-block">
-						{$note_content}
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="layui-col-xs12 layui-col-lg6">
-		<div class="layui-card">
-			<div class="layui-card-header hand" onclick="$.admin.card(this)">
-				{lang自定义模板}
-				<i class="layui-icon layui-icon-right"></i>
-			</div>
-			<div class="layui-card-body hide">
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang封面模板}</label>
-					<div class="layui-input-inline">
-						<input type="text" id="tpl_index" name="tpl_index" class="layui-input" value="{$rs.tpl_index}" />
-					</div>
-					<div class="layui-form-mid">
-						<div class="layui-btn-group">
-							<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_index')" class="layui-btn layui-btn-sm" />
-							<input type="button" value="{lang清空}" onclick="$('#tpl_index').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang后台统计}
+							</label>
+							<div class="layui-input-inline auto">
+								<input type="radio" name="admin-list-stat" value="0"{if !$rs.admin-list-stat} checked{/if} title="{lang禁用}" />
+								<input type="radio" name="admin-list-stat" value="1"{if $rs.admin-list-stat} checked{/if} title="{lang启用}" />
+							</div>
+							<div class="layui-form-mid">
+								{lang启用后会统计指定字段的数据}
+							</div>
 						</div>
-					</div>
-					<div class="layui-form-mid">{lang不启用请留空}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang列表模板}</label>
-					<div class="layui-input-inline">
-						<input type="text" id="tpl_list" name="tpl_list" class="layui-input" value="{$rs.tpl_list}" />
-					</div>
-					<div class="layui-input-inline auto">
-						<div class="layui-btn-group">
-							<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_list')" class="layui-btn layui-btn-sm" />
-							<input type="button" value="{lang清空}" onclick="$('#tpl_list').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang快评}
+							</label>
+							<div class="layui-input-inline auto">
+								<input type="radio" name="quick-comment-status" value="0"{if !$rs.quick-comment-status} checked{/if} title="{lang禁用}" />
+								<input type="radio" name="quick-comment-status" value="1"{if $rs.quick-comment-status} checked{/if} title="{lang启用}" />
+							</div>
+							<div class="layui-form-mid">
+								{lang如点赞，差评等功能}
+							</div>
 						</div>
-					</div>
-					<div class="layui-form-mid">{lang绑定模块才能生效}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang内容模板}</label>
-					<div class="layui-input-inline">
-						<input type="text" id="tpl_content" name="tpl_content" class="layui-input" value="{$rs.tpl_content}" />
-					</div>
-					<div class="layui-input-inline auto">
-						<div class="layui-btn-group">
-							<input type="button" value="{lang选择}" onclick="phpok_tpl_open('tpl_content')" class="layui-btn layui-btn-sm" />
-							<input type="button" value="{lang清空}" onclick="$('#tpl_content').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
-						</div>
-					</div>
-					<div class="layui-form-mid">{lang绑定模块才能生效}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang发布模板}</label>
-					<div class="layui-input-inline">
-						<input type="text" id="post_tpl" name="post_tpl" class="layui-input" value="{$rs.post_tpl}" />
-					</div>
-					<div class="layui-input-inline auto">
-						<div class="layui-btn-group">
-							<input type="button" value="{lang选择}" onclick="phpok_tpl_open('post_tpl')" class="layui-btn layui-btn-sm" />
-							<input type="button" value="{lang清空}" onclick="$('#post_tpl').val('');" class="layui-btn layui-btn-sm layui-btn-warm" />
-						</div>
-					</div>
-					<div class="layui-input-inline auto">{lang绑定模块且发布启用有效}</div>
-				</div>
-
-			</div>
-		</div>
-	</div>
-	<div class="layui-col-xs12 layui-col-lg6">
-		<div class="layui-card">
-			<div class="layui-card-header hand" onclick="$.admin.card(this)">
-				{langSEO优化}
-				<i class="layui-icon layui-icon-right"></i>
-			</div>
-			<div class="layui-card-body hide">
-				<div class="layui-form-item">
-					<label class="layui-form-label">{langSEO标题}</label>
-					<div class="layui-input-block">
-						<input type="text" id="seo_title" name="seo_title" class="layui-input" value="{$rs.seo_title}" />
-					</div>
-					<div class="layui-input-block mtop">{lang设置此标题后，网站 Title 将会替代默认定义的，不能超过85个汉字}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{langSEO关键字}</label>
-					<div class="layui-input-block">
-						<input type="text" id="seo_keywords" name="seo_keywords" class="layui-input" value="{$rs.seo_keywords}" />
-					</div>
-					<div class="layui-input-block mtop">{lang多个关键字用英文逗号或英文竖线隔开}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{langSEO描述}</label>
-					<div class="layui-input-block">
-						<textarea name="seo_desc" id="seo_desc" class="layui-textarea">{$rs.seo_desc}</textarea>
-					</div>
-					<div class="layui-input-block mtop">{lang简单描述该主题信息，用于搜索引挈，不支持HTML，不能超过85个汉字}</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">{lang标签}</label>
-					<div class="layui-input-block">
-						<input type="text" id="tag" name="tag" class="layui-input" value="{$rs.tag}" />
-					</div>
-					<div class="layui-input-block mtop">
-						{lang多个标签用 [title] 分开，最多不能超过10个|title:$tag_config.separator}
-					</div>
-				</div>
-			</div>
-		</div>
-		
-	</div>
-	<div class="layui-col-xs12 layui-col-lg6">
-		<div class="layui-card">
-			<div class="layui-card-header hand" onclick="$.admin.card(this)">
-				{lang筛选器}
-				<i class="layui-icon layui-icon-right"></i>
-			</div>
-			<div class="layui-card-body hide">
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang筛选状态}
-					</label>
-					<div class="layui-input-inline auto">
-						<input type="radio" name="filter_status" value="0"{if !$rs.filter_status} checked{/if} title="{lang禁用}" />
-						<input type="radio" name="filter_status" value="1"{if $rs.filter_status} checked{/if} title="{lang启用}" />
-					</div>
-					<div class="layui-form-mid">
-						{lang启用此项，前台将执行出现筛选选项}
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang筛选分类}
-					</label>
-					<div class="layui-input-inline auto">
-						<input type="radio" name="filter_cate_status" value="0"{if !$rs.filter_cate_status} checked{/if} title="{lang禁用}" />
-						<input type="radio" name="filter_cate_status" value="1"{if $rs.filter_cate_status} checked{/if} title="{lang启用}" />
-					</div>
-					<div class="layui-form-mid">
-						{lang禁用后，分类筛选将不包含}
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang分类标题}
-					</label>
-					<div class="layui-input-inline">
-						<input type="text" name="filter_cate" class="layui-input" value="{$rs.filter_cate}" />
-					</div>
-					<div class="layui-form-mid">
-						{lang仅限启用分类后有效}
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang价格筛选}
-					</label>
-					<div class="layui-input-inline auto">
-						<input type="radio" name="filter_price" value="0"{if !$rs.filter_price} checked{/if} title="{lang禁用}" />
-						<input type="radio" name="filter_price" value="1"{if $rs.filter_price} checked{/if} title="{lang启用}" />
-					</div>
-					<div class="layui-form-mid">
-						{lang仅限电商模式有效，启用此项，价格将显示相应的筛选，支持自定义范围}
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang价格标题}
-					</label>
-					<div class="layui-input-inline">
-						<input type="text" name="filter_price_title" class="layui-input" value="{$rs.filter_price_title}" />
-					</div>
-					<div class="layui-form-mid">
-						{lang仅限启用价格筛选后有效}
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">
-						{lang价格内容}
-					</label>
-					<div class="layui-input-block">
-						<textarea name="filter_price_info" id="filter_price_info" class="layui-textarea" style="height:180px;">{$rs.filter_price_info}</textarea>
-					</div>
-					<div class="layui-input-block mtop">
-						{lang一行一个，价格区间用英文连字符，值与显示用英文冒号分隔}<br />
-						{lang注意，系统不会自动范围价格范围，因此需要人工设定，无设定不显示}<br />
-						{lang示例：10-100:10元-1000元}
 					</div>
 				</div>
 			</div>
@@ -825,4 +874,4 @@
 </form>
 
 
-<!-- include tpl=foot_lay -->
+<!-- include tpl=foot_lay is_open=true -->

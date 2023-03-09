@@ -1,13 +1,11 @@
 <?php
 /**
  * Cookie 信息处理
- * @package phpok\libs
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
- * @版本 4.x
+ * @版本 6.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @时间 2017年08月11日
+ * @时间 2022年11月26日
 **/
 class cookie_lib
 {

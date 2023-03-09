@@ -1,10 +1,17 @@
-<!-- php:$comment = phpok('_comment','tid='.$tid.'&pageid='.$get.pageid,'psize=10','orderby=desc') -->
+<!-- php:$comment = phpok('_comment','tid='.$tid,'psize=10','orderby=desc','sublist=2') -->
 <div class="card">
 	<div class="card-header">
-		提交新评论<!-- if $comment.total -->，当前已有 {$comment.total} 条评论<!-- /if -->
+		<div class="d-flex justify-content-between">
+			<div>提交新评论<!-- if $comment.total --> <b>（{$comment.total}）</b> <!-- /if --></div>
+			<!-- if $comment.total -->
+			<div>
+				<a target="_blank" href="{url ctrl=content func=comment id=$rs.id/}" class="btn btn-primary">全部评论</a>
+			</div>
+			<!-- /if -->
+		</div>
 	</div>
 	<div class="card-body">
-		<form method="post" id="comment-post" class="am-form">
+		<form method="post" id="comment-post">
 			<input type="hidden" name="tid" value="{$tid ? $tid : $rs.id}" />
 			<input type="hidden" name="vtype" value="{$vtype ? $vtype : 'title'}" />
 			<!-- if $comment.uid -->
@@ -41,11 +48,44 @@
 </div>
 <!-- loop from=$comment.rslist key=$key value=$value id=tmpid -->
 <div class="card mt-2">
-	<div class="card-header">
-		<a href="{url ctrl=user id=$value.uid.id/}" target="_blank" class="am-comment-author">{$value.uid.user}</a>评论于<time>{func time_format $value.addtime}</time>
+	<div class="card-header pt-1 pb-1">
+		<div class="float-left">
+			<div class="d-flex">
+				<div class="mr-2">
+					<a href="{url ctrl=user id=$value.uid/}" target="_blank"><img src="{$value.avatar}" class="avatar" alt="{$value.user}" /></a>
+				</div>
+				<div class="align-self-center">
+					<a href="{url ctrl=user id=$value.uid/}" target="_blank">{$value.user}</a><br />
+					<time>{func time_format $value.addtime}</time>
+				</div>
+			</div>
+		</div>
+		
+		<!-- if $value.click_list -->
+		<div class="float-right">
+			<div class="row">
+				<!-- loop from=$value.click_list key=$k value=$v id=$idxx -->
+				<div class="col text-nowrap" title="{$v.title}">
+					<div class="hand" onclick="$.comment.click({$value.id},'{$k}','reply')">
+						<img id="{$k}-{$value.id}-img" src="{$v.is_clicked ? $v.icon1 : $v.icon2}" class="width_16" /> {$v.title} <small id="{$k}-{$value.id}-total">({$v.total})</small>
+					</div>
+					<!-- if $v.wholist -->
+					<div class="row">
+						<!-- loop from=$v.wholist key=$kk value=$vv id=$idxxx -->
+						<div class="col">
+							<a href="{url ctrl=content func=wholist id=$tid tid=$value.id uid=$vv.id/}" target="_blank"><img src="{$vv.avatar}" class="avatar-small" alt="{$vv.user}" /></a>
+						</div>
+						<!-- /loop -->
+					</div>
+					<!-- /if -->
+				</div>
+				<!-- /loop -->
+			</div>
+		</div>
+		<!-- /if -->
 	</div>
 	<div class="card-body">
-		<p class="card-text">{$value.content}</p>
+		<p class="card-text"><!-- if $value.vouch --><span class="badge badge-danger mr-2">佳</span><!-- /if -->{$value.content}</p>
 		<!-- if $value.res -->
 		<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
 			<!-- loop from=$value.res key=$k value=$v id=$idxx -->
@@ -55,13 +95,76 @@
 		<!-- /if -->
 		<!-- loop from=$value.adm_reply key=$k value=$v id=$idxx -->
 		<fieldset class="admin-reply">
-			<legend>管理员于 <time>{func time_format $v.addtime}</time> 回复</legend>
-			<div class="content">{$v.content}</div>
+			<legend>管理员回复</legend>
+			<div class="content">
+				<div class="float-right" style="margin-top:-1.6em;"><small><time>{func time_format $v.addtime}</time></small></div>
+				{$v.content}
+			</div>
 		</fieldset>
 		<!-- /loop -->
+		<!-- loop from=$value.sublist key=$k value=$v id=$idx -->
+		<div class="card mt-2">
+			<div class="card-header pt-1 pb-1">
+				<div class="float-left">
+					<div class="d-flex">
+						<div class="mr-2">
+							<a href="{url ctrl=user id=$v.uid/}" target="_blank"><img src="{$v.avatar}" class="avatar" alt="{$v.user}" /></a>
+						</div>
+						<div class="align-self-center">
+							<a href="{url ctrl=user id=$v.uid/}" target="_blank">{$v.user}</a><br />
+							<time>{func time_format $v.addtime}</time>
+						</div>
+					</div>
+				</div>
+				<!-- if $v.click_list -->
+				<div class="float-right">
+					<div class="row">
+						<!-- loop from=$v.click_list key=$kk value=$vv id=$idxx -->
+						<div class="col text-nowrap ">
+							<div class="hand" onclick="$.comment.click({$v.id},'{$kk}','reply')"><img id="{$kk}-{$v.id}-img" src="{$vv.is_clicked ? $vv.icon1 : $vv.icon2}" style="width:16px;height:16px;" /> {$vv.title} <small id="{$kk}-{$v.id}-total">({$vv.total})</small></div>
+							<!-- if $vv.wholist -->
+							<div class="row">
+								<!-- loop from=$vv.wholist key=$kkk value=$vvv id=$idxxx -->
+								<div class="col">
+									<a href="{url ctrl=content func=wholist id=$tid tid=$v.id uid=$vvv.id/}" target="_blank"><img src="{$vvv.avatar}" class="avatar-small" alt="{$vv.user}" /></a>
+								</div>
+								<!-- /loop -->
+							</div>
+							<!-- /if -->
+						</div>
+						<!-- /loop -->
+					</div>
+				</div>
+				<!-- /if -->
+			</div>
+			<div class="card-body">
+				<p class="card-text">{$v.content}</p>
+				<!-- loop from=$v.adm_reply key=$kk value=$vv id=$idxx -->
+				<fieldset class="admin-reply">
+					<legend>管理员回复</legend>
+					<div class="content">
+						<div class="float-right" style="margin-top:-1.6em;"><small><time>{func time_format $vv.addtime}</time></small></div>
+						{$vv.content}
+					</div>
+				</fieldset>
+				<!-- /loop -->
+			</div>
+		</div>
+		<!-- /loop -->
+		<div class="d-flex justify-content-between mt-2">
+			<div>
+				<button onclick="$.phpok.open('{url ctrl=content func=comment id=$rs.id parent_id=$value.id/}')" class="btn btn-warning btn-sm">
+					<span class="badge badge-light">{$value.reply_total}</span> 条回复
+					<i class="fa fa-angle-right"></i>
+				</button>
+			</div>
+			<div>
+				<button type="button" class="btn btn-primary btn-sm" onclick="$.comment.reply('{$vv.id}','{$tid ? $tid : $rs.id}','{$is_vcode ? 1 : 0}')">点评回复</button>
+			</div>
+		</div>
 	</div>
 </div>
 <!-- /loop -->
 <section class="container">
-	<div class="m-4"><!-- include tpl=block/pagelist pageurl=$rs.url total=$comment.total pageid=$comment.pageid psize=$comment.$psize --></div>
+	<div class="m-4"><!-- include tpl=block/pagelist pageurl=$rs.url total=$comment.total pageid=$comment.pageid psize=$comment.psize --></div>
 </section>

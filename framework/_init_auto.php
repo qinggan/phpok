@@ -1,10 +1,10 @@
 <?php
 /**
- * 
+ *
  * @作者 苏相锟 <admin@phpok.com>
  * @主页 https://www.phpok.com
  * @版本 5.x
- * @授权 GNU Lesser General Public License https://www.phpok.com/lgpl.html 
+ * @授权 GNU Lesser General Public License https://www.phpok.com/lgpl.html
  * @时间 2021年3月1日
 **/
 
@@ -25,6 +25,21 @@ class _init_auto
 		//
 	}
 
+	public function __destruct()
+	{
+		//
+	}
+
+	public function lib($class='',$param='')
+	{
+		return $GLOBALS['app']->lib($class,$param);
+	}
+
+	public function model($class='',$param='')
+	{
+		return $GLOBALS['app']->model($class,$param);
+	}
+
 	/**
 	 * 魔术方法之方法重载
 	 * @参数 $method $GLOBALS['app']下的方法，如果存在，直接调用，不存在，通过分析动态加载lib或是model
@@ -35,14 +50,7 @@ class _init_auto
 		if($method && method_exists($GLOBALS['app'],$method)){
 			return call_user_func_array(array($GLOBALS['app'],$method),$param);
 		}else{
-			$lst = explode("_",$method);
-			if($lst[1] == 'model'){
-				$GLOBALS['app']->model($lst[0]);
-				call_user_func_array(array($GLOBALS['app'],$method),$param);
-			}elseif($lst[1] == 'lib'){
-				$GLOBALS['app']->lib($lst[0]);
-				return call_user_func_array(array($GLOBALS['app'],$method),$param);
-			}
+			$GLOBALS['app']->error('方法：'.$method.' 不存在');
 		}
 	}
 
@@ -52,13 +60,17 @@ class _init_auto
 	**/
 	public function __get($id)
 	{
+		$engine_list = array('db','session','cache');
+		if(in_array($id,$engine_list)){
+			return $GLOBALS['app']->engine($id);
+		}
 		$lst = explode("_",$id);
-		if($lst[1] == "model"){
+		if(isset($lst[1]) && $lst[1] == "model"){
 			return $GLOBALS['app']->model($lst[0]);
-		}elseif($lst[1] == "lib"){
+		}elseif(isset($lst[1]) && $lst[1] == "lib"){
 			return $GLOBALS['app']->lib($lst[0]);
 		}
-		return $GLOBALS['app']->$id;
+		return isset($GLOBALS['app']->$id) ? $GLOBALS['app']->$id : false;
 	}
 
 	/**
@@ -80,10 +92,147 @@ class phpok_control extends _init_auto
 	{
 		if(!$id){
 			parent::__construct();
+			$this->init_authorization();
 			return true;
 		}
 		return $GLOBALS['app']->control($id,$app_id);
 	}
+
+	/**
+	 * 身份认证接口
+	**/
+	public function init_authorization()
+	{
+		$client_ip = $this->lib('common')->ip();
+		//基于浏览器生成的 MD5 认证
+		if(!$this->session()->val('api_code')){
+			$api_code = $this->lib('common')->str_rand(10);
+			$this->session()->assign('api_code',$api_code);
+			$chkdata = array();
+			$chkdata['ip'] = $client_ip;
+			$chkdata['api_code'] = $api_code;
+			$chkdata['time'] = $this->time;
+			$chkdata['session_id'] = $this->session()->sessid();
+			ksort($chkdata);
+			$md5 = md5(serialize($chkdata)).$chkdata['time'];
+			$authinfo = base64_encode('md5:'.$md5);
+		}else{
+			$api_code = $this->session()->val('api_code');
+			$chkdata = array();
+			$chkdata['ip'] = $client_ip;
+			$chkdata['api_code'] = $api_code;
+			$chkdata['time'] = $this->time;
+			$chkdata['session_id'] = $this->session()->sessid();
+			ksort($chkdata);
+			$md5 = md5(serialize($chkdata)).$chkdata['time'];
+			$authinfo = base64_encode('md5:'.$md5);
+			$tmpinfo = serialize($chkdata);
+		}
+		$this->assign('AUTHORIZATION',$authinfo);
+		if($this->app_id == 'admin' || !$this->is_ajax || !$this->config['api_auth']){
+			return false;
+		}
+		$not_auth = array('index','login','register','js','logout','vcode','plugin','token','task','call','usercp');
+		if(in_array($this->ctrl,$not_auth)){
+			return true;
+		}
+
+		$cache_id = $this->cache()->id('api-code-rsa');
+		$info = $this->cache()->get($cache_id);
+		if(!$info){
+			$info = $this->model('config')->get_all($this->site['id']);
+		}
+		if(!$info){
+			$this->error(P_Lang('未配置权限验证方式'));
+		}
+		$tmp = $_SERVER['HTTP_AUTHORIZATION'] ? $_SERVER['HTTP_AUTHORIZATION'] : $_SERVER['HTTP_TOKEN'];
+		if(!$tmp){
+			$this->error(P_Lang('HTTP_AUTHORIZATION 认证信息不存在'));
+		}
+		$tmps = explode(" ",$tmp);
+		if(!$tmps[1]){
+			$token = $tmp;
+		}else{
+			$token = $tmps[1];
+		}
+		list($type, $string) = explode(':', base64_decode($token));
+		$typelist = array('md5','code','rsa');
+		if(!in_array($type,$typelist)){
+			$this->error(P_Lang('HTTP_AUTHORIZATION 认证信息异常'));
+		}
+
+		if($type == 'md5'){
+			$chkdata = array();
+			$chkdata['ip'] = $client_ip;
+			$chkdata['api_code'] = $this->session()->val('api_code');
+			$chkdata['time'] = intval(substr($string,-10));
+			$chkdata['session_id'] = $this->session()->sessid();
+			$tmpinfo = serialize($chkdata);
+			ksort($chkdata);
+			$chkinfo = md5(serialize($chkdata)).$chkdata['time'];
+			if($chkinfo != $string){
+				$this->error(P_Lang('HTTP_AUTHORIZATION 认证信息失败'));
+			}
+			if($chkdata['time'] < ($this->time - 3600)){
+				$this->error(P_Lang('HTTP_AUTHORIZATION 认证相差超过一小时'));
+			}
+			$this->_api_code = $chkdata['api_code'];
+			return true;
+		}
+		if($type == 'code'){
+			$this->lib('token')->etype('api_code');
+			$this->lib('token')->keyid($info['api_code']);
+			$this->lib('token')->expiry(24*60*60);
+			$decode_data = $this->lib('token')->decode($string);
+			if(!$decode_data || !is_array($decode_data)){
+				$this->error(P_Lang('HTTP_AUTHORIZATION 认证失败'));
+			}
+			if(!$decode_data['session_id']){
+				$this->error(P_Lang('HTTP_AUTHORIZATION 认证失败，Session 丢失'));
+			}
+			if($this->session()->sessid() != $decode_data['session_id']){
+				$this->session()->comment($decode_data['session_id']);
+			}
+
+			if($decode_data['ip'] != $chkdata['ip']){
+				$this->error(P_Lang('HTTP_AUTHORIZATION 认证异常，IP不一致'));
+			}
+			if($decode_data['time'] < ($this->time - 3600)){
+				$this->error(P_Lang('HTTP_AUTHORIZATION 认证相差超过一小时'));
+			}
+			if(isset($decode_data['user_id']) && $decode_data['user_id'] != $this->session()->val('user_id')){
+				$this->error(P_Lang('HTTP_AUTHORIZATION 认证失败，用户ID不一致'));
+			}
+			$this->_api_code = $decode_data['api_code'];
+			return true;
+		}
+		$this->lib("token")->etype("public_key");
+		$this->lib('token')->public_key($info['public_key']);
+		$this->lib('token')->private_key($info['private_key']);
+		$this->lib('token')->expiry(24*60*60);
+		$decode_data = $this->lib('token')->decode($string);
+		if(!$decode_data || !is_array($decode_data)){
+			$this->error(P_Lang('HTTP_AUTHORIZATION 认证失败'));
+		}
+		if(!$decode_data['session_id']){
+			$this->error(P_Lang('HTTP_AUTHORIZATION 认证失败，Session 丢失'));
+		}
+		if($this->session()->sessid() != $decode_data['session_id']){
+			$this->session()->comment($decode_data['session_id']);
+		}
+		if($decode_data['ip'] != $chkdata['ip']){
+			$this->error(P_Lang('HTTP_AUTHORIZATION 认证异常，IP不一致'));
+		}
+		if($decode_data['time'] < ($this->time - 3600)){
+			$this->error(P_Lang('HTTP_AUTHORIZATION 认证相差超过一小时'));
+		}
+		if(isset($decode_data['user_id']) && $decode_data['user_id'] != $this->session()->val('user_id')){
+			$this->error(P_Lang('HTTP_AUTHORIZATION 认证失败，用户ID不一致'));
+		}
+		$this->_api_code = $decode_data['api_code'];
+		return true;
+	}
+
 }
 
 /**
@@ -113,7 +262,7 @@ class phpok_model extends _init_auto
 			if($this->app_id == 'admin' && $this->session->val('admin_site_id')){
 				$this->site_id = $this->session->val('admin_site_id');
 			}
-			if($this->app_id != 'admin' && $this->site['id']){
+			if($this->app_id != 'admin' && isset($this->site['id'])){
 				$this->site_id = $this->site['id'];
 			}
 		}else{
@@ -194,7 +343,7 @@ class _init_node_html extends _init_auto
 	 * 返回应用信息
 	 * @参数 $id 应用标识，为空时尝试读取当前应用标识
 	 * @返回 数组 应用基本信息
-	 * @更新时间 
+	 * @更新时间
 	**/
 	final public function _info($id='')
 	{
@@ -213,7 +362,7 @@ class _init_node_html extends _init_auto
 	 * 返回插件输出的HTML数据，请注意，这里并没有输出，只是返回
 	 * @参数 $name 模板名称，带后缀的模板名称，相对路径，系统会依次检查，具体请看：<b>private function _tplfile()</b>
 	 * @参数 $id 字符串，指定的插件ID，为空尝试获取当前插件ID
-	 * @返回 正确时返回模板内容，错误时返回false 
+	 * @返回 正确时返回模板内容，错误时返回false
 	**/
 	final public function _tpl($name,$id='')
 	{
@@ -307,7 +456,7 @@ class phpok_plugin extends _init_auto
 	 * 返回插件信息
 	 * @参数 $id 插件ID，为空时尝试读取当前插件ID
 	 * @返回 数组 id插件ID，title名称，author作者，version版本，note说明，param插件扩展保存的数据，这个是一个数组，path插件路径
-	 * @更新时间 
+	 * @更新时间
 	**/
 	final public function _info($id='')
 	{
@@ -317,9 +466,6 @@ class phpok_plugin extends _init_auto
 		$rs = $this->model('plugin')->get_one($id);
 		if(!$rs){
 			$rs = array('id'=>$id);
-		}
-		if($rs['param']){
-			$rs['param'] = unserialize($rs['param']);
 		}
 		$rs['path'] = $this->dir_root.'plugins/'.$id.'/';
 		return $rs;
@@ -350,7 +496,7 @@ class phpok_plugin extends _init_auto
 	 * 返回插件输出的HTML数据，请注意，这里并没有输出，只是返回
 	 * @参数 $name 模板名称，带后缀的模板名称，相对路径，系统会依次检查，具体请看：<b>private function _tplfile()</b>
 	 * @参数 $id 字符串，指定的插件ID，为空尝试获取当前插件ID
-	 * @返回 正确时返回模板内容，错误时返回false 
+	 * @返回 正确时返回模板内容，错误时返回false
 	**/
 	final public function _tpl($name,$id='')
 	{

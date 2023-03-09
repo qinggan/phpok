@@ -90,6 +90,7 @@ class db_pdo_mssql extends db
 
 	public function query($sql)
 	{
+		$this->checkquery($sql);
 		$this->cache_update($sql);
 		$this->check_connect();
 		$this->_time();
@@ -134,7 +135,7 @@ class db_pdo_mssql extends db
 			return false;
 		}
 		$this->_time();
-		$rs = false;
+		$rs = array();
 		while($rows = $this->query->fetch($this->type)){
 			$rs[] = $rows;
 		}

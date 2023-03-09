@@ -1,12 +1,18 @@
 <!-- include tpl=head_lay nopadding=true -->
 <style type="text/css">
-.hand{cursor: pointer;}
-ul.filelist{list-style:none;padding:0;margin:0}
-ul.filelist li{float:left;margin:3px 5px;width:100px;padding:1px;border:1px solid #ccc;cursor:pointer;text-align:center;}
-ul.filelist li:hover{background:#efefef;}
-ul.filelist li .ico{float:left;width:100px;height:100px;text-align:center;position:relative;z-index: 2;}
-ul.filelist li .ico .checkbox{position:absolute;width:20px;height:20px;background:#fff;top:1px;left:1px;z-index:1;}
-ul.filelist li img.img{width:100%}
+.checkbox {
+	position:absolute;
+	padding:5px 8px 2px 8px;
+	background:#fff;
+	top:1px;
+	left:1px;
+	z-index:1;
+	box-shadow:2px 2px 2px rgba(0,0,0,0.5);
+	border:1px solid #ccc;
+}
+.layui-card-header .layui-icon{
+	position:static;
+}
 </style>
 <script type="text/javascript">
 function phpok_input(val)
@@ -91,68 +97,81 @@ function add_select(id){
 	return true;
 }
 </script>
+<!-- if $session.admin_id && $sys.app_id == 'admin' -->
+<link rel="stylesheet" type="text/css" href="{#js#}/webuploader/webuploader.css" />
+<script type="text/javascript" src="{#js#}/webuploader/webuploader.min.js"></script>
+<script type="text/javascript" src="{#js#}/webuploader/admin.upload.js"></script>
+<script type="text/javascript">
+function cate_change()
+{
+	val = $("#upload_cate_id").val();
+	if(!val){
+		$.dialog.alert('请选择要存储的目标分类');
+		return false;
+	}
+	var url = '{$formurl}&cate_id='+val;
+	$.phpok.go(url);
+}
+</script>
+<!-- /if -->
+
+
 <div class="layui-card">
-	<div class="layui-card-header" style="padding-top:5px;">
+	<div class="layui-card-header layuiadmin-card-header-auto">
 		<form method="post" action="{$formurl}" class="layui-form" id="post_save" onsubmit="return check_search()">
-		<ul class="layout">
-			<li>
+		<div class="layui-row layui-col-space10 ">
+			<div class="layui-col-md2">
+				<select name="day">
+					<option value="">不限</option>
+					<!-- loop from=$daylist key=$key value=$value id=$tmpid -->
+					<option value="{$value.value}"{if $value.value == $day} selected{/if}>{$value.title}</option>
+					<!-- /loop -->
+				</select>
+			</div>
+			<div class="layui-col-md2">
 				<select name="cate_id" id="top_cate_id">
 					<option value="">全部分类…</option>
 					<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
 					<option value="{$value.id}"{if $value.id == $cate_id} selected{/if}>{$value.title}</option>
 					<!-- /loop -->
 				</select>
-			</li>
-			<li>
-				<select name="keytype" id="keytype" onchange="update_select(this.value)">
-					<!-- loop from=$keytype_list key=$key value=$value id=$tmpid -->
-					<option value="{$key}"{if $key == $keytype} selected{/if}>{$value}</option>
-					<!-- /loop -->
-				</select>
-			</li>
-			<li><input type="text" name="keywords" id="keywords" value="{$keywords}" class="layui-input" /></li>
-			<li><input type="submit" value="{lang搜索}" class="layui-btn layui-btn-sm" /></li>
-			<li><input type="button" value="{lang刷新}" class="layui-btn layui-btn-sm" onclick="$.phpok.reload()" /></li>
-		</ul>
+			</div>
+			<div class="layui-col-md2">
+				<input type="text" name="keywords" id="keywords" value="{$keywords}" class="layui-input" />
+			</div>
+			<div class="layui-col-md2">
+				<div class="layui-btn-group" style="margin-top:-6px;">
+					<input type="submit" value="{lang搜索}" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang刷新}" class="layui-btn layui-btn-sm" onclick="$.phpok.reload()" />
+				</div>
+			</div>
+			<!-- if $session.admin_id && $sys.app_id == 'admin' -->
+			<div class="layui-col-md2">
+				{$upload_buttons}
+			</div>
+			<!-- /if -->
+		</div>
 		</form>
 	</div>
 	<div class="layui-card-body">
-		<table class="layui-table">
-		<thead>
-		<tr>
-			<!-- if $multiple --><th></th><!-- /if -->
-			<th width="60px">小图</th>
-			<th>上传时间</th>
-			<th>类型</th>
-			<th>说明</th>
-			<th></th>
-		</tr>
-		</thead>
-		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-		<tr title="{lang名称：}{$value.title}&#10{lang添加：}{func date 'Y-m-d H:i:s' $value.addtime}{if $value.attr && $value.attr.width && $value.attr.height}&#10{lang属性：}{$value.attr.width}x{$value.attr.height}{/if}">
-			<!-- if $multiple --><td><input type="checkbox" name="addfile[]" onclick="add_select('{$value.id}')" id="addfile_{$value.id}" value="{$value.id}" /></td><!-- /if -->
-			<td><label for="addfile_{$value.id}"><img src="{$value.ico}" style="width:50px;" /></label></td>
-			<td>{func date 'Y-m-d H:i:s' $value.addtime}</td>
-			<td>{$value.ext}</td>
-			<td>
-				<label for="addfile_{$value.id}">{$value.title}</label>
-				<!-- if $value.attr -->
-				<div class="gray">
-					<!-- loop from=$value.attr key=$k value=$v id=$idxx -->
-					<!-- if $idxx.index -->，<!-- /if -->{$k}：{$v}
-					<!-- /loop -->
+		<div class="layui-row layui-col-space10 filelist" id="filelists">
+			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+			<div class="layui-col-xs6 layui-col-sm4 layui-col-md3 layui-col-lg2">
+				<div class="layui-card" lay-tips="{lang名称：}{$value.title}<br/>{lang添加：}{func date 'Y-m-d H:i:s' $value.addtime}{if $value.attr && $value.attr.width && $value.attr.height}<br/>{lang属性：}{$value.attr.width}x{$value.attr.height}{/if}">
+					<div class="layui-card-body"{if !$multiple} onclick="add_input('{$value.id}')"{/if}>
+						<label>
+							<!-- if $multiple -->
+							<div class="checkbox">
+								<input type="checkbox" name="addfile[]" onclick="add_select('{$value.id}')" id="addfile_{$value.id}" value="{$value.id}" />
+							</div>
+							<!-- /if -->
+							<img src="{$value.ico}"  style="width:100%;" />
+						</label>
+					</div>
 				</div>
-				<!-- /if -->
-			</td>
-			<td>
-				<div class="layui-btn-group">
-					<input type="button" value="查看" onclick="$.phpok.open('{$value.filename}')" class="layui-btn layui-btn-xs layui-btn-warm" />
-					<!-- if !$multiple --><input type="button" value="选择" onclick="add_input('{$value.id}')" class="layui-btn layui-btn-xs" /><!-- /if -->
-				</div>
-			</td>
-		</tr>
-		<!-- /loop -->
-		</table>
+			</div>
+			<!-- /loop -->
+		</div>
 		<!-- include tpl=pagelist -->	
 	</div>
 </div>
@@ -169,44 +188,4 @@ $(document).ready(function(){
 	}
 });
 </script>
-<!-- if $session.admin_id && $sys.app_id == 'admin' -->
-<link rel="stylesheet" type="text/css" href="{#js#}/webuploader/webuploader.css" />
-<script type="text/javascript" src="{#js#}/webuploader/webuploader.min.js"></script>
-<script type="text/javascript" src="{#js#}/webuploader/admin.upload.js"></script>
-<script type="text/javascript">
-var obj = art.dialog.opener;
-function cate_change()
-{
-	val = $("#upload_cate_id").val();
-	if(!val){
-		$.dialog.alert('请选择要存储的目标分类');
-		return false;
-	}
-	var url = '{$formurl}&cate_id='+val;
-	$.phpok.go(url);
-}
-</script>
-
-<div class="layui-card">
-	<div class="layui-card-header">
-		{lang附件上传}
-	</div>
-	<div class="layui-card-body layui-form">
-		<div class="layui-form-item">
-			<div class="layui-input-block">
-				<select id="upload_cate_id" onchange="cate_change()" lay-ignore style="width:400px;">
-					<!-- loop from=$catelist key=$key value=$value -->
-					<option value="{$value.id}"{if $value.id == $cate_id} selected{/if} data="{$value.filetypes}" catename="{$value.title}">
-					{$value.title}<!-- if $value.typeinfos --> / {lang支持上传格式：}{$value.typeinfos}<!-- /if --></option>
-					<!-- /loop -->
-				</select>
-			</div>
-			<div class="layui-input-block">
-				{$upload_buttons}
-			</div>
-			<div class="layui-input-block" id="upload_progress"></div>
-		</div>
-	</div>
-</div>
-<!-- /if -->
 <!-- include tpl=foot_lay is_open=true -->

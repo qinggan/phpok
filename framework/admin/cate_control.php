@@ -156,7 +156,7 @@ class cate_control extends phpok_control
 		}
 		$used_fields = array();
 		if($extlist){
-			$tmp = false;
+			$tmp = array();
 			foreach($extlist as $key=>$value){
 				if($value["ext"]){
 					$ext = is_string($value['ext']) ? unserialize($value["ext"]) : $value['ext'];
@@ -464,6 +464,7 @@ class cate_control extends phpok_control
 		$array['status'] = $this->get('status','int');
 		$array["site_id"] = $this->session->val('admin_site_id');
 		$list = explode("\n",$title);
+		$next_taxis = $this->model('cate')->cate_next_taxis($parent_id);
 		foreach($list as $key=>$value){
 			if(!$value || !trim($value)){
 				continue;
@@ -471,10 +472,13 @@ class cate_control extends phpok_control
 			$m = $maxid + $key + 1;
 			$data = $array;
 			$data['title'] = trim($value);
+			$data['taxis'] = $next_taxis;
 			$insert_id = $this->model('cate')->save($data);
 			if($insert_id){
 				$tmp = array("identifier"=>'cate-'.$insert_id);
 				$this->model('cate')->save($tmp,$insert_id);
+				//创建下一个排序
+				$next_taxis = $next_taxis + 10;
 			}
 		}
 		$this->success(P_Lang('分类信息配置成功'));

@@ -82,28 +82,53 @@ class design_form extends _init_auto
 			foreach($matches[0] as $key=>$value){
 				$id = 'k'.md5($value);
 				$tmp = $this->_str2array($value);
-				if(!$tmp || !$tmp['tplfile'] || !$tmp['code']){
+				if(!$tmp || !$tmp['code']){
 					continue;
 				}
+				$rs = $this->model('design')->get_one($tmp['code'],'code');
 				$content_id = $tmp['id'];
-				$tplfile = $tmp['tplfile'];
-				$ext = substr($tplfile,-5);
-				$ext = strtolower($ext);
-				if($ext != '.html'){
-					$tplfile .= '.html';
+				if($rs){
+					if($tmp['ext'] && is_array($tmp['ext'])){
+						foreach($tmp['ext'] as $k=>$v){
+							$rs['ext'][$k] = $v;
+						}
+					}
+					$tplfile = $this->dir_data.'design/'.$rs['code'].'.html';
+					if(!file_exists($tplfile)){
+						continue;
+					}
+					$info = $this->lib('file')->cat($tplfile);
+					$calldata = '';
+					if($rs['ext'] && $rs['ext']['calldata']){
+						$calldata = $rs['ext']['calldata'];
+					}
+					if(!$calldata){
+						$calldata = $tmp['code'];
+					}
+					if($tmp['calldata']){
+						$calldata = $tmp['calldata'];
+					}
+				}else{
+					$tplfile = $tmp['tplfile'];
+					$ext = substr($tplfile,-5);
+					$ext = strtolower($ext);
+					if($ext != '.html'){
+						$tplfile .= '.html';
+					}
+					if(!file_exists($this->dir_root.$tplfile)){
+						continue;
+					}
+					$info = $this->lib('file')->cat($this->dir_root.$tplfile);
+					$calldata = $tmp['code'];
 				}
-				if(!file_exists($this->dir_root.$tplfile)){
-					continue;
-				}
-				$info = $this->lib('file')->cat($this->dir_root.$tplfile);
 				//变量替换
 				if($tmp['replace'] && is_array($tmp['replace'])){
 					foreach($tmp['replace'] as $key=>$value){
 						$info = str_replace($value['old'],$value['new'],$info);
 					}
 				}
-				$info = str_replace('$info','$'.$id,$info);//更换变量				
-				$list = phpok($tmp['code'],$tmp['param']);
+				$info = str_replace('$info','$'.$id,$info);//更换变量
+				$list = phpok($calldata,$tmp['param']);
 				if($list){
 					$this->assign($id,$list);
 					$mycontent = $this->tpl->fetch($info,'content');
@@ -113,14 +138,17 @@ class design_form extends _init_auto
 			}
 		}	
 		$content = str_replace('pre-type="content"','data-type="content"',$content);
-		//去除pre-****=***属性
-		$content = preg_replace('/pre\-[a-zA-Z0-9]+=\"[^\"]+\"/is','',$content);
+		//去除pre-****=*** data-ext-***=***属性
+		$content = preg_replace('/pre\-[a-zA-Z0-9]+=\"[^\"]*\"/is','',$content);
+		$content = preg_replace('/data\-ext\-[a-zA-Z0-9]+=\"[^\"]*\"/is','',$content);
 		//去除无值的动画
 		$content = preg_replace('/data\-wow\-[a-zA-Z]+?=\"[0]*\"/is','',$content);
 		$content = preg_replace('/wow\-[a-zA-Z]+?=\"[0]*\"/is','',$content);
 		//去除多余空格，只保留一个空格
 		$content = preg_replace("/(\x20{2,})/"," ",$content);
 		$content = str_replace('" >','">',$content);
+		//去除备注
+		$content = preg_replace('/<!--\s+[\/]*layer\s+[a-zA-Z0-9]+\s+-->/isU','',$content);
 		return $content;
 	}
 
@@ -134,7 +162,18 @@ class design_form extends _init_auto
 		foreach($matches[1] as $key=>$value){
 			$rs[$value] = $matches[2][$key];
 		}
+		//增加data-ext-的扩展信息
+		preg_match_all('/data\-ext\-([a-zA-Z0-9]+?)=\"([^\"]*?)\"/is',$str,$matches);
+		foreach($matches[1] as $key=>$value){
+			$rs[$value] = $matches[2][$key];
+		}
 		
+		preg_match_all('/pre\-ext\-([a-zA-Z0-9]+?)=\"([^\"]*?)\"/is',$str,$matches);
+		$ext = array();
+		foreach($matches[1] as $key=>$value){
+			$ext[$value] = $matches[2][$key];
+		}
+		$rs['ext'] = $ext;
 		if($rs['param']){
 			$dt = array();
 			$dt['ext'] = array();

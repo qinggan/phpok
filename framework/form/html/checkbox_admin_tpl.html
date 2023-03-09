@@ -18,3 +18,10 @@ ul.checkbox_{$_rs.identifier} li{float:left;margin-right:15px;}
 	<li><label><input type="checkbox" lay-ignore name="{$_rs.identifier}[]" title="{$value.title}" value="{$value.val}"{if($value && $_rs.content && in_array($value.val,$_rs.content))} checked{/if} />{$value.title}</label></li>
 	<!-- /loop -->
 </ul>
+<!-- if $_rs.js_admin -->
+<script type="text/javascript">
+$(document).ready(function(){
+	{$_rs.js_admin}
+});
+</script>
+<!-- /if -->

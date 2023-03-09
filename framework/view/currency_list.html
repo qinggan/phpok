@@ -8,9 +8,6 @@
 			<button class="layui-btn layui-btn-sm" onclick="$.phpok.go('{url ctrl=currency func=set /}');">
 				<i class="layui-icon">&#xe608;</i> {lang添加货币}
 			</button>
-			<button class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.admin.close()">
-				<i class="layui-icon">&#x1006;</i> {lang关闭}
-			</button>
 		</div>
 	</div>
 	<div class="layui-card-body">
@@ -23,9 +20,10 @@
 			<th>{lang状态}</th>
 			<th>{lang名称}</th>
 			<th>{lang汇率}</th>
+			<th>{lang小数点位数}</th>
 			<th>{lang显示效果}</th>
 			<th>{lang排序}</th>
-			<th><div>{lang操作}</div></th>
+			<th>{lang操作}</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -39,7 +37,8 @@
 			</td>
 			<td><label for="id_{$value.id}">{$value.title}</label></td>
 			<td>{$value.val}</td>
-			<td>{$value.symbol_left}{func rand 10 99}.{func rand 10 99}{$value.symbol_right}</td>
+			<td>{$value.dpl ? $value.dpl : '整数'}</td>
+			<td>{$value.symbol_left}{func rand 10 99}{if $value.rand}.{$value.rand}{/if}{$value.symbol_right}</td>
 			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 			<td>
 				<div class="layui-btn-group">

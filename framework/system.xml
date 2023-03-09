@@ -21,6 +21,10 @@
 			<title><![CDATA[下拉菜单]]></title>
 			<note><![CDATA[与单选框类似，适用于数据量小使用]]></note>
 		</select>
+		<selectpage>
+			<title><![CDATA[基于SelectPage下拉菜单]]></title>
+			<note><![CDATA[适用于较大数据时使用的下拉菜单]]></note>
+		</selectpage>
 		<textarea>
 			<title><![CDATA[文本区]]></title>
 			<note><![CDATA[支持回车符号，注意容易与HTML代码冲突，建议实体文本使用]]></note>
@@ -69,6 +73,14 @@
 			<title><![CDATA[省市县联动]]></title>
 			<note><![CDATA[仅限国内使用，同时也用于物流应用]]></note>
 		</pca>
+		<fonticon>
+			<title><![CDATA[字体图标]]></title>
+			<note><![CDATA[实现字体图标在后台的管理应用，注意前端需要手工引入样式文件]]></note>
+		</fonticon>
+		<blockhtml>
+			<title><![CDATA[可视化代码块]]></title>
+			<note><![CDATA[实现一些模板里的静态页模块在线编辑，仅支持简单的文本及图片]]></note>
+		</blockhtml>
 	</form>
 	<field>
 		<varchar>

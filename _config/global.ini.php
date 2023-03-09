@@ -76,13 +76,28 @@ force_https = 0
 ;DENY 表示页面不允被嵌套
 ;SAMEORIGIN 表示页面只能被本站页面嵌入到iframe或者frame中
 ;ALLOW-FROM uri 表示页面允许frame或frame加载，其中uri 是指具体的网站域名
-iframe_options = 'SAMEORIGIN'
+iframe_options = *
 
 ;跨域请求数据，设为 false 表示禁止跨域数据请求，设为 true 表示允许跨域
 cross_domain = true
 
 ;允许跨域的域名，为 * 号表示允许所有，单独域名：www.phpok.com 写法
-cross_domain_origin = '*';
+cross_domain_origin = *
+
+
+;完整地址（即通过平台生成的网址是否带上域名）
+;设置为 0 或 false 表示系统默认为相对网址，但是参数如果传 true 过来，还是显示完整地址
+;设置为 1 或 true 表示系统强制为绝对地址（带有域名）
+is_baseurl = false
+
+;完整地址，为空使用系统生成
+baseurl = ""
+
+;是否开启API认证
+;设置为 0 或 false 表示不启用 AUTHORIZATION 认证
+;设置为 1 或 true 表示前台及API（除少数接口）大部分都要认在 HTTP 头里增加 AUTHORIZATION 认证
+api_auth = false
+
 
 [mobile]
 ;启用或禁用手机端，1/true启用，0/false禁用
@@ -112,12 +127,14 @@ excludejs = ""
 line = "_"
 
 ;是否继承上一级SEO，设为true会一层层递归进来
+;企业站用户（数据量少，建议设为 true），数据量稍多点的（超过1000条运营数据时，建议设为 false，以防止被百度认识垃圾站）
+;不清楚请设置 false
 inherit = false
 
-;SEO优化模式，{title}，即传过来的标题值，{seo} 是内置的 SEO 标题，{sitename} 即是网站名称
-format = "{title}-{seo}-{sitename}"
-
-;启用SEO标题时，是否包含title信息
+;仅限详细页有效，且必须启用 inherit 设为 true 时有效
+;  1、设为 false 详细页的标题在自身未设置SEO标题时，仅使用【主题 + 分类 + 项目】；
+;  2、设为 true  详细页的标题在自身未设置SEO标题时，使用【主题 + 分类 + 项目 + SEO标题】，请慎用，可能会造成标题超长
+;个人建议设为 false
 in_title = false
 
 [order]
@@ -178,7 +195,7 @@ folder = "static/cdn"
 
 [log]
 ;日志状态，设为1或true时表示开启，设为0或false时，表示关闭
-status = true
+status = false
 
 ;记录级别，目前仅支持 1 和 0
 ;1 表示所有的都记录

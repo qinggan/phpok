@@ -22,10 +22,8 @@
 				'success':function(rs){
 					if(rs.status){
 						var tip = $("#id").val() ? p_lang('项目信息编辑成功') : p_lang('项目信息创建成功');
-						$.dialog.tips(tip,function(){
-							$.admin.reload(get_url('project'));
-							$.admin.close();
-						}).lock();
+						$.dialog.tips(tip).lock();
+						$.admin.close(get_url('project'));
 						return false;
 					}
 					$.dialog.alert(rs.info);
@@ -84,19 +82,53 @@
 		**/
 		module_change:function(obj)
 		{
-			$("#module_set,#module_set2").hide();
+			$("#module_set,#module_set2,#use_filter_setting,#admin-other-setting").hide();
 			var val = $(obj).val();
 			var mtype = $(obj).find('option:selected').attr('data-mtype');
 			if(!val || val == '0'){
 				return true;
 			}
 			$("#tmp_orderby_btn,#tmp_orderby_btn2").html('');
-			//清除字段
-			//$("#tmp_fields_btn").html('');
 			var c = '';
 			var f = '';
+			var fhtml = '';
+			var fvalue = $("#admin-field-setting").attr("data-value");
+			if(!fvalue || fvalue == 'undefined'){
+				fvalue = $(obj).find('option:selected').attr('data-layout');
+			}
+			if(fvalue){
+				fvalue = fvalue.split(",");
+			}
+			//增加查看次数;
+			fhtml += '<input lay-filter="layout" type="checkbox" name="layout[]" value="hits" title="'+p_lang('查看次数')+'" ';
+			if(fvalue && $.inArray('hits',fvalue)>-1){
+				fhtml += ' checked';
+			}
+			fhtml += ' />';
+			//增加发布时间
+			fhtml += '<input lay-filter="layout" type="checkbox" name="layout[]" value="dateline" title="'+p_lang('发布时间')+'" ';
+			if(fvalue && $.inArray('dateline',fvalue)>-1){
+				fhtml += ' checked';
+			}
+			fhtml += ' />';
+			//增加排序
+			fhtml += '<input lay-filter="layout" type="checkbox" name="layout[]" value="sort" title="'+p_lang('排序')+'" ';
+			if(fvalue && $.inArray('sort',fvalue)>-1){
+				fhtml += ' checked';
+			}
+			fhtml += ' />';
 			if(mtype == 1){
 				c += '<input type="button" value="ID" onclick="phpok_admin_orderby(\'orderby2\',\'id\')" class="layui-btn layui-btn-sm" />';
+				c += '<input type="button" value="排序" onclick="phpok_admin_orderby(\'orderby2\',\'sort\')" class="layui-btn layui-btn-sm" />';
+				c += '<input type="button" value="时间" onclick="phpok_admin_orderby(\'orderby2\',\'dateline\')" class="layui-btn layui-btn-sm" />';
+				c += '<input type="button" value="查看次数" onclick="phpok_admin_orderby(\'orderby2\',\'hits\')" class="layui-btn layui-btn-sm" />';
+			}else{
+				//增加用户账号
+				fhtml += '<input lay-filter="layout" type="checkbox" name="layout[]" value="user_id" title="'+p_lang('用户账号')+'" ';
+				if(fvalue && $.inArray('user_id',fvalue)>-1){
+					fhtml += ' checked';
+				}
+				fhtml += ' />';
 			}
 			$.phpok.json(get_url('project','mfields','id='+val),function(rs){
 				if(!rs.status){
@@ -114,6 +146,12 @@
 							}
 						}
 						f += '<input type="button" value="'+list[i].title+'" onclick="$.admin_project.fields_add(\''+list[i].identifier+'\')" class="layui-btn layui-btn-sm"/>';
+						//增加扩展选项
+						fhtml += '<input lay-filter="layout" type="checkbox" name="layout[]" value="'+list[i].identifier+'" title="'+list[i].title+'" ';
+						if(fvalue && $.inArray(list[i].identifier,fvalue)>-1){
+							fhtml += ' checked';
+						}
+						fhtml += ' />';
 					}
 				}
 				if(f && f != ''){
@@ -123,11 +161,13 @@
 				}
 				if(mtype == 1){
 					$("#tmp_orderby_btn2").html(c);
-					$("#module_set2").show();
+					$("#module_set2,#admin-other-setting").show();
 				}else{
 					$("#tmp_orderby_btn").html(c);
-					$("#module_set").show();
+					$("#module_set,#use_filter_setting,#admin-other-setting").show();
 				}
+				$("#admin-field-setting").html(fhtml);
+				layui.form.render();
 				return true;
 			});
 		},
@@ -219,9 +259,8 @@
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
-						$.dialog.tips(p_lang('数据保存成功'),function(){
-							$.admin.reload(get_url('project'));
-						}).lock();
+						$.dialog.tips(p_lang('数据保存成功')).lock();
+						$.admin.reload(get_url('project'));
 						return false;
 					}
 					$.dialog.alert(rs.info);
@@ -336,6 +375,29 @@
 				return false;
 			})
 		},
+		clear:function(){
+			var id = $.checkbox.join();
+			if(!id){
+				$.dialog.tips(p_lang('未选择要操作的项目'));
+				return false;
+			}
+			$.dialog.prompt(p_lang('确定要清空吗？请填写二次密码以验证确定！'),function(val){
+				if(!val){
+					$.dialog.tips('密码不能为空');
+					return false;
+				}
+				var url = get_url('project','clear','id='+id+"&pass="+val);
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.tips(rs.info);
+						return false;
+					}
+					$.dialog.tips('清空执行完成，请稍候',function(){
+						$.phpok.reload();
+					}).lock();
+				})
+			});
+		},
 		ext_help:function()
 		{
 			top.$.dialog({
@@ -366,6 +428,62 @@
 				'okVal':'提交',
 				'cancel':true
 			})
+		},
+		set_submit:function()
+		{
+			var val = $("#action_type").val();
+			if(val == "set_lock:0"){
+				return this.set_lock(0);
+			}
+			if(val == "set_lock:1"){
+				return this.set_lock(1);
+			}
+			if(val == "set_hidden:0"){
+				return this.set_hidden(0);
+			}
+			if(val == "set_hidden:1"){
+				return this.set_hidden(1);
+			}
+			if(val == 'copy'){
+				return this.copy();
+			}
+			if(val == 'export'){
+				return this.export();
+			}
+			if(val == 'clear'){
+				return this.clear();
+			}
+			var id = $.checkbox.join();
+			if(!id){
+				$.dialog.alert(p_lang('未选择要操作的项目'));
+				return false;
+			}
+			if(val == '-'){
+				var url = get_url("project","group_set","action=_delete&id="+id);
+				$.phpok.json(url,function(rs){
+					if(rs.status){
+						$.dialog.tips(p_lang('删除分组操作成功'),function(){
+							$.phpok.reload();
+						}).lock();
+						return true;
+					}
+					$.dialog.tips(rs.info).lock();
+					return false;
+				});
+				return true;
+			}
+			var url = get_url("project","group_set","action="+val+"&id="+id);
+			$.phpok.json(url,function(rs){
+				if(rs.status){
+					$.dialog.tips(p_lang('设置分组操作成功'),function(){
+						$.phpok.reload();
+					}).lock();
+					return true;
+				}
+				$.dialog.tips(rs.info).lock();
+				return false;
+			});
+			return true;
 		}
 	};
 

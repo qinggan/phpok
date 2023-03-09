@@ -1,8 +1,9 @@
 <!-- include tpl=head_lay -->
 <form id="setting" class="layui-form" onsubmit="return $.admin_all.save()">
+
 <div class="layui-card ">
 	<div class="layui-card-header">{lang基本设置}</div>
-	<div class="layui-card-body">
+	<div class="layui-card-body layui-container">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang网站名称}
@@ -24,46 +25,46 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				<i class="layui-icon layui-icon-tips" lay-tips="{lang网站版LOGO 绑定网站的LOGO信息}"></i>
 				{lang网站Logo}
 			</label>
-			<div class="layui-input-inline default-auto">
+			<div class="layui-input-block">
 				{func form_edit logo $rs.logo text form_btn=image}
 			</div>
+			<div class="layui-input-block mtop">{lang网站版LOGO 绑定网站的LOGO信息}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				<i class="layui-icon layui-icon-tips" lay-tips="{lang手机版LOGO 绑定网站的手机版LOGO}"></i>
 				{lang手机Logo}
 			</label>
-			<div class="layui-input-inline default-auto">
+			<div class="layui-input-block">
 				{func form_edit logo_mobile $rs.logo_mobile text form_btn=image}
 			</div>
+			<div class="layui-input-block mtop">{lang手机版LOGO 绑定网站的手机版LOGO}</div>
 		</div>
 		
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				<i class="layui-icon layui-tips" lay-tips="{lang显示于网站标题前的小图标，规格建议使用32x32，建议只使用PNG格式}">&#xe702;</i>
 				{lang站点图标}
 			</label>
-			<div class="layui-input-inline default-auto">
+			<div class="layui-input-block">
 				{func form_edit favicon $rs.favicon text form_btn=image}
 			</div>
+			<div class="layui-input-block mtop">{lang显示于网站标题前的小图标，规格大小使用32x32或64x64，建议只使用PNG格式}</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				<i class="layui-icon layui-icon-tips" lay-tips="{lang添加页头信息，如添加google验证，百度验证等，支持HTML}"></i>
 				{lang网站扩展}
 			</label>
 			<div class="layui-input-block">
 				{$code_editor_info}
 			</div>
+			<div class="layui-input-block mtop">{lang添加页头信息，如添加google验证，百度验证等，支持HTML}</div>
 		</div>
 	</div>
 </div>
 <div class="layui-card">
 	<div class="layui-card-header hand" onclick="$.admin.card(this)">{lang扩展信息}<i class="layui-icon layui-icon-right"></i></div>
-	<div class="layui-card-body hide">
+	<div class="layui-card-body layui-container hide">
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang网站状态}</label>
 			<div class="layui-input-inline auto">
@@ -149,22 +150,7 @@
 			</div>
 			<div class="layui-input-block mtop">{lang简单说明关闭登录的通知信息}</div>
 		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				<i class="layui-icon layui-tips" lay-tips="{lang设置用户登录的默认方式}">&#xe702;</i>
-				{lang登录方式}
-			</label>
-			<div class="layui-input-inline auto">
-				<input type="radio" name="login_type" {if !$rs.login_type} checked{/if} value="0" title="{lang普通登录（即账号密码登录方式）}">
-				<!-- if $gateway_email -->
-				<input type="radio" name="login_type" value="email" {if $rs.login_type== 'email'} checked{/if} title="{langEmail验证登录}">
-				<!-- /if -->
-				<!-- if $gateway_sms -->
-				<input type="radio" name="login_type" value="sms" {if $rs.login_type== 'sms'} checked{/if} title="{lang短信验证登录}">
-				<!-- /if -->
-			</div>
-		</div>
-
+		<input type="hidden" name="login_type" value="0" />
 		<!-- if $gateway_email -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -197,59 +183,12 @@
 			<div class="layui-input-inline auto gray lh38">{lang请配置好短信验证码模板}</div>
 		</div>
 		<!-- /if -->
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{langAPI验证串}
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" id="api_code" name="api_code" value="{$rs.api_code}" placeholder="" autocomplete="off" class="layui-input">
-			</div>
-			<div class="layui-input-inline auto gray lh38">
-				<div class="layui-btn-group">
-					<input type="button" value="{lang随机生成}" onclick="$.admin_all.rand()" class="layui-btn layui-btn-sm" />
-					<input type="button" value="删除" onclick="$('#api_code').val('')" class="layui-btn layui-btn-sm layui-btn-danger" />
-				</div>
-			</div>
-			<div class="layui-form-mid">
-				{lang用于数据加密通迅时使用，建议设置复杂}
-			</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang公钥}
-			</label>
-			<div class="layui-input-inline long">
-				<textarea name="public_key" id="public_key" class="layui-textarea">{$rs.public_key}</textarea>
-			</div>
-			<div class="layui-form-mid">
-				{lang用于APP开发，数据传输前进行公钥加密}
-			</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang私钥}
-			</label>
-			<div class="layui-input-inline long">
-				<textarea name="private_key" id="private_key" class="layui-textarea">{$rs.private_key}</textarea>
-			</div>
-			<div class="layui-form-mid">
-				{lang用于APP开发，数据服务端数据进行解密}
-			</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">{lang默认加密}</label>
-			<div class="layui-input-inline auto">
-				<input type="radio" name="encode_type" value="api_code" title="{langAPI验证串}" {if $rs.biz_is_user} checked{/if}>
-				<input type="radio" name="encode_type" value="public_key" title="{lang公钥加密}" {if !$rs.biz_is_user} checked{/if}>
-			</div>
-			<div class="layui-input-inline auto gray lh38">{lang请选择电商是否对游客限制}</div>
-		</div>
 	</div>
 </div>
 
 <div class="layui-card">
 	<div class="layui-card-header hand" onclick="$.admin.card(this)">{lang电子商务}<i class="layui-icon layui-icon-right"></i></div>
-	<div class="layui-card-body hide">
+	<div class="layui-card-body layui-container hide">
 		<div class="layui-form-item">
 			<label class="layui-form-label">{lang电子商务}</label>
 			<div class="layui-input-inline auto">
@@ -336,7 +275,7 @@
 </div>
 <div class="layui-card">
 	<div class="layui-card-header hand" onclick="$.admin.card(this)">{langSEO优化}<i class="layui-icon layui-icon-right"></i></div>
-	<div class="layui-card-body hide">
+	<div class="layui-card-body layui-container hide">
 		<div id="seo_setting">
 			
 			<div class="layui-form-item">
@@ -377,7 +316,7 @@
 </div>
 <div class="layui-card">
 	<div class="layui-card-header hand" onclick="$.admin.card(this)">{lang上传配置}<i class="layui-icon layui-icon-right"></i></div>
-	<div class="layui-card-body hide">
+	<div class="layui-card-body layui-container hide">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang游客上传}
@@ -401,12 +340,12 @@
 <!-- if LICENSE != 'LGPL' -->
 <div class="layui-card">
 	<div class="layui-card-header hand" onclick="$.admin.card(this)">{lang后台自定义Logo}<i class="layui-icon layui-icon-right"></i></div>
-	<div class="layui-card-body hide">
+	<div class="layui-card-body layui-container hide">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang左侧栏大图}
 			</label>
-			<div class="layui-input-block gray" style="line-height:38px;">{lang显示在后台管理左上方的LOGO，图片规格是220x50，建议上传PNG格式}</div>
+			<div class="layui-input-block gray">{lang显示在后台管理左上方的LOGO，图片规格是220x50，建议上传PNG格式}</div>
 			<div class="layui-input-block">
 				{func form_edit adm_logo29 $rs.adm_logo29 text form_btn=image}
 			</div>
@@ -415,7 +354,7 @@
 			<label class="layui-form-label">
 				{lang左侧栏小图}
 			</label>
-			<div class="layui-input-block gray" style="line-height:38px;">{lang显示缩小后的Logo，规格是：50x50，建议上传PNG格式}</div>
+			<div class="layui-input-block gray">{lang显示缩小后的Logo，规格是：50x50，建议上传PNG格式}</div>
 			<div class="layui-input-block">
 				{func form_edit adm_logo50 $rs.adm_logo50 text form_btn=image}
 			</div>
@@ -424,7 +363,7 @@
 			<label class="layui-form-label">
 				{lang登录页}
 			</label>
-			<div class="layui-input-block gray" style="line-height:38px;">{lang显示在登录页上，建议使用PNG透明图片，图片规格是300x75}</div>
+			<div class="layui-input-block gray">{lang显示在登录页上，建议使用PNG透明图片，图片规格是300x75}</div>
 			<div class="layui-input-block">
 				{func form_edit adm_logo180 $rs.adm_logo180 text form_btn=image}
 			</div>

@@ -70,57 +70,51 @@
 		},
 		act:function(obj,id)
 		{
-			var title = obj.files[0].name;
-			if(!title){
-				$.dialog.alert(p_lang('请选择要上传的文件'))
-				return false;
-			}
 			this.file_id(id);//
-			if(aliyunVtype[id] == 'video'){
-				uploader[id] = this.aliyunVod(id);
-				uploader[id].addFile(obj.files[0], null, null, null, '{"Vod":{"Title":"'+title+'"}}');
-				var url = api_url('gateway','index','id='+aliyunGateway[id]+'&file=video_id&cate_id='+cateId[id]+"&title="+$.str.encode(title));
-				$.phpok.json(url,function(rs){
-					uploadAuth[id] = rs.info.UploadAuth;
-					uploadAddress[id] = rs.info.UploadAddress;
-					videoId[id] = rs.info.VideoId;
-					uploader[id].startUpload();
-				});
-			}else{
-				uploader[id] = this.aliyunVod(id);
-				uploader[id].addFile(obj.files[0], null, null, null, '{"Vod":{"Title":"'+title+'"}}');
-				var url = api_url('gateway','index','id='+aliyunGateway[id]+'&file=image_id&cate_id='+cateId[id]+"&title="+$.str.encode(title));
-				$.phpok.json(url,function(rs){
-					uploadAuth[id] = rs.info.UploadAuth;
-					uploadAddress[id] = rs.info.UploadAddress;
-					videoId[id] = rs.info.ImageId;
-					uploader[id].startUpload();
-				});
+			uploader[id] = this.aliyunVod(id);
+			for(var i=0;i<obj.files.length;i++){
+				uploader[id].addFile(obj.files[i], null, null, null, '{"Vod":{"Title":"'+obj.files[i].name+'"}}');
 			}
+			uploader[id].startUpload();
 		},
 		aliyunVod:function(id)
 		{
 			var obj = {
 				'userId':aliyunAccount[id],
 				'regoin':aliyunRegoin[id],
+				'addFileSuccess':function(uploadInfo) {
+					var file = uploadInfo.file;
+					$("#"+id+"_progress").show().append('<div id="phpok-upfile-' + file.id + '" class="phpok-upfile-list">' +
+						'<div class="title">' + file.name + ' <span class="status">'+p_lang('等待上传…')+'</span></div>' +
+						'<div class="progress"><span>&nbsp;</span></div>' +
+						'<div class="cancel" id="phpok-upfile-cancel-'+file.id+'"></div>' +
+					'</div>' );
+					var t = $(".phpok-upfile-list").length;
+					if(t<1){
+						t = 1;
+					}
+					var idx = t - 1;
+					$("#phpok-upfile-"+file.id+" .cancel").click(function(){
+						uploader[id].cancelFile(idx);
+						$("#phpok-upfile-"+file.id).remove();
+					});
+				},
 				// 文件上传失败
 				'onUploadFailed': function (uploadInfo, code, message) {
-					$.dialog.alert('上传文件：'+uploadInfo.file.name+' 失败<br/>错误代码：'+code+"<br/>提示内容："+message);
-					$("#file_"+fileId).val('');
+					$('#phpok-upfile-'+uploadInfo.file.id).find('span.status').html(p_lang('上传失败'));
+					$("#phpok-upfile-"+uploadInfo.file.id).fadeOut();
 				},
-				// 文件上传完成
+				// 单个文件上传完成
 				'onUploadSucceed': function (uploadInfo) {
 					$("input[type=file]").val('');
-					Tip = $.dialog.tips(p_lang('视频已成功上传到阿里云平台，请稍候…'),100).lock();
-					//保存数据到Form表单中，存储一条记录到本地
-					var url = api_url('gateway','index','id='+aliyunGateway[fileId]+"&file=success&cate_id="+cateId[fileId]+"&video_id="+videoId[fileId]);
+					$('#phpok-upfile-'+uploadInfo.file.id).find('span.status').html(p_lang('上传成功'));
+					$("#phpok-upfile-"+uploadInfo.file.id).fadeOut();
+					var url = api_url('gateway','index','id='+aliyunGateway[fileId]+"&file=success&cate_id="+cateId[fileId]+"&video_id="+uploadInfo.videoId);
 					$.phpok.json(url,function(rs){
 						if(!rs.status){
-							Tip.content(rs.info).time(2);
-							$("#file_"+fileId).val('');
+							$.dialog.tips(rs.info).lock();
 							return false;
 						}
-						Tip.content('附件上传成功').time(1.5);
 						if(aliyunMulti[fileId]){
 							var t = $("#"+fileId).val();
 							var v = t ? t+","+rs.info.id : rs.info.id;
@@ -130,7 +124,7 @@
 							if(d){
 								d += ","+rs.info.id;
 							}else{
-								d = rs.info;
+								d = rs.info.id;
 							}
 							$.phpok.data("upload-"+fileId,d);
 						}else{
@@ -147,9 +141,6 @@
 						}
 						$.phpokform.upload_showhtml(fileId,aliyunMulti[fileId]);
 					});
-					//去除客户端file
-					$("#file_"+fileId).val('');
-					$("#"+fileId+"_progress").hide().html('');
 				},
 				// 文件上传进度
 				'onUploadProgress': function (uploadInfo, totalSize, progress) {
@@ -164,12 +155,40 @@
 					}else{
 						size = (totalSize).toString() + 'B';
 					}
-					$("#"+fileId+"_progress").show().html('正在上传：'+uploadInfo.file.name+'，文件大小：'+size+'，已上传：'+ Math.ceil(progress * 100)+'%');
+					var $li = $('#phpok-upfile-'+uploadInfo.file.id),
+					$percent = $li.find('.progress span');
+					var width = $li.find('.progress').width();
+					$percent.css( 'width', parseInt(width * progress, 10) + 'px' );
+					$li.find('span.status').html(p_lang('正在上传…'));
+				},
+				//全部文件上传完成
+				onUploadEnd:function(){
+					$("#file_"+fileId).val('');
+					$("#"+fileId+"_progress").hide().html('');
 				},
 				// 开始上传
 				'onUploadstarted': function (uploadInfo) {
-					uploader[fileId].setUploadAuthAndAddress(uploadInfo, uploadAuth[fileId], uploadAddress[fileId],videoId[fileId]);
-					$("#"+fileId+"_progress").show().html('正在开始上传文件：'+uploadInfo.file.name+'，请稍候…');
+					if (!uploadInfo.videoId){
+						var title = uploadInfo.file.name;
+						var url = api_url("gateway","index","file=vod_id");
+						url += "&id="+aliyunGateway[fileId]+"&cate_id="+cateId[fileId];
+						url += "&title="+$.str.encode(uploadInfo.file.name);
+						if(uploadInfo.isImage){
+							url += "&type=image";
+						}
+						$.phpok.json(url,function(rs){
+							var tmpId = uploadInfo.isImage ? rs.info.ImageId : rs.info.VideoId;
+							uploader[fileId].setUploadAuthAndAddress(uploadInfo, rs.info.UploadAuth, rs.info.UploadAddress,tmpId);
+						})
+					}else{
+						var url = api_url("gateway","index","file=refresh_id");
+						url += "&id="+aliyunGateway[fileId];
+						url += "&vid="+uploadInfo.videoId;
+						$.phpok.json(url,function(rs){
+							var tmpId = uploadInfo.isImage ? rs.info.ImageId : rs.info.VideoId;
+							uploader[fileId].setUploadAuthAndAddress(uploadInfo, rs.info.UploadAuth, rs.info.UploadAddress,uploadInfo.videoId);
+						});
+					}
 				}
 			};
 			if(aliyunStorage[id] && aliyunStorage[id] != 'undefined'){

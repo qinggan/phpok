@@ -1,0 +1,94 @@
+<!-- include tpl=cart/header -->
+<script type="text/javascript">
+function cart_checkout()
+{
+	var id = $.checkbox.join();
+	if(!id){
+		$.dialog.alert('未指定要结算的产品');
+		return false;
+	}
+	return true;
+}
+</script>
+<section class="container pb-4">
+	<h3 class="text-center p-4">产品列表</h3>
+	<form method="post" action="{url ctrl=cart func=checkout/}" class="am-form" onsubmit="return cart_checkout()">
+	<table class="table table-hover">
+	<thead>
+		<tr>
+			<th colspan="2">图片</th>
+			<th>名称</th>
+		</tr>
+	</thead>
+	<tbody>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td><input type="checkbox" name="id[]" id="id_{$value.id}" value="{$value.id}" checked onchange="$.cart.price()" /></td>
+			<td>
+				<!-- if $value.tid -->
+				<a href="{url id=$value.tid/}" title="{$value.title}" target="_blank"><img src="{$value.thumb ? $value.thumb : 'images/nopic.png'}" width="60px" border="0" alt="{$value.title}" /></a>
+				<!-- else -->
+				<img src="{$value.thumb ? $value.thumb : 'images/nopic.png'}" width="80px" border="0" alt="{$value.title}" />
+				<!-- /if -->
+			</td>
+			<td>
+				<!-- if $value.tid -->
+				<a href="{url id=$value.tid/}" title="{$value.title}" target="_blank"><h5 id="title_{$value.id}">{$value.title}</h5></a>
+				<!-- else -->
+				<h5 id="title_{$value.id}">{$value.title}</h5>
+				<!-- /if -->
+				<table class="table table-borderless p-0">
+				<!-- loop from=$value._attrlist key=$k value=$v id=$tmpid -->
+				<tr>
+					<td class="p-0">{$v.title}：</td>
+					<td class="p-0">{$v.content}</td>
+				</tr>
+				<!-- /loop -->
+				<tr>
+					<td class="p-0" style="width:70px;">单价：</td>
+					<td class="p-0">{func price_format $value.price $value.currency_id}</td>
+				</tr>
+				<tr>
+					<td class="p-0">数量：</td>
+					<td class="p-0">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<div class="input-group-text">+</div>
+							</div>
+							<input type="number" class="form-control qty" min="1" name="qty_{$value.id}" id="qty_{$value.id}" value="{$value.qty}" onchange="$.cart.update('{$value.id}')">
+							<div class="input-group-append">
+								<div class="input-group-text">-</div>
+							</div>
+						</div>
+					</td>
+				</tr>
+				</table>
+				<!-- if $value.discount -->
+				<div class="text-muted"><del>{func price_format $value.price*$value.qty $value.currency_id}</del></div>
+				<!-- /if -->
+				<div class="text-danger">{func price_format $value.price_total $value.currency_id}</div>
+				<!-- loop from=$value.appslist key=$k value=$v id=$idxx -->
+				<div class="text-muted"><small>{$v.title}</small></div>
+				<!-- /loop -->
+			</td>
+		</tr>
+		<!-- /loop -->
+	</tbody>
+	</table>
+	<div class="row pt-4 pb-4 border-top">
+		<div class="col text-right">当前选中的产品价格是：<span class="text-danger" id="total_price">{$price}</span></div>
+	</div>
+	<div class="row mb-4 border-top pt-4">
+		<div class="col">
+			<input type="button" value="批量删除" onclick="$.cart.del()" class="btn btn-danger" />
+		</div>
+		<div class="col text-right">
+			<button type="submit" class="btn btn-primary btn-lg">
+				去结算
+				<i class="fa fa-angle-right"></i>
+			</button>
+		</div>
+	</div>
+	</form>
+</section>
+<!-- include tpl=cart/footer -->

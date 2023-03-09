@@ -69,20 +69,21 @@
 <div class="layui-row layui-col-space10 layui-form checkbox">
     <!-- loop from=$rslist key=$key value=$value id=$tmpid -->
     <div class="layui-col-sm6 layui-col-md4 layui-col-lg3" id="thumb_{$value.id}">
-        <div class="layui-card" style="height:165px;">
+        <div class="layui-card" style="min-height:165px;">
 	        <div class="layui-card-header">
-		        <input type="checkbox" name="attrid[]" title="{$value.title}" id="attrid_{$value.id}" value="{$value.id}" lay-skin="primary"/>
+		        <input type="checkbox" name="attrid[]" title="{$value.id} - {func phpok_cut $value.title 10 …}" id="attrid_{$value.id}" value="{$value.id}" lay-skin="primary"/>
 		        <!-- if $value.download -->, {lang下载次数} {$value.download} {lang次}<!-- /if -->
 			</div>
             <div class="layui-card-body layui-clear">
                 <div class="layui-row layui-col-space10">
-                    <div class="layui-col-sm3"><img src="{$value.ico}" width="100%" /></div>
-                    <div class="layui-col-sm9">
-						<div>
-							{lang文件名} {$value.name}
-							<!-- if $value.folder --><br>{lang存储目录} {$value.folder}<!-- /if -->
-							<br>{lang上传时间} {func date "Y-m-d H:i:s" $value.addtime}
-						</div>
+                    <div class="layui-col-sm6 layui-col-md3"><img src="{$value.ico}"  style="width:100px;" /></div>
+                    <div class="layui-col-sm6 layui-col-md9">
+						<div class="line1">{lang名称} {$value.name}</div>
+						<!-- if $value.folder --><div class="line1">{lang目录} {$value.folder}</div><!-- /if -->
+						<!-- if $value.addtime --><div class="line1">{lang时间} {func date "Y-m-d H:i:s" $value.addtime}</div><!-- /if -->
+						<!-- if $value.attr && $value.attr.width && $value.attr.height -->
+						<div>{lang宽高} {$value.attr.width} x {$value.attr.height}</div>
+						<!-- /if -->
 						<div class="layui-btn-group">
 							<input type="button" value="{lang修改}" class="layui-btn layui-btn-xs" onclick="$.admin_res.modify('{$value.id}')"/>
 							<input type="button" value="{lang预览}" class="layui-btn layui-btn-xs" onclick="$.admin_res.preview_attr('{$value.id}')"/>

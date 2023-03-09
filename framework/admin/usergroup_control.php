@@ -146,13 +146,11 @@ class usergroup_control extends phpok_control
 			$this->model('usergroup')->save($array,$id);
 			//存储扩展字段
 			ext_save("usergroup-".$id);
-			$this->model('temp')->clean("usergroup-".$id,$this->session->val('admin_id'));
 			$tip = P_Lang('用户组编辑成功');
 		}else{
 			$id = $this->model('usergroup')->save($array);
 			if($id){
 				ext_save("add-usergroup-ext-id",true,"usergroup-".$id);
-				$this->model('temp')->clean("add-usergroup-ext-id",$this->session->val('admin_id'));
 			}
 			$tip = P_Lang('用户组添加成功');
 		}

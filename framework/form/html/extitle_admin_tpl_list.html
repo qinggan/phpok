@@ -11,6 +11,7 @@
 	<th>{lang运费}</th>
 	<th>{lang税费}</th>
 	<!-- /if -->
+	<!-- if !$_rs.only_preview -->
 	<th width="60px">{lang排序}</th>
 	<th id="{$_rs.identifier}_action_buttons" width="120" style="text-align:center;">
 		<!-- if !$_true_delete -->
@@ -22,6 +23,7 @@
 		<input type="button" value="{lang添加}" onclick="$.phpokform.extitle_quickadd('{$_rs.id}','{$_rs.identifier}',{$_rs.form_maxcount})" class="layui-btn layui-btn-sm" />
 		<!-- /if -->
 	</th>
+	<!-- /if -->
 </tr>
 </thead>
 <tbody>
@@ -36,6 +38,7 @@
 	<td><input type="text" name="_freight[{$value.id}]" id="_freight_{$value.id}" value="{$value.freight}" class="layui-input" /></td>
 	<td><input type="text" name="_tax[{$value.id}]" id="_tax_{$value.id}" value="{$value.tax}" class="layui-input" /></td>
 	<!-- /if -->
+	<!-- if !$_rs.only_preview -->
 	<td align="center" data-value="{$idx.num}" data-total="{$idx.total}" data-id="{$value.id}" data-name="taxis-{$_rs.identifier}-{$_rs.id}">
 		<div class="button-group">
 			<input type="button" value="↑" class="phpok-btn" title="{lang向前移一位}" onclick="$.phpokform.extitle_sortup(this,'{$_rs.id}','{$_rs.identifier}')" />
@@ -48,6 +51,7 @@
 			<input type="button" value="{lang删除}" onclick="$.phpokform.extitle_delete('{$value.id}','{$_rs.id}','{$_rs.identifier}')" class="layui-btn layui-btn-sm layui-btn-danger" />
 		</div>
 	</td>
+	<!-- /if -->
 </tr>
 <!-- /loop -->
 </tbody>

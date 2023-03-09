@@ -21,28 +21,24 @@ class search_model_base extends phpok_model
 	function get_total($condition="",$mid=0,$ext=array())
 	{
 		$total = 0;
+		$listsql = array();
 		if($mid && is_array($mid)){
 			foreach($mid as $key=>$value){
-				$mycondition = $condition;
-				$sql  = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
-				$sql .= " LEFT JOIN ".$this->db->prefix."list_".$value." ext ON(l.id=ext.id) ";
-				if($ext && $ext[$value]){
-					$tmp = implode(" OR ",$ext[$value]);
-					if($mycondition){
-						$mycondition .= " AND (".$tmp.") ";
-					}else{
-						$mycondition = $tmp;
-					}
-				}
+				$sql  = " SELECT ext.id FROM ".$this->db->prefix."list_".$value." ext JOIN ".$this->db->prefix."list l ON(ext.id=l.id) ";
 				$sql .= " WHERE l.status=1 AND l.hidden=0 ";
-				if($mycondition){
-					$sql .= " AND ".$mycondition;
+				if($ext && $ext[$value]){
+					$sql .= " AND (".implode(" OR ",$ext[$value]).") ";
 				}
-				$tmp = $this->db->count($sql);
-				if($tmp){
-					$total += $tmp;
-				}
+				$listsql[] = $sql;
 			}
+			$sql  = " SELECT count(l.id) FROM ".$this->db->prefix."list l WHERE l.status=1 AND l.hidden=0 ";
+			if($condition){
+				$sql .= " AND ".$condition." ";
+			}
+			if($listsql){
+				$sql .= " AND l.id IN(".implode(" UNION ",$listsql).")";
+			}
+			$total = $this->db->count($sql);
 			return $total;
 		}
 		$sql  = "SELECT count(l.id) FROM ".$this->db->prefix."list l ";
@@ -57,7 +53,7 @@ class search_model_base extends phpok_model
 	}
 
 	//查询ID数量
-	function id_list($condition="",$offset=0,$psize=30,$mid=0,$ext=array())
+	function id_list($condition="",$offset=0,$psize=30,$mid=0,$ext=array(),$orderby='')
 	{
 		if($mid && is_array($mid)){
 			$sqlist = array();
@@ -80,7 +76,11 @@ class search_model_base extends phpok_model
 				$sqlist[] = $sql;
 			}
 			$sql = implode(" UNION ",$sqlist);
-			$sql .= " ORDER BY dateline DESC,id DESC ";
+			if(!$orderby){
+				$sql .= " ORDER BY dateline DESC,id DESC ";
+			}else{
+				$sql .= " ORDER BY ".$orderby;
+			}
 			$sql .= " LIMIT ".$offset.",".$psize;
 			return $this->db->get_all($sql);
 		}
@@ -92,7 +92,12 @@ class search_model_base extends phpok_model
 		if($condition){
 			$sql.= " AND ".$condition;
 		}
-		$sql.= " ORDER BY l.sort DESC,l.dateline DESC,l.id DESC LIMIT ".intval($offset).",".intval($psize);
+		if($orderby){
+			$sql .= " ORDER BY ".$orderby." ";
+		}else{
+			$sql .= " ORDER BY l.sort DESC,l.dateline DESC,l.id DESC ";
+		}
+		$sql.= " LIMIT ".intval($offset).",".intval($psize);
 		return $this->db->get_all($sql);
 	}
 

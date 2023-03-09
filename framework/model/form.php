@@ -152,7 +152,7 @@ class form_model_base extends phpok_model
 		//文本搜索
 		$txtlist = array('text','password','textarea','editor','code_editor','param','pca','url');
 		if($rs['form_type'] && in_array($rs['form_type'],$txtlist)){
-			$keywords = str_replace($this->space_array(),'|',$keywords);
+			$keywords = str_replace($this->space_array,'|',$keywords);
 			$tmplist = explode("|",$keywords);
 			$tmp_condition = array();
 			foreach($tmplist as $key=>$value){
@@ -169,7 +169,7 @@ class form_model_base extends phpok_model
 			$condition = implode(" OR ",$tmp_condition);
 			return $condition;
 		}
-		$keywords = str_replace($this->space_array(),'|',$keywords);
+		$keywords = str_replace($this->space_array,'|',$keywords);
 		$tmplist = explode("|",$keywords);
 		$tmp_condition = array();
 		//用户信息检索
@@ -390,7 +390,424 @@ class form_model_base extends phpok_model
 				return $condition;
 			}
 			return false;
-			
 		}
+	}
+
+	/**
+	 * 基于模块字段进行格式化
+	 * @参数 $rs 模块字段信息，数组
+	**/
+	public function optlist($rs)
+	{
+		if(!$rs["option_list"]){
+			$rs['option_list'] = 'default:0';
+		}
+		list($type,$group_id) = explode(":",$rs['option_list']);
+		if($type == 'default'){
+			return $this->_optlist_default($rs['ext_select']);
+		}
+		if($type == 'opt'){
+			return $this->_optlist_opt($group_id);
+		}
+		if($type == 'project'){
+			return $this->_optlist_subproject($group_id);
+		}
+		if($type == 'cate'){
+			return $this->_optlist_subcate($group_id);
+		}
+		if($type == 'user' && $group_id == 'grouplist'){
+			return $this->_optlist_usergroup();
+		}
+		if($type == 'gateway' && $group_id == 'express'){
+			return $this->_optlist_express();
+		}
+		if($type == 'gateway' && $group_id != 'express'){
+			return $this->_optlist_gateway();
+		}
+		//检测项目及模块相关信息
+		if($type == 'title' && $group_id){
+			$project = $this->model('project')->get_one($group_id,false);
+			if(!$project || !$project['module']){
+				return false;
+			}
+			$module = $this->model('module')->get_one($project['module']);
+			if(!$module){
+				return false;
+			}
+			if($module['mtype']){
+				return $this->_optlist_title_single($group_id,$rs,$project,$module);
+			}
+			if($module['tbl'] == 'cate'){
+				return false;
+			}
+			return $this->_optlist_title($group_id,$rs,$project,$module);
+		}
+		return false;
+	}
+
+	/**
+	 * 格式化内容
+	**/
+	public function optinfo($val,$rs)
+	{
+		if($rs['ext']){
+			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
+			$rs = array_merge($ext,$rs);
+			unset($rs['ext']);
+		}
+		
+		if(!$rs["option_list"]){
+			$rs['option_list'] = 'default:0';
+		}
+		list($type,$group_id) = explode(":",$rs['option_list']);
+		$info = array('val'=>$val,'title'=>$val,'type'=>$type,'data'=>array());
+		if($type == 'opt'){
+			return $this->_optinfo_opt($info,$group_id);
+		}
+		if($type == 'project'){
+			return $this->_optinfo_project($info);
+		}
+		if($type == 'title'){
+			return $this->_optinfo_title($info,$group_id,$rs);
+		}
+		if($type == 'cate'){
+			return $this->_optinfo_cate($info);
+		}
+		if($type == 'user' && $group_id == 'grouplist'){
+			return $this->_optinfo_user_grouplist($info);
+		}
+		if($type == 'gateway' && $group_id == 'express'){
+			return $this->_optinfo_express($info);
+		}
+		if($type == 'gateway' && $group_id != 'express'){
+			return $this->_optinfo_gateway($info);
+		}
+		return $info;
+	}
+
+	private function _optinfo_gateway($info)
+	{
+		$tmp = $this->model('gateway')->get_one($info['val']);
+		if(!$tmp){
+			$info['title'] = false;
+			$info['data'] = false;
+			return $info;
+		}
+		$info['title'] = $tmp['title'];
+		$info['data'] = $tmp;
+		return $info;
+	}
+
+	private function _optinfo_express($info)
+	{
+		$tmp = $this->model('express')->get_one($info['val']);
+		if(!$tmp){
+			$info['title'] = false;
+			$info['data'] = false;
+			return $info;
+		}
+		$info['title'] = $tmp['title'];
+		$info['data'] = $tmp;
+		return $info;
+	}
+
+	private function _optinfo_user_grouplist($info)
+	{
+		$tmp = $this->model('usergroup')->get_one($info['val']);
+		if(!$tmp){
+			$info['title'] = false;
+			$info['data'] = false;
+			return $info;
+		}
+		$info['title'] = $tmp['title'];
+		$info['data'] = $tmp;
+		return $info;
+	}
+
+	private function _optinfo_cate($info)
+	{
+		$tmp = $this->model('cate')->cate_info($info['val'],false);
+		if(!$tmp || !$tmp['status']){
+			$info['title'] = false;
+			$info['data'] = false;
+			return $info;
+		}
+		$info['title'] = $tmp['title'];
+		$info['data'] = $tmp;
+		return $info;
+	}
+
+	private function _optinfo_title($info,$group_id=0,$rs=array())
+	{
+		if(!$info || !$info['val']){
+			return false;
+		}
+		if(!$group_id){
+			return $info;
+		}
+		$project = $this->model('project')->get_one($group_id,false);
+		if(!$project || !$project['module']){
+			$info['data'] = false;
+			return $info;
+		}
+		$module = $this->model('module')->get_one($project['module']);
+		if($module['mtype']){
+			$tmp = $this->model('list')->single_one($info['val'],$project['module']);
+		}else{
+			$tmp = $this->model('list')->call_one($info['val']);
+		}
+		if(!$tmp){
+			$info['data'] = false;
+			return $info;
+		}
+		$field_show = $rs['field_show'] ? $rs['field_show'] : 'id';
+		$info['title'] = $tmp[$field_show] ? $tmp[$field_show] : $tmp['id'];
+		$info['data'] = $tmp;
+		return $info;
+	}
+
+	/**
+	 * 读取项目信息，不读扩展表
+	**/
+	private function _optinfo_project($info)
+	{
+		$tmp = $this->model('project')->get_one($info['val'],false);
+		if(!$tmp || !$tmp['status']){
+			return false;
+		}
+		$info['title'] = $tmp['title'];
+		$info['data'] = $tmp;
+		return $info;
+	}
+
+	private function _optinfo_opt($info,$group_id=0)
+	{
+		$val = $info['val'];
+		$group_rs = $this->model('opt')->group_one($group_id);
+		//检查是否是联动数据
+		if($group_rs && $group_rs['link_symbol'] && strpos($val,$group_rs['link_symbol']) !== false){
+			$list = explode($group_rs['link_symbol'],$val);
+			$list2 = array();
+			$parent_id = 0;
+			foreach( $list as $key => $value ){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				$value = trim($value);
+				$condition = "val='".$value."' AND group_id='".$group_id."' AND parent_id='".$parent_id."'";
+				$opt_data = $this->model('opt')->opt_one_condition($condition);
+				if($opt_data){
+					$list2[$key] = array('val'=>$value,'title'=>$opt_data['title']);
+					$parent_id = $opt_data['id'];
+				}
+			}
+			$tmp = array('title'=>array(),'val'=>array(),'data'=>$list2);
+			$tmp['type'] = $info['type'];
+			foreach($list2 as $key=>$value){
+				if($value && is_array($value)){
+					$tmp['title'][$key] = $value['title'];
+					$tmp['val'][$key] = $value['val'];
+				}
+			}
+			return $tmp;
+		}
+		$tmp = $this->model('opt')->opt_val($group_id,$val);
+		if(!$tmp){
+			return false;
+		}
+		$info['title'] = $tmp['title'];
+		$info['data'] = $tmp;
+		return $info;
+	}
+
+	/**
+	 * 读取独立表信息
+	**/
+	private function _optlist_title_single($group_id,$rs,$project,$module)
+	{
+		$orderby ='l.sort ASC,l.dateline DESC,l.id DESC';
+		$sql  = " SELECT l.*,c.title catename FROM ".$this->db->prefix.$project['module']." l ";
+		$sql .= " LEFT JOIN ".$this->db->prefix."cate c ON(l.cate_id=c.id) ";
+		$sql .= " WHERE l.project_id='".$group_id."'";
+		$sql .= " AND l.status=1 AND l.hidden=0 ORDER BY l.sort ASC,l.id DESC";
+		$tmplist = $this->db->get_all($sql);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		$field_value = $rs['field_value'] ? $rs['field_value'] : 'id';
+		$field_show = $rs['field_show'] ? $rs['field_show'] : 'id';
+		foreach($tmplist as $key=>$value){
+			$tmp = array("val"=>$value[$field_value],"title"=>$value[$field_show],'cate_id'=>$value['cate_id'],'catename'=>$value['catename']);
+			$rslist[] = $tmp;
+		}
+		return $rslist;
+	}
+
+	/**
+	 * 读主题的信息
+	**/
+	private function _optlist_title($group_id,$rs,$project,$module)
+	{
+		//检测主字段
+		if(!$rs['field_show']){
+			$rs['field_show'] = 'title';
+		}
+		if(!$rs['field_value']){
+			$rs['field_value'] = 'id';
+		}
+		$fields = $this->db->list_fields('list');
+		$is_ext = true;
+		if(in_array($rs['field_show'],$fields) && in_array($rs['field_value'],$fields)){
+			$is_ext = false;
+		}
+		if($is_ext){
+			$orderby = $project['orderby'] ? $project['orderby'] : 'l.sort ASC,l.dateline DESC,l.id DESC';
+			$k = 'l.cate_id,c.title catename';
+			if(in_array($rs['field_value'],$fields)){
+				$k .= ",l.".$rs['field_value']." id";
+			}else{
+				$k .= ",ext.".$rs['field_value']." id";
+			}
+			if(in_array($rs['field_show'],$fields)){
+				$k .= ",l.".$rs['field_show']." title";
+			}else{
+				$k .= ",ext.".$rs['field_show']." title";
+			}
+			$sql  = "SELECT ".$k." FROM ".$this->db->prefix."list l LEFT JOIN ".$this->db->prefix."cate c ON(l.cate_id=c.id) ";
+			$sql .= " LEFT JOIN ".$this->db->prefix."list_".$project['module']." ext ON(l.id=ext.id) WHERE l.project_id='".$group_id."'";
+			$sql .= " AND l.status=1 AND l.hidden=0 ORDER BY ".$orderby;
+			$tmplist = $this->db->get_all($sql);
+		}else{
+			$tmplist = $this->model("list")->title_list($group_id);
+		}
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$tmp = array("val"=>$value['id'],"title"=>$value['title'],'cate_id'=>$value['cate_id'],'catename'=>$value['catename']);
+			$rslist[] = $tmp;
+		}
+		return $rslist;
+	}
+
+	/**
+	 * 取得其他网关信息
+	**/
+	private function _optlist_gateway($group_id)
+	{
+		$tmplist = $this->model('gateway')->all($group_id);//其他网关参数
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$tmp = array('val'=>$value['id'],'title'=>$value['title']);
+			$rslist[] = $tmp;
+		}
+		return $rslist;
+	}
+
+	
+	/**
+	 * 取得物流相关信息
+	**/
+	private function _optlist_express()
+	{
+		$tmplist = $this->model('express')->get_all();
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$tmp = array('val'=>$value['id'],'title'=>$value['title']);
+			$rslist[] = $tmp;
+		}
+		return $rslist;
+	}
+
+
+	/**
+	 * 读取用户组
+	**/
+	private function _optlist_usergroup()
+	{
+		$tmplist = $this->model('usergroup')->get_all('status=1');
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$tmp = array("val"=>$value['id'],"title"=>$value['title']);
+			$rslist[] = $tmp;
+		}
+		return $rslist;
+	}
+
+	/**
+	 * 读取子分类
+	**/
+	private function _optlist_subcate($group_id)
+	{
+		$tmplist = $this->model('cate')->catelist_sonlist($group_id,false);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$tmp = array("val"=>$value['id'],"title"=>$value['title'],'parent_id'=>$value['parent_id']);
+			$rslist[] = $tmp;
+		}
+		return $rslist;
+	}
+
+	/**
+	 * 读取子项目信息
+	**/
+	private function _optlist_subproject($group_id)
+	{
+		$tmplist = $this->model('project')->project_sonlist($group_id);
+		if(!$tmplist){
+			return false;
+		}
+		$rslist = array();
+		foreach($tmplist as $key=>$value){
+			$tmp = array("val"=>$value['id'],"title"=>$value['title']);
+			$rslist[] = $tmp;
+		}
+		return $rslist;
+	}
+
+	/**
+	 * 基于自定义表单中获取到的数据
+	**/
+	private function _optlist_opt($group_id)
+	{
+		return $this->model('opt')->opt_all("group_id=".$group_id);
+	}
+
+	/**
+	 * 自定义默认的选项
+	**/
+	private function _optlist_default($info)
+	{
+		$list = explode("\n",$info);
+		$rslist = array();
+		foreach($list as $key=>$value){
+			if(!$value || !trim($value)){
+				continue;
+			}
+			if(strpos($value,':') !== false){
+				$tmp2 = explode(":",$value);
+				if(!$tmp2[1]){
+					$tmp2[1] = $tmp2[0];
+				}
+				$rslist[] = array('val'=>$tmp2[0],'title'=>$tmp2[1]);
+			}else{
+				$rslist[] = array('val'=>trim($value),'title'=>trim($value));
+			}
+		}
+		return $rslist;
 	}
 }
