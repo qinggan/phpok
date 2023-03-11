@@ -621,16 +621,9 @@ class phpok_call extends _init_auto
 			$tmp = $this->model('id')->id($rs['cate'],$rs['site'],true);
 			if($tmp['type'] == 'cate') $rs['cateid'] = $tmp['id'];
 		}
+		$rs['cateid'] = $this->_ids($rs['cateid']);
 		if($rs['cateid']){
 			if(strpos($rs['cateid'],',') !== false){
-				$tmp = explode(",",$rs['cateid']);
-                foreach($tmp as $key=>$value){
-                    if(!$value || !trim($value) || !intval($value)){
-                        unset($tmp[$key]);
-                        continue;
-                    }
-                }
-
 				if($project['cate_multiple']){
 					$condition .= " AND lc.cate_id IN(".(implode(",",$tmp)).") ";
 				}else{
