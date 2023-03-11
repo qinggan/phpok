@@ -1,9 +1,7 @@
 <?php
 /**
  * 调用中心类
- * @package phpok\framework
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 https://www.phpok.com
  * @版本 4.x
  * @授权 GNU Lesser General Public License (LGPL)
@@ -664,14 +662,9 @@ class phpok_call extends _init_auto
 		}
 		if($rs['idin']){
             $rs['idin'] = $this->_ids($rs['idin']);
-			$tmp = explode(",",$rs['idin']);
-			foreach($tmp as $key=>$value){
-				if(!$value || !trim($value) || !intval($value)){
-					unset($tmp[$key]);
-					continue;
-				}
-			}
-			$condition .= " AND l.id IN(".(implode(",",$tmp)).") ";
+            if($rs['idin']){
+	            $condition .= " AND l.id IN(".(implode(",",$tmp)).") ";
+            }
 		}
 		if($rs['tag']){
 			$list = explode(",",$rs['tag']);
