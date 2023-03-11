@@ -271,7 +271,7 @@ class reply_model_base extends phpok_model
 	 * 分组统计主题下的回复数量
 	 * @参数 $ids 要查询的主题ID
 	 * @参数 $condition 查询条件
-	 * @返回 成功返回数组，失败返回 false 
+	 * @返回 成功返回数组，失败返回 false
 	**/
 	public function group_tid_total($ids,$condition='')
 	{

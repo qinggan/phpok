@@ -510,8 +510,10 @@ class _init_phpok
 			}
 		}
 		if($config['cross_domain']){
-			$tmp = $config['cross_domain_origin'] ? $config['cross_domain_origin'] : '*';
-			header("Access-Control-Allow-Origin: ".$tmp);
+			$tmp = $config['cross_domain_origin'] ? explode(",",$config['cross_domain_origin']) : array("*");
+			foreach($tmp as $k=>$v){
+				header("Access-Control-Allow-Origin: ".$v);
+			}
 			header("Access-Control-Allow-Headers: *");
 		}
 		$this->config = $config;
@@ -2596,34 +2598,4 @@ class _init_phpok
 		return true;
 	}
 
-	/**
-	 * 格式化数据，强制数值
-	 * @参数 $ids 数组或以逗号隔开的字串
-	 * @参数 $is_array 返回模式，设为 true 返回数组，设为 false 返回字符串
-	**/
-	protected function _ids($ids,$is_array=false)
-	{
-		if(!$ids){
-			return false;
-		}
-		if(!is_array($ids)){
-			$ids = explode(",",$ids);
-		}
-		$idlist = array();
-		foreach($ids as $key=>$value){
-			$t = intval($value);
-			if(!$t){
-				continue;
-			}
-			$idlist[] = $t;
-		}
-		if(!$idlist || count($idlist)<1){
-			return false;
-		}
-		$idlist = array_unique($idlist);
-		if($is_array){
-			return $idlist;
-		}
-		return implode(",",$idlist);
-	}
 }
