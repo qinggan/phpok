@@ -75,6 +75,9 @@
 						goto_next(urls,i,true);
 						return;
 					}
+					var tip_info = rs.info ? rs.info : '上传失败';
+					tips_update(tip_info);
+					goto_next(urls,i,false);
 				}).catch(function() {
 					//上传图片失败
 					goto_next(urls,i, false);
@@ -89,45 +92,30 @@
 				ctx.drawImage(img, 0, 0, img.width, img.height);
 				var dataURL = canvas.toDataURL("image/png");
 				return dataURL
-				// return dataURL.replace("data:image/png;base64,", "");
 			}
 
-			function main() {
-				
-				  //此处自己替换本地图片的地址
-				img.crossOrigin= 'anonymous'
-				img.onload =function() {
-					var data = getBase64Image(img);
-					var img1 = document.createElement('img');
-					img1.src = data;
-					document.body.appendChild(img1);
-				}
-			}
-
-			//
+			//傻了，漏掉了跨域问题
 			function uploadImageUrl(urls,i) {
+				var oldUrl = urls[i];
 				var formData = new FormData();
-				var img = document.createElement('img');
-				img.src = urls[i];
-				img.crossOrigin= 'anonymous';
-				img.onload = function(){
-					var data = getBase64Image(img);
-					formData.append('data',data);
-					var option = {
-						url:imgUpload,
-						data:formData
-					}
-					ajaxPost(option).then(function(rs) {
-						image = null;
-						if(rs.status && rs.info){
-							updateEditorVal(urls[i], rs.info);
-							goto_next(urls,i,true);
-							return;
-						}
-					}).catch(function() {
-						goto_next(urls,i, false);
-					});
+				formData.append('url',oldUrl);
+				var option = {
+					url:imgUpload,
+					data:formData
 				}
+				ajaxPost(option).then(function(rs) {
+					image = null;
+					if(rs.status && rs.info){
+						updateEditorVal(urls[i], rs.info);
+						goto_next(urls,i,true);
+						return;
+					}
+					var tip_info = rs.info ? rs.info : '上传失败';
+					tips_update(tip_info);
+					goto_next(urls,i,false);
+				}).catch(function() {
+					goto_next(urls,i, false);
+				});
 			}
 
 			function parseUrl(url) {
