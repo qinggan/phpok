@@ -9,5 +9,4 @@
 	<install><![CDATA[install.php]]></install>
 	<uninstall><![CDATA[uninstall.php]]></uninstall>
 	<note><![CDATA[实现商城优惠码功能，支持产品促销优惠活罢，秒杀活动，支持用户领取优惠券抵扣]]></note>
-	<installed><![CDATA[1]]></installed>
 </root>

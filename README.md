@@ -6,7 +6,7 @@ phpok
 手工安装
 ===
 1. 打包下载后，请手工在 _data 目录下创建以下文件夹： **session**，**tpl_admin**，**tpl_www**，**log**，**update**，**zip**
-2. 请在根目录手动创建文件夹：**_cache**，**res**
+2. 请在根目录手动创建文件夹：**_cache**
 3. 设置 **_config/db.ini.php** 文件可写，Linux属性为 666
 4. 设置 **_cache**，**_data**，**res** 及子目录属性为 777
 5. 运行 phpokinstall.php 进行安装
@@ -35,10 +35,11 @@ phpok
 * 新增：简单的模块可视化编辑
 * 新增：执 Update，Delete, Insert, Replace 时进行安全较验
 
-资源包
+6.4.003 版本修正功能
 ===
-请到官网下载：https://phpok.oss-cn-shanghai.aliyuncs.com/6.4.zip
-res 目录里含有开发环境所有图片信息
+* 修正：带回复信息报错
+* 修正：附件是否被调用
+* 修正：库存表异常问题
 
 感谢
 ===
