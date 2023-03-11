@@ -213,12 +213,6 @@ class res_model extends res_model_base
 		if($chk){
 			return true;
 		}
-		//第十步，检查是否有用于收藏夹中
-		$sql = "SELECT id FROM ".$this->db->prefix."fav WHERE thumb='".$rs['filename']."'";
-		$chk = $this->db->get_one($sql);
-		if($chk){
-			return true;
-		}
 		return false;
 	}
 
