@@ -663,6 +663,7 @@ class phpok_call extends _init_auto
 			$condition.= " AND l.attr LIKE '%".$rs['attr']."%' ";
 		}
 		if($rs['idin']){
+            $rs['idin'] = $this->_ids($rs['idin']);
 			$tmp = explode(",",$rs['idin']);
 			foreach($tmp as $key=>$value){
 				if(!$value || !trim($value) || !intval($value)){
