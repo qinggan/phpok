@@ -51,3 +51,6 @@ if($tmplist){
 	$sql = "UPDATE ".$this->db->prefix."fields SET ext=''";
 	$this->db->query($sql);
 }
+
+$sql = "CREATE TABLE IF NOT EXISTS `".$this->db->prefix."stock` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',`tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',`attr` varchar(255) NOT NULL COMMENT '属性值，多个属性值用英文逗号隔开',`qty` int(10) NOT NULL DEFAULT '0' COMMENT '库存数量，仅支持整数',`cost` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '进货价',`market` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '市场价',`price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '销售价',PRIMARY KEY (`id`),UNIQUE KEY `sku_id` (`tid`,`attr`)) ENGINE=MyISAM AUTO_INCREMENT=99 DEFAULT CHARSET=utf8 COMMENT='库存表'";
+$this->db->query($sql);
