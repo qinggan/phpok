@@ -41,7 +41,7 @@ class db
 	protected $kec_right = '`';
 	protected $checkcmd = array('UPDATE', 'INSERT', 'REPLAC', 'DELETE');
 	protected $disable = array(
-		'function' => array('load_file', 'floor', 'hex', 'substring', 'ord', 'char', 'benchmark', 'reverse', 'strcmp', 'datadir', 'updatexml', 'extractvalue', 'name_const', 'multipoint', 'database', 'user'),
+		'function' => array('load_file', 'floor', 'hex', 'substring', 'ord', 'char', 'benchmark', 'reverse', 'strcmp', 'datadir', 'updatexml', 'extractvalue', 'name_const', 'multipoint'),
 		'action' => array('@', 'intooutfile', 'intodumpfile', 'unionselect', 'uniondistinct', 'information_schema', 'current_user', 'current_date'),
 		'note' => array('/*', '*/', '#', '--'),
 	);
