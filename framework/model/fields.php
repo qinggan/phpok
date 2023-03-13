@@ -59,9 +59,6 @@ class fields_model_base extends phpok_model
 			return false;
 		}
 		foreach($rslist as $key=>$value){
-			if($value['ext']){
-				$value['ext'] = unserialize($value['ext']);
-			}
 			$ext = $this->fields_ext_all($value['id']);
 			if($ext){
 				$value = array_merge($ext,$value);

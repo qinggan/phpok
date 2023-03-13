@@ -50,34 +50,31 @@ class ext_model extends ext_model_base
 		return $this->db->query($sql);
 	}
 
-	public function content_save($content,$id)
+	public function content_save($content,$id=0)
 	{
-		if(!$id || !$content) return false;
+		if(!$id){
+			return false;
+		}
 		$sql = "REPLACE INTO ".$this->db->prefix."extc(id,content) VALUES('".$id."','".$content."')";
 		return $this->db->query($sql);
 	}
 
-	public function ext_delete($id,$module)
+	public function ext_delete($id,$module='')
 	{
-		$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$id."'";
-		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$id."'";
-		$this->db->query($sql);
-		return true;
+		return $this->model('fields')->del($id);
 	}
 
 	public function delete($val,$module,$type="id")
 	{
+		if($type == 'id'){
+			return $this->model('fields')->del($val);
+		}
 		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE `".$type."`='".$val."' AND ftype='".$module."'";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
 		}
-		$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$rs['id']."'";
-		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$rs['id']."'";
-		$this->db->query($sql);
-		return true;
+		return $this->model('fields')->del($rs['id']);
 	}
 
 	//存储表单
