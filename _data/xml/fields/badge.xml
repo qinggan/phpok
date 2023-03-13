@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<title><![CDATA[徽章]]></title>
+	<identifier><![CDATA[badge]]></identifier>
+	<field_type><![CDATA[varchar]]></field_type>
+	<note><![CDATA[又名角标，主要放于标题旁起到重点提醒]]></note>
+	<form_type><![CDATA[text]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[safe]]></format>
+	<content><![CDATA[]]></content>
+	<group_id><![CDATA[main]]></group_id>
+	<form_btn><![CDATA[]]></form_btn>
+	<ext_format><![CDATA[]]></ext_format>
+	<ext_quick_words><![CDATA[]]></ext_quick_words>
+	<ext_quick_type><![CDATA[]]></ext_quick_type>
+	<ext_include_3><![CDATA[0]]></ext_include_3>
+	<ext_field><![CDATA[]]></ext_field>
+	<ext_onlyone><![CDATA[]]></ext_onlyone>
+	<ext_layout><![CDATA[]]></ext_layout>
+</root>

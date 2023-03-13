@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<title><![CDATA[内容图片]]></title>
+	<identifier><![CDATA[contentpics]]></identifier>
+	<field_type><![CDATA[varchar]]></field_type>
+	<note><![CDATA[放在内容前，用于实现通栏图片及相应的复杂信息]]></note>
+	<form_type><![CDATA[upload]]></form_type>
+	<form_style><![CDATA[]]></form_style>
+	<format><![CDATA[safe]]></format>
+	<content><![CDATA[]]></content>
+	<group_id><![CDATA[main]]></group_id>
+	<cate_id><![CDATA[1]]></cate_id>
+	<is_multiple><![CDATA[1]]></is_multiple>
+</root>
