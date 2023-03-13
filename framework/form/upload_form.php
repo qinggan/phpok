@@ -26,10 +26,6 @@ class upload_form extends _init_auto
 		$catelist = $this->model('rescate')->get_all();
 		$this->assign("catelist",$catelist);
 		$rs = $this->tpl->val('rs');
-		if($rs['ext']){
-			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
-			$this->assign('ext',$ext);
-		}
 		$html = $this->dir_phpok."form/html/upload_admin.html";
 		$this->view($html,"abs-file",false);
 	}
@@ -99,11 +95,9 @@ class upload_form extends _init_auto
 
 	private function _show_www($rs)
 	{
+		echo "<pre>".print_r($rs,true)."</pre>";
 		if(!$rs || !$rs['content']){
 			return false;
-		}
-		if($rs['ext'] && is_string($rs['ext'])){
-			$rs['ext'] = unserialize($rs['ext']);
 		}
 		if(is_array($rs['content'])){
 			return $rs['content'];
@@ -170,19 +164,7 @@ class upload_form extends _init_auto
 		}
 		//上传类型
 		$upload_type = array('title'=>'图片','ext'=>'jpg,gif,png','maxsize'=>'512000','swfupload'=>'*.jpg,*.png,*.gif');
-		if($rs['ext']){
-			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
-		}else{
-			$string = 'cate_id,is_multiple';
-			$tmp = explode(",",$string);
-			$ext = array();
-			foreach($tmp as $key=>$value){
-				if($rs[$value]){
-					$ext[$value] = $rs[$value];
-				}
-			}
-		}
-		$cateinfo = $this->model('rescate')->cate_info($ext['cate_id']);
+		$cateinfo = $this->model('rescate')->cate_info($rs['cate_id']);
 		if($cateinfo){
 			$folder = $cateinfo["root"];
 			if($cateinfo["folder"] && $cateinfo["folder"] != "/"){
@@ -192,7 +174,7 @@ class upload_form extends _init_auto
 			$upload_type['ext'] = $cateinfo['filetypes'] ? $cateinfo['filetypes'] : 'jpg,png,gif,rar,zip';
 			$upload_type['title'] = $cateinfo['typeinfo'] ? $cateinfo['typeinfo'] : $cateinfo['title'];
 			$upload_type['maxsize'] = $cateinfo['filemax'] * 1024;
-			$upload_type['id'] = $ext['cate_id'];
+			$upload_type['id'] = $rs['cate_id'];
 			$upload_type['etype'] = $cateinfo['etype'];
 			$upload_type['upload_binary'] = $cateinfo['upload_binary'];
 			$rs['cate_id'] = $cateinfo['id'];
@@ -221,10 +203,7 @@ class upload_form extends _init_auto
 		$rs['folder'] = $folder;
 		unset($tmp);
 		//二进制上传设置
-		$rs['upload_binary'] = 'false';
-		if($ext['upload_binary']){
-			$rs['upload_binary'] = 'true';
-		}
+		$rs['upload_binary'] = $rs['upload_binary'] && $rs['upload_binary'] != 'false' ? 'true' : 'false';
 		if($rs['upload_binary'] == 'false' && !ini_get('upload_tmp_dir')){
 			$rs['upload_binary'] = 'true';
 		}
@@ -277,8 +256,7 @@ class upload_form extends _init_auto
 
 		//上传类型
 		$upload_type = array('title'=>'图片','ext'=>'jpg,gif,png','maxsize'=>'512000','swfupload'=>'*.jpg,*.png,*.gif');
-		$ext = ($rs['ext'] && is_string($rs['ext'])) ? unserialize($rs['ext']) : ($rs['ext'] ? $rs['ext'] : array());
-		$cateinfo = $this->model('rescate')->cate_info($ext['cate_id']);
+		$cateinfo = $this->model('rescate')->cate_info($rs['cate_id']);
 		if($cateinfo){
 			$folder = $cateinfo["root"];
 			if($cateinfo["folder"] && $cateinfo["folder"] != "/"){
@@ -286,20 +264,14 @@ class upload_form extends _init_auto
 			}
 			$upload_type = array('title'=>($cateinfo['typeinfo'] ? $cateinfo['typeinfo'] : $cateinfo['title']));
 			$upload_type['ext'] = $cateinfo['filetypes'] ? $cateinfo['filetypes'] : 'jpg,png,gif,rar,zip';
-			if($ext['upload_type']){
-				$upload_type['ext'] = $ext['upload_type'];
-			}
-			if($ext['upload_name']){
-				$upload_type['title'] = $ext['upload_name'];
-			}
 			$upload_type['maxsize'] = $cateinfo['filemax'] * 1024;
-			$upload_type['id'] = $ext['cate_id'];
+			$upload_type['id'] = $rs['cate_id'];
 			$upload_type['etype'] = $cateinfo['etype'];
 			$rs['cate_id'] = $cateinfo['id'];
 		}else{
 			$folder = 'res/'.date("Ym/d/",$this->time);
-			$upload_type = array('title'=>($ext['upload_name'] ? $ext['upload_name'] : P_Lang('附件')));
-			$upload_type['ext'] = $ext['upload_type'] ? $ext['upload_type'] : 'jpg,gif,png,rar,zip';
+			$upload_type = array('title'=>P_Lang('附件'));
+			$upload_type['ext'] = 'jpg,gif,png,rar,zip';
 			$upload_type['maxsize'] = 1024*1024*100;
 			$upload_type['id'] = 0;
 			$rs['cate_id'] = 0;
@@ -318,17 +290,14 @@ class upload_form extends _init_auto
 		$rs['upload_type'] = $upload_type;
 		$rs['folder'] = $folder;
 		//二进制上传设置
-		$rs['upload_binary'] = 'false';
-		if($ext['upload_binary']){
-			$rs['upload_binary'] = 'true';
-		}
+		$rs['upload_binary'] = $rs['upload_binary'] && $rs['upload_binary'] != 'false' ? 'true' : 'false';
 		if($rs['upload_binary'] == 'false' && !ini_get('upload_tmp_dir')){
 			$rs['upload_binary'] = 'true';
 		}
 		//上传压缩属性
 		$compress = 'false';
-		if($ext['upload_compress']){
-			$compress = "{width:".$ext['upload_compress_wh'].",height:".$ext['upload_compress_wh'].",quality:100,allowMagnify:false,crop:false}";
+		if($rs['upload_compress']){
+			$compress = "{width:".$rs['upload_compress_wh'].",height:".$rs['upload_compress_wh'].",quality:100,allowMagnify:false,crop:false}";
 		}
 		$rs['upload_compress'] = $compress;
 		$rs['upload_ios'] = $this->lib('mobile')->is_ios();
