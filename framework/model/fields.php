@@ -40,6 +40,8 @@ class fields_model_base extends phpok_model
 			$this->db->query($sql);
 		}
 		$this->fields_ext_delete($rs['id']);
+		$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$rs['id']."'";
+		$this->db->query($sql);
 		return true;
 	}
 
