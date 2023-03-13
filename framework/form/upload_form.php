@@ -95,7 +95,6 @@ class upload_form extends _init_auto
 
 	private function _show_www($rs)
 	{
-		echo "<pre>".print_r($rs,true)."</pre>";
 		if(!$rs || !$rs['content']){
 			return false;
 		}
