@@ -25,7 +25,7 @@ class _init_auto
 	 * @参数 $ids 数组或以逗号隔开的字串
 	 * @参数 $is_array 返回模式，设为 true 返回数组，设为 false 返回字符串
 	**/
-	protected function _ids($ids,$is_array=false)
+	protected function _ids($ids, $is_array=false)
 	{
 		if(!$ids){
 			return false;
@@ -37,6 +37,36 @@ class _init_auto
 		foreach($ids as $key=>$value){
 			$t = intval($value);
 			if(!$t){
+				continue;
+			}
+			$idlist[] = $t;
+		}
+		if(!$idlist || count($idlist)<1){
+			return false;
+		}
+		$idlist = array_unique($idlist);
+		if($is_array){
+			return $idlist;
+		}
+		return implode(",",$idlist);
+	}
+
+	/**
+	 * 格式化数据，仅限支持中文，韩文，日文，字母，数字，下划线及中划线做键名
+	 * @参数 $ids 数组或以逗号隔开的字串
+	 * @参数 $is_array 返回模式，设为 true 返回数组，设为 false 返回字符串
+	**/
+	protected function _string($ids, $is_array=false)
+	{
+		if(!$ids){
+			return false;
+		}
+		if(!is_array($ids)){
+			$ids = explode(",",$ids);
+		}
+		$idlist = array();
+		foreach($ids as $key=>$value){
+			if(!preg_match("/^[a-z0-9A-Z\_\-\,\x{4e00}-\x{9fa5}\x{3130}-\x{318F}\x{AC00}-\x{D7A3}\x{0800}-\x{4e00}]+$/u",$value)){
 				continue;
 			}
 			$idlist[] = $t;
