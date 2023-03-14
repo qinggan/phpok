@@ -39,9 +39,9 @@
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
-						$.dialog.alert('操作成功',function(){
+						$.dialog.tips('操作成功',function(){
 							opener.$.phpok.reload();
-						},'succeed');
+						}).lock();
 						return true;
 					}
 					$.dialog.alert(rs.info);
@@ -123,12 +123,12 @@
 				'success':function(rs){
 					if(rs.status){
 						var tip = $("input[name=id]").length > 0 ? p_lang('菜单编辑成功') : p_lang('菜单添加成功');
-						$.dialog.alert(tip,function(){
+						$.dialog.tips(tip,function(){
 							opener.$.phpok.reload();
-						},'succeed');
+						}).lock();
 						return true;
 					}
-					$.dialog.alert(rs.info);
+					$.dialog.tips(rs.info);
 					return false;
 				}
 			});
