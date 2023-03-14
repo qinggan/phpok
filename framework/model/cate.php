@@ -1,9 +1,7 @@
 <?php
 /**
  * 栏目管理
- * @package phpok\model
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
@@ -33,7 +31,7 @@ class cate_model_base extends phpok_model
 			}
 		}
 	}
-	
+
 	/**
 	 * 取得单条分类信息
 	 * @参数 $id 主键或是指定的字段名对应的值
@@ -238,10 +236,6 @@ class cate_model_base extends phpok_model
 				$value['module_id'] = $tmp['module_id'];
 			}
 			if(!$value['module_id']){
-				continue;
-			}
-			$flist = $this->model('module')->fields_all($value['module_id']);
-			if(!$flist){
 				continue;
 			}
 			$tmplist = $this->catelist_module($value['module_id']);
