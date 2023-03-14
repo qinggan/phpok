@@ -9,13 +9,13 @@ function save()
 		'dataType':'json',
 		'success':function(rs){
 			if(rs.status){
-				$.dialog.alert('字段编辑成功',function(){
+				$.dialog.tips('字段编辑成功',function(){
 					obj.$.dialog.close();
 					obj.$.phpok.reload();
-				},'succeed');
+				}).lock();
 				return true;
 			}
-			$.dialog.alert(rs.info);
+			$.dialog.tips(rs.info);
 			return false;
 		}
 	});

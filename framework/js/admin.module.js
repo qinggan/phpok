@@ -23,7 +23,7 @@
 						$.phpok.reload();
 						return true;
 					}
-					$.dialog.alert(rs.info);
+					$.dialog.tips(rs.info);
 					return false;
 				})
 			});
@@ -50,7 +50,7 @@
 					$.phpok.reload();
 					return false;
 				}
-				$.dialog.alert(rs.info);
+				$.dialog.tips(rs.info);
 				return false;
 			});
 		},
@@ -70,7 +70,7 @@
 						$.admin.close(get_url('module','fields','id='+mid));
 						return false;
 					}
-					$.dialog.alert(rs.info);
+					$.dialog.tips(rs.info);
 					return false;
 				}
 			});
@@ -100,12 +100,12 @@
 					if(rs.status){
 						var id = $("#id").val();
 						var tip = !id ? p_lang('模块添加成功') : p_lang('模块编辑成功');
-						$.dialog.alert(tip,function(){
+						$.dialog.tips(tip,function(){
 							obj.$.phpok.reload();
-						},'succeed');
+						}).lock();
 						return false;
 					}
-					$.dialog.alert(rs.info);
+					$.dialog.tips(rs.info);
 					return false;
 				}
 			});
@@ -201,7 +201,7 @@
 						$.phpok.reload();
 						return false;
 					}
-					$.dialog.alert(rs.info);
+					$.dialog.tips(rs.info);
 					return false;
 				});
 			});
@@ -258,7 +258,7 @@
 						$.dialog.tips('配置成功');
 						return false;
 					}
-					$.dialog.alert(rs.info);
+					$.dialog.tips(rs.info);
 					return false;
 				}
 			});
@@ -272,7 +272,7 @@
 		{
 			$.dialog.prompt(p_lang('请设置新模块的名称：'),function(val){
 				if(!val){
-					$.dialog.alert(p_lang('名称不能为空'));
+					$.dialog.tips(p_lang('名称不能为空'));
 					return false;
 				}
 				var url = get_url("module","copy","id="+id+"&title="+$.str.encode(val));
@@ -281,7 +281,7 @@
 						$.phpok.reload();
 						return true;
 					}
-					$.dialog.alert(rs.info);
+					$.dialog.tips(rs.info);
 					return false;
 				});
 			},title);
@@ -303,7 +303,7 @@
 					$("#status_"+id).attr("value",rs.info);
 					return true;
 				}
-				$.dialog.alert(rs.info);
+				$.dialog.tips(rs.info);
 				return false;
 			});
 		},
@@ -313,23 +313,24 @@
 		taxis:function(id,taxis)
 		{
 			$.dialog.prompt(p_lang('请填写新的排序：'),function(val){
-				if(val != taxis){
-					$.phpok.json(get_url('module','taxis','taxis='+val+"&id="+id),function(rs){
-						if(rs.status){
-							$.phpok.reload();
-							return true;
-						}
-						$.dialog.alert(rs.info);
-						return false;
-					});
+				if(val == taxis){
+					return false;
 				}
+				$.phpok.json(get_url('module','taxis','taxis='+val+"&id="+id),function(rs){
+					if(rs.status){
+						$.phpok.reload();
+						return true;
+					}
+					$.dialog.tips(rs.info);
+					return false;
+				});
 			},taxis);
 		},
 		toH:function()
 		{
 			var ids = $.checkbox.join();
 			if(!ids){
-				$.dialog.alert('未指定ID');
+				$.dialog.tips('未指定ID');
 				return false;
 			}
 			$.phpok.json(get_url('module','field_hv','id='+ids+"&type=1"),function(rs){
@@ -346,7 +347,7 @@
 		{
 			var ids = $.checkbox.join();
 			if(!ids){
-				$.dialog.alert('未指定ID');
+				$.dialog.tips('未指定ID');
 				return false;
 			}
 			$.phpok.json(get_url('module','field_hv','id='+ids+"&type=0"),function(rs){
