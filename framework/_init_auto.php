@@ -69,7 +69,7 @@ class _init_auto
 			if(!preg_match("/^[a-z0-9A-Z\_\-\,\x{4e00}-\x{9fa5}\x{3130}-\x{318F}\x{AC00}-\x{D7A3}\x{0800}-\x{4e00}]+$/u",$value)){
 				continue;
 			}
-			$idlist[] = $t;
+			$idlist[] = $value;
 		}
 		if(!$idlist || count($idlist)<1){
 			return false;
