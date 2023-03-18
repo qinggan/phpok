@@ -58,7 +58,7 @@ class appsys_control extends phpok_control
 		$rslist = $this->model('appsys')->get_uninstall($keywords,$offset,$psize);
 		if($rslist){
 			$total = $this->model('appsys')->get_total();
-			
+
 			$installed = $this->model('appsys')->installed();
 			if($installed){
 				$total = $total - count($installed);
@@ -672,10 +672,22 @@ class appsys_control extends phpok_control
 		$info .= '//$menu[\'icon\'] = \'newtab\';'."\n";
 		$info .= '//$insert_id = $this->model(\'sysmenu\')->save($menu);'."\n";
 		$info .= '//if($insert_id){'."\n";
-		$info .= '//	$tmparray = array(\'gid\'=>$insert_id,\'title\'=>\'查看\',\'identifier\'=>\'list\',\'taxis\'=>10);'."\n";
-		$info .= '//	$this->model(\'popedom\')->save($tmparray);'."\n";
-		$info .= '//	$tmparray = array(\'gid\'=>$insert_id,\'title\'=>\'删除\',\'identifier\'=>\'delete\',\'taxis\'=>10);'."\n";
-		$info .= '//	$this->model(\'popedom\')->save($tmparray);'."\n";
+		$info .= '//	$tmpdata = array();'."\n";
+		$info .= '//	$tmpdata[\'list\'] = \'查看\';'."\n";
+		$info .= '//	$tmpdata[\'add\'] = \'添加\';'."\n";
+		$info .= '//	$tmpdata[\'modify\'] = \'修改\';'."\n";
+		$info .= '//	$tmpdata[\'status\'] = \'审核\';'."\n";
+		$info .= '//	$tmpdata[\'delete\'] = \'删除\';'."\n";
+		$info .= '//	$i=0;'."\n";
+		$info .= '//	foreach($tmpdata as $key=>$value){'."\n";
+		$info .= '//		$tmp = array();'."\n";
+		$info .= '//		$tmp[\'gid\'] = $insert_id;'."\n";
+		$info .= '//		$tmp[\'title\'] = $value;'."\n";
+		$info .= '//		$tmp[\'identifier\'] = $key;'."\n";
+		$info .= '//		$tmp[\'taxis\'] = ($i+1)*10;'."\n";
+		$info .= '//		$this->model(\'popedom\')->save($tmp);'."\n";
+		$info .= '//		$i++;'."\n";
+		$info .= '//	}'."\n";
 		$info .= '//}'."\n";
 		return $info;
 	}
