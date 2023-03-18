@@ -24,6 +24,9 @@
 				'dataType':'json',
 				'success':function(rs){
 					if(rs.status){
+						lock_status.setting('close',function(){
+							$.phpok.reload();
+						});
 						lock_status.content(p_lang('操作成功')).time(2);
 						return true;
 					}

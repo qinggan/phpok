@@ -1183,7 +1183,7 @@ class list_control extends phpok_control
 		$pid = $this->get("pid","int");
 		$parent_id = $this->get("parent_id","int");
 		if(!$pid && !$id){
-			$this->json(P_Lang('操作异常，无法取得项目信息'));
+			$this->error(P_Lang('操作异常，无法取得项目信息'));
 		}
 		$is_add = true;
 		if($id){
@@ -1194,33 +1194,33 @@ class list_control extends phpok_control
 			$is_add = false;
 		}
 		if(!$pid){
-			$this->json(P_Lang('操作异常，无法取得项目信息'));
+			$this->error(P_Lang('操作异常，无法取得项目信息'));
 		}
 		$this->popedom_auto($pid);
 		if($id){
 			if(!$this->popedom['modify']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}else{
 			if(!$this->popedom['add']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		$p_rs = $this->model('project')->get_one($pid);
 		if(!$p_rs){
-			$this->json(P_Lang('操作异常，无法取得项目信息'));
+			$this->error(P_Lang('操作异常，无法取得项目信息'));
 		}
 		$_autosave = $this->get('_autosave','int');
 		$array = array();
 		$title = $this->get("title");
 		if($title == ''){
-			$this->json(P_Lang('内容的主题不能为空'));
+			$this->error(P_Lang('内容的主题不能为空'));
 		}
 		$array["title"] = $title;
 		if($p_rs['cate']){
 			$cate_id = $this->get("cate_id","int");
 			if(!$cate_id && !$_autosave){
-				$this->json(P_Lang('主分类不能为空'));
+				$this->error(P_Lang('主分类不能为空'));
 			}
 			$array["cate_id"] = $cate_id;
 		}else{
@@ -1229,12 +1229,12 @@ class list_control extends phpok_control
 		//更新标识串
  		$array['identifier'] = $this->get("identifier");
  		if(!$array['identifier'] && $p_rs['is_identifier'] == 2 && !$_autosave){
-	 		$this->json(P_Lang('自定义标识不能为空，此项是系统设置必填项'));
+	 		$this->error(P_Lang('自定义标识不能为空，此项是系统设置必填项'));
  		}
  		if($array['identifier']){
 	 		$check = $this->check_identifier($array['identifier'],$id,$p_rs["site_id"]);
 	 		if($check != 'ok'){
-		 		$this->json($check);
+		 		$this->error($check);
 	 		}
  		}
 		if($p_rs['is_attr']){
@@ -1250,7 +1250,7 @@ class list_control extends phpok_control
 				$array["tag"] = preg_replace("/(\x20{2,})/"," ",$array["tag"]);
 			}
 			if(!$array['tag'] && $p_rs['is_tag'] == 2 && !$_autosave){
-				$this->json(P_Lang('Tag标签不能为空'));
+				$this->error(P_Lang('Tag标签不能为空'));
 			}
 		}else{
 			$array['tag'] = '';
@@ -1258,13 +1258,13 @@ class list_control extends phpok_control
 		if($p_rs['is_userid']){
 			$array['user_id'] = $this->get('user_id','int');
 			if(!$array['user_id'] && $p_rs['is_userid'] == 2 && !$_autosave){
-				$this->json(P_Lang('用户账号不能为空'));
+				$this->error(P_Lang('用户账号不能为空'));
 			}
 		}
 		if($p_rs['is_tpl_content']){
 			$array['tpl'] = $this->get('tpl');
 			if(!$array['tpl'] && $p_rs['is_tpl_content'] == 2 && !$_autosave){
-				$this->json(P_Lang('自定义内容模板不能为空'));
+				$this->error(P_Lang('自定义内容模板不能为空'));
 			}
 		}else{
 			$array['tpl'] = '';
@@ -1298,13 +1298,13 @@ class list_control extends phpok_control
 		$array["seo_desc"] = $this->get("seo_desc");
 		$array['lastdate'] = $this->time;//最后修改时间
 		if(!$array["seo_title"] && $p_rs['is_seo'] == 3 && !$_autosave){
-			$this->json(P_Lang('SEO标题不能为空'));
+			$this->error(P_Lang('SEO标题不能为空'));
 		}
 		if(!$array["seo_keywords"] && $p_rs['is_seo'] == 3 && !$_autosave){
-			$this->json(P_Lang('SEO关键字不能为空'));
+			$this->error(P_Lang('SEO关键字不能为空'));
 		}
 		if(!$array["seo_desc"] && $p_rs['is_seo'] == 3 && !$_autosave){
-			$this->json(P_Lang('SEO描述不能为空'));
+			$this->error(P_Lang('SEO描述不能为空'));
 		}
 
 		//自定义字段信息
@@ -1325,7 +1325,7 @@ class list_control extends phpok_control
 				if($value['onlyone'] && $ext_data[$value["identifier"]] != ''){
 					$check = $this->model('list')->ext_only_check($value['identifier'],$ext_data[$value["identifier"]],$p_rs["id"],$p_rs["module"],false,$id);
 					if($check){
-						$this->json(P_Lang('字段 [title] 内容重复，请重新设置',array('title'=>$value['title'])));
+						$this->error(P_Lang('字段 [title] 内容重复，请重新设置',array('title'=>$value['title'])));
 					}
 				}
 			}
@@ -1347,7 +1347,7 @@ class list_control extends phpok_control
  			$this->model('list')->save($array,$id);
  		}
  		if(!$id){
-	 		$this->json(P_Lang('存储数据失败，请检查'));
+	 		$this->error(P_Lang('存储数据失败，请检查'));
  		}
  		$crontab_list = $this->lib('file')->ls($this->dir_data.'crontab');
  		if($crontab_list){
@@ -1414,7 +1414,7 @@ class list_control extends phpok_control
 		}
 		$this->node('system_admin_title_success',$id,$p_rs);
 		$this->plugin('system_admin_title_success',$id,$p_rs);
- 		$this->json($id,true);
+ 		$this->success($id);
 	}
 
 	public function single_save_f()

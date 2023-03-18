@@ -167,8 +167,8 @@ var autosave_handle;
 					loading_action = $.dialog.tips(p_lang('正在保存数据，请稍候…')).time(3000).lock();
 				},
 				'success':function(rs){
-					if(rs.status != 'ok'){
-						loading_action.content(rs.content).time(1.5);
+					if(!rs.status){
+						loading_action.content(rs.info).time(1.5);
 						return false;
 					}
 					var url = get_url('list','action','id='+$("#pid").val());
@@ -177,7 +177,6 @@ var autosave_handle;
 						url += "&keywords[cateid]="+cateid;
 					}
 					if(id){
-						console.log('id:'+id);
 						$.admin.reload(url);
 						if(close){
 							loading_action.setting('close',function(){
