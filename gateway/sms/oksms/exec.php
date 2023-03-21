@@ -17,13 +17,14 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
+
 if(!$rs['ext'] || !$rs['ext']['server'] || !$rs['ext']['app_id'] || !$rs['ext']['app_key']){
 	if($this->config['debug']){
 		phpok_log(print_r($rs,true));
 	}
 	return false;
 }
-if(!$extinfo['content'] || !$extinfo['mobile']){
+if(!$extinfo['mobile']){
 	if($this->config['debug']){
 		phpok_log(print_r($extinfo,true));
 	}
@@ -36,22 +37,46 @@ if($rs['ext'] && $rs['ext']['ip']){
 }
 $this->lib('phpok')->app_id($rs['ext']['app_id']);
 $this->lib('phpok')->app_key($rs['ext']['app_key']);
-$data = array('code'=>$extinfo['content'],'mobile'=>$extinfo['mobile']);
+
+$code = array();
+if(is_numeric($extinfo['content'])){
+	$code['code'] = $extinfo['content'];
+}else{
+	$tmplist = explode(",",$extinfo['content']);
+	foreach($tmplist as $key=>$value){
+		if(!$value || !trim($value)){
+			continue;
+		}
+		$tmp = explode(":",$value);
+		if($tmp[0] && $tmp[1] != ''){
+			$code[$tmp[0]] = trim($tmp[1]);
+		}
+	}
+}
+$data = array('mobile'=>$extinfo['mobile']);
 if($rs['ext']['signame']){
 	$data['sign'] = $rs['ext']['signame'];
 }
 if($rs['ext']['tplcode']){
 	$data['tpl_id'] = $rs['ext']['tplcode'];
 }
+if(is_numeric($extinfo['content'])){
+	$data['code'] = $extinfo['content'];
+}else{
+	$data['code'] = $code;
+	$data['tpl_id'] = $extinfo['title'];
+}
+
 $t = $this->lib('phpok')->content($data);
 if(!$t){
 	$this->error('发送失败');
 }
 if($t && !$t['status']){
+	$info = $t['info'] ? $t['info'] : $t['error'];
 	if($this->config['debug']){
-		phpok_log($t['info']);
+		phpok_log($info);
 	}
-	$this->error($t['info']);
+	$this->error($info);
 	return false;
 }
 return true;
