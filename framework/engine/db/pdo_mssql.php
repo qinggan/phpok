@@ -2,7 +2,6 @@
 /**
  * 通过PDO连接MSSQL数据库
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
@@ -90,7 +89,6 @@ class db_pdo_mssql extends db
 
 	public function query($sql)
 	{
-		$this->checkquery($sql);
 		$this->cache_update($sql);
 		$this->check_connect();
 		$this->_time();
