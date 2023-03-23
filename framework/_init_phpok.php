@@ -1431,7 +1431,7 @@ class _init_phpok
 		switch ($type){
 			case 'safe_text':
 				$msg = strip_tags($msg);
-				$msg = str_replace(array("\\","'",'"',"<",">","&",";"),'',$msg);
+				$msg = str_replace(array("\\","'",'"',"<",">","&",";","(",")","0x"),'',$msg);
 			break;
 			case 'system':
 				$msg = !preg_match("/^[a-zA-Z][a-z0-9A-Z\_\-]+$/u",$msg) ? false : $msg;

@@ -31,7 +31,7 @@ class call_control extends phpok_control
 		if(substr($data,0,1) == '{'){
 			$data = $this->lib('json')->decode(stripslashes($data));
 			if($data){
-				$data = $this->format($data);
+				$data = $this->format($data,'safe_text');
 			}
 		}else{
 			$tmplist = explode(",",$data);
