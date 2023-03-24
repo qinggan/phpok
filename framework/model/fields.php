@@ -90,11 +90,13 @@ class fields_model_base extends phpok_model
 		if(!$fields_id){
 			return false;
 		}
-		$this->fields_ext_delete($fields_id);
+		//$this->fields_ext_delete($fields_id);
 		foreach($data as $key=>$value){
 			if($value && is_array($value)){
 				$value = serialize($value);
 			}
+			$sql = "DELETE FROM ".$this->db->prefix."fields_ext WHERE keyname='".$key."' AND fields_id='".$fields_id."'";
+			$this->db->query($sql);
 			$array = array('fields_id'=>$fields_id,'keyname'=>$key,'keydata'=>$value);
 			$this->db->insert($array,'fields_ext');
 		}
