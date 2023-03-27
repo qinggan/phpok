@@ -1,44 +1,32 @@
-<style type="text/css">
-.dropdown{margin:0;padding:0;}
-.dropdown dd, .dropdown dt, .dropdown ul { margin:0px; padding:0px; }
-.dropdown dd { position:relative; }
-.dropdown dt:hover { color:#5d4617; border: 1px solid #E5E5E5;}
-.dropdown dt{display:block; padding-right:20px; border:1px solid #E5E5E5; width:180px; height:36px;background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAABISURBVCiRY/z//z8DNQETVU1jYGBg1Nd3I+jECxd2MhJrINPFi7vwKiYkj2EgPk2kGgY3EJtmcgzDCrCF6f///4nGjIM+2QAAjDs6tb4QIIwAAAAASUVORK5CYII=') right center no-repeat;}
-.dropdown dt span { cursor:pointer; display:block; padding:5px; }
-.dropdown dd ul { background:#fff; border:1px solid #E5E5E5; color:#000; display:none; left:0px; padding:5px 0px; position:absolute; top:2px; width:auto; min-width:200px; list-style:none;height:300px;overflow-y:scroll;z-index:10; }
-.dropdown span.value { display:none; }
-.dropdown dd ul li{ padding:5px; display:block; }
-.dropdown dd ul li:hover { background-color:#d0c9af; }
-</style>
-<input type="hidden" name="{$_rs.identifier}" id="{$_rs.identifier}"  value="{$_rs.content}" />
-<dl class="dropdown" id="dropdown-{$_rs.identifier}">
-	<dt><span><!-- if $_rs.content --><i class="{$_rs.ext_prefix} {$_rs.content}" style="font-size:16px;"></i> {$_rs.content}<!-- else -->不使用图标<!-- /if --></span></dt>
-	<dd>
-	<ul>
-		<li>不使用图标<span class="value"></span></li>
-		<!-- loop from=$_iconlist key=$key value=$value id=$tmpid -->
-		<li><i class="{$_rs.ext_prefix} {$_rs.ext_prefix}-{$value}" style="font-size:16px;"></i> {$_rs.ext_prefix}-{$value}<span class="value">{$_rs.ext_prefix}-{$value}</span></li>
-		<!-- /loop -->
-	</ul>
-	</dd>
-</dl>
+<ul class="layout">
+	<li><input type="text" id="{$_rs.identifier}" name="{$_rs.identifier}" value="{$_rs.content}" /></li>
+	<li class="{$_rs.identifier}-preview" style="line-height:38px;"></li>
+</ul>
 
 <script type="text/javascript">
 $(document).ready(function(){
-	$("#dropdown-{$_rs.identifier} dt").click(function() {
-		$("#dropdown-{$_rs.identifier} dd ul").toggle();
-	});
-				
-	$("#dropdown-{$_rs.identifier} dd ul li").click(function() {
-		var text = $(this).html();
-		$("#dropdown-{$_rs.identifier} dt span").html(text);
-		$("#dropdown-{$_rs.identifier} dd ul").hide();
-		$("#{$_rs.identifier}").val($(this).find("span.value").html());
-	});
-	$(document).bind('click', function(e) {
-		var $clicked = $(e.target);
-		if (! $clicked.parents().hasClass("dropdown")){
-			$(".dropdown dd ul").hide();
+	var tag_data = [
+		{loop from=$_iconlist key=$key value=$value id=$tmpid}
+		{name:'{$value}',desc:'<i class="{$_rs.ext_prefix} {$_rs.ext_prefix}-{$value}"></i> {$_rs.ext_prefix}-{$value}'},
+		{/loop}
+	];
+	$('#{$_rs.identifier}').selectPage({
+		showField : 'desc',
+		keyField : 'name',
+		data : tag_data,
+		multiple:false,
+		pagination:false,
+		selectToCloseList:true,
+		autoSelectFirst:true,
+		eSelect : function(data){
+			if(data.name == ''){
+				$('.{$_rs.identifier}-preview').html('');
+			}else{
+				$('.{$_rs.identifier}-preview').html('<i class="{$_rs.ext_prefix} {$_rs.ext_prefix}-'+data.name+'" style="font-size:16px;"></i>  {$_rs.ext_prefix}-'+data.name);
+			}
+		},
+		eClear:function(datas){
+			$('.{$_rs.identifier}-preview').html('');
 		}
 	});
 });

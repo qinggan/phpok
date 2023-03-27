@@ -21,6 +21,11 @@ class fonticon_form extends _init_auto
 		parent::__construct();
 	}
 
+	public function cssjs()
+	{
+		$this->addjs('js/form.select.js');
+	}
+
 	public function phpok_config()
 	{
 		$this->view($this->dir_phpok.'form/html/fonticon_admin.html','abs-file');
