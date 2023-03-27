@@ -93,11 +93,11 @@ class task_control extends phpok_control
 		$id = $this->get('id');
 		if($id){
 			if(!$this->popedom['modify']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}else{
 			if(!$this->popedom['add']){
-				$this->json(P_Lang('您没有权限执行此操作'));
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 		}
 		$main = array();
@@ -107,14 +107,14 @@ class task_control extends phpok_control
 		$day30 = array(4,6,9,11);
 		if($main['day'] && is_numeric($main['day']) && $main['month'] && is_numeric($main['month'])){
 			if(in_array($main['month'],$day30) && $main['day'] == '31'){
-				$this->json(P_Lang('当前月份不支持31日'));
+				$this->error(P_Lang('当前月份不支持31日'));
 			}
 			if($main['month'] == '02' && $main['day'] > 29){
-				$this->json(P_Lang('二月份不支持30日及31日'));
+				$this->error(P_Lang('二月份不支持30日及31日'));
 			}
 			if($main['day'] == 29 && $main['year'] && is_numeric($main['year'])){
 				if($main['year']%4){
-					$this->json(P_Lang('当前月份不支持29日'));
+					$this->error(P_Lang('当前月份不支持29日'));
 				}
 			}
 		}
@@ -123,28 +123,26 @@ class task_control extends phpok_control
 		$main['second'] = $this->get('second');
 		$main['action'] = $this->get('actionfile');
 		if(!$main['action']){
-			$this->json(P_Lang('未指定动作'));
+			$this->error(P_Lang('未指定动作'));
 		}
 		if(!file_exists($this->dir_root.'task/'.$main['action'].'.php')){
-			$this->json(P_Lang('文件不存在'));
+			$this->error(P_Lang('文件不存在'));
 		}
 		$main['param'] = $this->get('param');
 		$this->model('task')->save($main,$id);
-		$this->json(true);
+		$this->success();
 	}
 
 	public function delete_f()
 	{
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get('id','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('task')->delete($id);
-		$this->json(true);
+		$this->success();
 	}
 }
-
-?>

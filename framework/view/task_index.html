@@ -2,41 +2,37 @@
 <script type="text/javascript">
 function edit_it(id)
 {
-	$("#update_"+id).ajaxSubmit({
-		'url':get_url('task','save','id='+id),
-		'type':'post',
-		'dataType':'json',
-		'success':function(rs){
-			if(rs.status == 'ok'){
-				if(id>0){
-					$.dialog.tips('修改成功');
-				}else{
-					$.dialog.alert('添加计划任务成功',function(){
-						$.phpok.reload();
-					});
-				}
-			}else{
-				$.dialog.alert(rs.content);
-				return false;
-			}
+	var url = get_url('task','save','id='+id);
+	var lock = $.dialog.tips('正在提交中，请稍候…',100).lock();
+	$.phpok.submit($("#update_"+id)[0],url,function(rs){
+		if(!rs.status){
+			lock.content(rs.info).time(2);
+			return false;
 		}
+		if(id>0){
+			lock.content('修改成功').time(2);
+			return true;
+		}
+		lock.setting('close',function(){
+			$.phpok.reload();
+		});
+		lock.content('添加成功').time(2);
+		return true;
 	});
 	return false;
 }
 function delete_id(id)
 {
-	$.dialog.confirm('确定要删除这条计划任务吗？',function(){
-		var url = get_url('task','delete','id='+id);
-		var rs = $.phpok.json(url);
-		if(rs.status == 'ok'){
-			$.dialog.alert('删除成功',function(){
-				$.phpok.reload();
-			});
-		}else{
-			$.dialog.alert(rs.content);
+	var url = get_url('task','delete','id='+id);
+	var lock = $.dialog.tips('正在提交中，请稍候…',100).lock();
+	$.phpok.json(url,function(rs){
+		if(!rs.status){
+			lock.content(rs.info).time(2);
 			return false;
 		}
-	})
+		$("#delete_"+id).remove();
+		lock.content('删除成功').time(1);
+	});
 }
 </script>
 <div class="layui-card">
@@ -56,7 +52,7 @@ function delete_id(id)
 		</tr>
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value -->
-		<tr>
+		<tr id="delete_{$value.id}">
 			<form method="post" class="layui-form" id="update_{$value.id}" onsubmit="return false;">
 			<td>
 				<select name="year">
@@ -183,7 +179,7 @@ function delete_id(id)
 				</select>
 			</td>
 			<td>
-				<input type="text" name="param" value="{$value.param}" />
+				<input type="text" name="param" value="" />
 			</td>
 			<td>
 				<input type="button" value="{lang新增}" onclick="edit_it(0)" class="layui-btn layui-btn-sm" />
