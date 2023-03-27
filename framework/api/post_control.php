@@ -132,6 +132,12 @@ class post_control extends phpok_control
 			$tip = $project_rs['alias_title'] ? $project_rs['alias_title'] : P_Lang('主题');
 			return $this->_e(P_Lang('{title}不能为空',array('title'=>$tip)));
 		}
+		if($project_rs['cate']){
+			$array["cate_id"] = $this->get("cate_id","int");
+			if(!$array['cate_id']){
+				return $this->_e(P_Lang('分类不能为空'));
+			}
+		}
 		$tid = $this->get('tid','int');
 		$tmp = $this->_filter($array['title'],$project_rs,$module,$tid);
 		if(!$tmp['status']){
@@ -191,7 +197,7 @@ class post_control extends phpok_control
 		$array["module_id"] = $project_rs["module"];
 		$array["project_id"] = $project_rs["id"];
 		$array["site_id"] = $project_rs["site_id"];
-		$array["cate_id"] = $this->get("cate_id","int");
+		
 		$array['user_id'] = 0;
 		if($this->session->val('user_id')){
 			$array['user_id'] = $this->session->val('user_id');
