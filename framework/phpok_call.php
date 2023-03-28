@@ -66,7 +66,6 @@ class phpok_call extends _init_auto
 	//执行数据调用
 	public function phpok($id,$rs="")
 	{
-		$keylist = $this->cache->key_all();
 		if(!$id){
 			return false;
 		}
@@ -635,9 +634,9 @@ class phpok_call extends _init_auto
 		if($rs['cateid']){
 			if(strpos($rs['cateid'],',') !== false){
 				if($project['cate_multiple']){
-					$condition .= " AND lc.cate_id IN(".(implode(",",$tmp)).") ";
+					$condition .= " AND lc.cate_id IN(".$rs['cateid'].") ";
 				}else{
-					$condition .= " AND l.cate_id IN(".(implode(",",$tmp)).") ";
+					$condition .= " AND l.cate_id IN(".$rs['cateid'].") ";
 				}
 			}else{
 				$cate_all = $this->model('cate')->cate_all($rs['site']);
