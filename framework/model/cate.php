@@ -116,7 +116,7 @@ class cate_model_base extends phpok_model
 	}
 
 	//取得分类下的模块扩展
-	protected function catelist_module($mid)
+	protected function catelist_module($mid,$cateid=0)
 	{
 		$flist = $this->model('module')->fields_all($mid);
 		if(!$flist){
@@ -127,7 +127,13 @@ class cate_model_base extends phpok_model
 		foreach($flist as $key=>$value){
 			$fields[] = $value['identifier'];
 		}
-		$sql = "SELECT ".implode(",",$fields)." FROM ".$this->db->prefix."cate_".$mid;
+		$sql = "SELECT ".implode(",",$fields)." FROM ".$this->db->prefix."cate_".$mid." WHERE 1=1";
+		if($cateid){
+			if(is_array($cateid)){
+				$cateid = implode(",",$cateid);
+			}
+			$sql .= " AND id IN(".$cateid.")";
+		}
 		$tmplist = $this->db->get_all($sql);
 		if(!$tmplist){
 			return false;
@@ -238,21 +244,12 @@ class cate_model_base extends phpok_model
 			if(!$value['module_id']){
 				continue;
 			}
-			$tmplist = $this->catelist_module($value['module_id']);
-			if(!$tmplist){
+			$tmplist = $this->catelist_module($value['module_id'],$value['id']);
+			if(!$tmplist || !$tmplist[$value['id']]){
 				continue;
 			}
-			foreach($tmplist as $k=>$v){
-				if(!$v['id'] || !$rslist[$v['id']]){
-					continue;
-				}
-				foreach($flist as $kk=>$vv){
-					if(!$v[$vv['identifier']]){
-						continue;
-					}
-					$rslist[$v['id']][$vv['identifier']] = $v[$vv['identifier']];
-				}
-			}
+			$value = array_merge($tmplist[$value['id']],$value);
+			$rslist[$key] = $value;
 		}
 		return $this->cate_ext($rslist);
 	}
