@@ -66,6 +66,7 @@ class phpok_call extends _init_auto
 	//执行数据调用
 	public function phpok($id,$rs="")
 	{
+		$keylist = $this->cache->key_all();
 		if(!$id){
 			return false;
 		}
@@ -141,6 +142,13 @@ class phpok_call extends _init_auto
 		if($info){
 			return $info;
 		}
+		$tmps = array('list','user','cate','project','reply','tag');
+		$db_keys = array();
+		foreach($tmps as $key=>$value){
+			$db_keys[] = $this->db->prefix.$value;
+		}
+		$this->cache->key_list($cache_id,$db_keys);
+		//指定数据库里的缓存
 		$this->db->cache_set($cache_id); //初始化缓存ID
 		return $this->$func($call_rs,$cache_id);
 	}
@@ -381,6 +389,8 @@ class phpok_call extends _init_auto
 		}
 		unset($rslist,$project);
 		if($cache_id){
+			//将缓存的ID和索引挂起来
+			$this->cache->key_list($cache_id,$this->db->prefix.'list');
 			$this->cache->save($cache_id,$array);
 		}
 		return $array;
@@ -461,6 +471,7 @@ class phpok_call extends _init_auto
 		}
 		unset($rslist,$project);
 		if($cache_id){
+			$this->cache->key_list($cache_id,$this->db->prefix.$module['id']);
 			$this->cache->save($cache_id,$array);
 		}
 		return $array;
@@ -1078,6 +1089,7 @@ class phpok_call extends _init_auto
 			$project['title_format'] = $html;
 		}
 		if($cache_id){
+			$this->cache->key_list($cache_id,$this->db->prefix.'project');
 			$this->cache->save($cache_id,$project);
 		}
 		return $project;
@@ -1192,6 +1204,7 @@ class phpok_call extends _init_auto
 		}
 		$array['tree'] = $tree;
 		if($cache_id){
+			$this->cache->key_list($cache_id,$this->db->prefix.'cate');
 			$this->cache->save($cache_id,$array);
 		}
 		return $array;
@@ -1246,6 +1259,7 @@ class phpok_call extends _init_auto
 		$project = $this->model('project')->project_one($rs['site'],$rs['pid']);
 		$cate['url'] = $this->url($project['identifier'],$cate['identifier'],'','www');
 		if($cache_id){
+			$this->cache->key_list($cache_id,$this->db->prefix.'cate');
 			$this->cache->save($cache_id,$cate);
 		}
 		return $cate;
@@ -1401,6 +1415,7 @@ class phpok_call extends _init_auto
 			$list[$key] = $value;
  		}
  		if($cache_id){
+	 		$this->cache->key_list($cache_id,$this->db->prefix.'project');
 			$this->cache->save($cache_id,$list);
 		}
  		return $list;
@@ -1453,6 +1468,7 @@ class phpok_call extends _init_auto
 			$list[$k] = $v;
 		}
 		if($cache_id){
+			$this->cache->key_list($cache_id,$this->db->prefix.'cate');
 			$this->cache->save($cache_id,$list);
 		}
 		return $list;
@@ -1553,6 +1569,7 @@ class phpok_call extends _init_auto
 			$data['rslist'] = $this->model('user')->get_list($condition,$offset,$psize);
 		}
 		if($cache_id){
+			$this->cache->key_list($cache_id,$this->db->prefix.'user');
 			$this->cache->save($cache_id,$data);
 		}
 		return $data;

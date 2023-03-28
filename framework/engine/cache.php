@@ -45,8 +45,6 @@ class cache
 
 	public function __destruct()
 	{
-		//echo "<pre>".print_r($this->key_list,true)."</pre>";
-		//echo "<pre>".print_r(count($this->key_list),true)."</pre>";
 		$this->save($this->key_id,$this->key_list);
 		$this->expired();
 	}
@@ -57,19 +55,19 @@ class cache
 			unset($this->key_list[$id]);
 			return true;
 		}
-		if($is_add){
-			$tmp = isset($this->key_list[$id]) ? $this->key_list[$id] : array();
-			if(!is_array($value)){
-				$value = array($value);
-			}
-			$tmp = array_merge($tmp,$value);
-			$tmp = array_unique($tmp);
-			$this->key_list[$id] = $tmp;
-			return true;
+		$tmp = isset($this->key_list[$id]) ? $this->key_list[$id] : array();
+		if(!is_array($value)){
+			$value = array($value);
 		}
-		$value = array_unique($value);
-		$this->key_list[$id] = $value;
+		$tmp = array_merge($tmp,$value);
+		$tmp = array_unique($tmp);
+		$this->key_list[$id] = $tmp;
 		return true;
+	}
+
+	public function key_all()
+	{
+		return $this->key_list;
 	}
 
 	public function status($status='')
@@ -175,7 +173,7 @@ class cache
 	public function delete($id)
 	{
 		@unlink($this->folder.$id.'.php');
-		if($this->key_list && $this->key_list){
+		if($this->key_list && $this->key_list[$id]){
 			unset($this->key_list[$id]);
 		}
 		return true;

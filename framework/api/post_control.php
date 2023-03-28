@@ -288,9 +288,9 @@ class post_control extends phpok_control
 			}
 			$tmplist[$value["identifier"]] = $val;
 		}
+		$this->cache->delete_index($this->db->prefix.'list');
 		if($tid){
 			$this->model('list')->update_ext($tmplist,$project_rs['module'],$tid);
-			$this->cache->delete_index($this->db->prefix.'list');
 			if($project_rs['etpl_admin'] || $project_rs['etpl_user']){
 				$param = 'id='.$tid.'&status=update';
 				$this->model('task')->add_once('post',$param);
@@ -302,7 +302,6 @@ class post_control extends phpok_control
 			$param = 'id='.$insert_id.'&status=create';
 			$this->model('task')->add_once('post',$param);
 		}
-		$this->cache->delete_index($this->db->prefix.'list');
 		if(!$tid && $array['user_id'] && $array["status"]){
 			$this->model('wealth')->add_integral($insert_id,$array['user_id'],'post',P_Lang('发布：{title}',array('title'=>$array['title'])));
 		}
