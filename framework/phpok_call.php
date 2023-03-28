@@ -12,7 +12,6 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class phpok_call extends _init_auto
 {
 	private $mlist;
-	private $phpoklist;
 	private $_cache;
 	public function __construct()
 	{
@@ -661,7 +660,7 @@ class phpok_call extends _init_auto
 		}
 		if($rs['tag']){
 			$list = explode(",",$rs['tag']);
-			$tag_condition = false;
+			$tag_condition = array();
 			foreach($list as $key=>$value){
 				if($value && trim($value)){
 					$tag_condition [] = " l.tag LIKE '%".trim($value)."%'";
@@ -670,7 +669,7 @@ class phpok_call extends _init_auto
 			if($tag_condition){
 				$condition .= " AND (".implode(" OR ",$tag_condition).")";
 			}
-			unset($tid_sql,$tag_condition,$list);
+			unset($tag_condition,$list);
 		}
 		if($rs['keywords']){
 			$keywords = str_replace(" ","%",$rs['keywords']);
@@ -1084,7 +1083,7 @@ class phpok_call extends _init_auto
 		return $project;
 	}
 
-	private function _cate_total(&$count=0,$rslist=array(),$totals=array(),$parent_id=0)
+	private function _cate_total(&$count,$rslist=array(),$totals=array(),$parent_id=0)
 	{
 		if($rslist && is_array($rslist)){
 			foreach($rslist as $key=>$value){

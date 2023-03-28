@@ -187,7 +187,6 @@ class phpok_control extends _init_auto
 			ksort($chkdata);
 			$md5 = md5(serialize($chkdata)).$chkdata['time'];
 			$authinfo = base64_encode('md5:'.$md5);
-			$tmpinfo = serialize($chkdata);
 		}
 		$this->assign('AUTHORIZATION',$authinfo);
 		if($this->app_id == 'admin' || !$this->is_ajax || !$this->config['api_auth']){
@@ -228,7 +227,6 @@ class phpok_control extends _init_auto
 			$chkdata['api_code'] = $this->session()->val('api_code');
 			$chkdata['time'] = intval(substr($string,-10));
 			$chkdata['session_id'] = $this->session()->sessid();
-			$tmpinfo = serialize($chkdata);
 			ksort($chkdata);
 			$chkinfo = md5(serialize($chkdata)).$chkdata['time'];
 			if($chkinfo != $string){
