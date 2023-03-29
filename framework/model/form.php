@@ -450,12 +450,6 @@ class form_model_base extends phpok_model
 	**/
 	public function optinfo($val,$rs)
 	{
-		if($rs['ext']){
-			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
-			$rs = array_merge($ext,$rs);
-			unset($rs['ext']);
-		}
-		
 		if(!$rs["option_list"]){
 			$rs['option_list'] = 'default:0';
 		}
@@ -481,6 +475,21 @@ class form_model_base extends phpok_model
 		}
 		if($type == 'gateway' && $group_id != 'express'){
 			return $this->_optinfo_gateway($info);
+		}
+		if(!$group_id && $rs['ext_select']){
+			$tmplist = explode("\n",$rs['ext_select']);
+			foreach($tmplist as $key => $value){
+				$value = trim($value);
+				if(!$value){
+					continue;
+				}
+				$tmp = explode(":",$value);
+				if($tmp[1] && $tmp[0] == $info['val']){
+					$info['title'] = $tmp[1];
+					break;
+				}
+			}
+			return $info;
 		}
 		return $info;
 	}
@@ -613,7 +622,7 @@ class form_model_base extends phpok_model
 		}
 		$tmp = $this->model('opt')->opt_val($group_id,$val);
 		if(!$tmp){
-			return false;
+			return $info;
 		}
 		$info['title'] = $tmp['title'];
 		$info['data'] = $tmp;

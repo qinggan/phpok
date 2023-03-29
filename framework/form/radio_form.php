@@ -76,10 +76,6 @@ class radio_form extends _init_auto
 
 	public function phpok_format($rs,$appid='admin')
 	{
-		if($rs['ext'] && is_string($rs['ext'])){
-			$tmp = unserialize($rs['ext']);
-			$rs = array_merge($tmp,$rs);
-		}
 		if(!$rs["option_list"]){
 			$rs['option_list'] = 'default:0';
 		}
@@ -123,18 +119,10 @@ class radio_form extends _init_auto
 	//输出内容
 	public function phpok_show($rs,$appid='admin')
 	{
-		$ext = array();
-		if($rs['ext']){
-			if(is_string($rs['ext'])){
-				$ext = unserialize($rs['ext']);
-			}else{
-				$ext = $rs['ext'];
-			}
+		if(!$rs["option_list"]){
+			$rs['option_list'] = 'default:0';
 		}
-		if(!$ext["option_list"]){
-			$ext['option_list'] = 'default:0';
-		}
-		$opt = explode(":",$ext["option_list"]);
+		$opt = explode(":",$rs["option_list"]);
 		if($appid == 'admin'){
 			$info = $this->model('form')->optinfo($rs['content'],$rs);
 			if($info && $info['title']){
