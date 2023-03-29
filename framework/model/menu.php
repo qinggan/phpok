@@ -2,7 +2,6 @@
 /**
  * 导航菜单管理
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 5.x
  * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
@@ -190,6 +189,7 @@ class menu_model_base extends phpok_model
 		}
 		$subids = array();
 		foreach($tmplist as $key=>$value){
+			$value['target'] = $value['target'] ? '_blank' : '_top';
 			if($value['project_id'] && $plist && $plist[$value['project_id']]){
 				$value['project'] = $plist[$value['project_id']];
 				if($value['type'] == 'project'){
@@ -198,7 +198,7 @@ class menu_model_base extends phpok_model
 						$value['title'] = $value['project']['title'];
 					}
 					if($value['submenu']){
-						$subids[] = array("parent_id"=>$value['id'],"pid"=>$value['project_id'],'project'=>$value['project'],'submenu'=>$value['submenu'],'type'=>$value['type']);
+						$subids[] = array("parent_id"=>$value['id'],"pid"=>$value['project_id'],'project'=>$value['project'],'submenu'=>$value['submenu'],'type'=>$value['type'],'target'=>$value['target']);
 					}
 				}
 			}
@@ -210,7 +210,7 @@ class menu_model_base extends phpok_model
 						$value['title'] = $value['cate']['title'];
 					}
 					if($value['submenu']){
-						$subids[] = array("parent_id"=>$value['id'],"pid"=>$value['project_id'],'project'=>$value['project'],'submenu'=>$value['submenu'],'cate_id'=>$value['cate_id'],'cate'=>$value['cate'],'type'=>$value['type']);
+						$subids[] = array("parent_id"=>$value['id'],"pid"=>$value['project_id'],'project'=>$value['project'],'submenu'=>$value['submenu'],'cate_id'=>$value['cate_id'],'cate'=>$value['cate'],'type'=>$value['type'],'target'=>$value['target']);
 					}
 				}
 			}
@@ -226,7 +226,6 @@ class menu_model_base extends phpok_model
 			}
 			$value['thumb'] = $value['thumb'];
 			$value['iconfont'] = $value['iconfont'];
-			$value['target'] = $value['target'] ? '_blank' : '_top';
 			$value['url'] = $value['link'];
 			$tmplist[$key] = $value;
 		}
