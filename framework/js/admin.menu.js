@@ -157,12 +157,16 @@
 		{
 			$.dialog.confirm(p_lang('确定要删除菜单ID #[id] 吗？删除后不能恢复','<span class="red">'+id+'</span>'),function(){
 				var url = get_url('menu','delete','id='+id);
+				var lock = $.dialog.tips('正在执行中，请稍候…',10).lock();
 				$.phpok.json(url,function(rs){
 					if(!rs.status){
-						$.dialog.alert(rs.info);
+						lock.content(rs.info).time(2);
 						return false;
 					}
-					$("#menu_"+id).remove();
+					lock.setting('close',function(){
+						$("#menu_"+id).remove();
+					})
+					lock.content('删除成功').time(1);
 				})
 			});
 		},
