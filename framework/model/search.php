@@ -26,15 +26,15 @@ class search_model_base extends phpok_model
 			foreach($mid as $key=>$value){
 				$sql  = " SELECT ext.id FROM ".$this->db->prefix."list_".$value." ext JOIN ".$this->db->prefix."list l ON(ext.id=l.id) ";
 				$sql .= " WHERE l.status=1 AND l.hidden=0 ";
+				if($condition){
+					$sql .= " AND ".$condition." ";
+				}
 				if($ext && $ext[$value]){
 					$sql .= " AND (".implode(" OR ",$ext[$value]).") ";
 				}
 				$listsql[] = $sql;
 			}
 			$sql  = " SELECT count(l.id) FROM ".$this->db->prefix."list l WHERE l.status=1 AND l.hidden=0 ";
-			if($condition){
-				$sql .= " AND ".$condition." ";
-			}
 			if($listsql){
 				$sql .= " AND l.id IN(".implode(" UNION ",$listsql).")";
 			}
