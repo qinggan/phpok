@@ -128,8 +128,8 @@ var autosave_handle;
 					if(loading_action){
 						loading_action.close();
 					}
-					if(rs.status != 'ok'){
-						$.dialog.alert(rs.content);
+					if(!rs.status){
+						$.dialog.alert(rs.info);
 						return false;
 					}
 					var url = get_url('list','action','id='+$("#pid").val());
@@ -183,10 +183,10 @@ var autosave_handle;
 								$.admin.close(url);
 							})
 						}
-						loading_action.content(p_lang('内容信息修改成功')).time(1.5);
+						loading_action.content(p_lang('内容信息修改成功')).time(2);
 						return true;
 					}
-					$.dialog.tips(p_lang('内容信息添加成功'));
+					loading_action.content(p_lang('内容信息添加成功')).time(2);
 					if(close == 2){
 						$.admin.reload(url);
 						var add_url = get_url('list','edit','pid='+$("#pid").val());
@@ -204,8 +204,8 @@ var autosave_handle;
 					$.admin.reload(url);
 					var old_title = $.admin.title();
 					var tmp = old_title.split("_");
-					$.admin.title(tmp[0]+"_编辑_#"+rs.content);
-					$.phpok.go(get_url('list','edit','id='+rs.content));
+					$.admin.title(tmp[0]+"_编辑_#"+rs.info);
+					$.phpok.go(get_url('list','edit','id='+rs.info));
 					return true;
 				}
 			});
