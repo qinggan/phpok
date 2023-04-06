@@ -125,11 +125,8 @@ var autosave_handle;
 					loading_action = $.dialog.tips('<img src="images/loading.gif" border="0" align="absmiddle" /> '+p_lang('正在保存数据，请稍候…')).time(3000).lock();
 				},
 				'success':function(rs){
-					if(loading_action){
-						loading_action.close();
-					}
 					if(!rs.status){
-						$.dialog.alert(rs.info);
+						loading_action.content(rs.info).time(2);
 						return false;
 					}
 					var url = get_url('list','action','id='+$("#pid").val());
@@ -137,13 +134,14 @@ var autosave_handle;
 						var cateid = $("#cate_id").val();
 						url += "&keywords[cateid]="+cateid;
 					}
-					if(id){
-						$.dialog.tips(p_lang('内容信息修改成功'));
+					loading_action.setting('close',function(){
 						opener.$.phpok.reload();
+					})
+					if(id){
+						loading_action.content(p_lang('内容信息修改成功')).time(2);
 						return true;
 					}
 					$.dialog.tips(p_lang('内容信息添加成功'));
-					opener.$.phpok.reload();
 					return true;
 				}
 			});
