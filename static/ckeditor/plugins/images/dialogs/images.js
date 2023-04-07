@@ -52,7 +52,8 @@
 				//alert('onShow');
 			},
 			onHide: function() {
-				document.getElementById('myiframeImages').contentWindow.location.reload(true);
+				//destroyIframe('myiframeImages');
+				//document.getElementById('myiframeImages').contentWindow.location.reload(true);
 				//alert('onHide');
 			},
 			onOk: function() {
@@ -61,11 +62,13 @@
 				if(t){
 					editor.insertHtml(t);
 					this.commitContent();
+					//destroyIframe('myiframeImages');
 					return true;
 				}
 				return false;
 			},
 			onCancel: function() {
+				//destroyIframe('myiframeImages');
 				//alert('onCancel');
 			},
 			resizable: false
