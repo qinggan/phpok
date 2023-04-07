@@ -88,6 +88,10 @@ class text_form extends _init_auto
 		if(!$rs || !$rs['content']){
 			return '';
 		}
+		//判断如果有UBB代码
+		if(strpos($rs['content'],'[') !== false && strpos($rs['content'],']') !== false){
+			$rs['content'] = $this->lib('ubb')->to_html($rs['content'],false);
+		}
 		if($appid == 'admin'){
 			$ext = $rs['ext'];
 			if($ext && is_string($ext)){

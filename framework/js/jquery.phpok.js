@@ -603,6 +603,27 @@ function identifier(str)
 				}
 				$(obj).focus();
 			}
+		},
+		get_selection:function(obj)
+		{
+			if(obj && typeof obj == 'string'){
+				var tmp = (obj.substr(0,1) == '.' || obj.substr(0,1) == '#') ? obj : '#'+obj;
+				obj = $(tmp);
+			}
+			var $t=$(obj)[0];
+			if (document.selection) {
+				$(obj).focus();
+				sel = document.selection.createRange();
+				return sel.text;
+			} else {
+				var start = $t.selectionStart; // 获取选中文本的起始位置
+				var end = $t.selectionEnd; // 获取选中文本的结束位置
+				if(start == end){
+					return '';
+				}
+				var selectedText = $t.value.substring(start, end); // 获取选中文本
+				return selectedText;
+			}
 		}
 	}
 })(jQuery);
@@ -613,35 +634,15 @@ function identifier(str)
 ;(function($){
 
 	$.input = {
-
-		checkbox_all: function(id)
+		add:function(obj,val)
 		{
-			return $.checkbox.all(id);
-		},
-
-		//全不选，调用方法：$.input.checkbox_none(id);
-		checkbox_none: function(id)
-		{
-			return $.checkbox.none(id);
-		},
-
-		//每次选5个（total默认值为5） $.input.checkbox_not_all(id,5);
-		checkbox_not_all: function(id,total)
-		{
-			return $.checkbox.more(id,total);
-		},
-
-		//反选，调用方法：$.input.checkbox_anti(id);
-		checkbox_anti: function(id)
-		{
-			return $.checkbox.anti(id);
-		},
-
-		//合并复选框值信息，以英文逗号隔开
-		checkbox_join: function(id,type)
-		{
-			return $.checkbox.join(id,type);
+			var old = $.form.get_selection(obj);
+			var content = '';
+			if(old){
+				content = old;
+			}
+			val = val.replace('$1',content);
+			$.form.input(obj,val);
 		}
 	};
-
 })(jQuery);

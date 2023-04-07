@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height,resize" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="width,height,resize,is_ubb" />
 <div class="layui-form-item">
 	<label class="layui-form-label">
 		{lang宽高：}
@@ -27,5 +27,13 @@
 		<input type="radio" name="resize" value="vertical"{if $rs.resize == 'vertical'} checked{/if} title="{lang可调节高度}" />
 	</div>
 </div>
-
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{langUBB代码}
+	</label>
+	<div class="layui-input-block">
+		<input type="radio" name="is_ubb" value="0"{if !$rs.is_ubb} checked{/if} title="{lang禁止}" />
+		<input type="radio" name="is_ubb" value="1"{if $rs.is_ubb} checked{/if} title="{lang启用}" />
+	</div>
+</div>
 

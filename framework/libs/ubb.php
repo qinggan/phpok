@@ -49,6 +49,7 @@ class ubb_lib
 		$info=preg_replace("/\[i\](.+?)\[\/i\]/is","<i>\\1</i>",$info);
 		$info=preg_replace("/\[u\](.+?)\[\/u\]/is","<u>\\1</u>",$info);
 		$info=preg_replace("/\[b\](.+?)\[\/b\]/is","<b>\\1</b>",$info);
+		$info=preg_replace("/\[del\](.+?)\[\/del\]/is","<del>\\1</del>",$info);
 		$info=preg_replace("/\[quote\](.+?)\[\/quote\]/is","<blockquote><div style='border:1px solid silver;background:#EFFFDF;color:#393939;padding:5px' >\\1</div></blockquote>", $info);
 		$info = $this->_download($info);
 		$info = $this->_title($info);

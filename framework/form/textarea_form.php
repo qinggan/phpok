@@ -44,7 +44,9 @@ class textarea_form extends _init_auto
 
 	public function phpok_show($rs,$appid="admin")
 	{
+		if(strpos($rs['content'],'[') !== false && strpos($rs['content'],']') !== false){
+			$rs['content'] = $this->lib('ubb')->to_html($rs['content'],false);
+		}
 		return $rs['content'];
 	}
 }
-?>
