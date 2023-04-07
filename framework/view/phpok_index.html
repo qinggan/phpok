@@ -40,8 +40,7 @@
 				</td>
 				<td>{$phpok_type_list[$value.type_id][title]}</td>
 				<td>
-					{$value.identifier}
-					<i class="phpok-copy hand layui-icon layui-icon-templeate-1" style="font-size:10px;" title="复制" data-clipboard-text="{$value.identifier}"></i>
+					<span class="layui-badge-rim hand phpok-copy"  title="点击复制" data-clipboard-text="{$value.identifier}">{$value.identifier}</span>
 				</td>
 				<!-- if $popedom.modify || $popedom.delete -->
 				<td>
