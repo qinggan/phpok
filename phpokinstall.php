@@ -144,6 +144,20 @@ function checkdir_rw(&$status,$dir='')
 	echo $info;
 }
 
+function rand_string($length=10)
+{
+	$first = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+	$letter_length = strlen($first)-1;
+	$rand_str = $first[rand(0,$letter_length)];
+	//取得以下随机数
+	$a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz@%^#&!';
+	$maxlength = strlen($a)-1;
+	for($i=0;$i<($length-1);++$i){
+		$rand_str .= $a[rand(0,$maxlength)];
+	}
+	return $rand_str;
+}
+
 class install
 {
 	public function head($num=1)
@@ -1025,6 +1039,8 @@ if($step == 'ajax_initdata'){
 	$sql = "UPDATE ".$db->prefix."site SET dir='".$adminer['dir']."'";
 	$db->query($sql);
 
+	
+
 	if(!$adminer['demo']){
 		$tblist = $db->list_tables();
 		$sql = "SELECT * FROM ".$db->prefix."module";
@@ -1044,10 +1060,13 @@ if($step == 'ajax_initdata'){
 				}
 			}
 		}
-		$string  = 'module,fields,list,list_cate,list_biz,list_attr,reply,project,plugins,res,tag,tag_stat,phpok,ext,extc,all,cate,user,user_ext,user_relation,';
-		$string .= 'wealth_info,wealth_log,session,payment_log,order_product,order_price,order_payment,order_log,order_invoice,order_express,order_address,order,log,fav,express,';
+		$string  = 'module,fields,list,list_cate,list_biz,list_attr,reply,project,plugins,';
+		$string .= 'res,tag,tag_stat,phpok,ext,extc,all,cate,user,user_ext,user_relation,';
+		$string .= 'wealth_info,wealth_log,session,payment_log,order_product,order_price,';
+		$string .= 'order_payment,order_log,order_invoice,order_express,order_address,order,log,fav,express,';
 		$string .= 'cart,cart_product,menu';
 		$tmplist = explode(",",$string);
+		$tmplist = array_unique($tmplist);
 		foreach($tmplist as $key=>$value){
 			$table = $db->prefix."".$value;
 			if(in_array($table,$tblist)){
@@ -1062,6 +1081,11 @@ if($step == 'ajax_initdata'){
 			}
 		}
 	}
+
+	//更新 config 表里的 api_code 值，确保每个密钥都不一样
+	$api_code = rand_string();
+	$sql = "UPDATE ".$db->prefix."config SET api_code='".$api_code."'";
+	$db->query($sql);
 	exit('ok');
 }
 if($step == 'ajax_iadmin'){
