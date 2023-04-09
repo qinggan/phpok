@@ -6,6 +6,10 @@
 		{lang系统参数设置}
 	</div>
 	<div class="layui-card-body">
+		<blockquote class="layui-elem-quote">
+			<p>RSA证书模式采用两套证书交叉使用，在APP里配置【服务端公钥 public_key】和【客户端私钥 private_key 】用于解决数据加密及解密传输</p>
+			<p>API验证串适合在WEB里互传或用于存储Cookie进行加密或用于生成Token</p>
+		</blockquote>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{langAPI验证串}
@@ -25,12 +29,11 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang公钥1}<br />
+				{lang服务端公钥}<br />
 				<input type="button" value="{lang生成}" onclick="$.admin_all.rsa_create()" class="layui-btn layui-btn-xs" />
 			</label>
 			<div class="layui-input-block gray">
-				{lang可用于APP或小程序开发，数据传输前进行公钥加密}
-				
+				{lang对应APP或小程序里的 publick_key，用于加密要传输的数据}
 			</div>
 			<div class="layui-input-block">
 				<textarea name="public_key" id="public_key" class="layui-textarea">{$rs.public_key}</textarea>
@@ -38,20 +41,20 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang私钥1}
+				{lang服务端私钥}
 			</label>
-			<div class="layui-input-block gray">{lang可用于用于APP或小程序开发，数据服务端数据进行解密}</div>
+			<div class="layui-input-block gray">{lang放在服务端里，用于解密客户端发过来的数据}</div>
 			<div class="layui-input-block">
 				<textarea name="private_key" id="private_key" class="layui-textarea">{$rs.private_key}</textarea>
 			</div>
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang公钥2}<br />
+				{lang客户端公钥}<br />
 				<input type="button" value="{lang生成}" onclick="$.admin_all.rsa_create2()" class="layui-btn layui-btn-xs" />
 			</label>
 			<div class="layui-input-block gray">
-				{lang可用于APP或小程序开发，数据传输前进行公钥加密}
+				{lang放在服务端里，用于加密要发送给客户端的数据}
 			</div>
 			<div class="layui-input-block">
 				<textarea name="public_key2" id="public_key2" class="layui-textarea">{$rs.public_key2}</textarea>
@@ -59,9 +62,9 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang私钥2}
+				{lang客户端私钥}
 			</label>
-			<div class="layui-input-block gray">{lang可用于用于APP或小程序开发，数据服务端数据进行解密}</div>
+			<div class="layui-input-block gray">{lang对应APP或小程序里的 private_key，用于解密要服务端发过来的数据}</div>
 			<div class="layui-input-block">
 				<textarea name="private_key2" id="private_key2" class="layui-textarea">{$rs.private_key2}</textarea>
 			</div>
