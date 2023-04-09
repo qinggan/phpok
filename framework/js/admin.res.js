@@ -54,7 +54,7 @@
 		{
 			var id = $.checkbox.join(".checkbox input[type=checkbox]");
 			if(!id || id == "undefined"){
-				$.dialog.alert(p_lang('未指定要操作的附件'));
+				$.dialog.tips(p_lang('未指定要操作的附件'));
 				return true;
 			}
 			var url = get_url("res","update_pl") + "&id="+$.str.encode(id);
@@ -67,7 +67,7 @@
 		{
 			var id = $.checkbox.join(".checkbox input[type=checkbox]");
 			if(!id || id == "undefined"){
-				$.dialog.alert(p_lang('未指定要操作的附件'));
+				$.dialog.tips(p_lang('未指定要操作的附件'));
 				return false;
 			}
 			$.dialog.confirm(p_lang('确定要删除选中的附件吗？删除后是不可恢复的'),function(){
@@ -102,7 +102,7 @@
 						}).lock();
 						return true;
 					}
-					$.dialog.alert(rs.content);
+					$.dialog.tips(rs.content);
 					return false;
 				})
 			});
@@ -191,7 +191,7 @@
 		{
 			var id = $.checkbox.join(".checkbox input[type=checkbox]");
 			if(!id || id == "undefined"){
-				$.dialog.alert(p_lang('未指定要操作的附件'));
+				$.dialog.tips(p_lang('未指定要操作的附件'));
 				return false;
 			}
 			$.dialog({

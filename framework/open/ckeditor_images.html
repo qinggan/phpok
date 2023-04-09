@@ -34,9 +34,9 @@
 	}
 	function dialogOK()
 	{
-		var id = $.checkbox.join();
+		var id = $.checkbox.join('piclist');
 		if(!id){
-			$.dialog.alert(p_lang('请选择要插入的图片'));
+			$.dialog.tips(p_lang('请选择要插入的图片'));
 			return false;
 		}
 		var list = id.split(',');
@@ -82,7 +82,7 @@
 	</form>
 </div>
 <div class="container-fluid">
-	<div class="row">
+	<div class="row" id="piclist">
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<div class="col-4 col-3 col-sm-2" id="li_{$value.id}" data="{$value.id}" title="名称：{$value.title}&#10;时间：{func date 'Y-m-d H:i' $value.mtime}{if $value.width}&#10;宽高：{$value.width}x{$value.height}{/if}">
 			<label class="position-relative">

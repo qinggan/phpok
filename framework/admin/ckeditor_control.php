@@ -386,6 +386,88 @@ class ckeditor_control extends phpok_control
 	}
 
 	/**
+	 * 浏览器图片预览
+	**/
+	public function images_f()
+	{
+		$cateid = $this->get('cateid','int');
+		if(!$cateid){
+			$cate = $this->model('rescate')->get_default();
+		}else{
+			$cate = $this->model('rescate')->get_one($cateid);
+		}
+		$formurl = $pageurl = $this->url('ckeditor','images');
+		$pageid = $this->get($this->config["pageid"],"int");
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$psize = $this->config['psize'];
+		$offset = ($pageid - 1) * $psize;
+		$condition = " ext IN ('gif','jpg','png','jpeg','webp') ";
+		if($cate){
+			$condition .=  " AND cate_id='".$cate['id']."' ";
+		}
+		$gd_rs = $this->model('gd')->get_editor_default();
+		$keywords = $this->get('keywords');
+		if($keywords){
+			$condition .= " AND (filename LIKE '%".$keywords."%' OR title LIKE '%".$keywords."%') ";
+			$this->assign('keywords',$keywords);
+			$pageurl .= "&keywords=".rawurlencode($keywords);
+		}
+		$total = $this->model('res')->edit_pic_total($condition,$gd_rs);
+		if($total){
+			$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,$gd_rs);
+			$piclist = array();
+			foreach($rslist as $key=>$value){
+				$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime'],'title'=>$value['title'],'id'=>$value['id']);
+				if($value['attr']){
+					$attr = is_string($value['attr']) ? unserialize($value['attr']) : $value['attr'];
+					$tmp['width'] = $attr['width'];
+					$tmp['height'] = $attr['height'];
+				}
+				$piclist[] = $tmp;
+			}
+			$this->assign('rslist',$piclist);
+			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3&always=1';
+			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
+			$this->assign("pagelist",$pagelist);
+			$this->assign("pageurl",$pageurl);
+		}
+		$this->assign('formurl',$formurl);
+		
+		$catelist = $this->model('rescate')->get_all();
+		if($catelist){
+			$is_cate = false;
+			$exts = array('jpg','gif','png','webp','exif','fpx','svg','psd','cdr','eps','ai','jpeg');
+			foreach($catelist as $key=>$value){
+				$tmp = explode(",",$value['filetypes']);
+				if(!array_intersect($tmp,$exts)){
+					unset($catelist[$key]);
+					continue;
+				}
+				if($cate && $value['id'] == $cate['id']){
+					$is_cate = true;
+				}
+			}
+			if($catelist){
+				$this->assign("catelist",$catelist);
+				if(!$is_cate){
+					reset($catelist);
+					$cate = current($catelist);
+				}
+				$array = array();
+				$array['is_multiple'] = 1;
+				$array['cate_id'] = $cate['id'];
+				$ext = array('ext'=>$array,'manage_forbid'=>1,'is_multiple'=>1,'cate_id'=>$cate['id'],'is_refresh'=>1);
+				$button = form_edit('values','','upload',$ext);
+				$this->assign('button',$button);
+				$this->assign('cate',$cate);
+			}
+		}
+		$this->view($this->dir_phpok.'open/ckeditor_images.html','abs-file');
+	}
+
+	/**
 	 * 在弹出CKeditor图片选择器时插入图片
 	**/
 	public function insert_f()
@@ -634,85 +716,4 @@ class ckeditor_control extends phpok_control
 		$this->view($this->dir_phpok.'open/ckeditor_upload.html','abs-file');
 	}
 
-	/**
-	 * 浏览器图片预览
-	**/
-	public function images_f()
-	{
-		$cateid = $this->get('cateid','int');
-		if(!$cateid){
-			$cate = $this->model('rescate')->get_default();
-		}else{
-			$cate = $this->model('rescate')->get_one($cateid);
-		}
-		$formurl = $pageurl = $this->url('ckeditor','images');
-		$pageid = $this->get($this->config["pageid"],"int");
-		if(!$pageid){
-			$pageid = 1;
-		}
-		$psize = $this->config['psize'];
-		$offset = ($pageid - 1) * $psize;
-		$condition = " ext IN ('gif','jpg','png','jpeg','webp') ";
-		if($cate){
-			$condition .=  " AND cate_id='".$cate['id']."' ";
-		}
-		$gd_rs = $this->model('gd')->get_editor_default();
-		$keywords = $this->get('keywords');
-		if($keywords){
-			$condition .= " AND (filename LIKE '%".$keywords."%' OR title LIKE '%".$keywords."%') ";
-			$this->assign('keywords',$keywords);
-			$pageurl .= "&keywords=".rawurlencode($keywords);
-		}
-		$total = $this->model('res')->edit_pic_total($condition,$gd_rs);
-		if($total){
-			$rslist = $this->model('res')->edit_pic_list($condition,$offset,$psize,$gd_rs);
-			$piclist = array();
-			foreach($rslist as $key=>$value){
-				$tmp = array('url'=>$value['filename'],'ico'=>$value['ico'],'mtime'=>$value['addtime'],'title'=>$value['title'],'id'=>$value['id']);
-				if($value['attr']){
-					$attr = is_string($value['attr']) ? unserialize($value['attr']) : $value['attr'];
-					$tmp['width'] = $attr['width'];
-					$tmp['height'] = $attr['height'];
-				}
-				$piclist[] = $tmp;
-			}
-			$this->assign('rslist',$piclist);
-			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=3&always=1';
-			$pagelist = phpok_page($pageurl,$total,$pageid,$psize,$string);
-			$this->assign("pagelist",$pagelist);
-			$this->assign("pageurl",$pageurl);
-		}
-		$this->assign('formurl',$formurl);
-		
-		$catelist = $this->model('rescate')->get_all();
-		if($catelist){
-			$is_cate = false;
-			$exts = array('jpg','gif','png','webp','exif','fpx','svg','psd','cdr','eps','ai','jpeg');
-			foreach($catelist as $key=>$value){
-				$tmp = explode(",",$value['filetypes']);
-				if(!array_intersect($tmp,$exts)){
-					unset($catelist[$key]);
-					continue;
-				}
-				if($cate && $value['id'] == $cate['id']){
-					$is_cate = true;
-				}
-			}
-			if($catelist){
-				$this->assign("catelist",$catelist);
-				if(!$is_cate){
-					reset($catelist);
-					$cate = current($catelist);
-				}
-				$array = array();
-				$array['is_multiple'] = 1;
-				$array['cate_id'] = $cate['id'];
-				$ext = array('ext'=>$array,'manage_forbid'=>1,'is_multiple'=>1,'cate_id'=>$cate['id'],'is_refresh'=>1);
-				$button = form_edit('values','','upload',$ext);
-				$this->assign('button',$button);
-				$this->assign('cate',$cate);
-			}
-		}
-		$this->view($this->dir_phpok.'open/ckeditor_images.html','abs-file');
-	}
 }
