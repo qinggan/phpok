@@ -29,6 +29,7 @@ class setting_sitemap extends phpok_plugin
 		$id = $this->plugin_id();
 		$ext = array();
 		$ext['changefreq'] = $this->get('changefreq');
+		$ext['my_lang_id'] = $this->get('my_lang_id');
 		$this->plugin_save($ext,$id);
 	}
 }

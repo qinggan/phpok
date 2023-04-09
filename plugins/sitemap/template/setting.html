@@ -1,3 +1,5 @@
+
+
 <div class="tips">
 	Sitemap 网页地址是：<span class="red">{$sys.url}index.php?c=plugin&f=exec&id=sitemap&exec=web</span><br />
 	Sitemap XML地址是：<span class="red">{$sys.url}api.php?c=plugin&f=exec&id=sitemap&exec=xml</span>
@@ -12,11 +14,25 @@
 	<div class="content">
 		<table cellpadding="0" cellspacing="0">
 		<tr>
-			<td><label><input type="radio" name="changefreq" value="daily"{if $rs.param.changefreq == 'daily'} checked{/if} />每日更新</label></td>
-			<td><label><input type="radio" name="changefreq" value="weekly"{if !$rs.param.changefreq || $rs.param.changefreq == 'weekly'} checked{/if} />每周更新</label></td>
-			<td><label><input type="radio" name="changefreq" value="monthly"{if $rs.param.changefreq == 'monthly'} checked{/if} />每月更新</label></td>
+			<td><label><input type="radio" name="changefreq" value="daily"{if $rs.param.changefreq == 'daily'} checked{/if} title="每日更新" /></label></td>
+			<td><label><input type="radio" name="changefreq" value="weekly"{if !$rs.param.changefreq || $rs.param.changefreq == 'weekly'} checked{/if} title="每周更新" /></label></td>
+			<td><label><input type="radio" name="changefreq" value="monthly"{if $rs.param.changefreq == 'monthly'} checked{/if} title="每月更新" /></label></td>
 		</tr>
 		</table>
 	</div>
 </div>
 
+<div class="table">
+	<div class="title">
+		语言
+		<span class="note">默认中文，请根据实际情况选择</span>
+	</div>
+	<div class="content">
+		<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label><input type="radio" name="my_lang_id" title="中文" value="cn"{if !$rs.param.my_lang_id || $rs.param.my_lang_id == 'cn'} checked{/if} /></label></td>
+			<td><label><input type="radio" name="my_lang_id" title="English" value="en"{if $rs.param.my_lang_id == 'en'} checked{/if} /></label></td>
+		</tr>
+		</table>
+	</div>
+</div>

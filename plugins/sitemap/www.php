@@ -1,13 +1,11 @@
 <?php
 /**
  * 站点sitemap读取
- * @package phpok\plugin\sitemap
  * @author qinggan <admin@phpok.com>
- * @copyright 2015-2016 深圳市锟铻科技有限公司
  * @homepage http://www.phpok.com
  * @version 4.x
  * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
- * @update 2016年07月17日
+ * @update 2023年4月8日
 **/
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
@@ -16,6 +14,8 @@ class www_sitemap extends phpok_plugin
 	public $me;
 	private $max_count = 19999;
 	private $changefreq = 'daily';
+	private $lang_page = '页码';
+	private $my_lang_id = 'cn';
 
 	/**
 	 * 构造函数
@@ -24,7 +24,10 @@ class www_sitemap extends phpok_plugin
 	{
 		parent::plugin();
 		$this->me = $this->plugin_info();
-		$this->changefreq = $this->me['param']['changefreq'];
+		if($this->me['param']){
+			$this->changefreq = $this->me['param']['changefreq'];
+			$this->my_lang_id = $this->me['param']['my_lang_id'];
+		}
 		$this->tpl->assign('plugin',$this->me);
 	}
 
@@ -132,6 +135,10 @@ class www_sitemap extends phpok_plugin
 
 	public function web()
 	{
+		$langid = ($this->lang == 'cn' || $this->lang == 'default' || !$this->lang) ? 'cn' : 'en';
+		if($langid == 'en'){
+			$this->lang_page = 'Page';
+		}
 		$plist = $this->project_all();
 		if(!$plist){
 			$rslist = array();
@@ -155,7 +162,7 @@ class www_sitemap extends phpok_plugin
 				}else{
 					$url = $listurl.'?pageid='.$i;
 				}
-				$rslist[$i] = array('url'=>$this->url_quote($url),'lastmod'=>date("Y-m-d",$this->time),'title'=>'分组 - 第 '.($i+1).' 页');
+				$rslist[$i] = array('url'=>$this->url_quote($url),'lastmod'=>date("Y-m-d",$this->time),'title'=>$this->lang_page.' '.($i+1));
 			}
 			$this->assign('rslist',$rslist);
 			$this->_view("web.html");
@@ -269,7 +276,7 @@ class www_sitemap extends phpok_plugin
 						$lastmod = date("Y-m-d",$lastmod);
 						$tmp = array('url'=>$url,'lastmod'=>$lastmod);
 						$tmp['priority'] = '0.8';
-						$tmp['title'] = $value['title'].' - 第 '.$i.' 页';
+						$tmp['title'] = $value['title'].' - 页码 '.$i;
 						$rslist[] = $tmp;
 					}
 				}
@@ -295,7 +302,7 @@ class www_sitemap extends phpok_plugin
 							$lastmod = $c_lasttime[$v['id']] ? $c_lasttime[$v['id']] : ($p_lasttime[$value['id']] ? $p_lasttime[$value['id']] : $this->time);
 							$lastmod = date("Y-m-d",$lastmod);
 							$tmp = array('url'=>$url,'lastmod'=>$lastmod);
-							$tmp['title'] = $value['title'].' - '.$v['title'].' - 第 '.$i.' 页';
+							$tmp['title'] = $value['title'].' - '.$v['title'].' - '.$this->lang_page.' '.$i;
 							$tmp['priority'] = '0.8';
 							$rslist[] = $tmp;
 						}
