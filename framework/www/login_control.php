@@ -1,9 +1,7 @@
 <?php
 /**
  * 用户登录操作，基于WEB模式
- * @package phpok\www
  * @作者 qinggan <admin@phpok.com>
- * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
@@ -34,7 +32,17 @@ class login_control extends phpok_control
 	public function index_f()
 	{
 		$backurl = $this->get('_back');
-		if(!$backurl){
+		if($backurl){
+			$tmp = strtolower($backurl);
+			if(substr($tmp,0,7) != 'http://' && substr($tmp,0,8) != 'https://'){
+				$backurl = $this->config['url'].$backurl;
+			}
+			$backup_host = parse_url($backurl,PHP_URL_HOST);
+			$webhost = $this->lib('server')->domain();
+			if($backup_host != $webhost){
+				$backurl = $this->config['url'];
+			}
+		}else{
 			$backurl = $this->config['url'];
 		}
 		if($this->session->val('user_id')){
