@@ -538,7 +538,7 @@ function check_connect(isin)
 				<input type="text" class="infor_input" name="dir" id="dir" value="{$site['dir']}" />
 				<p class="tips_p">根目录请设为/</p>
 			</li>
-			<input type="hidden" name="demo" value="1"/>
+			<input type="hidden" name="demo" value="0"/>
         </ul>
     </div>
 </div>
@@ -1084,7 +1084,7 @@ if($step == 'ajax_initdata'){
 
 	//更新 config 表里的 api_code 值，确保每个密钥都不一样
 	$api_code = rand_string();
-	$sql = "UPDATE ".$db->prefix."config SET api_code='".$api_code."'";
+	$sql = "UPDATE ".$db->prefix."config SET content='".$api_code."' WHERE identifier='api_code'";
 	$db->query($sql);
 	exit('ok');
 }
