@@ -17,15 +17,6 @@ class tag_model extends tag_model_base
 		parent::__construct();
 	}
 
-	public function get_total($condition="")
-	{
-		$sql = "SELECT count(id) FROM ".$this->db->prefix."tag WHERE site_id='".$this->site_id."' ";
-		if($condition){
-			$sql .= " AND ".$condition;
-		}
-		return $this->db->count($sql);
-	}
-
 	/**
 	 * 删除标签操作
 	**/
