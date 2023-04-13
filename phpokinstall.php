@@ -538,7 +538,7 @@ function check_connect(isin)
 				<input type="text" class="infor_input" name="dir" id="dir" value="{$site['dir']}" />
 				<p class="tips_p">根目录请设为/</p>
 			</li>
-			<input type="hidden" name="demo" value="0"/>
+			<input type="hidden" name="demo" value="1"/>
         </ul>
     </div>
 </div>
@@ -970,7 +970,7 @@ if($step == 'save'){
 	$info['user'] = $install->get('admin_user',false);
 	$info['email'] = $install->get('admin_email',false);
 	$info['pass'] = $install->get('admin_newpass',false);
-	$info['demo'] = 1;
+	$info['demo'] = $install->get('demo',false);
 	$handle = fopen(DIR_DATA.'install.lock.php','wb');
 	fwrite($handle,'<?php'."\n");
 	foreach($info as $key=>$value){
