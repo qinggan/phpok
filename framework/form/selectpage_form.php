@@ -164,12 +164,8 @@ class selectpage_form extends _init_auto
 	}
 
 	public function phpok_get($rs,$appid='admin'){
-		$ext = array();
-		if($rs['ext']){
-			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
-		}
 		$info = $this->get($rs['identifier'],$rs['form']);
-		if($ext['is_multiple'] && $info && is_array($info)){
+		if($rs['is_multiple'] && $info && is_array($info)){
 			return implode(",",$info);
 		}
 		return $info;
@@ -177,16 +173,12 @@ class selectpage_form extends _init_auto
 
 	public function phpok_show($rs,$appid="admin")
 	{
-		$ext = array();
-		if($rs['ext']){
-			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
+		if(!$rs["option_list"]){
+			$rs['option_list'] = 'default:0';
 		}
-		if(!$ext["option_list"]){
-			$ext['option_list'] = 'default:0';
-		}
-		$opt = explode(":",$ext["option_list"]);
+		$opt = explode(":",$rs["option_list"]);
 		if($appid == 'admin'){
-			if($ext['is_multiple']){
+			if($rs['is_multiple']){
 				$info = explode(",",$rs['content']);
 				if(!$info){
 					return false;
@@ -209,7 +201,7 @@ class selectpage_form extends _init_auto
 			}
 			return false;
 		}
-		if($ext['is_multiple']){
+		if($rs['is_multiple']){
 			$info = explode(",",$rs['content']);
 			if(!$info){
 				$info = array();

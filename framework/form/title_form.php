@@ -29,10 +29,6 @@ class title_form extends _init_auto
 
 	public function phpok_format($rs,$appid="admin")
 	{
-		if($rs['ext'] && is_string($rs['ext'])){
-			$ext = unserialize($rs['ext']);
-			$rs = array_merge($ext,$rs);
-		}
 		if(!$rs["optlist_id"]){
 			return P_Lang('未指定选项组');
 		}

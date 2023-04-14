@@ -57,13 +57,6 @@ class extitle_form extends _init_auto
 			return P_Lang('参数异常');
 		}
 		if(!$rs['form_pid']){
-			$ext = ($rs['ext'] && is_string($rs['ext'])) ? unserialize($rs['ext']) : array();
-			if(!$ext){
-				return P_Lang('字段没有配置好，不能执行');
-			}
-			$rs = array_merge($ext,$rs);
-		}
-		if(!$rs['form_pid']){
 			return P_Lang('字段没有配置好，不能执行');
 		}
 		$project = $this->model('project')->get_one($rs['form_pid'],false);
@@ -105,13 +98,6 @@ class extitle_form extends _init_auto
 	{
 		if(!$rs){
 			return P_Lang('参数异常');
-		}
-		if(!$rs['form_pid']){
-			$ext = ($rs['ext'] && is_string($rs['ext'])) ? unserialize($rs['ext']) : ($rs['ext'] ? $rs['ext'] : array());
-			if(!$ext){
-				return P_Lang('字段没有配置好，不能执行');
-			}
-			$rs = array_merge($ext,$rs);
 		}
 		if(!$rs['form_pid']){
 			return P_Lang('字段没有配置好，不能执行');
@@ -210,29 +196,17 @@ class extitle_form extends _init_auto
 	 * @参数 $project 项目信息
 	 * @参数 $module 模块信息
 	**/
-	public function content_format($field,$content,$project,$module,$empty_reback=false)
+	public function content_format($rs,$content,$project,$module,$empty_reback=false)
 	{
-		if($field['ext'] && is_string($field['ext'])){
-			$tmp = unserialize($field['ext']);
-			$field = array_merge($tmp,$field);
-			unset($tmp,$field['ext']);
-			if($field['form_is_single']){
-				$field['form_maxcount'] = 1;
-			}else{
-				if(!$field['form_maxcount']){
-					$field['form_maxcount'] = 9999;
-				}
+		if($rs['form_is_single']){
+			$rs['form_maxcount'] = 1;
+		}else{
+			if(!$rs['form_maxcount']){
+				$rs['form_maxcount'] = 9999;
 			}
 		}
-		if($field['form_show_editing']){
-			$ext = array('form_show_editing'=>$field['form_show_editing'],'form_true_delete'=>$field['form_true_delete']);
-			$ext['form_pid'] = $field['form_pid'];
-			$ext['form_field_used'] = $field['form_field_used'];
-		}else{
-			$ext = ($field['ext'] && is_string($field['ext'])) ? unserialize($field['ext']) : ($field['ext'] ? $field['ext'] : array());
-		}
-		$this->assign("_rs",$field);
-		$this->assign('_true_delete',$ext['form_true_delete']);
+		$this->assign("_rs",$rs);
+		$this->assign('_true_delete',$rs['form_true_delete']);
 		$list = array();
 		if($content){
 			$list = explode(",",$content);
@@ -259,8 +233,8 @@ class extitle_form extends _init_auto
 			return false;
 		}
 		$flist = $this->model('module')->fields_all($project['module'],'identifier');
-		$showids = $ext['form_show_editing'] ? $ext['form_show_editing'] : array();
-		if(!$ext['form_show_editing']){
+		$showids = $rs['form_show_editing'] ? $rs['form_show_editing'] : array();
+		if(!$rs['form_show_editing']){
 			$showids = array();
 			if(!$module['mtype']){
 				$showids[] = 'title';

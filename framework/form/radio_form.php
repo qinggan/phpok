@@ -98,19 +98,11 @@ class radio_form extends _init_auto
 
 	public function phpok_get($rs,$appid="admin")
 	{
-		$ext = array();
-		if($rs['ext']){
-			if(is_string($rs['ext'])){
-				$ext = unserialize($rs['ext']);
-			}else{
-				$ext = $rs['ext'];
-			}
-		}
 		$info = $this->get($rs['identifier'],$rs['format']);
 		if(!$info){
 			return false;
 		}
-		if($ext['is_add'] && $info == '_'){
+		if($rs['is_add'] && $info == '_'){
 			$info = $this->get($rs['identifier'].'_extadd',$rs['format']);
 		}
 		return $info;

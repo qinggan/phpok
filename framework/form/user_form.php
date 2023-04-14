@@ -46,17 +46,13 @@ class user_form extends _init_auto
 
 	public function phpok_show($rs,$appid="admin")
 	{
-		$ext = array();
-		if($rs['ext']){
-			$ext = is_string($rs['ext']) ? unserialize($rs['ext']) : $rs['ext'];
-		}
 		if(!$rs['content']){
 			return false;
 		}
 		if($appid == 'admin'){
-			return $this->_admin_show($rs,$ext);
+			return $this->_admin_show($rs);
 		}
-		$info = $this->_www_show($rs,$ext);
+		$info = $this->_www_show($rs);
 		//API 接口返回的数据中，不含手机号及密码
 		if($appid == 'api'){
 			if(isset($info['id'])){
@@ -71,9 +67,12 @@ class user_form extends _init_auto
 		return $info;
 	}
 
-	private function _www_show($rs,$ext)
+	private function _www_show($rs)
 	{
-		if($ext && is_array($ext) && $ext['is_multiple']){
+		if(!$rs || !$rs['content']){
+			return false;
+		}
+		if($rs['is_multiple']){
 			if($rs['content'] && is_array($rs['content'])){
 				$rs['content'] = implode(",",$rs['content']);
 			}
@@ -91,9 +90,12 @@ class user_form extends _init_auto
 		return $uinfo;
 	}
 
-	private function _admin_show($rs,$ext)
+	private function _admin_show($rs)
 	{
-		if($ext && is_array($ext) && $ext['is_multiple']){
+		if(!$rs || !$rs['content']){
+			return false;
+		}
+		if($rs['is_multiple']){
 			$condition = "u.id IN(".$rs['content'].") AND u.status=1";
 			$rslist = $this->model('user')->get_list($condition,0,999);
 			if(!$rslist){

@@ -93,12 +93,8 @@ class text_form extends _init_auto
 			$rs['content'] = $this->lib('ubb')->to_html($rs['content'],false);
 		}
 		if($appid == 'admin'){
-			$ext = $rs['ext'];
-			if($ext && is_string($ext)){
-				$ext = unserialize($rs['ext']);
-			}
 			if($rs['format'] == 'time'){
-				$format = $ext['form_btn'] == 'date' ? 'Y-m-d' : 'Y-m-d H:i:s';
+				$format = $rs['form_btn'] == 'date' ? 'Y-m-d' : 'Y-m-d H:i:s';
 				return date($format,$rs['content']);
 			}
 		}

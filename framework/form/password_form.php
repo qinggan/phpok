@@ -40,19 +40,11 @@ class password_form extends _init_auto
 
 	public function phpok_get($rs,$appid="admin")
 	{
-		$ext = array();
-		if($rs['ext']){
-			if(is_string($rs['ext'])){
-				$ext = unserialize($rs['ext']);
-			}else{
-				$ext = $rs['ext'];
-			}
-		}
 		$info = $this->get($rs['identifier'],$rs['format']);
-		if($ext['password_type'] == 'default'){
+		if($rs['password_type'] == 'default'){
 			return $info;
 		}
-		if($ext['password_type'] == 'md5'){
+		if($rs['password_type'] == 'md5'){
 			if($info && strlen($info) != 32){
 				return md5($info);
 			}
