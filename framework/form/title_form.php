@@ -66,14 +66,7 @@ class title_form extends _init_auto
 
 	public function phpok_show($rs,$appid="admin")
 	{
-		if(!$rs || !$rs['ext']){
-			return false;
-		}
-		$ext = $rs['ext'];
-		if(is_string($rs['ext'])){
-			$ext = unserialize($rs['ext']);
-		}
-		if(!$rs['content']){
+		if(!$rs || !$rs['content']){
 			return false;
 		}
 		$list = explode(',',$rs['content']);
@@ -102,7 +95,7 @@ class title_form extends _init_auto
 			}
 			return implode('<br />',$list);
 		}
-		if($ext['is_multiple']){
+		if($rs['is_multiple']){
 			$condition = "l.id IN(".$rs['content'].") AND status=1";
 			$orderby = "SUBSTRING_INDEX('".implode(",",$list)."',l.id,1)";
 			return $this->model('list')->get_all($condition,0,999,"",$orderby);
