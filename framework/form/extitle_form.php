@@ -117,13 +117,6 @@ class extitle_form extends _init_auto
 			return false;
 		}
 		$flist = $this->model('module')->fields_all($project['module'],'identifier');
-		if($flist){
-			foreach($flist as $key=>$value){
-				$tmp = ($value['ext'] && is_string($value['ext'])) ? unserialize($value['ext']) : $value['ext'];
-				$value = array_merge($tmp,$value);
-				$flist[$key] = $value;
-			}
-		}
 		if(is_array($rs['content'])){
 			if(isset($rs['content']['id'])){
 				$tmp = $rs['content']['id'];
