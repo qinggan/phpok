@@ -1,12 +1,11 @@
 <?php
 /**
  * 表单选项管理器
- * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
- * @主页 http://www.phpok.com
- * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @作者 苏相锟 <admin@phpok.com>
+ * @版本 6.x
+ * @授权 GNU Lesser General Public License (LGPL)
  * @时间 2018年01月20日
+ * @更新 2023年4月21日
 **/
 
 /**
@@ -21,12 +20,14 @@ class form_lib
 	//表单对象
 	public $cls;
 	public $appid = 'www';
-	public $dir_form;
+	private $dir_form;
+	private $ext_form;
 
 	//构造函数
 	public function __construct()
 	{
 		$this->dir_form = $GLOBALS['app']->dir_phpok.'form/';
+		$this->ext_form = $GLOBALS['app']->dir_extension.'ext-form/';
 		$appid = isset($GLOBALS['app']->appid) ? $GLOBALS['app']->appid : false;
 		$this->appid = $appid == 'admin' ? 'admin' : 'www';
 	}
@@ -46,10 +47,17 @@ class form_lib
 		if(isset($this->$class_name)){
 			return $this->$class_name;
 		}
-		if(!file_exists($this->dir_form.$class_name.'.php')){
+		$phpfile = false;
+		if(file_exists($this->ext_form.$name.'/form.php')){
+			$phpfile = $this->ext_form.$name.'/form.php';
+		}
+		if(!$phpfile && file_exists($this->dir_form.$class_name.'.php')){
+			$phpfile = $this->dir_form.$class_name.'.php';
+		}
+		if(!$phpfile){
 			return false;
 		}
-		include_once($this->dir_form.$class_name.'.php');
+		include_once($phpfile);
 		$this->$class_name = new $class_name();
 		return $this->$class_name;
 	}
@@ -176,7 +184,7 @@ class form_lib
 
 
 	//弹出窗口，用于创建字段
-	function open_form_setting($saveurl)
+	public function open_form_setting($saveurl)
 	{
 		if(!$saveurl) return false;
 		$GLOBALS['app']->assign('saveUrl',$saveurl);
@@ -192,7 +200,7 @@ class form_lib
 	}
 
 	//格式化值，对应的表单内容
-	function info($val,$rs)
+	public function info($val,$rs)
 	{
 		if($val == '' || !$rs || !is_array($rs)){
 			return $val;

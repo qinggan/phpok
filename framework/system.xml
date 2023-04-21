@@ -77,10 +77,6 @@
 			<title><![CDATA[字体图标]]></title>
 			<note><![CDATA[实现字体图标在后台的管理应用，注意前端需要手工引入样式文件]]></note>
 		</fonticon>
-		<blockhtml>
-			<title><![CDATA[可视化代码块]]></title>
-			<note><![CDATA[实现一些模板里的静态页模块在线编辑，仅支持简单的文本及图片]]></note>
-		</blockhtml>
 	</form>
 	<field>
 		<varchar>

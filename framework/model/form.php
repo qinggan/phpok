@@ -17,7 +17,7 @@ class form_model_base extends phpok_model
 	public function __construct()
 	{
 		parent::model();
-		$this->info = $this->lib('xml')->read($this->dir_phpok.'system.xml');
+		$this->_init();
 	}
 
 	/**
@@ -492,6 +492,31 @@ class form_model_base extends phpok_model
 			return $info;
 		}
 		return $info;
+	}
+
+	private function _init()
+	{
+		$this->info = $this->lib('xml')->read($this->dir_phpok.'system.xml');
+		$dlist = $this->lib('file')->ls($this->dir_extension.'ext-form');
+		if(!$dlist){
+			return $this->info;
+		}
+		foreach($dlist as $key=>$value){
+			if(is_file($value)){
+				continue;
+			}
+			$cfile = $value.'/config.xml';
+			if(!file_exists($cfile)){
+				continue;
+			}
+			$basename = basename($value);
+			$tmp = $this->lib('xml')->read($cfile);
+			if(!$tmp){
+				continue;
+			}
+			$this->info['form'][$basename] = $tmp;
+		}
+		return $this->info;
 	}
 
 	private function _optinfo_gateway($info)
