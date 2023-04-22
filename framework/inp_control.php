@@ -36,6 +36,20 @@ class inp_control extends phpok_control
 		$this->success();
 	}
 
+	public function form_f()
+	{
+		$type = $this->get('type','system');
+		if(!$type){
+			$this->error('未指定表单类型');
+		}
+		$exec = $this->get('exec','system');
+		if(!$exec){
+			$this->error('未指定执行方法');
+		}
+		$obj = $this->lib('form')->cls($type);
+		$obj->$exec();
+	}
+
 	public function xml_f()
 	{
 		$this->config('is_ajax',true);

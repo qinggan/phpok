@@ -69,10 +69,6 @@
 			<title><![CDATA[规格参数]]></title>
 			<note><![CDATA[字段类型请选择长文本，否则数据会被截断出错]]></note>
 		</param>
-		<pca>
-			<title><![CDATA[省市县联动]]></title>
-			<note><![CDATA[仅限国内使用，同时也用于物流应用]]></note>
-		</pca>
 		<fonticon>
 			<title><![CDATA[字体图标]]></title>
 			<note><![CDATA[实现字体图标在后台的管理应用，注意前端需要手工引入样式文件]]></note>
