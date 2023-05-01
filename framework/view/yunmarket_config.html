@@ -1,0 +1,65 @@
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_yunmarket.config_save(this)">
+<div class="layui-card">
+	<div class="layui-card-header">
+		配置云市场
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-container">
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					状态
+				</label>
+				<div class="layui-input-inline auto">
+					<input type="radio" name="status" value="0"{if !$rs.status} checked{/if} title="{lang关闭}" />
+					<input type="radio" name="status" value="1"{if $rs.status} checked{/if} title="{lang开启}" />
+				</div>
+				<div class="layui-form-mid">
+					开启后需要设置相应的应用ID和应用密钥，以保证数据通迅到位
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					云服务器
+				</label>
+				<div class="layui-input-block">
+					<input type="text" name="server" id="server" value="{$rs.server}" class="layui-input" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					IP
+				</label>
+				<div class="layui-input-block">
+					<input type="text" name="ip" id="ip" value="{$rs.ip}" class="layui-input" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					APPID
+				</label>
+				<div class="layui-input-block">
+					<input type="text" name="appid" id="appid" value="{$rs.appid}" class="layui-input" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">
+					APPSecret
+				</label>
+				<div class="layui-input-block">
+					<input type="text" name="appsecret" id="appsecret" value="{$rs.appsecret}" class="layui-input" />
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang取消返回}" class="layui-btn layui-btn-primary" onclick="$.phpok.go('{url ctrl=yunmarket/}')" />
+	</div>
+</div>
+
+</form>
+<!-- include tpl=foot_lay -->

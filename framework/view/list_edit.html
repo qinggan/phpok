@@ -1,7 +1,7 @@
 <!-- include tpl=head_lay nopadding=$isopen -->
 <input type="hidden" id="_root_cate" value="{$p_rs.cate}" />
 <script type="text/javascript" src="{func include_js list.js}"></script>
-<form method="post" id="_listedit" class="layui-form"{if $isopen} onsubmit="return false"{else} onsubmit="return $.admin_list_edit.save_not_close()"{/if}>
+<form method="post" id="_listedit" class="layui-form"{if $isopen} onsubmit="return false"{else} onsubmit="return $.admin_list_edit.save2close()"{/if}>
 <input type="hidden" name="id" id="id" value="{$id}" />
 <input type="hidden" name="pid" id="pid" value="{$pid}" />
 <input type="hidden" name="parent_id" id="parent_id" value="{$parent_id}" />
@@ -598,11 +598,12 @@
 <!-- if !$isopen -->
 <div class="submit-info">
 	<div class="layui-container">
-		<input type="submit" value="{lang保存}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="submit" value="{lang保存并关闭}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang保存}" class="layui-btn layui-btn-lg layui-btn-normal" onclick="$.admin_list_edit.save_not_close()" />
 		<!-- if !$id -->
 		<input type="button" value="{lang保存并继续添加}" onclick="$.admin_list_edit.save2add()" class="layui-btn layui-btn-lg layui-btn-normal" />
 		<!-- /if -->
-		<input type="button" value="{lang保存并关闭}" onclick="$.admin_list_edit.save2close()" class="layui-btn layui-btn-lg layui-btn-normal" />
+		
 		<input type="button" value="{lang取消关闭}" title="此操作不会保存数据" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
 		<!-- if $id && $p_rs.is_front -->
 		<input type="button" value="{lang预览}" title="需要先点击保存" class="layui-btn layui-btn-lg layui-btn-warm" onclick="$.phpok.open('{$sys.www_file}?id={$id}')" />

@@ -1,0 +1,32 @@
+<!-- include tpl=head_lay nopadding=true overflowy=false -->
+<div class="layui-card">
+	<div class="layui-card-body">
+		<div class="layui-row">
+			<div class="layui-col-xs4">
+		    	<img src="{$rs.thumb ? $rs.thumb : 'images/picture.png'}" style="width:145px;" />
+			</div>
+			<div class="layui-col-xs8">
+				<table class="layui-table" lay-size="sm">
+				<tr>
+					<td width="40">分类</td>
+					<td>{$rs.cate_title}</td>
+				</tr>
+				<!-- if $rs.note -->
+				<tr>
+					<td>摘要</td>
+					<td>{$rs.note}</td>
+				</tr>
+				<!-- /if -->
+				<tr>
+					<td>时间</td>
+					<td><!-- if $rs.lastdate -->{func time_format $rs.lastdate}<!-- else -->{func time_format $rs.dateline}<!-- /if --></td>
+				</tr>
+				</table>
+			</div>
+		</div>
+		<div class="content" style="height:370px;overflow-x:hidden;overflow-y:auto">
+			{$rs.content}
+		</div>
+	</div>
+</div>
+<!-- include tpl=foot_lay -->

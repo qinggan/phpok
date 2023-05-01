@@ -1,0 +1,90 @@
+<!-- include tpl=head_lay -->
+
+<div class="layui-card">
+	<div class="layui-card-header layuiadmin-card-header-auto">
+		<div class="layui-row">
+			<div class="layui-col-md9">
+		    	<form method="post" action="{url ctrl=yunmarket/}" class="layui-form">
+				<div class="layui-row layui-col-space5">
+					<div class="layui-col-xs12 layui-col-sm4 layui-col-md2">
+						<select name="cateid">
+							<option value="">{lang全部分类}</option>
+							<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+							<option value="{$value.id}"{if $cateid == $value.id} selected{/if}>{$value.title}</option>
+							<!-- /loop -->
+						</select>
+					</div>
+					<div class="layui-col-xs12 layui-col-sm4 layui-col-md2">
+						<input type="text" id="keywords" name="keywords" class="layui-input" value="{$keywords}" />
+					</div>
+					<div class="layui-col-xs12 layui-col-sm4 layui-col-md2">
+						<div class="layui-btn-group">
+							<input type="submit" value="{lang搜索}" class="layui-btn layui-btn-sm" />
+							<a href="{url ctrl=yunmarket/}" class="layui-btn layui-btn-warm layui-btn-sm">{lang取消搜索}</a>
+						</div>
+					</div>
+				</div>
+				</form>
+			</div>
+			<div class="layui-col-md3">
+				<div align="right">
+					<a href="{url ctrl=yunmarket func=config/}" class="layui-btn layui-btn-warm layui-btn-sm">配置环境</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<blockquote class="layui-elem-quote">
+			<p>【本地安装模式】不支持云处理，请手工删除相应的安装文件</p>
+			<p>【插件】仅仅是将文件放到 plugins 目录下，需要到【插件中心】进行安装操作</p>
+			<p>【插件】卸载，需要到【插件中心】进行卸载操作后才能在云市场卸载</p>
+			<p>【应用】仅仅是将文件放到 _app 目录下，需要到【应用中心】进行安装操作</p>
+			<p>【应用】卸载，需要到【应用中心】进行卸载操作后才能在云市场卸载</p>
+		</blockquote>
+		<!-- if $errinfo -->
+		<div style="padding:30px;text-align:center">{$errinfo}</div>
+		<!-- /if -->
+		<!-- if $rslist -->
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th colspan="2">软件名称</th>
+			<th>说明</th>
+			<th>价格</th>
+			<th>操作</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td width="24"><a href="javascript:$.admin_yunmarket.info('{$value.id}','{$value.title}');void(0)"><img src="{$value.thumb ? $value.thumb : 'images/picture.png'}" width="24" /></a></td>
+			<td><a href="javascript:$.admin_yunmarket.info('{$value.id}','{$value.title}');void(0)">{$value.title}</a></td>
+			<td class="gray">{$value.note}</td>
+			<td><!-- if $value.price>0 --><span class="red">{$value.price} 元</span><!-- else -->免费<!-- /if --></td>
+			<td>
+				<!-- if $value.action -->
+					<!-- if $value.is_buy -->
+					<div class="layui-btn-group">
+						<!-- if !$value.is_install -->
+						<input type="button" value="安装" onclick="$.admin_yunmarket.install('{$value.id}')" class="layui-btn layui-btn-xs" />
+						<!-- /if -->
+						<!-- if $value.is_install -->
+						<!-- if $value.is_update --><input type="button" value="升级" onclick="$.admin_yunmarket.update('{$value.id}','{$value.title}')" class="layui-btn layui-btn-xs" /><!-- /if -->
+						<input type="button" value="卸载" onclick="$.admin_yunmarket.uninstall('{$value.id}','{$value.title}')" class="layui-btn layui-btn-xs layui-btn-danger" />
+						<!-- /if -->
+					</div>
+					<!-- else -->
+					<div class="layui-btn-group">
+						<input type="button" value="在线购买" onclick="" class="layui-btn layui-btn-xs" />
+					</div>
+					<!-- /if -->
+				<!-- else -->
+				<div class="gray">{$value.tips}</div>
+				<!-- /if -->
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- /if -->
+	</div>
+</div>
+<!-- include tpl=foot_lay -->
