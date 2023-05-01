@@ -75,6 +75,20 @@
 		</div>
 	</li>
 </ul>
+<!-- elseif $_rs.form_btn == 'rand16' || $_rs.form_btn == 'rand32' -->
+<ul class="layout">
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li style="margin-top:3px;">
+		<div class="layui-btn-group">
+			<!-- if $_rs.form_btn == 'rand16' -->
+			<input type="button" value="{lang随机数}" class="layui-btn layui-btn-sm" onclick="$('input[name={$_rs.identifier}]').val($.phpok.rand(16,'fixed'))" />
+			<!-- else -->
+			<input type="button" value="{lang随机数}" class="layui-btn layui-btn-sm" onclick="$('input[name={$_rs.identifier}]').val($.phpok.rand(32,'fixed'))" />
+			<!-- /if -->
+			<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+		</div>
+	</li>
+</ul>
 <!-- elseif $_rs.form_btn && strpos($_rs.form_btn,'title:') !== false -->
 <ul class="layout">
 	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
