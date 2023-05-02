@@ -102,14 +102,14 @@
 			<table class="table">
 				<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
 				<tr>
-					<td class="text-right">
+					<td class="text-end">
 						<input type="hidden" name="ext_price[{$value.identifier}]" id="ext_price_{$value.identifier}" value="" />
 						{$value.title}：</td>
 					<td id="{$value.identifier}_price" class="text-danger">{$value.price}</td>
 				</tr>
 				<!-- /loop -->
 				<tr>
-					<td class="text-right">总价：</td>
+					<td class="text-end">总价：</td>
 					<td id="all_price" class="text-danger" width="150px">{$price}</td>
 				</tr>
 			</table>

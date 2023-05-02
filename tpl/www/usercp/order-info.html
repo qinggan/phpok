@@ -8,16 +8,16 @@
 	</div>
 	<div class="layui-card-body">
 		<div class="layui-row">
-			<div class="layui-col-md4 text-right">姓名：</div>
+			<div class="layui-col-md4 text-end">姓名：</div>
 			<div class="layui-col-md8"><!-- if $billing.fullname -->{$billing.fullname}<!-- else -->{$billing.lastname}{$billing.firstname}<!-- /if --></div>
-			<div class="layui-col-md4 text-right">联系方式：</div>
+			<div class="layui-col-md4 text-end">联系方式：</div>
 			<div class="layui-col-md8">
 				{$billing.tel}<!-- if $billing.tel && $billing.mobile --> / <!-- /if -->{$billinbilling.mobile}
 				<!-- if $billing.email --> / {$billing.email}<!-- /if -->
 			</div>
 		</div>
 		<div class="layui-row">
-			<div class="layui-col-md4 text-right">地址：</div>
+			<div class="layui-col-md4 text-end">地址：</div>
 			<div class="col-8 col-md-10 p-1">
 				{$billing.province}
 				<!-- if $billing.province != $billing.city -->
@@ -39,16 +39,16 @@
 	</div>
 	<div class="layui-card-body">
 		<div class="layui-row">
-			<div class="layui-col-md4 text-right">姓名：</div>
+			<div class="layui-col-md4 text-end">姓名：</div>
 			<div class="layui-col-md8"><!-- if $address.fullname -->{$address.fullname}<!-- else -->{$address.lastname}{$address.firstname}<!-- /if --></div>
-			<div class="layui-col-md4 text-right">联系方式：</div>
+			<div class="layui-col-md4 text-end">联系方式：</div>
 			<div class="layui-col-md8">
 				{$address.tel}<!-- if $address.tel && $address.mobile --> / <!-- /if -->{$address.mobile}
 				<!-- if $address.email --> / {$address.email}<!-- /if -->
 			</div>
 		</div>
 		<div class="layui-row">
-			<div class="layui-col-md4 text-right">地址：</div>
+			<div class="layui-col-md4 text-end">地址：</div>
 			<div class="col-8 col-md-10 p-1">
 				{$address.province}
 				<!-- if $address.province != $address.city -->
@@ -107,22 +107,22 @@
 		<!-- /loop -->
 		<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
 		<tr>
-			<td colspan="3" class="text-right">{$value.title}：</td>
+			<td colspan="3" class="text-end">{$value.title}：</td>
 			<td>{$value.price}</td>
 		</tr>
 		<!-- /loop -->
 		<!-- if $paid_price -->
 		<tr>
-			<td colspan="3" class="text-right">已付款：</td>
+			<td colspan="3" class="text-end">已付款：</td>
 			<td>{func price_format $paid_price $rs.currency_id $rs.currency_id}</td>
 		</tr>
 		<tr>
-			<td colspan="3" class="text-right">还需付款：</td>
+			<td colspan="3" class="text-end">还需付款：</td>
 			<td>{func price_format $unpaid_price $rs.currency_id $rs.currency_id}</td>
 		</tr>
 		<!-- /if -->
 		<tr>
-			<td colspan="3" class="text-right">订单总价：</td>
+			<td colspan="3" class="text-end">订单总价：</td>
 			<td>{func price_format $rs.price $rs.currency_id $rs.currency_id}</td>
 		</tr>
 		</table>
@@ -135,11 +135,11 @@
 	</div>
 	<div class="layui-card-body">
 		<div class="layui-row">
-			<div class="layui-col-md4 text-right">类型：</div>
+			<div class="layui-col-md4 text-end">类型：</div>
 			<div class="layui-col-md8">{$invoice.type}</div>
-			<div class="layui-col-md4 border-bottom text-right">抬头：</div>
+			<div class="layui-col-md4 border-bottom text-end">抬头：</div>
 			<div class="layui-col-md8">{$invoice.title}</div>
-			<div class="layui-col-md4 border-bottom text-right">内容：</div>
+			<div class="layui-col-md4 border-bottom text-end">内容：</div>
 			<div class="layui-col-md8">{$invoice.content}</div>
 		</div>
 	</div>

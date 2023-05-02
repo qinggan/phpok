@@ -42,11 +42,11 @@
 									<a href="{$value.url}" title="{$value.title}"><h5>{$value.title}</h5></a>
 								</div>
 								<!-- if !$value.onlyuser || ($value.onlyuser && $session.user_id) -->
-								<div class="col text-right">
+								<div class="col text-end">
 									<a href="{if $value.dfile}{url ctrl=download id=$value.dfile.id/}{else}{$value.dlink}{/if}" class="btn btn-primary btn-sm" target="_blank">下载附件</a>
 								</div>
 								<!-- else -->
-								<div class="col text-right">
+								<div class="col text-end">
 									<a class="btn btn-danger btn-sm" href="{url ctrl=login _back=$value.url/}">请先登录</a>
 								</div>
 								<!-- /if -->

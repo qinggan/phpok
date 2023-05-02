@@ -61,7 +61,7 @@ function cart_checkout()
 	</tbody>
 	</table>
 	<div class="row pt-4 pb-4 border-top">
-		<div class="col text-right">当前选中的产品价格是：<span class="text-danger" id="total_price">{$price}</span></div>
+		<div class="col text-end">当前选中的产品价格是：<span class="text-danger" id="total_price">{$price}</span></div>
 	</div>
 	<div class="row mb-4 border-top pt-4">
 		<div class="col">
@@ -72,7 +72,7 @@ function cart_checkout()
 			</div>
 			<input type="button" value="批量删除" onclick="$.cart.del()" class="btn btn-danger" />
 		</div>
-		<div class="col text-right">
+		<div class="col text-end">
 			<button type="submit" class="btn btn-primary btn-lg">
 				去结算
 				<i class="fa fa-angle-right"></i>
