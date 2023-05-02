@@ -57,6 +57,9 @@ class plugin_model_base extends phpok_model
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."plugins WHERE id='".$id."'";
 		$rs = $this->db->get_one($sql);
+		if(!$rs){
+			return false;
+		}
 		if($rs['pids']){
 			$rs['pids'] = explode(",",$rs['pids']);
 		}else{
