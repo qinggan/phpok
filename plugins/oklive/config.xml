@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-	<title><![CDATA[直播插件]]></title>
-	<desc><![CDATA[实现在线直播功能（支持在线聊天）]]></desc>
-	<author><![CDATA[phpok.com]]></author>
-	<version>1.0</version>
-</root>

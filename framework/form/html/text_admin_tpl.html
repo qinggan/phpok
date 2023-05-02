@@ -1,6 +1,6 @@
 <!-- if $_laydate -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" onchange="$.phpokform.laydate_format('{$_rs.identifier}','{$_rs.form_btn}')" lay-key="laydate_{$_rs.identifier}" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" onchange="$.phpokform.laydate_format('{$_rs.identifier}','{$_rs.form_btn}')" lay-key="laydate_{$_rs.identifier}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
 			<input type="button" value="{$_laydate_button}" class="layui-btn layui-btn-sm" id="btn_{$_rs.identifier}_{$_rs.form_btn}" onclick="$.phpokform.laydate_button('{$_rs.identifier}','{$_rs.form_btn}')" />
@@ -11,7 +11,7 @@
 <!-- /if -->
 <!-- if $_rs.form_btn == "file" -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
 			<input type="button" value="{lang选择文件}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_file_select('{$_rs.identifier}')" />
@@ -22,7 +22,7 @@
 </ul>
 <!-- elseif $_rs.form_btn == "image" -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
 			<input type="button" value="{lang选择图片}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_select('{$_rs.identifier}')" />
@@ -33,7 +33,7 @@
 </ul>
 <!-- elseif $_rs.form_btn == "video" -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
 			<input type="button" value="{lang选择视频}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_video_select('{$_rs.identifier}')" />
@@ -44,7 +44,7 @@
 </ul>
 <!-- elseif $_rs.form_btn == "url" -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
 			<input type="button" value="{lang首页}" class="layui-btn layui-btn-sm" onclick="$('#{$_rs.identifier}').val('index.php')" />
@@ -56,7 +56,7 @@
 </ul>
 <!-- elseif $_rs.form_btn == "user" -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
 			<input type="button" value="{lang用户库}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_user_select('{$_rs.identifier}')" />
@@ -66,7 +66,7 @@
 </ul>
 <!-- elseif $_rs.form_btn == 'color' -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
 	<li><input type="button" value=" " id="preview_color_{$_rs.identifier}" style="width:30px;height:30px;border:0;margin:0;padding:0;display:block;" /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
@@ -77,7 +77,7 @@
 </ul>
 <!-- elseif $_rs.form_btn == 'rand16' || $_rs.form_btn == 'rand32' -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
 			<!-- if $_rs.form_btn == 'rand16' -->
@@ -91,7 +91,7 @@
 </ul>
 <!-- elseif $_rs.form_btn && strpos($_rs.form_btn,'title:') !== false -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" /></li>
+	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
 			<input type="button" value="{$_rs.extitle}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_title_select('{$_rs.identifier}','{$_rs.form_btn_pid}','{$_rs.ext_field}','{if $_rs.ext_layout}{func implode , $_rs.ext_layout}{/if}')" />
@@ -100,7 +100,7 @@
 	</li>
 </ul>
 <!-- elseif !$_rs.form_btn -->
-	<input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" />
+	<input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} />
 	<!-- if $_rs.ext_quick_words -->
 	<div class="layui-btn-group" style="margin-top:3px;">
 		<!-- loop from=$_rs.ext_quick_words key=$key value=$value id=$tmpid -->

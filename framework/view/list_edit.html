@@ -114,11 +114,13 @@
 						<!-- /loop -->
 					</div>
 					<!-- else -->
+	
 					<div class="layui-form-item" data-id="{$value.identifier}">
 						<label class="layui-form-label">
-							<!-- if $value.note --><i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i> <!-- /if -->{$value.title}
+							{$value.title}
 							<small style="color:#ccc;display:block;">{$value.identifier}</small>
 						</label>
+						<!-- if $value.note && $value.form_type != 'text' --><div class="layui-input-block gray">{$value.note}</div><!-- /if -->
 						<div class="layui-input-block">
 							{$value.html}
 							<!-- if $popedom.ext && $value.is_edit && $session.adm_develop -->
