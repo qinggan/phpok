@@ -70,10 +70,11 @@
   --bs-border-radius-xl: 1rem;
   --bs-border-radius-2xl: 2rem;
   --bs-border-radius-pill: 50rem;
-  --bs-link-color: #0d6efd;
+  --bs-link-color: #1D5595;
   --bs-link-hover-color: #0a58ca;
   --bs-code-color: #d63384;
   --bs-highlight-bg: #fff3cd;
+  --bs-breadcrumb-bg:#e9ecef;
 }
 
 a{
@@ -232,7 +233,7 @@ header .menu a{
 	width:100%;
 	margin:0 auto;
 	z-index:99999;
-	box-shadow:2px 2px 3px rgba(0, 0, 0, 0.5);
+	box-shadow:2px 2px 3px rgba(0, 0, 0, 0.1);
 }
 
 .index-search{
