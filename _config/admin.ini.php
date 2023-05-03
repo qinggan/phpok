@@ -17,4 +17,3 @@ copy_status = 1
 
 ;码表地址，留空使用系统自带
 table_url = https://cdn.phpok.com/tables/table.txt
-

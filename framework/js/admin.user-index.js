@@ -12,15 +12,5 @@ $(document).ready(function(){
 	var total = $("#tablelist").attr("data-total");
 	var psize = $("#tablelist").attr("data-psize");
 	var opt = {'limit':psize};
-	/*opt['setWidth'] = function(e){
-		var url = get_url('fields','width',"mid=user&width="+e.setWidth+"&field="+e.field);
-		$.phpok.json(url,function(rs){
-			if(rs.status){
-				return true;
-			}
-			$.dialog.tips(rs.info);
-			return false;
-		})
-	}*/
 	layui.table.init("tablelist",opt);
 });

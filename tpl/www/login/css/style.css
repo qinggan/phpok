@@ -7,8 +7,13 @@
  * @时间 2021年5月14日
 **/
 
+:root {
+  --bs-blue: #1D5595;
+  --bs-link-color: #1D5595;
+}
 a{
-	color:#205696;
+	color:var(--bs-blue);
+	text-decoration:none;
 }
 a:hover{
 	text-decoration: none;
@@ -20,4 +25,7 @@ footer{
 .btn-primary{
 	background:#205696;
 	border-color:#0A3262;
+}
+.form-group{
+	margin-bottom:1rem;
 }

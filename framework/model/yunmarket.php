@@ -114,7 +114,7 @@ class yunmarket_model_base extends phpok_model
 			$sql .= " AND domain='".$domain."' ";
 		}
 		if($id){
-			$sql .= " AND id='".$id."' ";
+			$sql .= " AND soft_id='".$id."' ";
 		}
 		$tmplist = $this->db->get_all($sql);
 		if(!$tmplist){
@@ -180,6 +180,17 @@ class yunmarket_model_base extends phpok_model
 		$this->db->insert($data,'yunmarket_client','replace');
 	}
 
+	public function save($data,$id=0)
+	{
+		if(!$data || !is_array($data)){
+			return false;
+		}
+		if($id){
+			return $this->db->update($data,'yunmarket_server',array('id'=>$id));
+		}
+		return $this->db->insert($data,'yunmarket_server');
+	}
+
 	/**
 	 * 配置环境信息
 	**/
@@ -211,6 +222,28 @@ class yunmarket_model_base extends phpok_model
 			$string .= $key.'='.$value;
 		}
 		return md5($string);
+	}
+
+	public function vip($id)
+	{
+		if(!$id){
+			return false;
+		}
+		$config = $this->config();
+		if(!$config){
+			return false;
+		}
+		$data = array('id'=>$id,'func'=>'order');
+		$data['domain'] = $this->lib('server')->domain();
+		$data['_appid'] = $config['appid'];
+		$data['_signature'] = $this->signature($data,$config['appsecret']);
+		$this->lib('curl')->is_post(true);
+		$this->lib('curl')->post_data($data);
+		if($config['ip']){
+			$this->lib('curl')->host_ip($config['ip']);
+		}
+		$info = $this->lib('curl')->get_json($config['server']);
+		return $info;
 	}
 
 	public function uninstall($id)

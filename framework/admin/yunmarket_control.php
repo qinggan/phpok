@@ -103,7 +103,7 @@ class yunmarket_control extends phpok_control
 		}
 		$config = $this->model('yunmarket')->config();
 		if(!$config || !$config['status']){
-			$this->error(P_Lang('云市场未开启，<a href="'.$this->url('yunmarket','config').'">点击这里开启云市场</a>'));
+			$this->error(P_Lang('云市场未开启，请先开启'),$this->url('yunmarket','config'));
 		}
 		$psize = $this->config['psize'];
 		if(!$psize){
@@ -365,5 +365,29 @@ class yunmarket_control extends phpok_control
 		$this->model('yunmarket')->uninstall($id);
 		$this->lib('file')->rm($this->dir_root.$folder,'folder');
 		$this->success();
+	}
+
+	public function vip_f()
+	{
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$install_rs = $this->model('yunmarket')->get_install($id);
+		if($install_rs && $install_rs[$id]){
+			$this->error(P_Lang('软件已存在，请不要重复购买'));
+		}
+		$info = $this->model('yunmarket')->vip($id);
+		if(!$info){
+			$this->error('内容信息不存在');
+		}
+		if(!$info['status']){
+			$this->error($info['info']);
+		}
+		$linkto = $info['info'];
+		if(!$linkto){
+			$this->error(P_Lang('购买失败'));
+		}
+		$this->_location($linkto);
 	}
 }

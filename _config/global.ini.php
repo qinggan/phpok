@@ -1,7 +1,7 @@
 ;<?php exit("<h1>Access Denied</h1>");?>
 
 ;是否调试，1/true启用，0/false禁用
-debug = false
+debug = true
 
 ;压缩传缩，1/true启用，0/false禁用
 gzip = true
@@ -176,7 +176,7 @@ default = callback
 
 [cdn]
 ;是否开启 CDN 静态资源库
-status = true
+status = false
 
 ;CDN服务器地址
 server = "cdn.phpok.com"

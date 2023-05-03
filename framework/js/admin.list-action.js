@@ -33,14 +33,7 @@
 			opt['totalRow'] = true;
 		}
 		opt['setWidth'] = function(e){
-			var url = get_url('fields','width','mid='+ftype+"&width="+e.setWidth+"&field="+e.field);
-			$.phpok.json(url,function(rs){
-				if(rs.status){
-					return true;
-				}
-				$.dialog.tips(rs.info);
-				return false;
-			})
+			
 		}
 		if(total>10){
 			opt['height'] = 'full-210';
@@ -61,7 +54,6 @@
 				return false;
 			});
 			return true;
-
 		});
 		layui.table.on('checkbox(tablelist)', function(obj){
 			if(obj.type == 'all'){
@@ -75,5 +67,16 @@
 				$("#id_"+id).prop("checked",obj.checked);
 			}
 		});
+		layui.table.on('colResized(tablelist)',function(obj){
+			var e = obj.col;
+			var url = get_url('fields','width','mid='+ftype+"&width="+e.width+"&field="+e.field);
+			$.phpok.json(url,function(rs){
+				if(rs.status){
+					return true;
+				}
+				$.dialog.tips(rs.info);
+				return false;
+			});
+		})
 	});
 })(jQuery);

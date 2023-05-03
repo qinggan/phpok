@@ -176,7 +176,7 @@ function list_content_search(obj)
 	</div>
 	<!-- if $rslist -->
 	<div class="layui-card-body">
-		<table id="tablelist" lay-filter="tablelist" data-psize="{$psize}" data-total="{$total}" data-ftype="{$m_rs.id}" data-totalRow="{$rs.admin-list-stat}">
+		<table id="tablelist" lay-filter="tablelist" data-psize="{$psize}" data-total="{$total}" data-ftype="{$m_rs.id}" data-totalRow="{$rs.admin-list-stat}" lay-data="{escape: false}">
 		<thead>
 		<tr>
 			<th lay-data="{field:'_id', width:40,type:'checkbox',fixed:'left',unresize:true}"></th>

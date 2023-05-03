@@ -16,6 +16,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-$app->lib('weixin')->app_id('wxf84d920dc558bd08');
+//AppID：wx305b76749beefbe4
+$app->lib('weixin')->app_id('wx305b76749beefbe4');
 $wxurl = $rs ? $rs['url'] : ($cate_rs ? $cate_rs['url'] : ($page_rs ? $page_rs['url'] : $app->url));
 $wxconfig = $app->lib('weixin')->jsapi_config($wxurl);

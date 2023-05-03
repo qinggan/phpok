@@ -8,6 +8,10 @@
 **/
 ;(function($){
 	$.admin_yunmarket = {
+		buy:function(id)
+		{
+			$.phpok.open(get_url('yunmarket','vip','id='+id));
+		},
 		config_save:function(obj)
 		{
 			var url = get_url('yunmarket','config_save');

@@ -1,26 +1,24 @@
 <!-- include tpl=head_lay nopadding=true -->
 <script type="text/javascript">
-function save()
+function save(obj)
 {
-	var opener = $.dialog.opener;
-	$("#post_save").ajaxSubmit({
-		'url':get_url('plugin','extconfig_save','id={$id}'),
-		'type':'post',
-		'dataType':'json',
-		'success':function(rs){
-			if(rs.status){
-				$.dialog.alert('操作成功',function(){
-					opener.$.phpok.reload();
-				},'succeed');
-			}else{
-				$.dialog.alert(rs.info);
-				return false;
-			}
+	var url = get_url('plugin','extconfig_save','id={$id}');
+	var lock = $.dialog.tips('正在提交中，请稍候…',100).lock();
+	$.phpok.submit($(obj)[0],url,function(rs){
+		if(!rs.status){
+			lock.content(rs.info).time(2);
+			return false;
 		}
+		lock.setting('close',function(){
+			$.admin.close(get_url('plugin'))
+		});
+		lock.content('配置成功').time(2);
+		return true;
 	});
+	return false;
 }
 </script>
-<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<form method="post" class="layui-form" id="post_save" onsubmit="return save(this)">
 <div class="layui-card">
 	<div class="layui-card-header">
 		插件系统参数
@@ -38,7 +36,7 @@ function save()
 					<!-- /loop -->
 				</select>
 			</div>
-			<div class="layui-form-mid">
+			<div class="layui-form-mid gray">
 				指定项目，在 PHP 代码里可以直接用 <kbd>$this->pid</kbd> 来使用
 			</div>
 		</div>
@@ -51,7 +49,7 @@ function save()
 				<input type="checkbox" name="sys-pids[]" id="sys-pids-{$value.id}" value="{$value.id}" title="{$value.title}" {if $rs.pids && in_array($value.id,$rs.pids)} checked{/if} />
 				<!-- /loop -->
 			</div>
-			<div class="layui-input-block mtop">数组模式，适用于多个项目，程序中可以直接使用 <kbd>$this->pids</kbd> </div>
+			<div class="layui-input-block mtop gray">数组模式，适用于多个项目，程序中可以直接使用 <kbd>$this->pids</kbd> </div>
 		</div>
 	</div>
 </div>
@@ -65,5 +63,12 @@ function save()
 	</div>
 </div>
 <!-- /if -->
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang提交保存}" class="layui-btn layui-btn-danger" id="save_button" />
+	</div>
+</div>
+
 </form>
-<!-- include tpl=foot_lay is_open=true -->
+<!-- include tpl=foot_lay -->

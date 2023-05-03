@@ -19,6 +19,9 @@ class yunmarket_control extends phpok_control
 {
 	//云市场ID，仅限此ID可以通过接口访问，防止被JS采集
 	private $pid = 205;
+	private $linkurl = 'https://www.phpok.com/';
+	private $phpok_id_list = 'cloud-market';
+	private $phpok_id_cate = 'cloud-market-cate';
 	public function __construct()
 	{
 		parent::control();
@@ -36,10 +39,12 @@ class yunmarket_control extends phpok_control
 		if($func && $func == 'download'){
 			$this->download();
 		}
-		$phpok_id_list = 'cloud-market';
+		if($func && $func == 'order'){
+			$this->buy();
+		}
+		$phpok_id_list = $this->phpok_id_list;
 		//云市场分类标识
-		$phpok_id_cate = 'cloud-market-cate';
-		///
+		$phpok_id_cate = $this->phpok_id_cate;
 		$data = array();
 		$keywords = $this->get('keywords');
 		if($keywords){
@@ -140,6 +145,88 @@ class yunmarket_control extends phpok_control
 		$this->success($rs);
 	}
 
+	private function buy()
+	{
+		$pid = $this->pid;
+		$data = array();
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$data['id'] = $id;
+		$data['func'] = 'order';
+		$domain = $this->get('domain');
+		if(!$domain){
+			$this->error(P_Lang('数据异常，参数异常'));
+		}
+		$chk = $this->is_intranet($domain);
+		if($chk){
+			$this->error(P_Lang('内网或局域网不支持在线购买'));
+		}
+		$data['domain'] = $domain;
+		$appid = $this->get('_appid');
+		if(!$appid){
+			$this->error(P_Lang('未绑定APPID'));
+		}
+		$sign = $this->get('_signature');
+		if(!$sign){
+			$this->error(P_Lang('参数不完整'));
+		}
+		$user = $this->model('user')->get_one($appid);
+		if(!$user){
+			$this->error(P_Lang('未找到相关用户信息，请检查您的APPID'));
+		}
+		if(!$user['status'] || $user['status'] == 2){
+			$this->error(P_Lang('平台限制了您的密钥，请联系官网进行处理'));
+		}
+		if(!$user['keyid']){
+			$this->error(P_Lang('密钥未配置，请检查'));
+		}
+		$code = $this->model('yunmarket')->signature($data,$user['keyid']);
+		if($sign != $code){
+			$this->error(P_Lang('数据错误，较验不通过，请联系管理员'));
+		}
+		$arc = phpok("_arc","title_id=".$id);
+		//进入购买阶段
+		//下定单
+		$sn = $this->model('order')->create_sn($appid);
+		$status_list = $this->model('order')->status_list();
+		$price = price_format_val($arc['price'],$arc['currency_id'],$this->site['currency_id']);
+		$main = array('sn'=>$sn);
+		$main['user_id'] = $user['id'];
+		$main['addtime'] = $this->time;
+		$main['price'] = $price;
+		$main['currency_id'] = $this->site['currency_id'];
+		$main['currency_rate'] = $this->site['currency']['val'];
+		$main['status'] = 'create';
+		$main['status_title'] = $status_list['create'];
+		$main['passwd'] = md5(str_rand(10));
+		$main['email'] = $user['email'];
+		$main['mobile'] = $user['mobile'];
+		$tmpext = array();
+		$tmpext['域名'] = $domain;
+		$tmpext['软件码'] = $arc['md5'];
+		$main['ext'] = serialize($tmpext);
+		$order_id = $this->model('order')->save($main);
+		if(!$order_id){
+			$this->error(P_Lang('订单创建失败，请联系管理员'));
+		}
+		$tmp = array('order_id'=>$order_id,'tid'=>$arc['id']);
+		$tmp['title'] = $arc['title'];
+		$tmp['price'] = $price;
+		$tmp['qty'] = 1;
+		$tmp['is_virtual'] = 1;
+		if($arc['thumb']){
+			$tmp['thumb'] = $arc['thumb']['filename'];
+		}
+		$this->model('order')->save_product($tmp);
+		$linkurl = $this->url('order','payment','sn='.$sn.'&passwd='.$main['passwd'],'www',true);
+		if($linkurl){
+			$this->success($linkurl);
+		}
+		$this->error(P_Lang('支付创建失败'));
+	}
+
 	/**
 	 * 获取内容
 	**/
@@ -187,10 +274,14 @@ class yunmarket_control extends phpok_control
 			$this->error(P_Lang('项目不符合系统要求'));
 		}
 		$cate = phpok("_cate","cateid=".$arc['cate_id']);
+		$content = $arc['content'];
+		if($content){
+			$content = $this->img2full($content);
+		}
 		$rs = array();
 		$rs['id'] = $arc['id'];
 		$rs['title'] = $arc['title'];
-		$rs['content'] = $arc['content'];
+		$rs['content'] = $content ? $content : '';
 		$rs['cate_id'] = $arc['cate_id'];
 		if($cate){
 			$rs['cate_title'] = $cate['title'];
@@ -304,5 +395,67 @@ class yunmarket_control extends phpok_control
 		}
 		$rs['download'] = base64_encode($content);
 		$this->success($rs);
+	}
+
+	private function img2full($content='')
+	{
+		if(!$content){
+			return false;
+		}
+		$linkurl = $this->linkurl;
+		preg_match_all("/<img\s*.+\s*src\s*=\s*[\"|']?\s*([^>\"'\s]+?)[\"|'| ]?.*[\/]?>/isU",$content,$matches);
+		$list = $matches[1];
+		if(!$list || count($list)<1){
+			return $content;
+		}
+		$list = array_unique($list);
+		$save_folder = $app->dir_root.$folder;
+		foreach($list as $key=>$value){
+			$value = trim($value);
+			if(!$value){
+				continue;
+			}
+			$tmp1 = substr($value,0,7);
+			$tmp2 = substr($value,0,8);
+			$tmp3 = substr($value,0,2);
+			$tmp1 = strtolower($tmp1);
+			$tmp2 = strtolower($tmp2);
+			if($tmp1 == 'http://' || $tmp2 == 'https://' || $tmp3 == '//'){
+				continue;
+			}
+			//将网址后面的@符号去掉
+			$old_url = $value;
+			$new_url = $linkurl.$value;
+			$url_list[] = array("old_url"=>$old_url,"new_url"=>$new_url);			
+		}
+		foreach($url_list as $key=>$value){
+			$content = str_replace($value["old_url"],$value["new_url"],$content);
+		}
+		return $content;
+	}
+
+	private function is_intranet($domain,$ip='')
+	{
+		$ip2 = gethostbyname($domain);
+		if($ip2){
+			$ip = $ip2;
+		}
+		if(!$ip){
+			return true;
+		}
+		if($ip == '127.0.0.1' || $ip == '::1'){
+			return true;
+		}
+		$info = explode(".",$ip);
+		if($info[0] == 10){
+			return true;
+		}
+		if($info[0] == 172 && $info[1]>=16 && $info[1] <=31){
+			return true;
+		}
+		if($info[0] == 192 && $info[1] == 168){
+			return true;
+		}
+		return false;
 	}
 }

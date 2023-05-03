@@ -94,22 +94,7 @@
 			});
 		},
 		config:function(id,title){
-			var url = get_url('plugin','extconfig','id='+id);
-			$.dialog.open(url,{
-				'title':p_lang('设置插件{title}相关参数',' <span class="red">'+title+'</span> '),
-				'lock':true,
-				'width':'790px',
-				'height':'500px',
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert('iframe还没加载完毕呢');
-						return false;
-					};
-					iframe.save();
-					return false;
-				},'cancel':true
-			});
+			$.win('配置插件_'+title,get_url('plugin','extconfig','id='+id));
 		},
 		upload:function()
 		{
