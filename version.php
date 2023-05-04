@@ -16,4 +16,4 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-define("VERSION","6.3.153");
+define("VERSION","6.4.100");
