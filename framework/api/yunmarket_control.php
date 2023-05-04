@@ -399,6 +399,7 @@ class yunmarket_control extends phpok_control
 			$tmps = explode(",",$arc['extlib']);
 			$dt = array();
 			$dt['sqlext'] = "ext.folder IN('".implode("','",$tmps)."')";
+			$dt['is_usercp'] = true;
 			$elist = phpok($this->phpok_id_list,$dt);
 			if($elist && $elist['rslist']){
 				$extlist = array();
