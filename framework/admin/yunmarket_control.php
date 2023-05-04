@@ -18,6 +18,7 @@ if(!defined("PHPOK_SET")){
 class yunmarket_control extends phpok_control
 {
 	private $popedom;
+	private $_errinfo = '';
 	public function __construct()
 	{
 		parent::control();
@@ -189,42 +190,9 @@ class yunmarket_control extends phpok_control
 		if(!$rs['download']){
 			$this->error(P_Lang('安装文件下载失败'));
 		}
-		//开始进入安装
-		$info = base64_decode($rs['download']);
-		file_put_contents($this->dir_data.'tmp.zip',$info);
-		$this->lib('file')->make($this->dir_data.'tmp/','folder');
-		$this->lib('phpzip')->unzip($this->dir_data.'tmp.zip',$this->dir_data.'tmp/');
-		$this->lib('file')->rm($this->dir_data.'tmp.zip');
-		if(substr($rs['folder']) == '/'){
-			$rs['folder'] = substr($rs['folder'],0,-1);
-		}
-		$tmpname = basename($rs['folder']);
-		$list = $this->lib('file')->ls($this->dir_data.'tmp/');
-		$strlen = strlen($this->dir_data."tmp/".$tmpname.'/');
-		$install_php = '';
-		$checkfile = $this->dir_data.'tmp/'.$tmpname;
-		if(!file_exists($checkfile) || !is_dir($checkfile)){
-			$this->lib('file')->rm($this->dir_data.'tmp','folder');
-			$this->error(P_Lang('安装失败，安装包制作异常'));
-		}
-		$folder = $this->dir_root.$rs['folder'].'/';
-		if(!is_dir($folder)){
-			$this->lib('file')->make($folder);
-		}
-		$list = array();
-		$this->lib('file')->deep_ls($this->dir_data.'tmp/'.$tmpname,$list);
-		foreach($list as $key=>$value){
-			$tmp = substr($value,$strlen);
-			if(is_file($value)){
-				$this->lib('file')->mv($value,$folder.$tmp);
-			}
-			if(is_dir($value) && !is_dir($this->dir_root.$folder.$tmp)){
-				$this->lib('file')->make($folder.$tmp,'folder');
-			}
-		}
-		$install_php = $this->dir_data.'tmp/install.php';
-		if(file_exists($install_php)){
-			include($install_php);
+		$check = $this->_ext_install($rs,'install');
+		if(!$check && $this->_errinfo){
+			$this->error($this->_errinfo);
 		}
 		//检测是否_app或是plugins
 		$app_chk = substr($rs['folder'],0,5);
@@ -236,12 +204,12 @@ class yunmarket_control extends phpok_control
 		if($plugin_chk == 'plugins/'){
 			$type = 'plugin';
 		}
-		//增加记录
-		$data = array('id'=>$id,'md5'=>$rs['md5'],'version'=>$rs['version'],'version_update'=>$rs['version_update'],'dateline'=>$this->time);
-		$data['folder'] = $rs['folder'];
-		$this->model('yunmarket')->install($data);
-		//删除目录
-		$this->lib('file')->rm($this->dir_data.'tmp','folder');
+		//检测是否有其他应用库需要安装
+		if($rs['extlist']){
+			foreach($rs['extlist'] as $key=>$value){
+				$this->_ext_install($value,'lib');
+			}
+		}
 		$this->success($type);
 	}
 
@@ -270,46 +238,9 @@ class yunmarket_control extends phpok_control
 			$this->error(P_Lang('安装文件下载失败'));
 		}
 		//开始进入升级
-		$info = base64_decode($rs['download']);
-		file_put_contents($this->dir_data.'tmp.zip',$info);
-		$this->lib('file')->make($this->dir_data.'tmp/','folder');
-		$this->lib('phpzip')->unzip($this->dir_data.'tmp.zip',$this->dir_data.'tmp/');
-		$this->lib('file')->rm($this->dir_data.'tmp.zip');
-		if(substr($rs['folder']) == '/'){
-			$rs['folder'] = substr($rs['folder'],0,-1);
-		}
-		$tmpname = basename($rs['folder']);
-		$list = $this->lib('file')->ls($this->dir_data.'tmp/');
-		$strlen = strlen($this->dir_data."tmp/".$tmpname.'/');
-		$checkfile = $this->dir_data.'tmp/'.$tmpname;
-		if(!file_exists($checkfile) || !is_dir($checkfile)){
-			$this->lib('file')->rm($this->dir_data.'tmp','folder');
-			$this->error(P_Lang('升级失败，升级包制作异常'));
-		}
-		$folder = $this->dir_root.$rs['folder'].'/';
-		if(!is_dir($folder)){
-			$this->lib('file')->make($folder);
-		}
-		$list = array();
-		$this->lib('file')->deep_ls($this->dir_data.'tmp/'.$tmpname,$list);
-		$app_chk = substr($rs['folder'],0,5);
-		foreach($list as $key=>$value){
-			$tmp = substr($value,$strlen);
-			if(is_file($value)){
-				$tmpbasename = basename($value);
-				//因为是升级操作，这里就不覆盖 config.xml 配置文件
-				if($tmpbasename == 'config.xml' && $app_chk == '_app/'){
-					continue;
-				}
-				$this->lib('file')->mv($value,$folder.$tmp);
-			}
-			if(is_dir($value) && !is_dir($this->dir_root.$folder.$tmp)){
-				$this->lib('file')->make($folder.$tmp,'folder');
-			}
-		}
-		$install_php = $this->dir_data.'tmp/update.php';
-		if(file_exists($install_php)){
-			include($install_php);
+		$status = $this->_ext_install($rs,'update');
+		if(!$status && $this->_errinfo){
+			$this->error($this->_errinfo);
 		}
 		//检测是否_app或是plugins
 		$plugin_chk = substr($rs['folder'],0,8);
@@ -320,12 +251,6 @@ class yunmarket_control extends phpok_control
 		if($plugin_chk == 'plugins/'){
 			$type = 'plugin';
 		}
-		//升级记录
-		$data = array('id'=>$id,'md5'=>$rs['md5'],'version'=>$rs['version'],'version_update'=>$rs['version_update'],'dateline'=>$this->time);
-		$data['folder'] = $rs['folder'];
-		$this->model('yunmarket')->install($data);
-		//删除目录
-		$this->lib('file')->rm($this->dir_data.'tmp','folder');
 		$this->success($type);
 	}
 
@@ -389,5 +314,84 @@ class yunmarket_control extends phpok_control
 			$this->error(P_Lang('购买失败'));
 		}
 		$this->_location($linkto);
+	}
+
+	/**
+	 * 软件包安装
+	 * @参数 $rs 数组，软件包信息，包含 download
+	 * @参数 $actype install安装，update升级，lib应用库
+	 * @返回 true 或 false
+	**/
+	private function _ext_install($rs,$actype='install')
+	{
+		if(substr($rs['folder'],-1) == '/'){
+			$rs['folder'] = substr($rs['folder'],0,-1);
+		}
+		$tmpfolder = $this->dir_root.$rs['folder'].'/';
+		//如果目录类存在，则跳过
+		if(file_exists($tmpfolder)){
+			if($actype == 'install'){
+				$this->_errinfo = P_Lang('安装目录已存在，不支持覆盖安装');
+				return false;
+			}
+			if($actype == 'lib'){
+				$this->_errinfo = '';
+				return false;
+			}
+		}
+		if(!$rs['download']){
+			$this->_errinfo = P_Lang('软件不存在，请检查');
+			return false;
+		}
+		if(!$rs['folder'] && $actype == 'lib'){
+			$this->_errinfo = '';
+			return false;
+		}
+		$info = base64_decode($rs['download']);
+		file_put_contents($this->dir_data.'tmp.zip',$info);
+		$this->lib('file')->make($this->dir_data.'tmp/','folder');
+		$this->lib('phpzip')->unzip($this->dir_data.'tmp.zip',$this->dir_data.'tmp/');
+		$this->lib('file')->rm($this->dir_data.'tmp.zip');
+		if(!is_dir($tmpfolder)){
+			$this->lib('file')->make($tmpfolder);
+		}
+		$tmpname = basename($rs['folder']);
+		$strlen = strlen($this->dir_data."tmp/".$tmpname.'/');
+		$checkfile = $this->dir_data."tmp/".$tmpname;
+		if((!file_exists($checkfile) || !is_dir($checkfile)) && $actype != 'lib'){
+			$this->_errinfo = P_Lang('软件包异常，请检查');
+			return false;
+		}
+		$list = array();
+		$this->lib('file')->deep_ls($this->dir_data.'tmp/'.$tmpname,$list);
+		foreach($list as $key=>$value){
+			$tmp = substr($value,$strlen);
+			if(is_file($value)){
+				$this->lib('file')->mv($value,$tmpfolder.$tmp);
+			}
+			if(is_dir($value) && !is_dir($tmpfolder.$tmp)){
+				$this->lib('file')->make($tmpfolder.$tmp.'/','folder');
+			}
+		}
+		//判断是否有 install 或 update
+		if($actype == 'install'){
+			$install_php = $this->dir_data.'tmp/install.php';
+			if(file_exists($install_php)){
+				include($install_php);
+			}
+		}
+		if($actype == 'update'){
+			$install_php = $this->dir_data.'tmp/update.php';
+			if(file_exists($install_php)){
+				include($install_php);
+			}
+		}
+		//增加记录
+		$data = array('id'=>$rs['id'],'md5'=>$rs['md5'],'version'=>$rs['version'],'version_update'=>$rs['version_update'],'dateline'=>$this->time);
+		$data['folder'] = $rs['folder'];
+		$this->model('yunmarket')->install($data);
+		//删除目录
+		$this->lib('file')->rm($this->dir_data.'tmp','folder');
+		return true;
 	}
 }

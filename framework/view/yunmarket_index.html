@@ -56,7 +56,7 @@
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<tr>
-			<td width="24"><a href="javascript:$.admin_yunmarket.info('{$value.id}','{$value.title}');void(0)"><img src="{$value.thumb ? $value.thumb : 'images/picture.png'}" width="24" /></a></td>
+			<td width="24"><a href="javascript:$.admin_yunmarket.info('{$value.id}','{$value.title}');void(0)"><img src="{$value.thumb ? $value.thumb : 'images/ext.png'}" width="24" /></a></td>
 			<td><a href="javascript:$.admin_yunmarket.info('{$value.id}','{$value.title}');void(0)">{$value.title}</a></td>
 			<td class="gray">{$value.note}</td>
 			<td><!-- if $value.price>0 --><span class="red">{$value.price} 元</span><!-- else -->免费<!-- /if --></td>

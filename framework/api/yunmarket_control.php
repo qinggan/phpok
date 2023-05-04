@@ -86,7 +86,7 @@ class yunmarket_control extends phpok_control
 		}
 		$code = $this->model('yunmarket')->signature($data,$user['keyid']);
 		if($sign != $code){
-			$this->error(P_Lang('数据错误，较验不通过，请联系管理员'));
+			$this->error(P_Lang('数据错误，校验不通过，请联系管理员'));
 		}
 		$rs = array();
 		$subcate = phpok($phpok_id_cate);
@@ -184,7 +184,7 @@ class yunmarket_control extends phpok_control
 		}
 		$code = $this->model('yunmarket')->signature($data,$user['keyid']);
 		if($sign != $code){
-			$this->error(P_Lang('数据错误，较验不通过，请联系管理员'));
+			$this->error(P_Lang('数据错误，校验不通过，请联系管理员'));
 		}
 		$arc = phpok("_arc","title_id=".$id);
 		//进入购买阶段
@@ -264,7 +264,7 @@ class yunmarket_control extends phpok_control
 		}
 		$code = $this->model('yunmarket')->signature($data,$user['keyid']);
 		if($sign != $code){
-			$this->error(P_Lang('数据错误，较验不通过，请联系管理员'));
+			$this->error(P_Lang('数据错误，校验不通过，请联系管理员'));
 		}
 		$arc = phpok("_arc","title_id=".$id);
 		if(!$arc){
@@ -352,7 +352,7 @@ class yunmarket_control extends phpok_control
 		}
 		$code = $this->model('yunmarket')->signature($data,$user['keyid']);
 		if($sign != $code){
-			$this->error(P_Lang('数据错误，较验不通过，请联系管理员'));
+			$this->error(P_Lang('数据错误，校验不通过，请联系管理员'));
 		}
 		$arc = phpok("_arc","title_id=".$id);
 		if(!$arc){
@@ -394,6 +394,41 @@ class yunmarket_control extends phpok_control
 			$this->error(P_Lang('软件信息异常，请联系管理员'));
 		}
 		$rs['download'] = base64_encode($content);
+		//安装相应的扩展应用
+		if($arc['extlib']){
+			$tmps = explode(",",$arc['extlib']);
+			$dt = array();
+			$dt['sqlext'] = "ext.folder IN('".implode("','",$tmps)."')";
+			$elist = phpok($this->phpok_id_list,$dt);
+			if($elist && $elist['rslist']){
+				$extlist = array();
+				foreach($elist['rslist'] as $key=>$value){
+					$app_chk = substr($value['folder'],0,5);
+					$plugin_chk = substr($value['folder'],0,8);
+					//插件和应用不允许当成合并库使用
+					if($app_chk == '_app/' || $plugin_chk == 'plugins/'){
+						continue;
+					}
+					if(!$value['soft']){
+						continue;
+					}
+					if(!file_exists($this->dir_root.$value['soft']['filename'])){
+						continue;
+					}
+					$tmp = array();
+					$tmp['id'] = $value['id'];
+					$tmp['folder'] = $value['folder'];
+					$tmp['version'] = $value['version'];
+					$tmp['version_update'] = $value['version_update'];
+					$tmp['md5'] = $value['md5'];
+					$tmp['download'] = base64_encode(file_get_contents($this->dir_root.$value['soft']['filename']));
+					$extlist[] = $tmp;
+				}
+				if($extlist && count($extlist)>0){
+					$rs['extlist'] = $extlist;
+				}
+			}
+		}
 		$this->success($rs);
 	}
 
