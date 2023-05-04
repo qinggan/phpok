@@ -1,9 +1,10 @@
 <!-- include tpl=head_lay nopadding=true overflowy=false -->
+<link rel="stylesheet" type="text/css" href="js/highlighter/emacs.css" />
 <div class="layui-card">
 	<div class="layui-card-body">
 		<div class="layui-row">
 			<div class="layui-col-xs4">
-		    	<img src="{$rs.thumb ? $rs.thumb : 'images/picture.png'}" style="width:145px;" />
+		    	<img src="{$rs.thumb ? $rs.thumb : 'images/ext.png'}" style="width:120px;" />
 			</div>
 			<div class="layui-col-xs8">
 				<table class="layui-table" lay-size="sm">
@@ -29,4 +30,10 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript" src="js/highlighter/shcore.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	SyntaxHighlighter.all();
+});
+</script>
 <!-- include tpl=foot_lay -->
