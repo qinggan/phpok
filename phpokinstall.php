@@ -1116,5 +1116,6 @@ if($step == 'ajax_clearcache'){
 }
 if($step == 'ajax_endok'){
 	touch(DIR_DATA."install.lock");
+	touch(DIR_DATA.'first.lock');
 	exit('ok');
 }
