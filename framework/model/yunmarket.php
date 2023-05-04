@@ -178,6 +178,7 @@ class yunmarket_model_base extends phpok_model
 			return false;
 		}
 		$this->db->insert($data,'yunmarket_client','replace');
+		return true;
 	}
 
 	public function save($data,$id=0)
