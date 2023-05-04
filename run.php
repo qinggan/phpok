@@ -15,42 +15,40 @@ if(!defined("PHPOK_SET")){
 }
 
 /**
- * 变更fields的扩展字段存储方式
+ * 增加云市场客户端
 **/
-$sql = "CREATE TABLE IF NOT EXISTS `".$this->db->prefix."fields_ext` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',`fields_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '扩展字段ID',`keyname` varchar(255) NOT NULL COMMENT '键名',`keydata` text NOT NULL COMMENT '键值',PRIMARY KEY (`id`),KEY `fields_id` (`fields_id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='字段扩展表' AUTO_INCREMENT=1";
+$sql = "CREATE TABLE IF NOT EXISTS `".$this->db->prefix."yunmarket_client` (`id` int(10) unsigned NOT NULL COMMENT '主键ID',`md5` varchar(255) NOT NULL COMMENT 'MD5码',`version` varchar(50) NOT NULL COMMENT '版本号',`version_update` varchar(50) NOT NULL COMMENT '内部版本号',`folder` varchar(50) NOT NULL COMMENT '安装目录，用于删操作',`dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '安装时间',PRIMARY KEY (`id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='验证是否已安装'";
 $this->db->query($sql);
 
-$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ext!=''";
-$tmplist = $this->db->get_all($sql);
-if($tmplist){
-	foreach($tmplist as $key=>$value){
-		$xmldata = unserialize($value['ext']);
-		$file = $this->dir_data.'xml/fields_'.$value['id'].'.xml';
-		$is_delete = false;
-		if(file_exists($file)){
-			$tmp = $this->lib('xml')->read($file);
-			if($tmp){
-				$xmldata = array_merge($xmldata,$tmp);
-			}
-			$is_delete = true;
-		}
-		$sql = "DELETE FROM ".$this->db->prefix."fields_ext WHERE fields_id='".$value['id']."'";
-		$this->db->query($sql);
-		foreach($xmldata as $k=>$v){
-			if($v && is_array($v)){
-				$v = serialize($v);
-			}
-			$array = array('fields_id'=>$value['id'],'keyname'=>$k,'keydata'=>$v);
-			$this->db->insert($array,'fields_ext');
-		}
-		//删除文件
-		if($is_delete){
-			$this->lib('file')->rm($file);
-		}
+
+/**
+ * 安装云市场
+**/
+$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE appfile='yunmarket'";
+$rs = $this->db->get_one($sql);
+if(!$rs){
+	$menu = array('parent_id'=>5,'title'=>'云市场','status'=>1);
+	$menu['appfile'] = 'yunmarket';
+	$menu['taxis'] = 130;
+	$menu['site_id'] = 0;
+	$menu['icon'] = 'windows8';
+	$menu['if_system'] = 1;
+	$insert_id = $this->model('sysmenu')->save($menu);
+	if($insert_id){
+		$tmparray = array('gid'=>$insert_id,'title'=>'查看','identifier'=>'list','taxis'=>10);
+		$this->model('popedom')->save($tmparray);
+		$tmparray = array('gid'=>$insert_id,'title'=>'配置','identifier'=>'setting','taxis'=>20);
+		$this->model('popedom')->save($tmparray);
+		$tmparray = array('gid'=>$insert_id,'title'=>'安装','identifier'=>'install','taxis'=>30);
+		$this->model('popedom')->save($tmparray);
+		$tmparray = array('gid'=>$insert_id,'title'=>'卸载','identifier'=>'uninstall','taxis'=>40);
+		$this->model('popedom')->save($tmparray);
+		$tmparray = array('gid'=>$insert_id,'title'=>'升级','identifier'=>'update','taxis'=>50);
+		$this->model('popedom')->save($tmparray);
+		$tmparray = array('gid'=>$insert_id,'title'=>'状态','identifier'=>'status','taxis'=>60);
+		$this->model('popedom')->save($tmparray);
+		$tmparray = array('gid'=>$insert_id,'title'=>'备份','identifier'=>'backup','taxis'=>70);
+		$this->model('popedom')->save($tmparray);
 	}
-	$sql = "UPDATE ".$this->db->prefix."fields SET ext=''";
-	$this->db->query($sql);
 }
 
-$sql = "CREATE TABLE IF NOT EXISTS `".$this->db->prefix."stock` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',`tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',`attr` varchar(255) NOT NULL COMMENT '属性值，多个属性值用英文逗号隔开',`qty` int(10) NOT NULL DEFAULT '0' COMMENT '库存数量，仅支持整数',`cost` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '进货价',`market` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '市场价',`price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '销售价',PRIMARY KEY (`id`),UNIQUE KEY `sku_id` (`tid`,`attr`)) ENGINE=MyISAM AUTO_INCREMENT=99 DEFAULT CHARSET=utf8 COMMENT='库存表'";
-$this->db->query($sql);
