@@ -1,0 +1,30 @@
+<!-- include tpl=header -->
+<section class="bg-light p-5 bg-default"{if $page_rs.banner} style="background-image:url('{$page_rs.banner.filename}')"{/if}>
+	<h1 class="text-center p-4">{$rs.title}</h1>
+	<div class="container">
+		<!-- if $rs.tag -->
+		<div class="text-center m-3">
+			<span class="p-2 bg-dark bg-opacity-10 rounded">
+				标签：
+				<!-- loop from=$rs.tag key=$k value=$v id=$idxx -->
+				{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+				<!-- /loop -->
+			</span>
+		</div>
+		<!-- /if -->
+	</div>
+</section>
+<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
+<div class="container">
+	<div class="row">
+		<div class="col-sm-3 mt-3">
+			<div class="mb-3"><!-- include tpl=block/about --></div>
+			<div class="mb-3"><!-- include tpl=block/contact --></div>
+		</div>
+		<div class="col-sm-9 mt-3">
+			<div class="content">{$rs.content}</div>
+		</div>
+	</div>
+</div>
+
+<!-- include tpl=footer -->

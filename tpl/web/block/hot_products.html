@@ -1,0 +1,29 @@
+<!-- php:$list = phpok('hot_products') -->
+<!-- if $list.total && $list.rslist -->
+<div class="card">
+	<div class="card-body">
+		<section id="code_hot_products" class="carousel slide carousel-fade" data-bs-ride="carousel">
+			<div class="carousel-indicators">
+				<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+				<button type="button" data-bs-target="#code_hot_products" data-bs-slide-to="{$tmpid.index}"{if !$tmpid.index} class="active" aria-current="true"{/if} aria-label="{$value.title}"></button>
+				<!-- /loop -->
+			</div>
+			<div class="carousel-inner">
+				<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+				<div class="carousel-item animated fadeIn{if !$tmpid.index} active{/if}">
+					<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="d-block w-100" alt="{$value.title}" /></a>
+				</div>
+				<!-- /loop -->
+			</div>
+			<button class="carousel-control-prev" type="button" data-bs-target="#code_hot_products" data-bs-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">下一张</span>
+			</button>
+			<button class="carousel-control-next" type="button" data-bs-target="#code_hot_products" data-bs-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">下一张</span>
+			</button>
+		</section>
+	</div>
+</div>
+<!-- /if -->
