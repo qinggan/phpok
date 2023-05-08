@@ -179,7 +179,7 @@ function list_content_search(obj)
 		<table id="tablelist" lay-filter="tablelist" data-psize="{$psize}" data-total="{$total}" data-ftype="{$m_rs.id}" data-totalRow="{$rs.admin-list-stat}" lay-data="{escape: false}">
 		<thead>
 		<tr>
-			<th lay-data="{field:'_id', width:40,type:'checkbox',fixed:'left',unresize:true}"></th>
+			<th lay-data="{field:'_id', width:50,type:'checkbox',fixed:'left',unresize:true}"></th>
 			<th lay-data="{field:'status', width:50,fixed:'left',unresize:true}"></th>
 			<th lay-data="{field:'id', width:70,fixed:'left',sort:true,align:'center'}">ID</th>
 			<th lay-data="{field:'title',minWidth:180,sort:true}">{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}</th>
