@@ -271,6 +271,7 @@ fieldset.admin-reply + fieldset.admin-reply{
 
 .nav .nav-link.active{
 	background:var(--bs-primary);
+	color:var(--bs-white);
 }
 .width_16{
 	width:16px;

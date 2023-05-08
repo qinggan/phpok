@@ -1,0 +1,96 @@
+<!-- include tpl=header menutitle=$page_rs.title -->
+<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background-image:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}');"{/if}>
+	<h1 class="p-4 text-center">{$cate_rs ? $cate_rs.title : $page_rs.title}</h1>
+	<!-- php:$taglist = $cate_rs.tag ? $cate_rs.tag : $page_rs.tag -->
+	<!-- if $taglist -->
+	<div class="container">
+		<div class="text-center m-3">
+			<small class="p-2 bg-light-50 rounded-lg">
+			标签：
+			<!-- loop from=$taglist key=$k value=$v id=$idxx -->
+			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+			<!-- /loop -->
+			</small>
+		</div>
+	</div>
+	<!-- /if -->
+</section>
+<script type="text/javascript">
+function book_save(obj)
+{
+	if(!$('#title').val()){
+		$.dialog.tips("留言主题不能为空").lock();
+		return false;
+	}
+	if(!$('#fullname').val()){
+		$.dialog.tips('留言人姓名不能为空').lock();
+		return false;
+	}
+	if(!$('#email').val()){
+		$.dialog.tips('邮箱不能为空').lock();
+		return false;
+	}
+	var act = $.dialog.tips('正在提交中，请稍候…',100).lock();
+	$.phpok.submit(obj,api_url('post','ok'),function(rs){
+		if(!rs.status){
+			act.content(rs.info).time(1.5);
+			return false;
+		}
+		$("#update_vcode").phpok_vcode();
+		$("#_chkcode").val('');
+		act.setting('close',function(){
+			$.phpok.reload();
+		});
+		act.content('您的留言信息已发布，我们会尽快处理…').time(1.5);
+		return true;
+	});
+	return false;
+}
+</script>
+<section><!-- include tpl=block/breadcrumb --></section>
+<section class="container">
+	<div class="card">
+		<div class="card-header">
+			发布新留言
+		</div>
+		<div class="card-body">
+			<form method="post" id="book_post" onsubmit="return book_save(this)">
+			<input type="hidden" name="id" id="id" value="{$page_rs.identifier}" />
+			<!-- fields pid=$page_rs.id fields_format=1 in_title=1 -->
+			<!-- loop from=$list key=$key value=$value -->
+			<div class="form-group clearfix">
+				<label for="{$value.identifier}">{$value.title}</label>
+				{$value.html}
+			</div>
+			<!-- if $value.form_type == 'text' -->
+			<script type="text/javascript">
+			$(document).ready(function(){
+				$("#{$value.identifier}").addClass("form-control");
+			});
+			</script>
+			<!-- /if -->
+			<!-- /loop -->
+			<!-- if $sys.is_vcode && function_exists("imagecreate") -->
+			<div class="form-group">
+				<div class="row">
+				<div class="col-sm-3"><input class="form-control"  type="text" name="_chkcode" id="_chkcode" placeholder="请填写验证码" /></div>
+				<div class="col-sm-2"><img src="" border="0" align="absmiddle" id="vcode" class="hand" /></div>
+				</div>
+			</div>
+			<script type="text/javascript">
+			$(document).ready(function(){
+				$("#vcode").phpok_vcode();
+				$("#vcode").click(function(){
+					$(this).phpok_vcode();
+				});
+			});
+			</script>
+			<!-- /if -->
+			<div class="form-group d-block mt-4">
+				<input name="" type="submit" class="btn btn-primary" value="提交" />
+			</div>
+			</form>
+		</div>
+	</div>
+</section>
+<!-- include tpl=footer -->
