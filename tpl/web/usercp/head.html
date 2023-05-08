@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="Expires" content="wed, 26 feb 1997 08:21:57 gmt" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<title><!-- if $title -->{$title} - <!-- /if -->个人中心</title>
+	<meta name="renderer" content="webkit" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="system-copyright" content="{$license}" />
+	<meta name="system-version" content="{$version}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+	<base href="{$sys.url}" />
+	<!-- if $config.favicon -->
+	<link rel="shortcut icon" href="{$config.favicon}" />
+	<!-- /if -->
+	<link rel="stylesheet" href="{$sys.webroot}static/admin/layui/{#css#}/layui.css" media="all" />
+	<link rel="stylesheet" href="{$sys.webroot}static/admin/style/admin.css" media="all" />
+	<link rel="stylesheet" href="{#css#}/artdialog.css" />
+	<link rel="stylesheet" href="{#css#}/extadmin.css" />
+	<link rel="stylesheet" href="{$config.tpl_id.dir_tpl}usercp/{#css#}/style.css" media="all" />
+	<script type="text/javascript" src="static/admin/layui/layui.all.js"></script>
+	<script type="text/javascript" src="{#js#}/clipboard.min.js"></script>
+	<script type="text/javascript" src="{url ctrl=js ext=jquery.artdialog/}"></script>
+	<!-- if $js -->
+	<!-- php:$tmp = explode(",",$js) -->
+	<!-- loop from=$tmp key=$key value=$value id=$tmpid -->
+	<script type="text/javascript" src="{$value}"></script>
+	<!-- /loop -->
+	<!-- /if -->
+	<!-- plugin head -->
+	<!-- if $session.user_id && ($sys.ctrl == 'usercp' || ($sys.ctrl == 'order' && $sys.func != 'payment')) -->
+	<script type="text/javascript">
+	$(document).ready(function(){
+		if (self.location == top.location){
+			top.location = get_url("usercp","","title={$title}&link="+$.str.encode(self.location));
+		}
+	});
+	</script>
+	<!-- /if -->
+</head>
+<body{if $overflowy} style="overflow-y:hidden"{/if}>
+<div class="layui-fluid"{if $nopadding} style="padding:0;"{/if}>

@@ -1,0 +1,40 @@
+<!-- include tpl=usercp/head title=$rs.title -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		当前共有{$rs.title} {$rs.val} {$rs.unit}
+		<!-- if $rs.ifpay -->
+		<div class="float-right">
+			<input type="button" value="在线充值" onclick="$.win('在线充值','{url ctrl=payment id=$rs.id/}')" class="layui-btn layui-btn-sm" />
+		</div>
+		<!-- /if -->
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>{$rs.title}</th>
+			<th>日志</th>
+			<th>时间</th>
+		</tr>
+		</thead>
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>
+				<!-- if $value.val>0 && substr($value.val,0,1) != '+' -->
+				+
+				<!-- /if -->
+				<!-- if $value.val <0 -->
+				-
+				<!-- /if -->
+				{func abs $value.val} {$rs.unit}
+			</td>
+			<td>{$value.note}</td>
+			<td>{func date 'Y-m-d H:i' $value.dateline}</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+		<!-- include tpl=usercp/pagelist -->
+	</div>
+</div>
+
+<!-- include tpl=usercp/foot -->

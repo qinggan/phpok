@@ -1,0 +1,54 @@
+/**
+ * 会员中心公共页
+ * @作者 苏相锟 <admin@phpok.com>
+ * @主页 www.phpok.com
+ * @版本 5.x
+ * @授权 GNU Lesser General Public License (LGPL)
+ * @时间 2022年3月16日
+**/
+
+.float-right{
+	float:right;
+}
+.text-center{
+	text-align:center;
+}
+.text-right{
+	text-align:right;
+}
+
+.content{ line-height:170%;font-size:1.2em;font-weight:500;}
+.content p{ margin-bottom:1em;}
+.content table {border: 1px solid #ddd;border-collapse: collapse;display: table;}
+.content table td {border: 1px solid #ddd;padding: 5px 10px;}
+.content table th {border: 1px solid #ddd;background-color: #f7f7f7;padding: 5px 10px;}
+.content blockquote{
+	margin:1em 0;border:1px solid #efefef;background:#fcfcfc;padding:0.5em 1em;
+}
+.content ul,.content ol{
+	margin:1em 2em;
+}
+.content ul li,.content ol li{
+	/*margin-left:2em;*/
+}
+.content li p{
+	margin:0;
+}
+.content ul li{
+	list-style-type:disc;
+	line-height:180%;
+}
+
+.bg-gray{
+	background:#f2f2f2;
+}
+.text-gray{
+	color:#333;
+}
+
+ul.layout{list-style:none;margin:0;padding:0;}
+ul.layout li{float:left;margin-right:10px;line-height:24px;margin-bottom:3px;}
+ul.layout li a.active{font-weight:bold;color:#1d5595;}
+ul.layout li label{vertical-align:middle;}
+ul.layout li label input{margin-top:-1px;vertical-align:middle;}
+ul.layout:after{clear:both;content:'.';display:block;visibility:hidden;height:0;overflow:hidden;}

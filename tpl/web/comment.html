@@ -1,0 +1,269 @@
+<!-- include tpl=header title=$rs.title -->
+<section><!-- include tpl=block/breadcrumb --></section>
+<section class="container">
+	
+<!-- if $parent_id -->
+<div class="mb-2">
+	<div class="btn-group" role="group">
+		<a href="{url ctrl=content func=comment id=$rs.id parent_id=$parent_id vouch=1/}" class="btn btn-primary">推荐评论</a>
+		<a href="{url ctrl=content func=comment id=$rs.id parent_id=$parent_id/}" class="btn btn-info">全部评论</a>
+	</div>
+	<div class="btn-group" role="group">
+		<a href="{url ctrl=content func=comment id=$rs.id parent_id=$parent_id sublist=1/}" class="btn btn-primary">显示一条子评论</a>
+		<a href="{url ctrl=content func=comment id=$rs.id parent_id=$parent_id sublist=3/}" class="btn btn-info">显示三条子评论</a>
+		<a href="{url ctrl=content func=comment id=$rs.id parent_id=$parent_id/}" class="btn btn-primary">不显示子评论</a>
+	</div>
+</div>
+<div class="card">
+	<div class="card-header">
+		<div class="float-left">
+			评论 #{$comment.id}
+			<!-- if $comment.vouch -->
+			<span class="badge badge-pill badge-danger">佳</span>
+			<!-- /if -->
+		</div>
+		<!-- if $comment.click_list -->
+		<div class="float-right">
+			<div class="row">
+				<!-- loop from=$comment.click_list key=$k value=$v id=$idxx -->
+				<div class="col text-nowrap " title="{$v.title}">
+					<div class="hand" onclick="$.comment.click({$comment.id},'{$k}','reply')"><img id="{$k}-{$comment.id}-img" src="{$v.is_clicked ? $v.icon1 : $v.icon2}" class="width_16" /> {$v.title} <small id="{$k}-{$comment.id}-total">({$v.total})</small></div>
+					<!-- if $v.wholist -->
+					<div class="row">
+						<!-- loop from=$v.wholist key=$kk value=$vv id=$idxxx -->
+						<div class="col">
+							<a href="{url ctrl=content func=wholist id=$rs.id tid=$comment.id uid=$vv.id/}" target="_blank"><img src="{$vv.avatar}" class="avatar-small" alt="{$vv.user}" /></a>
+						</div>
+						<!-- /loop -->
+					</div>
+					<!-- /if -->
+				</div>
+				<!-- /loop -->
+			</div>
+		</div>
+		<!-- /if -->
+	</div>
+	<div class="card-body">
+		<div class="content">{$comment.content}</div>
+		<!-- if $comment.res -->
+		<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+			<!-- loop from=$comment.res key=$k value=$v id=$idxx -->
+			<div class="col p-2"><a href="{$v.gd.auto}" target="_blank"><img src="{$v.gd.thumb}" alt="{$v.title}" class="rounded" style="max-width:100%" /></a></div>
+			<!-- /loop -->
+		</div>
+		<!-- /if -->
+		<!-- loop from=$comment.adm_reply key=$k value=$v id=$idxx -->
+		<fieldset class="admin-reply">
+			<legend>管理员回复</legend>
+			<div class="content">
+				<div class="float-right" style="margin-top:-1.6em;"><small><time>{func time_format $v.addtime}</time></small></div>
+				{$v.content}
+			</div>
+		</fieldset>
+		<!-- /loop -->
+	</div>
+	<!-- if $rs.user_id && $rs.user_id == $session.user_id -->
+	<div class="card-footer">
+		<!-- if $comment.vouch -->
+		<button type="button" class="btn btn-warning btn-sm" onclick="$.comment.vouch('{$comment.id}',0)">取消佳评</button>
+		<!-- else -->
+		<button type="button" class="btn btn-success btn-sm" onclick="$.comment.vouch('{$comment.id}',1)">设为佳评</button>
+		<!-- /if -->
+	</div>
+	<!-- /if -->
+</div>
+<!-- else -->
+<div class="mb-2">
+	<div class="btn-group" role="group">
+		<a href="{url ctrl=content func=comment id=$rs.id vouch=1/}" class="btn btn-primary">推荐评论</a>
+		<a href="{url ctrl=content func=comment id=$rs.id/}" class="btn btn-info">全部评论</a>
+	</div>
+	<div class="btn-group" role="group">
+		<a href="{url ctrl=content func=comment id=$rs.id sublist=1/}" class="btn btn-primary">显示一条子评论</a>
+		<a href="{url ctrl=content func=comment id=$rs.id sublist=3/}" class="btn btn-info">显示三条子评论</a>
+		<a href="{url ctrl=content func=comment id=$rs.id/}" class="btn btn-primary">不显示子评论</a>
+	</div>
+</div>
+<div class="card">
+	<div class="card-header">
+		{$rs.title}
+		<div class="float-right"><small>{func time_format $rs.dateline}</small></div>
+	</div>
+	<div class="card-body">
+		<div class="content">{func phpok_cut $rs.content 255}…【<a href="{$rs.url}">查看全部</a>】</div>
+	</div>
+</div>
+<!-- /if -->
+<div class="card mt-2">
+	<div class="card-header">
+		提交新评论<!-- if $total -->，共有 {$total} 条评论<!-- /if -->
+	</div>
+	<div class="card-body">
+		<form method="post" id="comment-post">
+			<input type="hidden" name="tid" value="{$rs.id}" />
+			<!-- if $parent_id -->
+			<input type="hidden" name="parent_id" value="{$parent_id}" />
+			<!-- /if -->
+			<input type="hidden" name="vtype" value="title" />
+			<!-- if $session.user_id -->
+			<div class="form-group">{func form_edit comment $content editor width=100%&height=150&btns[image]=1}</div>
+			<!-- else -->
+			<div class="form-group">
+				<textarea class="form-control" rows="5" name="comment" id="comment" placeholder="填写评论信息" style="resize: none;"></textarea>
+			</div>
+			<div class="form-group clearfix">
+				{func form_edit pictures $res upload is_multiple=1}
+			</div>
+			<!-- /if -->
+			<!-- if $is_vcode -->
+			<div class="form-group">
+				<div class="row">
+				<div class="col-sm-3"><input class="form-control"  type="text" name="_chkcode" id="_chkcode" placeholder="请填写验证码" /></div>
+				<div class="col-sm-2"><img src="" border="0" align="absmiddle" id="vcode" class="hand" /></div>
+				</div>
+			</div>
+			<script type="text/javascript">
+			$(document).ready(function(){
+				$("#vcode").phpok_vcode();
+				$("#vcode").click(function(){
+					$(this).phpok_vcode();
+				});
+			});
+			</script>
+			<!-- /if -->
+			<div class="form-group d-block mt-4">
+				<input name="" type="submit" class="btn btn-primary" value="提交" />
+			</div>
+		</form>
+	</div>
+</div>
+<!-- loop from=$rslist key=$key value=$value id=tmpid -->
+<div class="card mt-2">
+	<div class="card-header pt-1 pb-1">
+		<div class="float-left">
+			<div class="d-flex">
+				<div class="me-2">
+					<a href="{url ctrl=user id=$value.uid/}" target="_blank"><img src="{$value.avatar}" class="avatar" alt="{$value.user}" /></a>
+				</div>
+				<div class="align-self-center">
+					<a href="{url ctrl=user id=$value.uid/}" target="_blank">{$value.user}</a><br />
+					<time>{func time_format $value.addtime}</time>
+				</div>
+			</div>
+		</div>
+		<!-- if $value.click_list -->
+		<div class="float-right">
+			<div class="row">
+				<!-- loop from=$value.click_list key=$k value=$v id=$idxx -->
+				<div class="col text-nowrap " title="{$v.title}">
+					<div class="hand" onclick="$.comment.click({$value.id},'{$k}','reply')"><img id="{$k}-{$value.id}-img" src="{$v.is_clicked ? $v.icon1 : $v.icon2}" class="width_16" /> {$v.title} <small id="{$k}-{$value.id}-total">({$v.total})</small></div>
+					<!-- if $v.wholist -->
+					<div class="row">
+						<!-- loop from=$v.wholist key=$kk value=$vv id=$idxxx -->
+						<div class="col">
+							<a href="{url ctrl=content func=wholist id=$rs.id tid=$value.id uid=$vv.id/}" target="_blank"><img src="{$vv.avatar}" class="avatar-small" alt="{$vv.user}" /></a>
+						</div>
+						<!-- /loop -->
+					</div>
+					<!-- /if -->
+				</div>
+				<!-- /loop -->
+			</div>
+			<!-- if $value.vouch -->
+			<div class="text-end">
+				<span class="badge badge-pill badge-danger" style="margin-top:-1.2em;">佳</span>
+			</div>
+			<!-- /if -->
+		</div>
+		<!-- /if -->
+	</div>
+	<div class="card-body">
+		<div class="card-text">{$value.content}</div>
+		<!-- if $value.res -->
+		<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+			<!-- loop from=$value.res key=$k value=$v id=$idxx -->
+			<div class="col p-2"><a href="{$v.gd.auto}" target="_blank"><img src="{$v.gd.thumb}" alt="{$v.title}" class="rounded" style="max-width:100%" /></a></div>
+			<!-- /loop -->
+		</div>
+		<!-- /if -->
+		<!-- loop from=$value.adm_reply key=$k value=$v id=$idxx -->
+		<fieldset class="admin-reply">
+			<legend>管理员回复</legend>
+			<div class="content">
+				<div class="float-right" style="margin-top:-1.6em;"><small><time>{func time_format $v.addtime}</time></small></div>
+				{$v.content}
+			</div>
+		</fieldset>
+		<!-- /loop -->
+		<!-- loop from=$value.sublist key=$k value=$v id=$idx -->
+		<div class="card mt-2">
+			<div class="card-header pt-1 pb-1">
+				<div class="float-left">
+					<div class="d-flex">
+						<div class="me-2">
+							<a href="{url ctrl=user id=$v.uid/}" target="_blank"><img src="{$v.avatar}" class="avatar" alt="{$v.user}" /></a>
+						</div>
+						<div class="align-self-center">
+							<a href="{url ctrl=user id=$v.uid/}" target="_blank">{$v.user}</a><br />
+							<time>{func time_format $v.addtime}</time>
+						</div>
+					</div>
+				</div>
+				<!-- if $v.click_list -->
+				<div class="float-right">
+					<div class="row">
+						<!-- loop from=$v.click_list key=$kk value=$vv id=$idxx -->
+						<div class="col text-nowrap hand" onclick="$.comment.click({$vv.id},'{$kk}','reply')">
+							<span><img id="{$kk}-{$v.id}-img" src="{$vv.is_clicked ? $vv.icon1 : $vv.icon2}" style="width:16px;height:16px;" /></span> {$vv.title} <small id="{$kk}-{$v.id}-total">({$vv.total})</small>
+						</div>
+						<!-- /loop -->
+					</div>
+				</div>
+				<!-- /if -->
+			</div>
+			<div class="card-body">
+				<p class="card-text">{$v.content}</p>
+				<!-- loop from=$v.adm_reply key=$kk value=$vv id=$idxx -->
+				<fieldset class="admin-reply">
+					<legend>管理员回复</legend>
+					<div class="content">
+						<div class="float-right" style="margin-top:-1.6em;"><small><time>{func time_format $vv.addtime}</time></small></div>
+						{$vv.content}
+					</div>
+				</fieldset>
+				<!-- /loop -->
+			</div>
+		</div>
+		<!-- /loop -->
+		<div class="d-flex justify-content-between mt-2">
+			<div>
+				<button onclick="$.phpok.open('{url ctrl=content func=comment id=$rs.id parent_id=$value.id/}')" class="btn btn-warning btn-sm">
+					<span class="badge badge-light">{$value.reply_total}</span> 条回复
+					<i class="fa fa-angle-right"></i>
+				</button>
+			</div>
+			<div>
+				<!-- if $rs.user_id && $rs.user_id == $session.user_id -->
+					<!-- if $value.vouch -->
+					<button type="button" class="btn btn-warning btn-sm" onclick="$.comment.vouch('{$value.id}',0)">取消佳评</button>
+					<!-- else -->
+					<button type="button" class="btn btn-success btn-sm" onclick="$.comment.vouch('{$value.id}',1)">设为佳评</button>
+					<!-- /if -->
+				<!-- /if -->
+				<!-- if $session.user_id && ($session.user_id == $rs.user_id || $session.user_id == $comment.uid) -->
+					<button type="button" class="btn btn-danger btn-sm" onclick="$.comment.del('{$value.id}',1)">删除评论</button>
+				<!-- /if -->
+			</div>
+			<div>
+				<button type="button" class="btn btn-primary btn-sm" onclick="$.comment.reply('{$value.id}','{$rs.id}','{$is_vcode ? 1 : 0}')">点评回复</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /loop -->
+</section>
+
+<section class="container">
+	<div class="m-4"><!-- include tpl=block/pagelist --></div>
+</section>
+<!-- include tpl=footer -->

@@ -1,0 +1,27 @@
+<!-- include tpl=usercp/head title=订单日志 -->
+<!-- include tpl=usercp/order-baseinfo -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		日志
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>说明</th>
+			<th>时间</th>
+			<th>操作人</th>
+		</tr>
+		</thead>
+		<!-- loop from=$loglist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value.note}</td>
+			<td>{func time_format $value.addtime}</td>
+			<td>{$value.who}</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+</div>
+
+<!-- include tpl=usercp/foot -->

@@ -1,0 +1,138 @@
+<!-- php:$tip_title = $id ? '修改地址' : '添加地址' -->
+<!-- include tpl=usercp/head title=$tip_title -->
+<script type="text/javascript">
+function save()
+{
+	var id = $("#id").val();
+	$("#setsubmit").ajaxSubmit({
+		'url':api_url('address','save'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			if(rs.status){
+				var tip = id ? '{lang地址信息修改成功}' : '{lang地址信息添加成功}';
+				$.dialog.tips(tip,function(){
+					$.admin.close('{url ctrl=usercp func=address/}');
+				}).lock();
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<form method="post" class="layui-form" id="setsubmit" onsubmit="return save()">
+<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{$id ? '修改地址' : '添加地址'}
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				姓名
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" class="layui-input" id="fullname" name="fullname" value="{$rs.fullname}" placeholder="填写收件人姓名" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				省市
+			</label>
+			<div class="layui-input-inline auto">
+				<select name="country" id="country" lay-ignore onchange="$.address.glist()">
+					<!-- if $rs.country -->
+					<option value="{$rs.country}">{$rs.country}</option>
+					<!-- else -->
+					<option value="中国">中国</option>
+					<!-- /if -->
+				</select>
+			</div>
+			<div class="layui-input-inline auto">
+				<select name="province" id="province" lay-ignore onchange="$.address.glist()">
+					<!-- if $rs.province -->
+					<option value="{$rs.province}">{$rs.province}</option>
+					<!-- else -->
+					<option value="">请选择…</option>
+					<!-- /if -->
+				</select>
+			</div>
+			<div class="layui-input-inline auto">
+				<select name="city" id="city" lay-ignore onchange="$.address.glist()">
+					<!-- if $rs.city -->
+					<option value="{$rs.city}">{$rs.city}</option>
+					<!-- else -->
+					<option value="">请选择…</option>
+					<!-- /if -->
+				</select>
+			</div>
+			<div class="layui-input-inline auto">
+				<select name="county" id="county" lay-ignore>
+					<!-- if $rs.county -->
+					<option value="{$rs.county}">{$rs.county}</option>
+					<!-- else -->
+					<option value="">请选择…</option>
+					<!-- /if -->
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				地址
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="address" id="address" value="{$rs.address}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				不包含国家，省市信息
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				手机号
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="tel" id="mobile" name="mobile" value="{$rs.mobile}" placeholder="填写有效的手机号码" class="layui-input"/>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				电话
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="tel" id="tel" name="tel" value="{$rs.tel}" placeholder="填写有效的固定电话" class="layui-input"/>
+			</div>
+			<div class="layui-form-mid">
+				即固定电话
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				Email
+			</label>
+			<div class="layui-input-inline default-auto">
+				<input type="email" id="email" name="email" value="{$rs.email}" placeholder="用来接收订单提醒邮件，便于您及时了解订单状态" class="layui-input"/>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+	</div>
+</div>
+
+</form>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	//异步加载国家，省，市，县信息
+	$.address.glist();
+});
+</script>
+<!-- include tpl=usercp/foot -->

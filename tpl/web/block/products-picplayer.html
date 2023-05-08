@@ -1,0 +1,30 @@
+<section id="code_products_content" class="carousel slide carousel-fade" data-bs-ride="carousel">
+	<div class="carousel-indicators">
+		<!-- if !$rs.pictures && $rs.thumb -->
+		<li data-target="#code_products_content" data-slide-to="0" aria-current="true" class="active"></li>
+		<!-- /if -->
+		<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
+		<button type="button" data-bs-target="#code_products_content" data-bs-slide-to="{$tmpid.index}"{if !$tmpid.index} class="active" aria-current="true"{/if} aria-label="{$rs.title} - {$tmpid.num}"></button>
+		<!-- /loop -->
+	</div>
+	<div class="carousel-inner">
+		<!-- if !$rs.pictures && $rs.thumb -->
+		<div class="carousel-item animated fadeIn active">
+			<img src="{$rs.thumb.gd.big}" class="d-block w-100" alt="{$value.title}" />
+		</div>
+		<!-- /if -->
+		<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
+		<div class="carousel-item animated fadeIn{if !$tmpid.index} active{/if}">
+			<img src="{$value.gd.big}" class="d-block w-100" alt="{$value.title}" />
+		</div>
+		<!-- /loop -->
+	</div>
+	<button class="carousel-control-prev" type="button" data-bs-target="#code_products_content" data-bs-slide="prev">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="visually-hidden">下一张</span>
+	</button>
+	<button class="carousel-control-next" type="button" data-bs-target="#code_products_content" data-bs-slide="next">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="visually-hidden">下一张</span>
+	</button>
+</section>

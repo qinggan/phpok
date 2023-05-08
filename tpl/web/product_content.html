@@ -1,0 +1,337 @@
+<!-- include tpl=header -->
+<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background-image:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}')"{/if}>
+	<h1 class="p-4 text-center">{$rs.title}</h1>
+	<!-- if $rs.subtitle -->
+	<h6 class="text-center">{$rs.subtitle}</h6>
+	<!-- /if -->
+	<div class="container">
+		<div class="text-center d-block m-4">
+			<small class="p-2 bg-dark bg-opacity-10 rounded">
+				发布日期：{func time_format $rs.dateline} &nbsp; &nbsp;
+				浏览次数：{$rs.hits}
+			</small>
+		</div>
+		<!-- if $rs.tag -->
+		<div class="text-center m-3">
+			<small class="p-2 bg-dark bg-opacity-10 rounded">
+			标签：
+			<!-- loop from=$rs.tag key=$k value=$v id=$idxx -->
+			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+			<!-- /loop -->
+			</small>
+		</div>
+		<!-- /if -->
+	</div>
+</section>
+<section><!-- include tpl=block/breadcrumb --></section>
+<!-- loop from=$rs.attrs key=$key value=$value id=$tmpid -->
+<input type="hidden" data-id="{$key}" data-price="{$value.price}" data-stock="{$value.qty}" />
+<!-- /loop -->
+<script type="text/javascript">
+function attr_select(id,aid)
+{
+	$("#attr_"+aid).val(id);
+	$("button[name=attr"+aid+"]").each(function(i){
+		var tid = $(this).attr('data');
+		if(tid == id){
+			$(this).removeClass("btn-light").addClass("btn-primary");
+		}else{
+			$(this).removeClass('btn-primary').addClass("btn-light");
+		}
+	});
+	remote_data(id,aid);
+}
+function attr_unselect(id,aid)
+{
+	$("#attr_"+aid).val('');
+	$("button[name=attr"+aid+"][data="+id+"]").removeClass('btn-primary').addClass("btn-light");
+	remote_data(id,aid);
+}
+function remote_data(id,aid)
+{
+	var qty = $("#buycount").val();
+	if(!qty || qty<1){
+		qty = 1;
+	}
+	var url = api_url('content','price','id={$rs.id}&qty='+qty+"&symbol=1");
+	var ids = new Array();
+	$("input[name=attr]").each(function(i){
+		var val = $(this).val();
+		if(val != ''){
+			ids.push(val);
+		}
+	});
+	if(ids && ids.length>0){
+		url += "&attr="+ids.join(",");
+	}
+	$("select[data-name=apps]").each(function(i){
+		var tname = $(this).attr("data-id");
+		var val = $(this).val();
+		url += "&"+tname+"_id="+val;
+	});
+	$.phpok.json(url,function(rs){
+		if(!rs.status){
+			$.dialog.tips(rs.info);
+			if(id && aid && id != 'undefined' && aid != 'undefined'){
+				attr_unselect(id,aid);
+			}
+			return false;
+		}
+		if(rs.status == 2){
+			return true;
+		}
+		$("#showprice").html(rs.info.price_format);
+		$("#stock_qty").html(rs.info.qty);
+	});
+}
+function update_apps(name)
+{
+	remote_data();
+}
+$(document).ready(function(){
+	$("#minus").click(function(){
+		var o = $("#buycount").val();
+		if(o<2){
+			$.dialog.alert('要购买的数量不能少于1');
+			return false;
+		}
+		o = parseInt(o) - 1;
+		$("#buycount").val(o);
+		remote_data();
+	});
+	$("#plus").click(function(){
+		var o = $("#buycount").val();
+		o = parseInt(o) + 1;
+		$("#buycount").val(o);
+		remote_data();
+	});
+	$("#buycount").blur(function(){
+		remote_data();
+	}).on("keyup",function(){
+		remote_data();
+	});
+});
+</script>
+<section class="container">
+	<div class="row">
+		<div class="col-sm-4 col-md-3">
+			<div class="mb-3"><!-- include tpl=block/catelist cid=$cate_rs.id pid=$page_rs.id title=$page_rs.title --></div>
+			<div class="mb-3"><!-- include tpl=block/contact --></div>
+		</div>
+		<div class="col-sm-8 col-md-9">
+			<div class="row">
+				<div class="col">
+					<!-- include tpl=block/products-picplayer -->
+				</div>
+				<div class="col">
+					<ul class="list-group list-group-flush">
+						<!-- loop from=$rs.apps key=$key value=$value id=$tmpid -->
+						<!-- if $value.me -->
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col col-md-3 text-end">
+									<b>{$value.me.title}</b>
+								</div>
+								<div class="col">
+									<select name="{$key}_id" id="{$key}_id" data-name="apps" data-id="{$key}">
+										<!-- loop from=$value.list key=$k value=$v id=$idxx -->
+										<option value="{$v.id}"{if $value.rs.id == $v.id} selected{/if}>{$v.title}</option>
+										<!-- /loop -->
+									</select>
+								</div>
+							</div>
+						</li>
+						<!-- /if -->
+						<!-- /loop -->
+						<!-- loop from=$rs.attrlist key=$key value=$value -->
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col col-md-3 text-end"><b>{$value.title}</b></div>
+								<div class="col">
+									<input type="hidden" name="attr" id="attr_{$value.id}" value="" />
+									<!-- loop from=$value.rslist key=$k value=$v id=$tmpid -->
+									<button type="button" class="btn btn-sm btn-light mb-1" name="attr{$value.id}" data="{$v.id}" onclick="attr_select('{$v.id}','{$value.id}')">
+										<!-- if $v.pic --><img src="{$v.pic}" style="width:40px;height:40px" /><!-- /if -->
+										{$v.title}
+									</button>
+									<!-- /loop -->
+								</div>
+							</div>
+						</li>
+						<!-- /loop -->
+						<!-- if $rs.qty -->
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col col-md-3 text-end"><b>库存</b></div>
+								<div class="col" id="stock_qty">{$rs.qty}</div>
+							</div>
+						</li>
+						<!-- /if -->
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col col-md-3 text-end"><b>购买数量</b></div>
+								<div class="col">
+									<div class="input-group w-50">
+										<button type="button" id="minus" class="btn btn-secondary btn-sm"><i class="fa fa-minus"></i></button>
+										<input type="text" class="form-control" name="buycount" id="buycount" value="1" type="number" min="1" onkeyup="value=value.replace(/[^\d]/g,'')" onblur="value=value.replace(/[^\d]/g,'')" />
+										<button type="button" id="plus" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></button>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col col-md-3 text-end"><b>价格</b></div>
+								<div class="col">
+									<!-- if $rs.min-max -->
+									<span class="price" style="color:red;font-size:16px;" id="showprice">
+										<!-- loop from=$rs.min-max key=$key value=$value id=$tmpid -->
+										<!-- if $tmpid.index --> - <!-- /if -->
+										{func price_format $value $rs.currency_id $config.currency_id}
+										<!-- /loop -->
+									</span>
+									<!-- else -->
+									<span class="price" style="color:red;font-size:16px;" id="showprice">{func price_format $rs.price $rs.currency_id $config.currency_id}</span>
+									<!-- /if -->
+								</div>
+							</div>
+							<!-- if $rs.wholesale -->
+							<div class="row" style="margin-top:20px;">
+								<div class="col">
+									<table class="table table-bordered">
+									<thead>
+										<tr>
+											<th>数量</th>
+											<th>价格</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td scope="row">≥1</td>
+											<td>{func price_format $rs.price $rs.currency_id}</td>
+										</tr>
+										<!-- loop from=$rs.wholesale key=$key value=$value id=$tmpid -->
+										<tr>
+											<td scope="row">≥{$value.qty}</td>
+											<td>{func price_format $value.price $rs.currency_id}</td>
+										</tr>
+										<!-- /loop -->
+									</tbody>
+									</table>
+								</div>
+							</div>
+							<!-- /if -->
+						</li>
+					</ul>
+					<div class="row mt-3">
+						<div class="col">
+							<button type="button" class="btn btn-primary" onclick="$.cart.add('{$rs.id}',$('#buycount').val())">
+								<i class="fa fa-cart-plus"></i> 加入购物车
+							</button>
+						</div>
+						<div class="col">
+							<button type="button" class="btn btn-warning float-right" onclick="$.cart.onebuy('{$rs.id}',$('#buycount').val())">
+								<i class="fa fa-check"></i> 立即购买
+							</button>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</section>
+<div class="container-fluid p-0 m-0">
+	<div class="card mt-3 mb-3 rounded-0 border-bottom-0 border-left-0 border-right-0">
+		<div class="card-header">
+			<ul class="nav nav-tabs justify-content-center card-header-tabs" role="tablist">
+				<li><a href="#product-content" class="nav-link active me-2 ml-2" role="tab" data-bs-toggle="tab">产品介绍</a></li>
+				<!-- if $rs.pictures -->
+				<li><a href="#product-pictures" class="nav-link me-2 ml-2" role="tab" data-bs-toggle="tab">产品图集</a></li>
+				<!-- /if -->
+				<!-- if $rs.params -->
+				<li><a href="#product-params" class="nav-link me-2 ml-2" role="tab" data-bs-toggle="tab">规格参数</a></li>
+				<!-- /if -->
+				<!-- if $rs.package -->
+				<li><a href="#product-package" class="nav-link me-2 ml-2" role="tab" data-bs-toggle="tab">包装清单</a></li>
+				<!-- /if -->
+				<li><a href="#product-service" class="nav-link me-2 ml-2" role="tab" data-bs-toggle="tab">售后信息</a></li>
+				<!-- if $page_rs.comment_status -->
+				<li><a href="#product-comment" class="nav-link me-2 ml-2" role="tab" data-bs-toggle="tab">产品评论</a></li>
+				<!-- /if -->
+			</ul>
+		</div>
+	</div>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane fade show active" id="product-content">
+			<!-- loop from=$rs.contentpics key=$key value=$value id=$tmpid -->
+			<div align="center"><img src="{$value.filename}" style="max-width:100%" /></div>
+			<!-- /loop -->
+			{$rs.content}
+		</div>
+		<!-- if $rs.pictures -->
+		<div role="tabpanel" class="tab-pane fade" id="product-pictures">
+			<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
+			<p align="center"><img src="{$value.gd.auto}" style="max-width:100%;" border="0" /></p>
+			<!-- /loop -->
+		</div>
+		<!-- /if -->
+		<!-- if $rs.params -->
+		<div role="tabpanel" class="tab-pane fade" id="product-params">
+			
+			<!-- loop from=$rs.params key=$key value=$value id=$tmpid -->
+			<h4 class="text-center p-3">{$value.name}</h4>
+			<hr />
+			<!-- if $value.info -->
+			<div class="container">
+				<!-- php:$tmplist = unserialize($value.info) -->
+				<div class="row">
+				<!-- loop from=$tmplist.content key=$k value=$v id=$idx -->
+					<!-- loop from=$tmplist.title key=$kk value=$vv id=$idxx -->
+					<div class="col{if $kk==0}-3{elseif $kk == 1}-5{else}-4 text-muted{/if} mt-2">{if $kk == 2 && $v[$kk]}备注：{/if}{$v[$kk]}</div>
+					<!-- /loop -->
+				<!-- /loop -->
+				</div>
+			<!-- /if -->
+			<!-- if $value.note -->
+			<div class="content">{$value.note}</div>
+			<!-- /if -->
+			</div>
+			<!-- if $tmpid.num != $tmpid.total --><hr /><!-- /if -->
+			<!-- /loop -->
+			<br /><br />
+		</div>
+		<!-- /if -->
+		<!-- if $rs.package -->
+		<div role="tabpanel" class="tab-pane fade" id="product-package">
+			<div class="container">
+			<table class="table table-bordered">
+				<tbody>
+					<!-- loop from=$rs.package key=$key value=$value id=$tmpid -->
+					<tr>
+						<th>{$key}</th>
+						<td>x {$value}</td>
+					</tr>
+					<!-- /loop -->
+				</tbody>
+			</table>
+			</div>
+		</div>
+		<!-- /if -->
+		<div role="tabpanel" class="tab-pane fade" id="product-service">
+			<!-- php:$t = phpok('after-sale-protection') -->
+			<div class="container"><div class="content">{$t.content}</div></div>
+		</div>
+		<!-- if $page_rs.comment_status -->
+		<div role="tabpanel" class="tab-pane fade" id="product-comment">
+			<div class="container">
+				<!-- include tpl=block/comment tid=$rs.id -->
+			</div>
+		</div>
+		<!-- /if -->
+		
+	</div>
+	
+</div>
+<!-- include tpl=footer -->

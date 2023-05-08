@@ -1,0 +1,17 @@
+<header class="container-fluid no-gutters header d-flex bg-light border-bottom">
+	<div class="col col-1 pl-2">
+		<i class="fa fa-bars hand" onclick="$.framework.menu()"></i>
+		
+	</div>
+	<div class="col">
+		<ul class="d-flex justify-content-end mr-3">
+			<li class="mr-3"><a href="{$sys.url}" class="text-dark" title="网站首页"><i class="fa fa-home ml-3"></i> <small>网站首页</small></a></li>
+			<li class="mr-1"><img src="{$me.avatar ? $me.avatar : $config.tpl_id.dir_tpl.'usercp/'.'img'.'/avatar.png'}" class="border" style="width:18px;height:18px;border-radius:100%;" /></li>
+			<li class="mr-3">{$me.user}</li>
+			<li class="hand" onclick="$.user.logout('{$session.user_name}')">
+				<i class="fa fa-sign-out"></i>
+				退出
+			</li>
+		</ul>
+	</div>
+</header>

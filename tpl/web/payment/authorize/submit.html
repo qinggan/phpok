@@ -1,0 +1,114 @@
+<!-- include tpl=head title=信用卡支付 -->
+<script type="text/javascript">
+function payment_submit_it()
+{
+	var tip = $.dialog.tips('正在付款，请稍候…').lock();
+	$(".am-form").ajaxSubmit({
+		'url':get_url('payment','submit'),
+		'type':'post',
+		'dataType':'json',
+		'success':function(rs){
+			tip.close();
+			if(rs.status){
+				$.dialog.alert('付款成功，我们会尽快处理订单，祝您愉快',function(){
+					$.phpok.go(get_url('order','info','sn={$orderinfo.sn}&passwd={$orderinfo.passwd}'));
+				},'succeed');
+				return true;
+			}
+			$.dialog.alert(rs.info);
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+<div class="main" style="width:500px;margin:10% auto;">
+	<form method="post" class="am-form" onsubmit="return payment_submit_it()">
+	<input type="hidden" name="id" value="{$id}" />
+	<div class="am-panel am-panel-default">
+		<div class="am-panel-hd">信用卡在线付款</div>
+		<ul class="am-list am-list-static">
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">订单编号</div>
+					<div class="am-u-sm-8">{$orderinfo.sn}</div>
+				</div>
+			</li>
+			<!-- if $orderinfo -->
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">订单金额</div>
+					<div class="am-u-sm-8 am-text-primary">{func price_format $orderinfo.price $orderinfo.currency_id}</div>
+				</div>
+			</li>
+			<!-- /if -->
+			<!-- if $paid_price -->
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">已付金额</div>
+					<div class="am-u-sm-8">{func price_format $paid_price $orderinfo.currency_id}</div>
+				</div>
+			</li>
+			<!-- /if -->
+			<!-- if $unpaid_price -->
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">还需付款</div>
+					<div class="am-u-sm-8 am-text-danger">{func price_format $unpaid_price $orderinfo.currency_id}</div>
+				</div>
+			</li>
+			<!-- /if -->
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">信用卡卡号</div>
+					<div class="am-u-sm-8"><input type="text" name="cc_data[number]" id="card_number" /></div>
+				</div>
+			</li>
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">有效期</div>
+					<div class="am-u-sm-8">
+						<div class="am-g am-g-collapse">
+							<div class="am-u-sm-3">
+								<select name="cc_data[expDateMonth]">
+									<!-- for($i=1;$i<=12;$i++) -->
+									<!-- php:$idxx = $i<10 ? '0'.$i : $i -->
+									<option value="{$idxx}">{$idxx}月</option>
+									<!-- /for -->
+								</select>
+							</div>
+							<div class="am-u-sm-1 am-text-center">/</div>
+							<div class="am-u-sm-4">
+								<select name="cc_data[expDateYear]">
+									<!-- for($i=date("Y",$sys.time);$i<=(date("Y",$sys.time)+20);$i++) -->
+									<option value="{$i}">{$i}年</option>
+									<!-- /for -->
+								</select>
+							</div>
+							<div class="am-u-sm-4">&nbsp;</div>
+						</div>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="am-g">
+					<div class="am-u-sm-4 am-text-right">CVV2</div>
+					<div class="am-u-sm-3"><input type="text" name="cc_data[cvv2]" /></div>
+					<div class="am-u-sm-5">卡背面的3位数字</div>
+				</div>
+			</li>
+		</ul>
+		
+	</div>
+	<div style="margin-top:10px;">
+		<!-- if $orderinfo -->
+		<input type="button" value="返回订单" class="am-btn am-btn-default" onclick="$.phpok.go('{url ctrl=order func=info sn=$orderinfo.sn passwd=$orderinfo.passwd/}')" />
+		<!-- /if -->
+		
+		<input type="submit" value="确认支付" class="am-btn am-btn-primary am-fr" id="payment_submit" />
+	</div>
+	</form>
+
+</div>
+
+<!-- include tpl=foot -->

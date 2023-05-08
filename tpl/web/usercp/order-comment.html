@@ -1,0 +1,136 @@
+<!-- include tpl=usercp/head title=订单评论 -->
+<script type="text/javascript">
+function save_comment(tid)
+{
+	var url = api_url('comment','save','tid='+tid+"&order_id={$rs.id}&vtype=order");
+	var comment = $("#comment_"+tid).val();
+	if(!comment){
+		$.dialog.alert('评论内容不能为空',true,'error');
+		return false;
+	}
+	url += '&comment='+$.str.encode(comment);
+	var pic = $("#pic_"+tid).val();
+	if(pic){
+		url += "&pictures="+$.str.encode(pic);
+	}
+	$.phpok.json(url,function(rs){
+		if(!rs.status){
+			$.dialog.alert(rs.info);
+			return false;
+		}
+		$.dialog.tips('评论提交成功',function(){
+			$.phpok.reload();
+		}).lock();
+	});
+	return false;
+}
+</script>
+<!-- if $tip_info -->
+<div class="layui-card">
+	<div class="layui-card-body">
+		<!-- loop from=$tip_info key=$key value=$value id=$tmpid -->
+		<blockquote class="layui-elem-quote">{$value}</blockquote>
+		<!-- /loop -->
+	</div>
+</div>
+<!-- /if -->
+<!-- include tpl=usercp/order-baseinfo -->
+
+<!-- if $is_comment -->
+<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		评论产品：#{$tmpid.num}
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th width="100">图片</th>
+			<th>基本信息</th>
+			<th width="80">数量</th>
+			<th width="150">价格</th>
+		</tr>
+		</thead>
+		<tr>
+			<td>
+				<!-- if $value.thumb -->
+				<img src="{$value.thumb}" width="70" height="70" border="0" />
+				<!-- else -->
+				<img src="{#images#}/blank.gif" width="70" height="70" border="0" />
+				<!-- /if -->
+			</td>
+			<td>
+				<div>{$value.title}</div>
+				<!-- loop from=$value.ext key=$k value=$v id=$tmpid3 -->
+				<div>{$v.title}：{$v.content}</div>
+				<!-- /loop -->
+			</td>
+			<td>{$value.qty}</td>
+			<td>{func price_format $value.price $rs.currency_id $rs.currency_id}</td>
+		</tr>
+		<!-- if $value.comment -->
+		<thead>
+		<tr>
+			<th colspan="4">评论信息</th>
+		</tr>
+		</thead>
+		<tr>
+			<td colspan="4">
+				<!-- loop from=$value.comment key=$k value=$v id=$tmpid2 -->
+				<fieldset class="layui-elem-field">
+					<legend><small>{func time_format $v.addtime} 发评论</small></legend>
+					<div class="layui-field-box">
+						{$v.content}
+						<!-- if $v.res -->
+						<div class="layui-row layui-col-space10">
+							<!-- loop from=$v.res key=$kk value=$vv id=$idxx -->
+							<div class="layui-col-md2">
+						    	<a href="{$vv.gd.auto}" target="_blank"><img src="{$vv.ico}" alt="{$v.title}" class="rounded" style="max-width:100%;" /></a>
+							</div>
+							<!-- /loop -->
+						</div>
+						<!-- /if -->
+						<!-- loop from=$v.adm_reply key=$kk value=$vv id=$idxx -->
+						<fieldset class="layui-elem-field">
+							<legend><small>管理员回复 <time>{func time_format $vv.addtime}</time></small></legend>
+							<div class="layui-field-box">{$vv.content}</div>
+						</fieldset>
+						<!-- /loop -->
+					</div>
+				</fieldset>
+				<!-- /loop -->
+			</td>
+		</tr>
+		
+		<!-- /if -->
+		<thead>
+		<tr>
+			<th colspan="4">发评论</th>
+		</tr>
+		</thead>
+		<tr>
+			<td colspan="4">
+				<form method="post" onsubmit="return save_comment('{$value.tid}')">
+				
+				<div class="layui-row layui-col-space10">
+					<div class="layui-col-md12"><textarea name="comment" id="comment_{$value.tid}" class="layui-textarea" style="resize:none;"></textarea></div>
+					<div class="layui-col-md10">
+				    	<!-- php:$field = 'pic_'.$value.tid -->
+						<!-- php:$tmp = '' -->
+						{func form_edit $field $tmp upload is_multiple=1}
+					</div>
+					<div class="layui-col-md2 text-end">
+						<input type="submit" value="提交评论" class="layui-btn layui-btn-sm" />
+					</div>
+				</div>
+				</form>
+			</td>
+		</tr>
+		</table>
+	</div>
+</div>
+<!-- /loop -->
+<!-- /if -->
+
+<!-- include tpl=usercp/foot -->

@@ -34,9 +34,95 @@ function top_search(obj)
 
 
 /**
+ * 筛选器
+**/
+function filter_submit(url,id,val,cutype)
+{
+	if(!url || !id || url == 'undefined' || id == 'undefined' || !val || val == 'undefined'){
+		return false;
+	}
+	url += (url.indexOf('?') > -1) ? '&' : '?';
+	if(id == 'cate'){
+		url += "cate="+val;
+		$.phpok.go(url);
+		return true;
+	}
+	if(id == 'price'){
+		var t = val.split('-');
+		if(t[0] && t[0] != 'undefined'){
+			url += "price[min]="+t[0]+"&";
+		}
+		if(t[1] && t[1] != 'undefined'){
+			url += "price[max]="+t[1];
+		}
+		$.phpok.go(url);
+		return true;
+	}
+	var str = '';
+	var is_delete = false;
+	if(cutype != ''){
+		$("#filter_"+id+" .active").each(function(i){
+			var info = $(this).attr('data-val');
+			if(info && info != val){
+				if(str != ''){
+					str += cutype+""+info;
+				}else{
+					str = info;
+				}
+			}
+			if(info && info == val){
+				is_delete = true;
+			}
+		});
+		if(str != '' && !is_delete){
+			str += cutype+""+val;
+		}
+		if(str == '' && !is_delete){
+			str = val;
+		}
+		if(str != ''){
+			url += "ext["+id+"]="+$.str.encode(str);
+		}
+	}else{
+		url += "ext["+id+"]="+$.str.encode(val);
+	}
+	$.phpok.go(url);
+}
+
+
+
+
+/**
  * 文档加载完成后初始化
 **/
 $(document).ready(function(){
 	$(document).off('click.bs.dropdown.data-api');
 	dropdownOpen();//调用
+
+	/**
+	 * 评论
+	**/
+	if($("#comment-post").length > 0){
+	    //提交评论
+	    $("#comment-post").submit(function(){
+			$.comment.post($("#comment-post")[0]);
+			return false;
+		});
+		if(typeof CKEDITOR != 'undefined'){
+			CKEDITOR.on('instanceReady', function(evt) {
+				evt.editor.setKeystroke(CKEDITOR.CTRL + 13, 'save');
+			});
+			CKEDITOR.instances['comment'].on('save', function(event) {
+				window.onbeforeunload = null;
+				$.comment.post($("#comment-post")[0]);
+				return false;
+			});
+		}
+		$(document).keypress(function(e){
+			if(e.ctrlKey && e.which == 13 || e.which == 10) {
+				$.comment.post($("#comment-post")[0]);
+				return false;
+			}
+		});
+	}
 });

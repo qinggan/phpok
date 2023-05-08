@@ -1,0 +1,239 @@
+<!-- include tpl=cart/header title=快速订单 -->
+<script type="text/javascript">
+function update_virtual(val)
+{
+	if(val == 1){
+		$("#address-info").hide();
+		return true;
+	}
+	$("#address-info").show();
+	window.setTimeout(function(){
+		$.address.glist();
+	}, 200);
+}
+function save(obj)
+{
+	var url = api_url('cart','add','_clear=1&qty=1');
+	var title = $("#title").val();
+	if(!title){
+		$.dialog.tips('名称不能为空');
+		return false;
+	}
+	var price = $("#price").val();
+	if(!price || price == 'undefined'){
+		$.dialog.tips('价格不能为空');
+		return false;
+	}
+	price = parseFloat(price);
+	if(price<0.0001){
+		$.dialog.tips('价格不能小于0.0001元');
+		return false;
+	}
+	var fullname = $("#fullname").val();
+	if(!fullname){
+		$.dialog.tips('姓名不能为空');
+		return false;
+	}
+	//手机号
+	var mobile = $("#mobile").val();
+	if(!mobile){
+		$.dialog.tips('手机号不能为空');
+		return false;
+	}
+	// 判断是否为手机号
+    var myreg = /^[1][0-9]{10}$/;
+    if(!myreg.test(mobile)) {
+	    $.dialog.tips('手机号不合法');
+		return false;
+    }
+	var is_virtual = $("input[name=is_virtual]:checked").val();
+	if(is_virtual == '0'){
+		var country = $("#country").val();
+		var province = $("#province").val();
+		var city = $("#city").val();
+		var county = $("#county").val();
+		if(!country){
+			$.dialog.tips('请选择国家信息');
+			return false;
+		}
+		if(!province){
+			$.dialog.tips('请选择省份信息');
+			return false;
+		}
+		if(!city){
+			$.dialog.tips('请选择城市信息');
+			return false;
+		}
+		var address = $("#address").val();
+		if(!address){
+			$.dialog.tips('请填写收件人地址信息');
+			return false;
+		}
+	}
+	url += "&title="+$.str.encode(title);
+	url += "&price="+$.str.encode(price);
+	url += "&is_virtual="+is_virtual;
+	$.phpok.json(url,function(rs){
+		if(!rs.status){
+			$.dialog.tips(rs.info);
+			return false;
+		}
+		//生成订单
+		var url = api_url('order','create','id[]='+rs.info);
+		var postdata = {};
+		postdata['mobile'] = mobile;
+		postdata['note'] = $("#note").val();
+		if(is_virtual == '0'){
+			postdata['shipping-country'] = country;
+			postdata['shipping-province'] = province;
+			postdata['shipping-city'] = city;
+			if(county){
+				postdata['shipping-county'] = county;
+			}
+			postdata['shipping-fullname'] = fullname;
+			postdata['shpping-address'] = address;
+			postdata['shpping-mobile'] = mobile;
+			var zipcode = $("#zipcode").val();
+			if(zipcode){
+				postdata['shpping-zipcode'] = zipcode;
+			}
+		}else{
+			if(postdata['note'] != ''){
+				postdata['note'] += "\n";
+			}
+			postdata['note'] += "联系人："+fullname;
+		}
+		$.phpok.json(url,function(res){
+			if(!res.status){
+				$.dialog.tips(res.info);
+				return false;
+			}
+			url = get_url('order','info','sn='+res.info.sn+"&passwd="+res.info.passwd);
+			$.phpok.go(url);
+		},postdata);
+	});
+	return false;
+}
+</script>
+<form method="post" class="" id="post_save" onsubmit="return save(this)">
+<div class="container">
+	<div class="card mt-2">
+		<div class="card-header">
+			产品信息
+		</div>
+		<div class="card-body">
+			<div class="form-group row justify-content-center">
+				<div class="col-sm-2">服务类型：</div>
+				<div class="col-sm-5" data-toggle="buttons">
+					<label class="btn btn-light active">
+						<input type="radio" name="is_virtual" value="1" autocomplete="off" onclick="update_virtual(1)" checked> 服务
+					</label>
+					<label class="btn btn-light">
+						<input type="radio" name="is_virtual" value="0" autocomplete="off" onclick="update_virtual(0)"> 实物
+					</label>
+				</div>
+			</div>
+			<div class="form-group row justify-content-center">
+				<div class="col-sm-2">名称：</div>
+				<div class="col-sm-5">
+					<input type="text" class="form-control" name="title" id="title" placeholder="填写产品或服务的名称">
+				</div>
+			</div>
+			<div class="form-group row justify-content-center">
+				<div class="col-sm-2">价格：</div>
+				<div class="col-sm-5">
+					<input type="text" class="form-control" name="price" id="price" placeholder="填写价格，仅支持数字+小数点，仅限{$config.currency.title}">
+				</div>
+			</div>
+			<div class="form-group row justify-content-center">
+				<div class="col-sm-2">备注：</div>
+				<div class="col-sm-5">
+					<input type="text" class="form-control" name="note" id="note" placeholder="填写备注信息，如无请留空">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="card mt-2">
+		<div class="card-header">
+			收件人信息
+		</div>
+		<div class="card-body">
+			<div class="form-group row justify-content-center">
+				<div class="col-sm-2">姓名：</div>
+				<div class="col-sm-5">
+					<input type="text" class="form-control" name="fullname" id="fullname"{if $me} value="{$me.fullname ? $me.fullname : $me.user}"{/if} placeholder="请填写联系人的姓名">
+				</div>
+			</div>
+			<div class="form-group row justify-content-center">
+				<div class="col-sm-2">手机号：</div>
+				<div class="col-sm-5">
+					<input type="text" class="form-control" name="mobile" id="mobile"{if $me} value="{$me.mobile}"{/if} placeholder="请填写联系人的手机号">
+				</div>
+			</div>
+			<div id="address-info" class="pca" style="display:none;">
+				<div class="form-group row justify-content-center">
+					<div class="col-sm-2">省市县：</div>
+					<div class="col-sm-5">
+						<div class="row">
+							<div class="col-12">
+								<select name="country" id="country" class="form-control" onchange="$.address.glist()">
+									<!-- if $rs.country -->
+									<option value="{$rs.country}">{$rs.country}</option>
+									<!-- else -->
+									<option value="中国">中国</option>
+									<!-- /if -->
+								</select>
+								
+							</div>
+							<div class="col-12">
+								<select name="province" id="province" class="form-control mt-1" onchange="$.address.glist()">
+									<!-- if $rs.province -->
+									<option value="{$rs.province}">{$rs.province}</option>
+									<!-- else -->
+									<option value="">请选择…</option>
+									<!-- /if -->
+								</select>
+							</div>
+							<div class="col-12">
+								<select name="city" id="city" class="form-control mt-1" onchange="$.address.glist()">
+									<!-- if $rs.city -->
+									<option value="{$rs.city}">{$rs.city}</option>
+									<!-- else -->
+									<option value="">请选择…</option>
+									<!-- /if -->
+								</select>
+							</div>
+							<div class="col-12">
+								<select name="county" class="form-control mt-1" id="county">
+									<!-- if $rs.county -->
+									<option value="{$rs.county}">{$rs.county}</option>
+									<!-- else -->
+									<option value="">请选择…</option>
+									<!-- /if -->
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group row justify-content-center">
+					<div class="col-sm-2">收货地址：</div>
+					<div class="col-sm-5">
+						<input type="text" class="form-control" name="address" id="address" placeholder="不含省市县，收货地址">
+					</div>
+				</div>
+				<div class="form-group row justify-content-center">
+					<div class="col-sm-2">邮编：</div>
+					<div class="col-sm-5">
+						<input type="text" class="form-control" name="zipcode" id="zipcode" placeholder="不清楚请留空">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="text-center mt-2">
+		<button type="submit" class="btn btn-primary">提交订单</button>
+	</div>
+</div>
+</form>
+
+<!-- include tpl=cart/footer -->
