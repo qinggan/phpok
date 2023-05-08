@@ -180,7 +180,14 @@ class tag_control extends phpok_control
 		if(!$id){
 			$this->error(P_Lang('未指定ID'));
 		}
-		$this->model('tag')->delete($id);
+		$list = explode(',',$id);
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				continue;
+			}
+			$this->model('tag')->delete($value);
+		}
 		$this->success();
 	}
 

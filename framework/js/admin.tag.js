@@ -86,6 +86,26 @@
 				});
 			});
 		},
+		dels:function()
+		{
+			var ids = $.checkbox.join('.ids');
+			if(!ids){
+				$.dialog.tips(p_lang('未指定要操作的标签'));
+				return false;
+			}
+			$.dialog.confirm(p_lang('确定要删除选中的标签'),function(){
+				var url = get_url('tag','delete','id='+ids);
+				$.phpok.json(url,function(data){
+					if(data.status){
+						$.dialog.tips('删除成功').lock();
+						$.phpok.reload();
+						return true;
+					}
+					$.dialog.tips(data.info);
+					return false;
+				});
+			})
+		},
 		config:function()
 		{
 			var url = get_url('tag','config');

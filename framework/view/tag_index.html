@@ -2,8 +2,8 @@
 <div class="layui-card">
 	<div class="layui-card-header">
 		<div class="fl">
-		<ul class="layout" style="margin:2px 0;">
-			<form method="post" action="{url ctrl=tag/}">
+		<ul class="layout" style="margin:3px 0;">
+			<form method="post" class="layui-form" action="{url ctrl=tag/}">
 			<li><input type="text" name="keywords" class="layui-input" id="keywords" value="{$keywords}" /></li>
 			<li><input type="submit" value="提交" class="layui-btn layui-btn-sm" /></li>
 			</form>
@@ -22,7 +22,7 @@
 		<!-- /if -->
 	</div>
 	<div class="layui-card-body">
-		<table class="layui-table">
+		<table class="layui-table layui-form">
 		<thead>
 		<tr>
 			<th width="70">ID</th>
@@ -33,12 +33,14 @@
 			<th width="70" class="center">{lang替换次数}</th>
 			<th width="90" class="center">{lang主题数}</th>
 			<th width="90" class="center">{lang点击数}</th>
-			<th width="140">{lang操作}</th>
+			<th width="150">{lang操作}</th>
 		</tr>
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value -->
 		<tr id="edit_{$value.id}">
-			<td>{$value.id}</td>
+			<td>
+				<input type="checkbox" id="id_{$value.id}" class="ids" name="id" value="{$value.id}" title="{$value.id}" />
+			</td>
 			<td>{$value.title}<!-- if $value.url --><br />{$value.url}<!-- /if --></td>
 			<td>{$value.alt ? $value.alt : '-'}</td>
 			<td>
@@ -60,7 +62,21 @@
 		</tr>
 		<!-- /loop -->
 		</table>
-		<div align="center"><!-- include tpl=pagelist --></div>
+		<div class="layui-row">
+			<div class="layui-col-md6">
+		    	<div class="layui-btn-group">
+		    		<input type="button" value="{lang全选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.all()" />
+		    		<input type="button" value="{lang全不选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.none()" />
+		    		<input type="button" value="{lang反选}" class="layui-btn layui-btn-primary layui-btn-sm" onclick="$.checkbox.anti()" />
+		    	</div>
+		    	<div class="layui-btn-group">
+		    		<input type="button" value="{lang删除}" class="layui-btn layui-btn-danger layui-btn-sm" onclick="$.admin_tag.dels()" />
+		    	</div>
+			</div>
+			<div class="layui-col-md6">
+				<div align="right"><!-- include tpl=pagelist --></div>
+			</div>
+		</div>
 	</div>
 </div>
 <!-- include tpl=foot_lay -->
