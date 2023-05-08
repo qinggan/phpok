@@ -93,7 +93,7 @@
 				$.dialog.tips(p_lang('未指定要操作的标签'));
 				return false;
 			}
-			$.dialog.confirm(p_lang('确定要删除选中的标签'),function(){
+			$.dialog.confirm(p_lang('确定要删除选中的标签 {ids}','<span class="red">'+ids+'</span>'),function(){
 				var url = get_url('tag','delete','id='+ids);
 				$.phpok.json(url,function(data){
 					if(data.status){

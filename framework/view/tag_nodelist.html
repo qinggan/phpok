@@ -49,7 +49,7 @@
 				#{$value.id}_{$value.title}
 				<div class="layui-btn-group fr">
 					<input type="button" value="{lang编辑}" onclick="$.admin_tag.node_set('{$value.id}','edit')" class="layui-btn layui-btn-sm" />
-					<!-- if !$value.pid -->
+					<!-- if $value.pid -->
 					<input type="button" value="{lang绑定}" onclick="$.admin_tag.node_title('{$value.id}')" class="layui-btn layui-btn-sm" />
 					<!-- /if -->
 					<input type="button" value="{lang删除}" onclick="$.admin_tag.node_delete('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />

@@ -131,20 +131,89 @@ class tag_control extends phpok_control
 			foreach($nodelist as $key=>$value){
 				if($value['ids']){
 					$tmplist = explode(',',$value['ids']);
-					$value['clist'] = $value['plist'] = $value['tlist'] = array();
+					$tmplist = array();
 					foreach($tmplist as $k=>$v){
 						if(substr($v,0,1) == 'p'){
-							$value['plist'][] = substr($v,1);
-						}
-						if(substr($v,0,1) == 'c'){
-							$value['clist'][] = substr($v,1);
+							$tmp_id = substr($v,1);
+							$arc = phpok('_project','pid='.$tmp_id);
+							if($arc){
+								$tmplist[] = $arc;
+								unset($arc);
+							}
 						}
 						if(is_numeric($v)){
-							$value['tlist'][] = $v;
+							$arc = phpok("_arc",'title_id='.$v);
+							if($arc){
+								$tmplist[] = $arc;
+								unset($arc);
+							}
 						}
 					}
-					$nodelist[$key] = $value;
+					if($tmplist && count($tmplist)>0){
+						$psize = 1;
+						if($value['type'] && $value['psize']>0){
+							$psize = $value['psize'];
+						}
+						$klist = array_rand($tmplist,$psize);
+						if(is_numeric($klist) || is_string($klist)){
+							$klist = array($klist);
+						}
+						$infolist = array();
+						foreach($klist as $key=>$value){
+							$infolist[] = $tmplist[$value];
+						}
+						if($value['type']){
+							$value['rslist'] = $infolist;
+						}else{
+							$value['rs'] = current($infolist);
+						}
+					}else{
+						$psize = 1;
+						if($value['type'] && $value['psize']>0){
+							$psize = $value['psize'];
+						}
+						$dt = array();
+						$dt['pid'] = $value['pid'];
+						if($value['cid']){
+							$dt['cateid'] = $value['cid'];
+						}
+						$dt['psize'] = $psize;
+						$dt['is_list'] = true;
+						$tmps = phpok("_arclist",$dt);
+						if($tmps && $tmps['total'] && $tmps['rslist']){
+							if($value['type']){
+								$value['rslist'] = $tmps['rslist'];
+							}else{
+								$value['rs'] = current($tmps['rslist']);
+							}
+						}
+					}
+				}else{
+					$psize = 1;
+					if($value['type'] && $value['psize']>0){
+						$psize = $value['psize'];
+					}
+					$dt = array();
+					$dt['pid'] = $value['pid'];
+					if($value['cid']){
+						$dt['cateid'] = $value['cid'];
+					}
+					$dt['psize'] = $psize;
+					$dt['is_list'] = true;
+					$tmps = phpok("_arclist",$dt);
+					if($tmps && $tmps['total'] && $tmps['rslist']){
+						if($value['type']){
+							$value['rslist'] = $tmps['rslist'];
+						}else{
+							$value['rs'] = current($tmps['rslist']);
+						}
+					}
 				}
+				if(!$value['rslist'] && !$value['rs']){
+					unset($nodelist[$key]);
+					continue;
+				}
+				$nodelist[$key] = $value;
 				$rs[$value['identifier']] = $value;
 			}
 			$this->assign('nodelist',$nodelist);
