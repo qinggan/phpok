@@ -88,9 +88,9 @@
 			<td>{func date 'Y-m-d H:i:s' $value.addtime}</td>
 			<td>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang管理员回复}" onclick="$.admin_reply.adm({$value.id})" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang修改}" onclick="$.admin_reply.edit({$value.id})" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang删除}" onclick="$.admin_reply.del({$value.id})" class="layui-btn layui-btn-sm layui-btn-danger" />
+					<input type="button" value="{lang管理员回复}" onclick="$.admin_reply.adm({$value.id})" class="layui-btn layui-btn-xs" />
+					<input type="button" value="{lang修改}" onclick="$.admin_reply.edit({$value.id})" class="layui-btn layui-btn-xs" />
+					<input type="button" value="{lang删除}" onclick="$.admin_reply.del({$value.id})" class="layui-btn layui-btn-xs layui-btn-danger" />
 				</div>
 			</td>
 		</tr>
@@ -104,7 +104,7 @@
 			</td>
 			<td>
 				<!-- if ($popedom.delete && $v.admin_id == $session.admin_id) || $session.admin_rs.if_system -->
-				<input type="button" value="{lang删除}" onclick="$.admin_reply.del({$v.id},'reply')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				<input type="button" value="{lang删除}" onclick="$.admin_reply.del({$v.id},'reply')" class="layui-btn layui-btn-xs layui-btn-danger" />
 				<!-- /if -->
 			</td>
 		</tr>
