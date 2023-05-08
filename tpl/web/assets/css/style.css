@@ -145,7 +145,6 @@ header .nav a.nav-link{
 	background-position: center center;
 }
 
-
 .float-left{
 	float:left;
 }
@@ -270,7 +269,9 @@ fieldset.admin-reply + fieldset.admin-reply{
 }
 /* 管理员回复评论信息 结束 */
 
-
+.nav .nav-link.active{
+	background:var(--bs-primary);
+}
 .width_16{
 	width:16px;
 	height:16px;

@@ -90,6 +90,44 @@ function filter_submit(url,id,val,cutype)
 }
 
 
+/**
+ * 基于Ajax加载内容
+**/
+var is_loading = false;
+var is_locking = false;
+function loadmore(id,func)
+{
+	if(is_loading || is_locking){
+		return false;
+	}
+	var scrollTop = $(this).scrollTop();
+	var scrollHeight = $(document).height() -500;
+	var windowHeight = $(this).height();
+	if (scrollTop + windowHeight >= scrollHeight) {
+		is_loading = true;
+		var url = window.location.href;
+		var data = {};
+		data['pageid'] = pageid+1;
+		data['ajax'] = 1;
+		var loading = $.dialog.tips('加载中，请稍候…',100).lock();
+		$.phpok.json(url,function(rs){
+			is_loading = false;
+			if(!rs.status){
+				is_locking = true;
+				loading.content('已全部加载…').time(0.5);
+				return false;
+			}
+			loading.close();
+			is_locking = false;
+			pageid = data['pageid'];
+			$("#"+id).append(rs.info);
+			if(func && func != 'undefined' && typeof func == 'function'){
+				(func)();
+			}
+		},data);
+	}
+}
+
 
 
 /**
