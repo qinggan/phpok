@@ -4,8 +4,8 @@
 	<div class="col p-2">
 		<div class="card">
 			<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="card-img-top" alt="{$value.title}" /></a>
-			<div class="card-body p-2" style="height:100px;">
-				<a href="{$value.url}"><h5 class="crop-text-2">{$value.title}</h5></a>
+			<div class="card-body p-2">
+				<a href="{$value.url}"><h5 class="text-1">{$value.title}</h5></a>
 				<!-- if $info.project.is_biz && $value.price && $value.price>0 --><div class="card-text text-danger">{func price_format $value.price $value.currency_id $config.currency_id}</div><!-- /if -->
 			</div>
 		</div>
