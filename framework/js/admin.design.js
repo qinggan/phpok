@@ -11,9 +11,9 @@ function paddingSetting(id,obj)
 {
 	var list = new Array();
 	list[0] = {'title':'上','name':'pt'};
-	list[1] = {'title':'右','name':'pr'};
+	list[1] = {'title':'右','name':'pe'};
 	list[2] = {'title':'下','name':'pb'};
-	list[3] = {'title':'左','name':'pl'};
+	list[3] = {'title':'左','name':'ps'};
 	var html = '<div>';
 	html += '<table class="layui-table" lay-skin="nob">';
 	for(var i in list){
@@ -34,30 +34,30 @@ function paddingSetting(id,obj)
 		'cancel':true,
 		'ok': function(){
 			var pt = $("input[name=pt]:checked").val();
-			var pr = $("input[name=pr]:checked").val();
+			var pe = $("input[name=pe]:checked").val();
 			var pb = $("input[name=pb]:checked").val();
-			var pl = $("input[name=pl]:checked").val();
-			if(pt == pr && pt == pb && pt == pl && pt != 'undefined'){
+			var ps = $("input[name=ps]:checked").val();
+			if(pt == pe && pt == pb && pt == ps && pt != 'undefined'){
 				var input = 'p-'+pt;
 			}else{
 				var input = '';
 				if(pt && pt != 'undefined'){
 					input += ' pt-'+pt;
 				}
-				if(pr && pr != 'undefined'){
-					input += ' pr-'+pr;
+				if(pe && pe != 'undefined'){
+					input += ' pe-'+pe;
 				}
 				if(pb && pb != 'undefined'){
 					input += ' pb-'+pb;
 				}
-				if(pl && pl != 'undefined'){
-					input += ' pl-'+pl;
+				if(ps && ps != 'undefined'){
+					input += ' ps-'+ps;
 				}
 				input = $.trim(input);
 			}
 			var old = $(id).val();
 			if(old){
-				old = old.replace(/p[trbl]*\-\d/g,'');
+				old = old.replace(/p[tebs]*\-\d/g,'');
 				old = $.trim(old);
 				if(old){
 					input = old + ' '+input;
@@ -73,9 +73,9 @@ function marginSetting(id,obj)
 {
 	var list = new Array();
 	list[0] = {'title':'上','name':'mt'};
-	list[1] = {'title':'右','name':'mr'};
+	list[1] = {'title':'右','name':'me'};
 	list[2] = {'title':'下','name':'mb'};
-	list[3] = {'title':'左','name':'ml'};
+	list[3] = {'title':'左','name':'ms'};
 	var html = '<div>';
 	html += '<table class="layui-table" lay-skin="nob">';
 	for(var i in list){
@@ -96,30 +96,30 @@ function marginSetting(id,obj)
 		'cancel':true,
 		'ok': function(){
 			var mt = $("input[name=mt]:checked").val();
-			var mr = $("input[name=mr]:checked").val();
+			var me = $("input[name=me]:checked").val();
 			var mb = $("input[name=mb]:checked").val();
-			var ml = $("input[name=ml]:checked").val();
-			if(mt == mr && mt == mb && mt == ml && mt != 'undefined'){
+			var ms = $("input[name=ms]:checked").val();
+			if(mt == me && mt == mb && mt == ms && mt != 'undefined'){
 				var input = 'm-'+mt;
 			}else{
 				var input = '';
 				if(mt && mt != 'undefined'){
 					input += ' mt-'+mt;
 				}
-				if(mr && mr != 'undefined'){
-					input += ' mr-'+mr;
+				if(me && me != 'undefined'){
+					input += ' me-'+me;
 				}
 				if(mb && mb != 'undefined'){
 					input += ' mb-'+mb;
 				}
-				if(ml && ml != 'undefined'){
-					input += ' ml-'+ml;
+				if(ms && ms != 'undefined'){
+					input += ' ms-'+ms;
 				}
 				input = $.trim(input);
 			}
 			var old = $(id).val();
 			if(old){
-				old = old.replace(/m[trbl]*\-\d/g,'');
+				old = old.replace(/m[tebs]*\-\d/g,'');
 				old = $.trim(old);
 				if(old){
 					input = old + ' '+input;
