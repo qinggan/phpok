@@ -1,7 +1,5 @@
 <!-- include tpl=header title=$rs.title -->
-<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
-
-
+<section><!-- include tpl=block/breadcrumb --></section>
 <section class="container">
 	
 <!-- if $parent_id -->
@@ -144,7 +142,7 @@
 	<div class="card-header pt-1 pb-1">
 		<div class="float-left">
 			<div class="d-flex">
-				<div class="mr-2">
+				<div class="me-2">
 					<a href="{url ctrl=user id=$value.uid/}" target="_blank"><img src="{$value.avatar}" class="avatar" alt="{$value.user}" /></a>
 				</div>
 				<div class="align-self-center">
@@ -202,7 +200,7 @@
 			<div class="card-header pt-1 pb-1">
 				<div class="float-left">
 					<div class="d-flex">
-						<div class="mr-2">
+						<div class="me-2">
 							<a href="{url ctrl=user id=$v.uid/}" target="_blank"><img src="{$v.avatar}" class="avatar" alt="{$v.user}" /></a>
 						</div>
 						<div class="align-self-center">

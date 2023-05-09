@@ -5,7 +5,7 @@
 			<div>提交新评论<!-- if $comment.total --> <b>（{$comment.total}）</b> <!-- /if --></div>
 			<!-- if $comment.total -->
 			<div>
-				<a target="_blank" href="{url ctrl=content func=comment id=$rs.id/}" class="btn btn-primary">全部评论</a>
+				<a target="_blank" href="{url ctrl=content func=comment id=$rs.id/}" class="btn btn-primary btn-sm">全部评论</a>
 			</div>
 			<!-- /if -->
 		</div>
@@ -22,10 +22,10 @@
 			</div>
 			<!-- /if -->
 			<!-- if $is_vcode -->
-			<div class="form-group">
+			<div class="form-group mt-2">
 				<div class="row">
-				<div class="col-sm-3"><input class="form-control"  type="text" name="_chkcode" id="_chkcode" placeholder="请填写验证码" /></div>
-				<div class="col-sm-2"><img src="" border="0" align="absmiddle" id="vcode" class="hand" /></div>
+					<div class="col-sm-3"><input class="form-control"  type="text" name="_chkcode" id="_chkcode" placeholder="请填写验证码" /></div>
+					<div class="col-sm-2"><img src="" border="0" align="absmiddle" id="vcode" class="hand" /></div>
 				</div>
 			</div>
 			<script type="text/javascript">
@@ -46,40 +46,41 @@
 <!-- loop from=$comment.rslist key=$key value=$value id=tmpid -->
 <div class="card mt-2">
 	<div class="card-header pt-1 pb-1">
-		<div class="float-left">
-			<div class="d-flex">
-				<div class="mr-2">
-					<a href="{url ctrl=user id=$value.uid/}" target="_blank"><img src="{$value.avatar}" class="avatar" alt="{$value.user}" /></a>
-				</div>
-				<div class="align-self-center">
-					<a href="{url ctrl=user id=$value.uid/}" target="_blank">{$value.user}</a><br />
-					<time>{func time_format $value.addtime}</time>
+		<div class="d-flex justify-content-between">
+			<div>
+				<div class="row row-cols-auto">
+					<div class="col">
+						<a href="{url ctrl=user id=$value.uid/}" target="_blank"><img src="{$value.avatar}" class="avatar" alt="{$value.user}" /></a>
+					</div>
+					<div class="col">
+						<a href="{url ctrl=user id=$value.uid/}" target="_blank">{$value.user}</a><br />
+						<time>{func time_format $value.addtime}</time>
+					</div>
 				</div>
 			</div>
-		</div>
-		
-		<!-- if $value.click_list -->
-		<div class="float-right">
-			<div class="row">
-				<!-- loop from=$value.click_list key=$k value=$v id=$idxx -->
-				<div class="col text-nowrap" title="{$v.title}">
-					<div class="hand" onclick="$.comment.click({$value.id},'{$k}','reply')">
-						<img id="{$k}-{$value.id}-img" src="{$v.is_clicked ? $v.icon1 : $v.icon2}" class="width_16" /> {$v.title} <small id="{$k}-{$value.id}-total">({$v.total})</small>
-					</div>
-					<!-- if $v.wholist -->
-					<div class="row">
-						<!-- loop from=$v.wholist key=$kk value=$vv id=$idxxx -->
-						<div class="col">
-							<a href="{url ctrl=content func=wholist id=$tid tid=$value.id uid=$vv.id/}" target="_blank"><img src="{$vv.avatar}" class="avatar-small" alt="{$vv.user}" /></a>
+			<!-- if $value.click_list -->
+			<div>
+				<div class="row row-cols-auto">
+					<!-- loop from=$value.click_list key=$k value=$v id=$idxx -->
+					<div class="col text-nowrap" title="{$v.title}">
+						<div class="hand" onclick="$.comment.click({$value.id},'{$k}','reply')">
+							<img id="{$k}-{$value.id}-img" src="{$v.is_clicked ? $v.icon1 : $v.icon2}" class="width_16" /> {$v.title} <small id="{$k}-{$value.id}-total">({$v.total})</small>
 						</div>
-						<!-- /loop -->
+						<!-- if $v.wholist -->
+						<div class="row">
+							<!-- loop from=$v.wholist key=$kk value=$vv id=$idxxx -->
+							<div class="col">
+								<a href="{url ctrl=content func=wholist id=$tid tid=$value.id uid=$vv.id/}" target="_blank"><img src="{$vv.avatar}" class="avatar-small" alt="{$vv.user}" /></a>
+							</div>
+							<!-- /loop -->
+						</div>
+						<!-- /if -->
 					</div>
-					<!-- /if -->
+					<!-- /loop -->
 				</div>
-				<!-- /loop -->
 			</div>
+			<!-- /if -->
 		</div>
-		<!-- /if -->
 	</div>
 	<div class="card-body">
 		<p class="card-text"><!-- if $value.vouch --><span class="badge badge-danger mr-2">佳</span><!-- /if -->{$value.content}</p>
@@ -102,37 +103,39 @@
 		<!-- loop from=$value.sublist key=$k value=$v id=$idx -->
 		<div class="card mt-2">
 			<div class="card-header pt-1 pb-1">
-				<div class="float-left">
-					<div class="d-flex">
-						<div class="mr-2">
-							<a href="{url ctrl=user id=$v.uid/}" target="_blank"><img src="{$v.avatar}" class="avatar" alt="{$v.user}" /></a>
-						</div>
-						<div class="align-self-center">
-							<a href="{url ctrl=user id=$v.uid/}" target="_blank">{$v.user}</a><br />
-							<time>{func time_format $v.addtime}</time>
-						</div>
-					</div>
-				</div>
-				<!-- if $v.click_list -->
-				<div class="float-right">
-					<div class="row">
-						<!-- loop from=$v.click_list key=$kk value=$vv id=$idxx -->
-						<div class="col text-nowrap ">
-							<div class="hand" onclick="$.comment.click({$v.id},'{$kk}','reply')"><img id="{$kk}-{$v.id}-img" src="{$vv.is_clicked ? $vv.icon1 : $vv.icon2}" style="width:16px;height:16px;" /> {$vv.title} <small id="{$kk}-{$v.id}-total">({$vv.total})</small></div>
-							<!-- if $vv.wholist -->
-							<div class="row">
-								<!-- loop from=$vv.wholist key=$kkk value=$vvv id=$idxxx -->
-								<div class="col">
-									<a href="{url ctrl=content func=wholist id=$tid tid=$v.id uid=$vvv.id/}" target="_blank"><img src="{$vvv.avatar}" class="avatar-small" alt="{$vv.user}" /></a>
-								</div>
-								<!-- /loop -->
+				<div class="d-flex justify-content-between">
+					<div>
+						<div class="row row-cols-auto">
+							<div class="col">
+								<a href="{url ctrl=user id=$v.uid/}" target="_blank"><img src="{$v.avatar}" class="avatar" alt="{$v.user}" /></a>
 							</div>
-							<!-- /if -->
+							<div class="col">
+								<a href="{url ctrl=user id=$v.uid/}" target="_blank">{$v.user}</a><br />
+								<time>{func time_format $v.addtime}</time>
+							</div>
 						</div>
-						<!-- /loop -->
 					</div>
+					<!-- if $v.click_list -->
+					<div>
+						<div class="row row-cols-auto">
+							<!-- loop from=$v.click_list key=$kk value=$vv id=$idxx -->
+							<div class="col text-nowrap ">
+								<div class="hand" onclick="$.comment.click({$v.id},'{$kk}','reply')"><img id="{$kk}-{$v.id}-img" src="{$vv.is_clicked ? $vv.icon1 : $vv.icon2}" style="width:16px;height:16px;" /> {$vv.title} <small id="{$kk}-{$v.id}-total">({$vv.total})</small></div>
+								<!-- if $vv.wholist -->
+								<div class="row">
+									<!-- loop from=$vv.wholist key=$kkk value=$vvv id=$idxxx -->
+									<div class="col">
+										<a href="{url ctrl=content func=wholist id=$tid tid=$v.id uid=$vvv.id/}" target="_blank"><img src="{$vvv.avatar}" class="avatar-small" alt="{$vv.user}" /></a>
+									</div>
+									<!-- /loop -->
+								</div>
+								<!-- /if -->
+							</div>
+							<!-- /loop -->
+						</div>
+					</div>
+					<!-- /if -->
 				</div>
-				<!-- /if -->
 			</div>
 			<div class="card-body">
 				<p class="card-text">{$v.content}</p>
@@ -156,7 +159,7 @@
 				</button>
 			</div>
 			<div>
-				<button type="button" class="btn btn-primary btn-sm" onclick="$.comment.reply('{$vv.id}','{$tid ? $tid : $rs.id}','{$is_vcode ? 1 : 0}')">点评回复</button>
+				<button type="button" class="btn btn-primary btn-sm" onclick="$.comment.reply('{$value.id}','{$tid ? $tid : $rs.id}','{$is_vcode ? 1 : 0}')">点评回复</button>
 			</div>
 		</div>
 	</div>

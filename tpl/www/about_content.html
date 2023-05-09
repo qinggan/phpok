@@ -1,12 +1,10 @@
 <!-- include tpl=header -->
 <section class="bg-light p-5 bg-default"{if $page_rs.banner} style="background-image:url('{$page_rs.banner.filename}');"{/if}>
-	<div class="p-4">
-		<h1 class="text-center">{$rs.title}</h1>
-	</div>
+	<h1 class="text-center p-4">{$rs.title}</h1>
 	<div class="container">
 		<!-- if $rs.tag -->
 		<div class="text-center m-3">
-			<span class="p-2 bg-light-50 rounded-lg">
+			<span class="p-2 bg-dark bg-opacity-10 rounded">
 			标签：
 			<!-- loop from=$rs.tag key=$k value=$v id=$idxx -->
 			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
@@ -16,7 +14,7 @@
 		<!-- /if -->
 	</div>
 </section>
-<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
+<section><!-- include tpl=block/breadcrumb --></section>
 <div class="container">
 	<div class="row">
 		<div class="col-sm-3">

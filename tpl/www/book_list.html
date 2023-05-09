@@ -1,5 +1,5 @@
 <!-- include tpl=header menutitle=$page_rs.title -->
-<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background-image:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}');"{/if}>
 	<h1 class="p-4 text-center">{$cate_rs ? $cate_rs.title : $page_rs.title}</h1>
 	<!-- php:$taglist = $cate_rs.tag ? $cate_rs.tag : $page_rs.tag -->
 	<!-- if $taglist -->
@@ -47,7 +47,7 @@ function book_save(obj)
 	return false;
 }
 </script>
-<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
+<section><!-- include tpl=block/breadcrumb --></section>
 <section class="container">
 	<div class="card">
 		<div class="card-header">
@@ -93,30 +93,4 @@ function book_save(obj)
 		</div>
 	</div>
 </section>
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<section class="container">
-	<div class="card mt-3">
-		<div class="card-header">
-			{$value.title}<small class="float-right">发布时间：{func time_format $value.dateline}</small>
-		</div>
-		<div class="card-body">
-			<p class="card-text">{$value.content}</p>
-			<!-- if $value.pic -->
-			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
-				<!-- loop from=$value.pic key=$k value=$v id=$idxx -->
-				<div class="col p-2"><a href="{$v.gd.auto}" target="_blank"><img src="{$v.gd.thumb}" alt="{$v.title}" class="rounded" style="max-width:100%" /></a></div>
-				<!-- /loop -->
-			</div>
-			<!-- /if -->
-			<!-- if $value.adm_reply -->
-			<fieldset class="admin-reply">
-				<legend>管理员回复</legend>
-				<div class="content">{$value.adm_reply}</div>
-			</fieldset>
-			<!-- /loop -->
-		</div>
-	</div>
-</section>
-<!-- /loop -->
-<div class="mt-2"><!-- include tpl=block/pagelist --></div>
 <!-- include tpl=footer -->

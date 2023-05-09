@@ -17,7 +17,7 @@
 	op
 }
 </style>
-<section class="bg-light p-5"{if $homepage.banner} style="background:url('{$homepage.banner}') center center no-repeat;background-size:cover;height:450px;"{/if}>
+<section class="bg-light p-5 bg-default"{if $homepage.banner} style="background-image:url('{$homepage.banner}')"{/if}>
 	<h1 class="p-4 text-center" style="margin-top:50px;"><span class="heart">{$homepage.heart ? $homepage.heart : '这家伙很懒，什么都没有写'}</span></h1>
 	<!-- if $taglist -->
 	<div class="container">

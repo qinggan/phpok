@@ -1,12 +1,12 @@
 <!-- include tpl=head title=$title -->
 <header>
-	<div class="topnav d-none d-lg-block">
-		<div class="container">
+	<section class="bg-light border-bottom">
+		<div class="container p-2">
 			<div class="row">
-				<div class="col-4">
+				<div class="col">
 					您好，欢迎访问{$config.title}
 				</div>
-				<div class="col-8 text-end">
+				<div class="col text-end">
 					<!-- php:$list = menu('topnav') -->
 					<!-- loop from=$list key=$key value=$value id=$tmpid -->
 					<a class="p-1" href="{$value.url}" title="{$value.title}" target="{$value.target}">{$value.title}</a>
@@ -46,36 +46,56 @@
 				</div>
 			</div>
 		</div>
-	</div>
-	<section class="headnav">
-		<div class="container">
+	</section>
+	<section>
+		<div class="container p-3">
 			<div class="row">
-				<div class="col-9 col-lg-2 mt-3 mb-3">
-					<a href="{$sys.url}" title="{$config.title}" class="align-middle"><img src="{$config.logo}" alt="{$config.title}" class="logo" /></a>
+				<div class="col">
+					<div class="d-flex justify-content-start">
+						<div class="me-2"><a href="{$sys.url}" title="{$config.title}" class="align-middle"><img src="{$config.logo}" alt="{$config.title}" class="logo" /></a></div>
+						<div class="fs-1 align-middle"><a href="{$sys.url}">{$config.title}</a></div>
+					</div>
 				</div>
-				<div class="col-lg-10 d-none d-lg-block mt-3">
-					<ul class="nav justify-content-end">
-						<!-- php:$list = menu("top") -->
+				<div class="col"></div>
+				<div class="col">
+					<form action="{url ctrl=search/}" method="post" onsubmit="return top_search(this)">
+					<div class="input-group">
+						<input type="text" name="keywords" value="{$keywords}" id="top-keywords" class="form-control" placeholder="请输入要搜索的词" />
+						<button type="submit" class="btn btn-warning">搜索</button>
+					</div>
+					</form>
+					<div class="mt-2 text-end text-gray">
+						<small>搜索关键字：</small>
+						<!-- php:$list = phpok('_keywords','type=hot','psize=5','sign=1') -->
 						<!-- loop from=$list key=$key value=$value id=$tmpid -->
-						<!-- if $value.sublist -->
-						<li class="nav-item dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button">{$value.title}</a>
-							<div class="dropdown-menu" style="top:36px;">
-								<!-- loop from=$value.sublist key=$k value=$v id=$idxx -->
-								<a class="dropdown-item" href="{$v.url}" target="{$v.target}">{$v.title}</a>
-								<!-- /loop -->
-							</div>
-						</li>
-						<!-- else -->
-						<li class="nav-item{if $value.lighlight} active{/if}">
-							<a class="nav-link" href="{$value.url}">{$value.title}</a>
-						</li>
-						<!-- /if -->
+						<a class="p-1" href="{url ctrl=search keywords=$value.title/}"><small>{$value.title}</small></a>
 						<!-- /loop -->
-					</ul>
+					</div>
 				</div>
 			</div>
 		</div>
-		<div class="bg-nav"></div>
+	</section>
+	<section class="bg-primary">
+		<div class="container p-1">
+			<ul class="nav justify-content-between">
+				<!-- php:$list = menu("top") -->
+				<!-- loop from=$list key=$key value=$value id=$tmpid -->
+				<!-- if $value.sublist -->
+				<li class="nav-item dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<a class="nav-link dropdown-toggle" href="{$value.url}" target="{$value.target}" title="{$value.title}" role="button">{$value.title}</a>
+					<div class="dropdown-menu" style="top:36px;">
+						<!-- loop from=$value.sublist key=$k value=$v id=$idxx -->
+						<a class="dropdown-item" href="{$v.url}" target="{$v.target}" title="{$v.title}">{$v.title}</a>
+						<!-- /loop -->
+					</div>
+				</li>
+				<!-- else -->
+				<li class="nav-item{if $value.lighlight} active{/if}">
+					<a class="nav-link" href="{$value.url}" target="{$value.target}" title="{$value.title}">{$value.title}</a>
+				</li>
+				<!-- /if -->
+				<!-- /loop -->
+			</ul>
+		</div>
 	</section>
 </header>

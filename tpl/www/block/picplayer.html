@@ -1,26 +1,29 @@
-<!-- 图片轮播 -->
 <!-- php:$slider = phpok('picplayer') -->
 <!-- if $slider && $slider.rslist -->
-<div id="slider_{$slider.project.id}" class="carousel slide" data-ride="carousel">
-	<ol class="carousel-indicators">
+<section id="slider_{$slider.project.id}" class="carousel slide carousel-fade" data-bs-ride="carousel">
+	<div class="carousel-indicators">
 		<!-- loop from=$slider.rslist key=$key value=$value id=$tmpid -->
-		<li data-target="#slider_{$slider.project.id}" data-slide-to="{$tmpid.index}"{if !$tmpid.index} class="active"{/if}></li>
+		<button type="button" data-bs-target="#slider_{$slider.project.id}" data-bs-slide-to="{$tmpid.index}"{if !$tmpid.index} class="active" aria-current="true"{/if} aria-label="{$value.title}"></button>
 		<!-- /loop -->
-	</ol>
+	</div>
 	<div class="carousel-inner">
 		<!-- loop from=$slider.rslist key=$key value=$value id=$tmpid -->
 		<div class="carousel-item animated fadeIn{if !$tmpid.index} active{/if}">
-			<a href="{$value.linkurl ? $value.linkurl : 'javascript:void(0);'}" title="{$value.title}" {if $value.linkurl} target="{$value.target}"{/if}><img src="{$value.banner.filename}" class="d-block w-100" alt="{$value.title}" /></a>
+			<a href="{$value.linkurl ? $value.linkurl : 'javascript:void(0);'}" title="{$value.title}" {if $value.linkurl} target="{$value.target.val}"{/if}><img src="{$value.banner.filename}" class="d-block w-100" alt="{$value.title}" /></a>
+			<div class="carousel-caption d-none d-md-block">
+				<h4>{$value.title}</h4>
+			</div>
 		</div>
 		<!-- /loop -->
+
 	</div>
-	<a class="carousel-control-prev" href="#slider_{$slider.project.id}" role="button" data-slide="prev">
+	<button class="carousel-control-prev" type="button" data-bs-target="#slider_{$slider.project.id}" data-bs-slide="prev">
 		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-		<span class="sr-only">下一张</span>
-	</a>
-	<a class="carousel-control-next" href="#slider_{$slider.project.id}" role="button" data-slide="next">
+		<span class="visually-hidden">下一张</span>
+	</button>
+	<button class="carousel-control-next" type="button" data-bs-target="#slider_{$slider.project.id}" data-bs-slide="next">
 		<span class="carousel-control-next-icon" aria-hidden="true"></span>
-		<span class="sr-only">下一张</span>
-	</a>
-</div>
+		<span class="visually-hidden">下一张</span>
+	</button>
+</section>
 <!-- /if -->

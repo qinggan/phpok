@@ -1,19 +1,19 @@
-<!-- include tpl=header js="js/jquery.zoombie.js" -->
-<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;"{/if}>
+<!-- include tpl=header -->
+<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background-image:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}')"{/if}>
 	<h1 class="p-4 text-center">{$rs.title}</h1>
 	<!-- if $rs.subtitle -->
 	<h6 class="text-center">{$rs.subtitle}</h6>
 	<!-- /if -->
 	<div class="container">
 		<div class="text-center d-block m-4">
-			<small class="p-2 bg-light-50 rounded-lg ">
+			<small class="p-2 bg-dark bg-opacity-10 rounded">
 				发布日期：{func time_format $rs.dateline} &nbsp; &nbsp;
 				浏览次数：{$rs.hits}
 			</small>
 		</div>
 		<!-- if $rs.tag -->
 		<div class="text-center m-3">
-			<small class="p-2 bg-light-50 rounded-lg">
+			<small class="p-2 bg-dark bg-opacity-10 rounded">
 			标签：
 			<!-- loop from=$rs.tag key=$k value=$v id=$idxx -->
 			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
@@ -23,8 +23,7 @@
 		<!-- /if -->
 	</div>
 </section>
-<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
-
+<section><!-- include tpl=block/breadcrumb --></section>
 <!-- loop from=$rs.attrs key=$key value=$value id=$tmpid -->
 <input type="hidden" data-id="{$key}" data-price="{$value.price}" data-stock="{$value.qty}" />
 <!-- /loop -->
@@ -32,12 +31,12 @@
 function attr_select(id,aid)
 {
 	$("#attr_"+aid).val(id);
-	$("div[name=attr"+aid+"]").each(function(i){
+	$("button[name=attr"+aid+"]").each(function(i){
 		var tid = $(this).attr('data');
 		if(tid == id){
-			$(this).addClass("selected");
+			$(this).removeClass("btn-light").addClass("btn-primary");
 		}else{
-			$(this).removeClass('selected');
+			$(this).removeClass('btn-primary').addClass("btn-light");
 		}
 	});
 	remote_data(id,aid);
@@ -45,7 +44,7 @@ function attr_select(id,aid)
 function attr_unselect(id,aid)
 {
 	$("#attr_"+aid).val('');
-	$("div[name=attr"+aid+"][data="+id+"]").removeClass('selected');
+	$("button[name=attr"+aid+"][data="+id+"]").removeClass('btn-primary').addClass("btn-light");
 	remote_data(id,aid);
 }
 function remote_data(id,aid)
@@ -116,53 +115,22 @@ $(document).ready(function(){
 <section class="container">
 	<div class="row">
 		<div class="col-sm-4 col-md-3">
-			<div class="mb-3">
-				<!-- include tpl=block/catelist cid=$cate_rs.id pid=$page_rs.id title=$page_rs.title -->
-			</div>
-			<!-- include tpl=block/taglist -->
+			<div class="mb-3"><!-- include tpl=block/catelist cid=$cate_rs.id pid=$page_rs.id title=$page_rs.title --></div>
+			<div class="mb-3"><!-- include tpl=block/contact --></div>
 		</div>
 		<div class="col-sm-8 col-md-9">
 			<div class="row">
-				<div class="col-sm-6">
-					<div id="slider_{$page_rs.id}" class="carousel slide" data-ride="carousel">
-						<ol class="carousel-indicators">
-							<!-- if !$rs.pictures && $rs.thumb -->
-							<li data-target="#slider_{$page_rs.id}" data-slide-to="0" class="active"></li>
-							<!-- /if -->
-							<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
-							<li data-target="#slider_{$page_rs.id}" data-slide-to="{$tmpid.index}"{if !$tmpid.index} class="active"{/if}></li>
-							<!-- /loop -->
-						</ol>
-						<div class="carousel-inner">
-							<!-- if !$rs.pictures && $rs.thumb -->
-							<div class="carousel-item active">
-								<img src="{$rs.thumb.gd.auto}" class="d-block w-100" alt="{$rs.title}" />
-							</div>
-							<!-- /if -->
-							<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
-							<div class="carousel-item{if !$tmpid.index} active{/if}">
-								<img src="{$value.gd.auto}" class="d-block w-100" alt="{$rs.title} - {$tmpid.num}" />
-							</div>
-							<!-- /loop -->
-						</div>
-						<a class="carousel-control-prev" href="#slider_{$page_rs.id}" role="button" data-slide="prev">
-							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-							<span class="sr-only">下一张</span>
-						</a>
-						<a class="carousel-control-next" href="#slider_{$page_rs.id}" role="button" data-slide="next">
-							<span class="carousel-control-next-icon" aria-hidden="true"></span>
-							<span class="sr-only">下一张</span>
-						</a>
-					</div>
+				<div class="col">
+					<!-- include tpl=block/products-picplayer -->
 				</div>
-				<div class="col-sm-6">
+				<div class="col">
 					<ul class="list-group list-group-flush">
 						<!-- loop from=$rs.apps key=$key value=$value id=$tmpid -->
 						<!-- if $value.me -->
 						<li class="list-group-item">
 							<div class="row">
-								<div class="col-sm-4">
-									{$value.me.title}
+								<div class="col col-md-3 text-end">
+									<b>{$value.me.title}</b>
 								</div>
 								<div class="col">
 									<select name="{$key}_id" id="{$key}_id" data-name="apps" data-id="{$key}">
@@ -178,19 +146,15 @@ $(document).ready(function(){
 						<!-- loop from=$rs.attrlist key=$key value=$value -->
 						<li class="list-group-item">
 							<div class="row">
-								<div class="col-sm-4"><b>{$value.title}</b></div>
+								<div class="col col-md-3 text-end"><b>{$value.title}</b></div>
 								<div class="col">
 									<input type="hidden" name="attr" id="attr_{$value.id}" value="" />
-									<div class="row row-cols-sm-1">
-										<!-- loop from=$value.rslist key=$k value=$v id=$tmpid -->
-										<div class="col">
-											<div class="attr m-1" name="attr{$value.id}" data="{$v.id}" style="user-select: none;" onclick="attr_select('{$v.id}','{$value.id}')">
-												<!-- if $v.pic --><img src="{$v.pic}" style="width:40px;height:40px" /><!-- /if -->
-												{$v.title}
-											</div>
-										</div>
-										<!-- /loop -->
-									</div>
+									<!-- loop from=$value.rslist key=$k value=$v id=$tmpid -->
+									<button type="button" class="btn btn-sm btn-light mb-1" name="attr{$value.id}" data="{$v.id}" onclick="attr_select('{$v.id}','{$value.id}')">
+										<!-- if $v.pic --><img src="{$v.pic}" style="width:40px;height:40px" /><!-- /if -->
+										{$v.title}
+									</button>
+									<!-- /loop -->
 								</div>
 							</div>
 						</li>
@@ -198,22 +162,26 @@ $(document).ready(function(){
 						<!-- if $rs.qty -->
 						<li class="list-group-item">
 							<div class="row">
-								<div class="col-sm-4"><b>库存</b></div>
+								<div class="col col-md-3 text-end"><b>库存</b></div>
 								<div class="col" id="stock_qty">{$rs.qty}</div>
 							</div>
 						</li>
 						<!-- /if -->
 						<li class="list-group-item">
 							<div class="row">
-								<div class="col-sm-4"><b>购买数量</b></div>
+								<div class="col col-md-3 text-end"><b>购买数量</b></div>
 								<div class="col">
-									<input name="buycount" id="buycount" value="1" type="number" min="1" onkeyup="value=value.replace(/[^\d]/g,'')" onblur="value=value.replace(/[^\d]/g,'')" />
+									<div class="input-group w-50">
+										<button type="button" id="minus" class="btn btn-secondary btn-sm"><i class="fa fa-minus"></i></button>
+										<input type="text" class="form-control" name="buycount" id="buycount" value="1" type="number" min="1" onkeyup="value=value.replace(/[^\d]/g,'')" onblur="value=value.replace(/[^\d]/g,'')" />
+										<button type="button" id="plus" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></button>
+									</div>
 								</div>
 							</div>
 						</li>
 						<li class="list-group-item">
 							<div class="row">
-								<div class="col-sm-4"><b>价格</b></div>
+								<div class="col col-md-3 text-end"><b>价格</b></div>
 								<div class="col">
 									<!-- if $rs.min-max -->
 									<span class="price" style="color:red;font-size:16px;" id="showprice">
@@ -278,39 +246,39 @@ $(document).ready(function(){
 	<div class="card mt-3 mb-3 rounded-0 border-bottom-0 border-left-0 border-right-0">
 		<div class="card-header">
 			<ul class="nav nav-tabs justify-content-center card-header-tabs" role="tablist">
-				<li><a href="#product-content" class="nav-link active mr-2 ml-2" role="tab" data-toggle="tab">产品介绍</a></li>
+				<li><a href="#product-content" class="nav-link active me-2 ml-2" role="tab" data-bs-toggle="tab">产品介绍</a></li>
 				<!-- if $rs.pictures -->
-				<li><a href="#product-pictures" class="nav-link mr-2 ml-2" role="tab" data-toggle="tab">产品图集</a></li>
+				<li><a href="#product-pictures" class="nav-link me-2 ml-2" role="tab" data-bs-toggle="tab">产品图集</a></li>
 				<!-- /if -->
 				<!-- if $rs.params -->
-				<li><a href="#product-params" class="nav-link mr-2 ml-2" role="tab" data-toggle="tab">规格参数</a></li>
+				<li><a href="#product-params" class="nav-link me-2 ml-2" role="tab" data-bs-toggle="tab">规格参数</a></li>
 				<!-- /if -->
 				<!-- if $rs.package -->
-				<li><a href="#product-package" class="nav-link mr-2 ml-2" role="tab" data-toggle="tab">包装清单</a></li>
+				<li><a href="#product-package" class="nav-link me-2 ml-2" role="tab" data-bs-toggle="tab">包装清单</a></li>
 				<!-- /if -->
-				<li><a href="#product-service" class="nav-link mr-2 ml-2" role="tab" data-toggle="tab">售后信息</a></li>
+				<li><a href="#product-service" class="nav-link me-2 ml-2" role="tab" data-bs-toggle="tab">售后信息</a></li>
 				<!-- if $page_rs.comment_status -->
-				<li><a href="#product-comment" class="nav-link mr-2 ml-2" role="tab" data-toggle="tab">产品评论</a></li>
+				<li><a href="#product-comment" class="nav-link me-2 ml-2" role="tab" data-bs-toggle="tab">产品评论</a></li>
 				<!-- /if -->
 			</ul>
 		</div>
 	</div>
 	<div class="tab-content">
-		<div role="tabpanel" class="tab-pane active" id="product-content">
+		<div role="tabpanel" class="tab-pane fade show active" id="product-content">
 			<!-- loop from=$rs.contentpics key=$key value=$value id=$tmpid -->
 			<div align="center"><img src="{$value.filename}" style="max-width:100%" /></div>
 			<!-- /loop -->
 			{$rs.content}
 		</div>
 		<!-- if $rs.pictures -->
-		<div role="tabpanel" class="tab-pane" id="product-pictures">
+		<div role="tabpanel" class="tab-pane fade" id="product-pictures">
 			<!-- loop from=$rs.pictures key=$key value=$value id=$tmpid -->
 			<p align="center"><img src="{$value.gd.auto}" style="max-width:100%;" border="0" /></p>
 			<!-- /loop -->
 		</div>
 		<!-- /if -->
 		<!-- if $rs.params -->
-		<div role="tabpanel" class="tab-pane" id="product-params">
+		<div role="tabpanel" class="tab-pane fade" id="product-params">
 			
 			<!-- loop from=$rs.params key=$key value=$value id=$tmpid -->
 			<h4 class="text-center p-3">{$value.name}</h4>
@@ -336,7 +304,7 @@ $(document).ready(function(){
 		</div>
 		<!-- /if -->
 		<!-- if $rs.package -->
-		<div role="tabpanel" class="tab-pane" id="product-package">
+		<div role="tabpanel" class="tab-pane fade" id="product-package">
 			<div class="container">
 			<table class="table table-bordered">
 				<tbody>
@@ -351,12 +319,12 @@ $(document).ready(function(){
 			</div>
 		</div>
 		<!-- /if -->
-		<div role="tabpanel" class="tab-pane" id="product-service">
+		<div role="tabpanel" class="tab-pane fade" id="product-service">
 			<!-- php:$t = phpok('after-sale-protection') -->
 			<div class="container"><div class="content">{$t.content}</div></div>
 		</div>
 		<!-- if $page_rs.comment_status -->
-		<div role="tabpanel" class="tab-pane" id="product-comment">
+		<div role="tabpanel" class="tab-pane fade" id="product-comment">
 			<div class="container">
 				<!-- include tpl=block/comment tid=$rs.id -->
 			</div>

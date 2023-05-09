@@ -5,7 +5,7 @@
 	<!-- if $taglist -->
 	<div class="container">
 		<div class="text-center m-3">
-			<span class="p-2 bg-light-50 rounded-lg">
+			<span class="p-2 bg-dark bg-opacity-10 rounded">
 			标签：
 			<!-- loop from=$taglist key=$k value=$v id=$idxx -->
 			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
@@ -15,38 +15,44 @@
 	</div>
 	<!-- /if -->
 </section>
-<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
+<section><!-- include tpl=block/breadcrumb --></section>
 <section class="container">
 	<div class="row">
-		<div class="col-sm-4 col-md-3">
+		<div class="col col-sm-4 col-md-3">
 			<div class="mb-3"><!-- include tpl=block/catelist cid=$cate_rs.id pid=$page_rs.id title=$page_rs.title --></div>
 			<div class="mb-3"><!-- include tpl=block/contact --></div>
 			<div class="mb-3"><!-- include tpl=block/hot_products --></div>
 		</div>
-		<div class="col-sm-8 col-md-9">
-			<ul class="list-unstyled">
+		<div class="col col-sm-8 col-md-9">
+			<ul class="list-group list-group-flush">
 				<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-				<li class="media mb-2 border-bottom pb-2">
-					<!-- if $value.thumb --><a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="align-self-start mr-3" alt="{$value.title}" width="120" /></a><!-- /if -->
-					<div class="media-body">
-						<a href="{$value.url}" title="{$value.title}"><h5 class="mt-0 mb-1">{$value.title}</h5></a>
-						<!-- if $value.note -->
-						<div class="text-muted">{func nl2br $value.note}</div>
+				<li class="list-group-item">
+					<div class="d-flex">
+						<!-- if $value.thumb -->
+						<div class="flex-shrink-0">
+							<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="align-self-start mr-3" alt="{$value.title}" width="120" /></a>
+						</div>
 						<!-- /if -->
-						<div class="row mt-2">
-							<small class="col text-muted">
-								时间：{func time_format $value.dateline}，
-								次数：{$value.hits}
-							</small>
-							<!-- if $value.tag -->
-							<small class="col text-end">
-								标签：
-								<!-- loop from=$value.tag key=$k value=$v id=$idxx -->
-								{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
-								<!-- /loop -->
-							</small>
+						<div class="flex-grow-1 ms-3">
+							<a href="{$value.url}" title="{$value.title}"><h5 class="mt-0 mb-1">{$value.title}</h5></a>
+							<!-- if $value.note -->
+							<div class="text-muted">{func nl2br $value.note}</div>
 							<!-- /if -->
-						</div>						
+							<div class="row mt-2">
+								<small class="col text-muted">
+									时间：{func time_format $value.dateline}，
+									次数：{$value.hits}
+								</small>
+								<!-- if $value.tag -->
+								<small class="col text-end">
+									标签：
+									<!-- loop from=$value.tag key=$k value=$v id=$idxx -->
+									{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+									<!-- /loop -->
+								</small>
+								<!-- /if -->
+							</div>	
+						</div>
 					</div>
 				</li>
 				<!-- /loop -->

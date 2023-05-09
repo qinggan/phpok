@@ -9,6 +9,7 @@
 
 a{
 	color:#205696;
+	text-decoration: none;
 }
 a:hover{
 	text-decoration: none;
@@ -20,4 +21,21 @@ footer{
 .btn-primary{
 	background:#205696;
 	border-color:#0A3262;
+}
+
+.float-left{
+	float:left;
+}
+
+.float-right{
+	float:right;
+}
+
+.form-control:focus{
+	box-shadow:none;
+	border-color:inherit;
+}
+
+.form-group{
+	margin-bottom:1rem;
 }

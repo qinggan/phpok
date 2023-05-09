@@ -1,11 +1,11 @@
 <!-- include tpl=header -->
-<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}') center center no-repeat;background-size:cover;"{/if}>
+<section class="bg-light p-5 bg-default"{if $cate_rs.banner || $page_rs.banner} style="background-image:url('{$cate_rs.banner ? $cate_rs.banner.filename : $page_rs.banner.filename}')"{/if}>
 	<h1 class="p-4 text-center">{$cate_rs ? $cate_rs.title : $page_rs.title}</h1>
 	<!-- php:$taglist = $cate_rs.tag ? $cate_rs.tag : $page_rs.tag -->
 	<!-- if $taglist -->
 	<div class="container">
 		<div class="text-center m-3">
-			<span class="p-2 bg-light-50 rounded-lg">
+			<span class="p-2 bg-dark bg-opacity-10 rounded">
 			标签：
 			<!-- loop from=$taglist key=$k value=$v id=$idxx -->
 			{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
@@ -15,79 +15,23 @@
 	</div>
 	<!-- /if -->
 </section>
-<section class="container-fluid p-0"><!-- include tpl=block/breadcrumb --></section>
+<section><!-- include tpl=block/breadcrumb --></section>
 <!-- if $filter -->
-<script type="text/javascript">
-function filter_submit(url,id,val,cutype)
-{
-	if(!url || !id || url == 'undefined' || id == 'undefined' || !val || val == 'undefined'){
-		return false;
-	}
-	url += (url.indexOf('?') > -1) ? '&' : '?';
-	if(id == 'cate'){
-		url += "cate="+val;
-		$.phpok.go(url);
-		return true;
-	}
-	if(id == 'price'){
-		var t = val.split('-');
-		if(t[0] && t[0] != 'undefined'){
-			url += "price[min]="+t[0]+"&";
-		}
-		if(t[1] && t[1] != 'undefined'){
-			url += "price[max]="+t[1];
-		}
-		$.phpok.go(url);
-		return true;
-	}
-	var str = '';
-	var is_delete = false;
-	if(cutype != ''){
-		$("#filter_"+id+" .active").each(function(i){
-			var info = $(this).attr('data-val');
-			if(info && info != val){
-				if(str != ''){
-					str += cutype+""+info;
-				}else{
-					str = info;
-				}
-			}
-			if(info && info == val){
-				is_delete = true;
-			}
-		});
-		if(str != '' && !is_delete){
-			str += cutype+""+val;
-		}
-		if(str == '' && !is_delete){
-			str = val;
-		}
-		if(str != ''){
-			url += "ext["+id+"]="+$.str.encode(str);
-		}
-	}else{
-		url += "ext["+id+"]="+$.str.encode(val);
-	}
-	$.phpok.go(url);
-}
-</script>
-<style type="text/css">
-.filter .active{
-	font-weight:bold;
-	color:darkred;
-}
-</style>
 <section class="container filter">
 	<!-- loop from=$filter key=$key value=$value id=$tmpid -->
-	<div class="row mb-2 p-1 border-bottom">
+	<div class="row{if $tmpid.num != $tmpid.total} border-bottom{/if}">
 		<div class="col-2 text-blue text-end">
-			{$value.title}：
+			<div class="p-2">{$value.title}：</div>
 		</div>
 		<div class="col-10" id="filter_{$value.identifier}">
-			<a href="{$value.url}" class="pr-2 {if $value.highlight} active{/if}">不限</a>
-		    <!-- loop from=$value.list key=$k value=$v id=$tmpid2 -->
-		    <a class="pr-2 {if $v.highlight} active{/if}" data-val="{$v.val}" href="javascript:filter_submit('{$value.url}','{$value.identifier}','{$v.val}','{$value.join}');void(0);">{$v.title}</a>
-		    <!-- /loop -->
+			<div class="d-flex justify-content-start">
+				<div class="p-2">
+					<a href="{$value.url}" class="btn btn-sm {if $value.highlight}btn-primary{else}btn-light{/if}">不限</a>
+				</div>
+				<!-- loop from=$value.list key=$k value=$v id=$tmpid2 -->
+		    	<div class="p-2"><a class="btn btn-sm {if $v.highlight}btn-primary{else}btn-light{/if}" data-val="{$v.val}" href="javascript:filter_submit('{$value.url}','{$value.identifier}','{$v.val}','{$value.join}');void(0);">{$v.title}</a></div>
+		    	<!-- /loop -->
+		    </div>
 		</div>
 	</div>
 	<!-- /loop -->
@@ -96,19 +40,19 @@ function filter_submit(url,id,val,cutype)
 
 <section class="container">
 	<div class="row mt-3">
-		<div class="col-sm-4 col-md-3">
+		<div class="col col-sm-4 col-md-3">
 			<div class="mb-3"><!-- include tpl=block/catelist cid=$cate_rs.id pid=$page_rs.id title=$page_rs.title --></div>
 			<div class="mb-3"><!-- include tpl=block/contact --></div>
 			<div class="mb-3"><!-- include tpl=block/taglist --></div>
 		</div>
-		<div class="col-sm-8 col-md-9">
+		<div class="col col-sm-8 col-md-9">
 			<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3">
 				<!-- loop from=$rslist key=$key value=$value -->
 				<div class="col mb-3">
 					<div class="card">
 						<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="card-img-top" alt="{$value.title}" /></a>
 						<div class="card-body">
-							<h5 class="card-title crop-text-2" style="height:50px;">{$value.title}</h5>
+							<h5 class="card-title text-2">{$value.title}</h5>
 							<!-- if $value.apps && $value.apps.coupon && $value.apps.coupon.rs -->
 							<div class="discount"><img src="{$value.apps.coupon.rs.pic1}"/></div>
 							<!-- /if -->

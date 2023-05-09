@@ -1,8 +1,10 @@
 <!-- php:$list = phpok("_taglist","psize=60") -->
 <!-- if $list -->
 <div class="card">
+	<div class="card-header">
+		TAG标签
+	</div>
 	<div class="card-body">
-		<h5 class="card-title">TAG标签</h5>
 		<div class="tags">
 	        <!-- loop from=$list key=$key value=$value id=$tmpid -->
 	        <a href="{$value.url}" target="{$value.target}" alt="{$value.at}">{$value.title}</a>
