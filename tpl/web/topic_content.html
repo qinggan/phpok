@@ -1,0 +1,20 @@
+<!-- include tpl=header -->
+<section class="bg-light p-5 bg-default"{if $rs.banner} style="background-image:url('{$rs.banner.filename}')"{/if}>
+	<h1 class="p-4 text-center">{$rs.title}</h1>
+	<!-- if $rs.tag -->
+	<div class="text-center m-3">
+		<small class="p-2 bg-dark bg-opacity-10 rounded">
+		标签：
+		<!-- loop from=$rs.tag key=$k value=$v id=$idxx -->
+		{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+		<!-- /loop -->
+		</small>
+	</div>
+	<!-- /if -->
+</section>
+<section><!-- include tpl=block/breadcrumb --></section>
+<section class="clearfix">
+	<!-- if $rs.note --><div class="container"><div class="content">{func nl2br $rs.note}</div></div><!-- /if -->
+	{$rs.content}
+</section>
+<!-- include tpl=footer -->

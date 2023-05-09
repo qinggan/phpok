@@ -24,33 +24,35 @@
 			<div class="mb-3"><!-- include tpl=block/hot_products --></div>
 		</div>
 		<div class="col col-sm-8 col-md-9">
-			<ul class="list-unstyled">
+			<ul class="list-group list-group-flush">
 				<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-				<li class="d-flex border-bottom mb-2 pb-2">
-					<!-- if $value.thumb -->
-					<div class="flex-shrink-0">
-						<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="align-self-start mr-3" alt="{$value.title}" width="120" /></a>
-					</div>
-					<!-- /if -->
-					<div class="flex-grow-1 ms-3">
-						<a href="{$value.url}" title="{$value.title}"><h5 class="mt-0 mb-1">{$value.title}</h5></a>
-						<!-- if $value.note -->
-						<div class="text-muted">{func nl2br $value.note}</div>
+				<li class="list-group-item">
+					<div class="d-flex">
+						<!-- if $value.thumb -->
+						<div class="flex-shrink-0">
+							<a href="{$value.url}" title="{$value.title}"><img src="{$value.thumb.gd.thumb}" class="align-self-start mr-3" alt="{$value.title}" width="120" /></a>
+						</div>
 						<!-- /if -->
-						<div class="row mt-2">
-							<small class="col text-muted">
-								时间：{func time_format $value.dateline}，
-								次数：{$value.hits}
-							</small>
-							<!-- if $value.tag -->
-							<small class="col text-end">
-								标签：
-								<!-- loop from=$value.tag key=$k value=$v id=$idxx -->
-								{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
-								<!-- /loop -->
-							</small>
+						<div class="flex-grow-1 ms-3">
+							<a href="{$value.url}" title="{$value.title}"><h5 class="mt-0 mb-1">{$value.title}</h5></a>
+							<!-- if $value.note -->
+							<div class="text-muted">{func nl2br $value.note}</div>
 							<!-- /if -->
-						</div>	
+							<div class="row mt-2">
+								<small class="col text-muted">
+									时间：{func time_format $value.dateline}，
+									次数：{$value.hits}
+								</small>
+								<!-- if $value.tag -->
+								<small class="col text-end">
+									标签：
+									<!-- loop from=$value.tag key=$k value=$v id=$idxx -->
+									{$v.html}<!-- if $idxx.total != $idxx.num -->，<!-- /if -->
+									<!-- /loop -->
+								</small>
+								<!-- /if -->
+							</div>	
+						</div>
 					</div>
 				</li>
 				<!-- /loop -->
