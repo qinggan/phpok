@@ -265,22 +265,21 @@ class user_model_base extends phpok_model
 	}
 
 	/**
+	 * 取得某一条扩展字段配置信息
+	 * @参数 $id 主键ID
+	**/
+	public function field_one($id)
+	{
+		return $this->model('fields')->one($id);
+	}
+
+	/**
 	 * 取得指定表的字段
 	 * @参数 $tbl 表名
 	**/
 	public function tbl_fields_list($tbl='user')
 	{
 		return $this->db->list_fields($tbl);
-	}
-
-	/**
-	 * 取得某一条扩展字段配置信息
-	 * @参数 $id 主键ID
-	**/
-	public function field_one($id)
-	{
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE id='".$id."'";
-		return $this->db->get_one($sql);
 	}
 
 	/**

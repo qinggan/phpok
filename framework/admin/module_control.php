@@ -270,14 +270,25 @@ class module_control extends phpok_control
 		if(!$this->popedom["set"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$id = $this->get("id","int");
+		$id = $this->get("id");
 		if(!$id){
 			$this->error(P_Lang('未指定模型'),$this->url("module"));
 		}
-		$rs = $this->model('module')->get_one($id);
+		if(is_numeric($id)){
+			$rs = $this->model('module')->get_one($id);
+			if(!$rs){
+				$this->error(P_Lang('模块信息不存在'));
+			}
+			$condition = "area LIKE '%module%'";
+		}else{
+			if($id != 'user'){
+				$this->error(P_Lang('ID类型异常'));
+			}
+			$rs = array('id'=>'user','title'=>P_Lang('用户扩展字段'));
+			$condition = "area LIKE '%user%'";
+		}
 		$this->assign("id",$id);
 		$this->assign("rs",$rs);
-		$condition = "area LIKE '%module%'";
 		$fields_list = $this->model('fields')->default_all();
 		$groups = $this->model('fields')->groups();
 		if($fields_list){
