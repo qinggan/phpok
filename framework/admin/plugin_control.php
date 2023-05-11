@@ -96,6 +96,9 @@ class plugin_control extends phpok_control
 	**/
 	public function extconfig_f()
 	{
+		if(!$this->popedom["config"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get("_phpokid");
 		if(!$id){
 			$id = $this->get('id');
@@ -220,6 +223,9 @@ class plugin_control extends phpok_control
 	**/
 	public function unzip_f()
 	{
+		if(!$this->popedom["install"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get('id','int');
 		if(!$id){
 			$filename = $this->get('filename');
@@ -338,7 +344,7 @@ class plugin_control extends phpok_control
 	**/
 	public function uninstall_f()
 	{
-		if(!$this->popedom["install"]){
+		if(!$this->popedom["uninstall"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("_phpokid");
@@ -370,7 +376,7 @@ class plugin_control extends phpok_control
 	**/
 	public function status_f()
 	{
-		if(!$this->popedom["install"]){
+		if(!$this->popedom["status"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("_phpokid");
@@ -447,6 +453,9 @@ class plugin_control extends phpok_control
 
 	public function upload_f()
 	{
+		if(!$this->popedom["install"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$array = array("identifier"=>'zipfile',"form_type"=>'upload');
 		$array['upload_type'] = 'update';
 		$this->lib('form')->cssjs($array);
@@ -460,6 +469,9 @@ class plugin_control extends phpok_control
 	**/
 	public function zip_f()
 	{
+		if(!$this->popedom["list"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$id = $this->get('id');
 		if(!$id){
 			$this->error(P_Lang('插件标识不存在'),$this->url('plugin'));
@@ -640,6 +652,9 @@ class plugin_control extends phpok_control
 	**/
 	public function create_f()
 	{
+		if(!$this->popedom["install"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
 		$title = $this->get('title');
 		if(!$title){
 			$this->error(P_Lang('插件名称不能为空'));
