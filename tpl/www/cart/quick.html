@@ -82,6 +82,7 @@ function save(obj)
 		var url = api_url('order','create','id[]='+rs.info);
 		var postdata = {};
 		postdata['mobile'] = mobile;
+		postdata['fullname'] = fullname;
 		postdata['note'] = $("#note").val();
 		if(is_virtual == '0'){
 			postdata['shipping-country'] = country;
@@ -97,18 +98,13 @@ function save(obj)
 			if(zipcode){
 				postdata['shpping-zipcode'] = zipcode;
 			}
-		}else{
-			if(postdata['note'] != ''){
-				postdata['note'] += "\n";
-			}
-			postdata['note'] += "联系人："+fullname;
 		}
 		$.phpok.json(url,function(res){
 			if(!res.status){
 				$.dialog.tips(res.info);
 				return false;
 			}
-			url = get_url('order','info','sn='+res.info.sn+"&passwd="+res.info.passwd);
+			url = get_url('order','payment','sn='+res.info.sn+"&passwd="+res.info.passwd);
 			$.phpok.go(url);
 		},postdata);
 	});
