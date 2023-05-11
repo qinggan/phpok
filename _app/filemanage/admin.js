@@ -18,7 +18,7 @@
 					return false;
 				}
 				var url_ext = "folder="+$.str.encode(folder)+"&type=file&title="+$.str.encode(val);
-				$.phpok.json(api_url("filemanage","create",url_ext),function(rs){
+				$.phpok.json(get_url("filemanage","create",url_ext),function(rs){
 					if(rs.status){
 						$.phpok.reload();
 						return true;
@@ -36,7 +36,7 @@
 					return false;
 				}
 				var url_ext = "folder="+$.str.encode(folder)+"&type=folder&title="+$.str.encode(val);
-				$.phpok.json(api_url("filemanage","create",url_ext),function(rs){
+				$.phpok.json(get_url("filemanage","create",url_ext),function(rs){
 					if(rs.status){
 						$.phpok.reload();
 						return true;
@@ -53,14 +53,14 @@
 					$.dialog.alert(p_lang('操作异常，未指定文件'));
 					return false;
 				}
-				var url = api_url("filemanage","delfile","folder="+$.str.encode(folder)+"&title="+$.str.encode(title));
+				var url = get_url("filemanage","delfile","folder="+$.str.encode(folder)+"&title="+$.str.encode(title));
 				$.phpok.json(url,function(rs){
 					if(rs.status){
 						$.dialog.tips(p_lang('删除成功')).position('48%','5px');
 						$("#"+id).remove();
 						return true;
 					}
-					$.dialog.alert(rs.info);
+					$.dialog.tips(rs.info);
 					return false;
 				})
 			});
@@ -68,8 +68,8 @@
 		download:function(folder,title)
 		{
 			var url_ext = "folder="+$.str.encode(folder)+"&title="+$.str.encode(title);
-			var url = api_url("filemanage","download",url_ext);
-			$.phpok.go(url);
+			var url = get_url("filemanage","download",url_ext);
+			$.phpok.open(url);
 		},
 		edit:function(folder,title)
 		{
@@ -155,7 +155,7 @@
 					layer.alert("新旧名称一样");
 					return false;
 				}
-				var url = api_url("filemanage","rename","folder="+$.str.encode(folder)+"&old="+$.str.encode(title)+"&title="+$.str.encode(val));
+				var url = get_url("filemanage","rename","folder="+$.str.encode(folder)+"&old="+$.str.encode(title)+"&title="+$.str.encode(val));
 				$.phpok.json(url,function(rs){
 					if(rs.status){
 						$.phpok.reload();
