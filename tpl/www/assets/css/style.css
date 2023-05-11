@@ -277,3 +277,66 @@ fieldset.admin-reply + fieldset.admin-reply{
 	width:16px;
 	height:16px;
 }
+
+/* 在线客服 */
+.kfonline{
+	position: fixed;
+	bottom: 60px;
+	right: 15px;
+	z-index: 999999;
+}
+
+.kfonline .card-header{
+	cursor: pointer;
+}
+
+.kfonline-icon{
+	width:40px;
+	height:40px;
+	cursor: pointer;
+	color:var(--bs-white);
+	border:1px solid var(--bs-white);
+	line-height:36px;
+	text-align:center;
+	background:var(--bs-primary);
+	margin-top:-4px;
+	position:relative;
+}
+.kfonline-icon.cart sup{
+	position:absolute;
+	top:2px;
+	right:2px;
+	font-size:60%;
+}
+.kfonline-icon.weixin div{
+	display:none;
+	position:absolute;
+	right:40px;
+	top:0;
+	width:120px;
+}
+.kfonline-icon.weixin div img{
+	width:100%;
+}
+.kfonline-icon.weixin:hover div{
+	display: block;
+}
+
+.kfonline-icon.tel div{
+	display:none;
+	position:absolute;
+	right:40px;
+	top:0;
+}
+
+.kfonline-icon.tel:hover div{
+	display: block;
+}
+
+.kfonline-icon a .fa{
+	color:var(--white);
+}
+
+.kfonline-icon.toTop{
+	
+}

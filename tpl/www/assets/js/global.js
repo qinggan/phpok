@@ -134,8 +134,27 @@ function loadmore(id,func)
  * 文档加载完成后初始化
 **/
 $(document).ready(function(){
+	if ($("meta[name=toTop]").attr("content") == "true") {
+		if ($(this).scrollTop() == 0) {
+			$(".toTop").hide();
+		}
+		$(".toTop").click(function(event) {
+			$("html,body").animate({
+				scrollTop: "0px"
+			}, 666)
+		});
+		$(window).scroll(function(event) {
+			if ($(this).scrollTop() == 0) {
+				$(".toTop").hide();
+			}
+			if ($(this).scrollTop() != 0) {
+				$(".toTop").show();
+			}
+		});
+	}
 	$(document).off('click.bs.dropdown.data-api');
 	dropdownOpen();//调用
+	
 
 	/**
 	 * 评论

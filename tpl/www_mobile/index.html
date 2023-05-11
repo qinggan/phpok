@@ -5,18 +5,15 @@
 <!-- if $products -->
 <section class="container">
 	<div class="p-4">
-		<div class="row m-2">
-
-			<div class="col">
-				<h2 class="h1 text-center"{if $products.project.style} style="{$products.project.style}"{/if}>
-					{$products.project.title}
-					<!-- if $products.project.entitle --><small class="d-block m-2">{$products.project.entitle}</small><!-- /if -->
-				</h2>
-			</div>
+		<div class="m-2">
+			<h2 class="h1 text-center"{if $products.project.style} style="{$products.project.style}"{/if}>
+				{$products.project.title}
+				<!-- if $products.project.entitle --><small class="d-block m-2">{$products.project.entitle}</small><!-- /if -->
+			</h2>
 		</div>
 		<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
 			<!-- loop from=$products.rslist key=$key value=$value id=$tmpid -->
-			<div class="col-6 col-md-4 p-2">
+			<div class="col-12 col-md-4 p-2">
 				<div class="card p-2">
 					<a href="{$value.url}" title="{$value.title}"><img class=" card-img-top" src="{$value.thumb.gd.thumb}" alt="{$value.title}" /></a>
 					<div class="card-body p-2">
@@ -74,7 +71,7 @@
 			<!-- /if -->
 			<div class="col">
 				<div class="media-body">
-					<a href="{$value.url}" title="{$value.title}"><h5>{$value.title}</h5></a>
+					<a href="{$value.url}" title="{$value.title}" class="crop-text-1"><h5>{$value.title}</h5></a>
 					<p class="crop-text-2"><!-- if $value.note -->{func phpok_cut $value.note 100 …}<!-- else -->{func phpok_cut $value.content 100 …}<!-- /if --></p>
 				</div>
 			</div>

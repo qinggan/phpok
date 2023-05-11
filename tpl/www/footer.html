@@ -78,5 +78,32 @@
 	<!-- /if -->
 </footer>
 
+<div class="kfonline">
+	<div class="kfonline-icon cart" onclick="$.phpok.go('{url ctrl=cart/}')">
+		<i class="fa fa-shopping-cart"></i>
+		<sup id="head_cart_num" class="badge badge-danger badge-pill" style="display:none;">0</sup>
+	</div>
+	<!-- php:$list = phpok('kfonline') -->
+	<!-- loop from=$list.rslist key=$key value=$value id=$tmpid -->
+	<!-- if $value.qtype && $value.qtype.val == 'qq' -->
+	<div class="kfonline-icon qq">
+		<a class="text-white" href="tencent://message/?uin={$value.account}" target="_blank"><i class="fa fa-qq"></i></a>
+	</div>
+	<!-- elseif $value.qtype && $value.qtype.val == 'tel' -->
+	<div class="kfonline-icon tel">
+		<a class="text-white" href="tel:{$value.account}"><i class="fa fa-phone"></i></a>
+		<div class="fs-4 bg-white p-3 shadow">{$value.account}</div>
+	</div>
+	<!-- elseif $value.qtype && $value.qtype.val == 'weixin' && $value.qrcode -->
+	<div class="kfonline-icon weixin">
+		<i class="fa fa-weixin"></i>
+		<div class="bg-white p-1 shadow"><img src="{$value.qrcode.filename}" /></div>
+	</div>
+	<!-- /if -->
+	<!-- /loop -->
+	<div class="kfonline-icon toTop">
+		<i class="fa fa-arrow-up"></i>
+	</div>
+</div>
 
 <!-- include tpl=foot -->

@@ -44,7 +44,7 @@ a{
 }
 
 .logo{
-	max-width:100%;
+	width:60px;
 }
 .btn-primary{
 	background-color:var(--blue);

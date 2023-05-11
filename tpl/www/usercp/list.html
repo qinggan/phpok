@@ -26,7 +26,7 @@ function post_del(id)
 		<!-- /if -->
 	</div>
 	<div class="layui-card-body">
-		<table id="tablelist" lay-filter="tablelist" data-psize="{$psize}" data-total="{$total}" data-ftype="{$m_rs.id}" data-totalRow="{$page_rs.admin-list-stat}">
+		<table id="tablelist" lay-filter="tablelist" data-psize="{$psize}" data-total="{$total}" data-ftype="{$m_rs.id}" data-totalRow="{$page_rs.admin-list-stat}" lay-data="{escape: false}">
 		<thead>
 		<tr>
 			<th lay-data="{field:'id', width:70,fixed:'left',sort:true,align:'center'}">ID</th>
