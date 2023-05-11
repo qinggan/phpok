@@ -72,6 +72,74 @@ class file_lib
 	}
 
 	/**
+	 * 附件下载
+	 * @参数 $file 要下载的文件地址
+	 * @参数 $title 下载后的文件名
+	 * @参数 $isfile 是否文件
+	**/
+	public function download($file,$title='',$isfile=true)
+	{
+		if(!$file){
+			return false;
+		}
+		if(!$isfile){
+			set_time_limit(0);
+			header("Content-type: applicatoin/octet-stream");
+			header("Date: ".gmdate("D, d M Y H:i:s",time())." GMT");
+			header("Last-Modified: ".gmdate("D, d M Y H:i:s",time())." GMT");
+			header("Content-Encoding: none");
+			header("Content-Disposition: attachment; filename=".rawurlencode($title)."; filename*=utf-8''".rawurlencode($title));
+			header("Accept-Ranges: bytes");
+			echo $file;
+			exit;
+		}
+		if(!file_exists($file)){
+			return false;
+		}
+		$ext = pathinfo($file,PATHINFO_EXTENSION);
+		$filesize = filesize($file);
+		if(!$title){
+			$title = basename($file);
+		}else{
+			$title = str_replace('.'.$ext,'',$title);
+			$title.= '.'.$ext;
+		}
+		ob_end_clean();
+		set_time_limit(0);
+		header("Content-type: applicatoin/octet-stream");
+		header("Date: ".gmdate("D, d M Y H:i:s",time())." GMT");
+		header("Last-Modified: ".gmdate("D, d M Y H:i:s",time())." GMT");
+		header("Content-Encoding: none");
+		header("Content-Disposition: attachment; filename=".rawurlencode($title)."; filename*=utf-8''".rawurlencode($title));
+		header("Accept-Ranges: bytes");
+		$range = 0;
+		$size2 = $filesize -1;
+		if (isset ($_SERVER['HTTP_RANGE'])) {
+		    list ($a, $range) = explode("=", $_SERVER['HTTP_RANGE']);
+		    $new_length = $size2 - $range;
+		    header("HTTP/1.1 206 Partial Content");
+		    header("Content-Length: ".$new_length); //输入总长
+		    header("Content-Range: bytes ".$range."-".$size2."/".$filesize);
+		} else {
+		    header("Content-Range: bytes 0-".$size2."/".$filesize); //Content-Range: bytes 0-4988927/4988928
+		    header("Content-Length: ".$filesize);
+		}
+		$read_buffer=4096;
+		$sum_buffer = 0;
+		$handle = fopen($file, "rb");
+		fseek($handle, $range);
+		ob_start();
+		while (!feof($handle) && $sum_buffer<$filesize) {
+			echo fread($handle,$read_buffer);
+			$sum_buffer+=$read_buffer;
+			ob_flush();
+			flush();
+		}
+		ob_end_clean();
+		fclose($handle);
+	}
+
+	/**
 	 * 保存数据
 	 * @参数 $content 要保存的内容，支持字符串，数组，多维数组等
 	 * @参数 $file 保存的文件地址
@@ -136,6 +204,19 @@ class file_lib
 		unset($content);
 		$this->_close($handle);
 		return true;
+	}
+
+	/**
+	 * 文件夹排序
+	**/
+	public function folder_sort($list,$is_asc=false)
+	{
+		if($is_asc){
+			usort($list,array($this,'_sort'));
+		}else{
+			usort($list,array($this,'_rsort'));
+		}
+		return $list;
 	}
 
 	/**
@@ -266,24 +347,15 @@ class file_lib
 	**/
 	public function mv($old,$new,$recover=true)
 	{
-		if(!file_exists($old)){
+		$act = $this->cp($old,$new,$recover);
+		if(!$act){
 			return false;
 		}
-		if(substr($new,-1) == "/"){
-			$this->make($new,"dir");
-		}else{
-			$this->make($new,"file");
+		//删除旧的文件
+		if(is_file($old)){
+			$this->rm($old,'file');
 		}
-		if(file_exists($new)){
-			if($recover){
-				unlink($new);
-			}else{
-				return false;
-			}
-		}else{
-			$new = $new.basename($old);
-		}
-		rename($old,$new);
+		$this->rm($old,'folder');
 		return true;
 	}
 
@@ -306,16 +378,21 @@ class file_lib
 	 * 获取文件夹及子文件夹等多层文件列表（无限级，长度受系统限制）
 	 * @参数 $folder 文件夹
 	 * @参数 $list 引用变量
+	 * @参数 $infolder 是否包含文件夹
 	**/
-	public function deep_ls($folder,&$list)
+	public function deep_ls($folder,&$list,$infolder=false)
 	{
 		$this->read_count++;
 		$tmplist = $this->_dir_list($folder);
 		if($tmplist){
 			foreach($tmplist as $key=>$value){
 				if(is_dir($value)){
-					$this->deep_ls($value,$list);
-				}else{
+					if($infolder){
+						$list[] = $value;
+					}
+					$this->deep_ls($value,$list,$infolder);
+				}
+				if(is_file($value)){
 					$list[] = $value;
 				}
 			}
@@ -416,70 +493,32 @@ class file_lib
 	}
 
 	/**
-	 * 附件下载
-	 * @参数 $file 要下载的文件地址
-	 * @参数 $title 下载后的文件名
-	 * @参数 $isfile 是否文件
+	 * 文件夹排序
 	**/
-	public function download($file,$title='',$isfile=true)
+	private function _rsort($a,$b)
 	{
-		if(!$file){
-			return false;
+		$list_a = explode('/',$a);
+		$list_b = explode('/',$b);
+		$length_a = count($list_a);
+		$length_b = count($list_b);
+		if($length_a == $length_b){
+			return 0;
 		}
-		if(!$isfile){
-			set_time_limit(0);
-			header("Content-type: applicatoin/octet-stream");
-			header("Date: ".gmdate("D, d M Y H:i:s",time())." GMT");
-			header("Last-Modified: ".gmdate("D, d M Y H:i:s",time())." GMT");
-			header("Content-Encoding: none");
-			header("Content-Disposition: attachment; filename=".rawurlencode($title)."; filename*=utf-8''".rawurlencode($title));
-			header("Accept-Ranges: bytes");
-			echo $file;
-			exit;
+		return $length_a > $length_b ? -1 : 1;
+	}
+
+	/**
+	 * 文件夹排序
+	**/
+	private function _sort($a,$b)
+	{
+		$list_a = explode('/',$a);
+		$list_b = explode('/',$b);
+		$length_a = count($list_a);
+		$length_b = count($list_b);
+		if($length_a == $length_b){
+			return 0;
 		}
-		if(!file_exists($file)){
-			return false;
-		}
-		$ext = pathinfo($file,PATHINFO_EXTENSION);
-		$filesize = filesize($file);
-		if(!$title){
-			$title = basename($file);
-		}else{
-			$title = str_replace('.'.$ext,'',$title);
-			$title.= '.'.$ext;
-		}
-		ob_end_clean();
-		set_time_limit(0);
-		header("Content-type: applicatoin/octet-stream");
-		header("Date: ".gmdate("D, d M Y H:i:s",time())." GMT");
-		header("Last-Modified: ".gmdate("D, d M Y H:i:s",time())." GMT");
-		header("Content-Encoding: none");
-		header("Content-Disposition: attachment; filename=".rawurlencode($title)."; filename*=utf-8''".rawurlencode($title));
-		header("Accept-Ranges: bytes");
-		$range = 0;
-		$size2 = $filesize -1;
-		if (isset ($_SERVER['HTTP_RANGE'])) {
-		    list ($a, $range) = explode("=", $_SERVER['HTTP_RANGE']);
-		    $new_length = $size2 - $range;
-		    header("HTTP/1.1 206 Partial Content");
-		    header("Content-Length: ".$new_length); //输入总长
-		    header("Content-Range: bytes ".$range."-".$size2."/".$filesize);
-		} else {
-		    header("Content-Range: bytes 0-".$size2."/".$filesize); //Content-Range: bytes 0-4988927/4988928
-		    header("Content-Length: ".$filesize);
-		}
-		$read_buffer=4096;
-		$sum_buffer = 0;
-		$handle = fopen($file, "rb");
-		fseek($handle, $range);
-		ob_start();
-		while (!feof($handle) && $sum_buffer<$filesize) {
-			echo fread($handle,$read_buffer);
-			$sum_buffer+=$read_buffer;
-			ob_flush();
-			flush();
-		}
-		ob_end_clean();
-		fclose($handle);
+		return $length_a < $length_b ? -1 : 1;
 	}
 }
