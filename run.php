@@ -52,3 +52,14 @@ if(!$rs){
 	}
 }
 
+/**
+ * 删除会员字段核心菜单
+**/
+$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE appfile='user' AND func='fields'";
+$rs = $this->db->get_one($sql);
+if($rs){
+	$sql = "DELETE FROM ".$this->db->prefix."popedom WHERE gid='".$rs['id']."'";
+	$this->db->query($sql);
+	$sql = "DELETE FROM ".$this->db->prefix."sysmenu WHERE id='".$rs['id']."'";
+	$this->db->query($sql);
+}

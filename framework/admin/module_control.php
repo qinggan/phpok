@@ -279,13 +279,11 @@ class module_control extends phpok_control
 			if(!$rs){
 				$this->error(P_Lang('模块信息不存在'));
 			}
-			$condition = "area LIKE '%module%'";
 		}else{
 			if($id != 'user'){
 				$this->error(P_Lang('ID类型异常'));
 			}
 			$rs = array('id'=>'user','title'=>P_Lang('用户扩展字段'));
-			$condition = "area LIKE '%user%'";
 		}
 		$this->assign("id",$id);
 		$this->assign("rs",$rs);
@@ -329,7 +327,7 @@ class module_control extends phpok_control
 		if(!$this->popedom["set"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$id = $this->get("id","int");
+		$id = $this->get("id");
 		if(!$id){
 			$this->error(P_Lang('未指定模型ID'));
 		}
@@ -395,16 +393,132 @@ class module_control extends phpok_control
 		$this->success();
 	}
 
+	public function field_addok_f()
+	{
+		if(!$this->popedom['set']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$mid = $this->get('mid');
+		if(!$mid){
+			$this->error(P_Lang('未指定ID'));
+		}
+		if(is_numeric($mid)){
+			$rs = $this->model('module')->get_one($mid);
+			if(!$rs){
+				$this->error(P_Lang('模块信息不存在'));
+			}
+		}else{
+			if($mid != 'user'){
+				$this->error(P_Lang('模块异常'));
+			}
+			$rs = array('id'=>'user','title'=>P_Lang('用户扩展字段'));
+		}
+		$array = array('module_id'=>$mid);
+		$array['title'] = $this->get("title");
+		if(!$array['title']){
+			$this->error(P_Lang('名称不能为空'));
+		}
+		$array['note'] = $this->get("note");
+		$identifier = $this->get('identifier');
+		if(!$identifier){
+			$this->error(P_Lang('标识串不能为空'));
+		}
+		$identifier = strtolower($identifier);
+		if(!preg_match("/^[a-z][a-z0-9\_]+$/u",$identifier)){
+			$this->error(P_Lang('字段标识不符合系统要求，限字母、数字及下划线且必须是字母开头'));
+		}
+		if($mid == 'user'){
+			$tblname = 'user_ext';
+		}else{
+			if(!$rs['mtype']){
+				$tbl = $rs['tbl'] ? $rs['tbl'] : 'list';
+				$flist = $this->model('fields')->tbl_fields($tbl);
+				if($flist && in_array($identifier,$flist)){
+					$this->error(P_Lang('字符已经存在'));
+				}
+			}
+			$tblname = $rs['mtype'] ? $mid : $rs['tbl'].'_'.$mid;
+		}
+		$flist = $this->model('fields')->tbl_fields($tblname);
+		if($flist && in_array($identifier,$flist)){
+			$this->error(P_Lang('字符在扩展表中已使用'));
+		}
+		$array['identifier'] = $identifier;
+		$array['field_type'] = $this->get("field_type");
+		$array['form_type'] = $this->get("form_type");
+		$array['form_style'] = $this->get("form_style");
+		$array['format'] = $this->get("format");
+		$array['content'] = $this->get("content");
+		$array['taxis'] = $this->get("taxis","int");
+		$array['is_front'] = $this->get('is_front','int');
+		$array['search'] = $this->get('search','int');
+		$array['search_separator'] = $this->get('search_separator');
+		$array['onlyone'] = $this->get('onlyone','int');
+		$array['group_id'] = $this->get('group_id');
+		$array['filter'] = $this->get('filter','int');
+		$array['filter_join'] = $this->get('filter_join');
+		$array['filter_content'] = $this->get('filter_content');
+		$array['filter_title'] = $this->get('filter_title');
+		$array['admin-list-width'] = $this->get('admin-list-width','int');
+		$array['admin-list-edit'] = $this->get('admin-list-edit','int');
+		$array['admin-list-sort'] = $this->get('admin-list-sort','int');
+		$array['admin-list-stat'] = $this->get('admin-list-stat','int');
+		$array['admin-history'] = $this->get('admin-history','int');
+		$ext_form_id = $this->get("ext_form_id");
+		$ext = array();
+		if($ext_form_id){
+			$list = explode(",",$ext_form_id);
+			foreach($list as $key=>$value){
+				$val = explode(':',$value);
+				if($val[1] && $val[1] == "checkbox"){
+					$value = $val[0];
+					$array[$value] = $this->get($value,"checkbox");
+				}else{
+					$value = $val[0];
+					$array[$value] = $this->get($value,'html_js');
+				}
+			}
+		}
+		$this->model('module')->fields_save($array);
+		if(is_numeric($mid)){
+			$tbl_exists = $this->model('module')->chk_tbl_exists($mid,$rs['mtype'],$rs['tbl']);
+			if(!$tbl_exists){
+				$this->model('module')->create_tbl($mid);
+				$tbl_exists2 = $this->model('module')->chk_tbl_exists($mid,$rs['mtype'],$rs['tbl']);
+				if(!$tbl_exists2){
+					$this->error(P_Lang('模块：[title]创建表失败',array('title'=>$rs['title'])));
+				}
+			}
+		}
+		$list = $this->model('module')->fields_all($mid);
+		if($list){
+			foreach($list as $key=>$value){
+				if($flist && in_array($value['identifier'],$flist)){
+					continue;
+				}
+				$this->model('module')->create_fields($value['id']);
+			}
+		}
+		$this->success();
+	}
+
 	/**
 	 * 创建扩展字段
 	**/
 	public function field_create_f()
 	{
-		$mid = $this->get('mid','int');
+		$mid = $this->get('mid');
 		if(!$mid){
 			$this->error(P_Lang('未指定模块ID'));
 		}
-		$m_rs = $this->model('module')->get_one($mid);
+		if(is_numeric($mid)){
+			$m_rs = $this->model('module')->get_one($mid);
+		}else{
+			if($mid != 'user'){
+				$this->error(P_Lang('模块异常'));
+			}
+			$m_rs = array('id'=>'user','title'=>P_Lang('用户扩展字段'));
+		}
 		$this->assign('m_rs',$m_rs);
 		$this->assign('mid',$mid);
 		$taxis = $this->model('module')->fields_next_taxis($mid);
@@ -636,104 +750,6 @@ class module_control extends phpok_control
 		$this->success();
 	}
 
-	public function field_addok_f()
-	{
-		if(!$this->popedom['set']){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$mid = $this->get('mid','int');
-		if(!$mid){
-			$this->error(P_Lang('未指定ID'));
-		}
-		$rs = $this->model('module')->get_one($mid);
-		if(!$rs){
-			$this->error(P_Lang('模块信息不存在'));
-		}
-		$array = array('module_id'=>$mid);
-		$array['title'] = $this->get("title");
-		if(!$array['title']){
-			$this->error(P_Lang('名称不能为空'));
-		}
-		$array['note'] = $this->get("note");
-		$identifier = $this->get('identifier');
-		if(!$identifier){
-			$this->error(P_Lang('标识串不能为空'));
-		}
-		$identifier = strtolower($identifier);
-		if(!preg_match("/^[a-z][a-z0-9\_]+$/u",$identifier)){
-			$this->error(P_Lang('字段标识不符合系统要求，限字母、数字及下划线且必须是字母开头'));
-		}
-		if($identifier == 'phpok'){
-			$this->error(P_Lang('phpok是系统禁用字符，请不要使用'));
-		}
-		if(!$rs['mtype']){
-			$tbl = $rs['tbl'] ? $rs['tbl'] : 'list';
-			$flist = $this->model('fields')->tbl_fields($tbl);
-			if($flist && in_array($identifier,$flist)){
-				$this->json(P_Lang('字符已经存在'));
-			}
-		}
-		$tblname = $rs['mtype'] ? $mid : $rs['tbl'].'_'.$mid;
-		$flist = $this->model('fields')->tbl_fields($tblname);
-		if($flist && in_array($identifier,$flist)){
-			$this->error(P_Lang('字符在扩展表中已使用'));
-		}
-		$array['identifier'] = $identifier;
-		$array['field_type'] = $this->get("field_type");
-		$array['form_type'] = $this->get("form_type");
-		$array['form_style'] = $this->get("form_style");
-		$array['format'] = $this->get("format");
-		$array['content'] = $this->get("content");
-		$array['taxis'] = $this->get("taxis","int");
-		$array['is_front'] = $this->get('is_front','int');
-		$array['search'] = $this->get('search','int');
-		$array['search_separator'] = $this->get('search_separator');
-		$array['onlyone'] = $this->get('onlyone','int');
-		$array['group_id'] = $this->get('group_id');
-		$array['filter'] = $this->get('filter','int');
-		$array['filter_join'] = $this->get('filter_join');
-		$array['filter_content'] = $this->get('filter_content');
-		$array['filter_title'] = $this->get('filter_title');
-		$array['admin-list-width'] = $this->get('admin-list-width','int');
-		$array['admin-list-edit'] = $this->get('admin-list-edit','int');
-		$array['admin-list-sort'] = $this->get('admin-list-sort','int');
-		$array['admin-list-stat'] = $this->get('admin-list-stat','int');
-		$array['admin-history'] = $this->get('admin-history','int');
-		$ext_form_id = $this->get("ext_form_id");
-		$ext = array();
-		if($ext_form_id){
-			$list = explode(",",$ext_form_id);
-			foreach($list AS $key=>$value){
-				$val = explode(':',$value);
-				if($val[1] && $val[1] == "checkbox"){
-					$value = $val[0];
-					$array[$value] = $this->get($value,"checkbox");
-				}else{
-					$value = $val[0];
-					$array[$value] = $this->get($value,'html_js');
-				}
-			}
-		}
-		$this->model('module')->fields_save($array);
-		$tbl_exists = $this->model('module')->chk_tbl_exists($mid,$rs['mtype'],$rs['tbl']);
-		if(!$tbl_exists){
-			$this->model('module')->create_tbl($mid);
-			$tbl_exists2 = $this->model('module')->chk_tbl_exists($mid,$rs['mtype'],$rs['tbl']);
-			if(!$tbl_exists2){
-				$this->error(P_Lang('模块：[title]创建表失败',array('title'=>$rs['title'])));
-			}
-		}
-		$list = $this->model('module')->fields_all($mid);
-		if($list){
-			foreach($list as $key=>$value){
-				if($flist && in_array($value['identifier'],$flist)){
-					continue;
-				}
-				$this->model('module')->create_fields($value['id']);
-			}
-		}
-		$this->success();
-	}
 
 	/**
 	 * 导出模块字段，此项仅用于导出XML配置文件，如果模块中绑定主题或其他一些选项，在这里不会被体现，需要您手动再绑定

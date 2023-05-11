@@ -151,11 +151,15 @@ class module_model extends module_model_base
 		if(!$rs){
 			return false;
 		}
-		$table = $this->get_one($rs['ftype']);
-		if(!$this->chk_tbl_exists($table['id'],$table['mtype'],$table['tbl'])){
-			return false;
+		if($rs['ftype'] == 'user'){
+			$tblname = $this->db->prefix.'user_ext';
+		}else{
+			$table = $this->get_one($rs['ftype']);
+			if(!$this->chk_tbl_exists($table['id'],$table['mtype'],$table['tbl'])){
+				return false;
+			}
+			$tblname = $table['mtype'] ? $this->db->prefix.$table['id'] : $this->db->prefix.$table['tbl']."_".$table['id'];
 		}
-		$tblname = $table['mtype'] ? $this->db->prefix.$table['id'] : $this->db->prefix.$table['tbl']."_".$table['id'];
 		$data = array('id'=>$rs['identifier'],'type'=>$rs['field_type'],'unsigned'=>false);
 		$data['notnull'] = true;
 		if($rs['field_type'] == 'date' || $rs['field_type'] == 'datetime'){
@@ -184,8 +188,15 @@ class module_model extends module_model_base
 			return false;
 		}
 		$rs = $this->field_one($id);
-		$table = $this->get_one($rs['ftype']);
-		$tblname = $table['mtype'] ? $this->db->prefix.$table['id'] : $this->db->prefix.$table['tbl']."_".$table['id'];
+		if($rs['ftype'] == 'user'){
+			$tblname = $this->db->prefix.'user_ext';
+		}else{
+			$table = $this->get_one($rs['ftype']);
+			if(!$this->chk_tbl_exists($table['id'],$table['mtype'],$table['tbl'])){
+				return false;
+			}
+			$tblname = $table['mtype'] ? $this->db->prefix.$table['id'] : $this->db->prefix.$table['tbl']."_".$table['id'];
+		}
 		$idlist = $this->db->list_fields($tblname,false);
 		if($idlist && in_array($rs['identifier'],$idlist)){
 			$this->db->delete_table_fields($tblname,$rs['identifier']);
