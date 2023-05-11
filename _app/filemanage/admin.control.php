@@ -25,6 +25,64 @@ class admin_control extends \phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
+	/**
+	 * 创建文件（夹）
+	**/
+	public function create_f()
+	{
+		if(!$this->session->val('admin2verify')){
+			$this->view('admin_vcode');
+		}
+		if(!$this->popedom["add"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$folder = $this->_folder();
+		$title = $this->get("title");
+		$type = $this->get("type");
+		if(!$type){
+			$type = "file";
+		}
+		$file = $this->dir_root.$folder.$title;
+		if(file_exists($file)){
+			$this->error(P_Lang('要创建的文件（夹）名称已经存在，请检查'));
+		}
+		if($type == "folder"){
+			$this->lib('file')->make($file,"dir");
+		}else{
+			$this->lib('file')->make($file,"file");
+		}
+		$this->success();
+	}
+
+	/**
+	 * 复制文件（夹）
+	**/
+	public function copy_f()
+	{
+		if(!$this->session->val('admin2verify')){
+			$this->error(P_Lang('未经过二次密码确认，不能执行此操作'));
+		}
+		if(!$this->popedom["edit"] || !$this->popedom['add']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->error(P_Lang('未指定要复制的文件（夹）'));
+		}
+		$folder = $this->get('folder');
+		if(!$folder){
+			$folder = '/';
+		}
+		$tmpdata = array('title'=>$title,'folder'=>$folder);
+		$file = $this->dir_data.'cp-'.$this->session->val('admin_id').'.php';
+		$this->lib('file')->vi($tmpdata,$file,'config');
+		//删除移动记录
+		$file = $this->dir_data.'mv-'.$this->session->val('admin_id').'.php';
+		if(file_exists($file)){
+			$this->lib('file')->rm($file);
+		}
+		$this->success();
+	}
 
 	/**
 	 * 仅供CSS操作
@@ -99,35 +157,6 @@ class admin_control extends \phpok_control
 	}
 
 	/**
-	 * 创建文件（夹）
-	**/
-	public function create_f()
-	{
-		if(!$this->session->val('admin2verify')){
-			$this->view('admin_vcode');
-		}
-		if(!$this->popedom["add"]){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$folder = $this->_folder();
-		$title = $this->get("title");
-		$type = $this->get("type");
-		if(!$type){
-			$type = "file";
-		}
-		$file = $this->dir_root.$folder.$title;
-		if(file_exists($file)){
-			$this->error(P_Lang('要创建的文件（夹）名称已经存在，请检查'));
-		}
-		if($type == "folder"){
-			$this->lib('file')->make($file,"dir");
-		}else{
-			$this->lib('file')->make($file,"file");
-		}
-		$this->success();
-	}
-
-	/**
 	 * 删除文件夹
 	**/
 	public function delfile_f()
@@ -181,7 +210,7 @@ class admin_control extends \phpok_control
 		$title = $this->get("title");
 		$file = $this->dir_root.$folder.$title;
 		if(!is_file($file)){
-			$this->error(P_Lang('文件不存在'));
+			$this->error(P_Lang('不支持文件夹下载或当前文件不存在'));
 		}
 		$this->lib('file')->download($file,$title);
 	}
@@ -324,6 +353,35 @@ class admin_control extends \phpok_control
 		$this->display('admin_html');
 	}
 
+	/**
+	 * 移动
+	**/
+	public function move_f()
+	{
+		if(!$this->session->val('admin2verify')){
+			$this->error(P_Lang('未经过二次密码确认，不能执行此操作'));
+		}
+		if(!$this->popedom["edit"] || !$this->popedom['add']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$title = $this->get('title');
+		if(!$title){
+			$this->error(P_Lang('未指定要移动的文件（夹）'));
+		}
+		$folder = $this->get('folder');
+		if(!$folder){
+			$folder = '/';
+		}
+		$tmpdata = array('title'=>$title,'folder'=>$folder);
+		$file = $this->dir_data.'mv-'.$this->session->val('admin_id').'.php';
+		$this->lib('file')->vi($tmpdata,$file,'config');
+		//删除复制记录
+		$file = $this->dir_data.'cp-'.$this->session->val('admin_id').'.php';
+		if(file_exists($file)){
+			$this->lib('file')->rm($file);
+		}
+		$this->success();
+	}
 
 
 	/**
@@ -443,7 +501,97 @@ class admin_control extends \phpok_control
 		if($rs_i > 0){
 			$this->assign("rslist",$rslist);
 		}
+		//判断是否有粘贴
+		$is_paste = false;
+		if($this->popedom['add'] && $this->popedom['edit']){
+			
+			$file = $this->dir_data.'cp-'.$this->session->val('admin_id').'.php';
+			if(file_exists($file)){
+				include_once($file);
+				if($config && $config['folder'] != $folder){
+					$is_paste = true;
+				}
+			}else{
+				$file = $this->dir_data.'mv-'.$this->session->val('admin_id').'.php';
+				if(file_exists($file)){
+					include_once($file);
+					if($config && $config['folder'] != $folder){
+						$is_paste = true;
+					}
+				}
+			}
+			$this->assign('is_paste',$is_paste);
+		}
 		$this->display('admin_index');
+	}
+
+
+	/**
+	 * 粘贴
+	**/
+	public function paste_f()
+	{
+		if(!$this->session->val('admin2verify')){
+			$this->error(P_Lang('未经过二次密码确认，不能执行此操作'));
+		}
+		if(!$this->popedom["edit"] || !$this->popedom['add']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$file = $this->dir_data.'mv-'.$this->session->val('admin_id').'.php';
+		$is_move = true;
+		if(!file_exists($file)){
+			$is_move = false;
+			$file = $this->dir_data.'cp-'.$this->session->val('admin_id').'.php';
+			if(!file_exists($file)){
+				$this->error(P_Lang('没有粘贴项'));
+			}
+		}
+		include_once($file);
+		if(!$config){
+			$this->error(P_Lang('粘贴异常，移动（复制）记录有异'));
+		}
+		$folder = $this->get('folder');
+		if(!$folder){
+			$folder = '/';
+		}
+		$old = $this->dir_root;
+		if($config['folder'] == $folder){
+			$this->error(P_Lang('目标一样，不支持移动或复制'));
+		}
+		$old = $this->dir_root;
+		if($config['folder'] == '/'){
+			$old .= $config['title'];
+		}else{
+			if(substr($config['folder'],0,-1) == '/'){
+				$config['folder'] = substr($config['folder'],1);
+			}
+			if(substr($config['folder'],-1) != '/'){
+				$config['folder'] .= '/';
+			}
+			$old .= $config['folder'].$config['title'];
+		}
+		if(!file_exists($old)){
+			$this->error(P_Lang('复制或移动失败，文件（夹）不存在'));
+		}
+		$new = $this->dir_root;
+		if($folder == '/'){
+			$new .= $config['title'];
+		}else{
+			if(substr($folder,0,-1) == '/'){
+				$folder = substr($folder,1);
+			}
+			if(substr($config['folder'],-1) != '/'){
+				$folder .= '/';
+			}
+			$new .= $folder.$title;
+		}
+		if($is_move){
+			$this->lib('file')->mv($old,$new);
+		}else{
+			$this->lib('file')->cp($old,$new);
+		}
+		$this->lib('file')->rm($file);
+		$this->success();
 	}
 
 	/**
@@ -509,7 +657,7 @@ class admin_control extends \phpok_control
 		if(!$this->session->val('admin2verify')){
 			$this->error(P_Lang('未经过二次密码确认，不能执行此操作'));
 		}
-		if(!$this->popedom["edit"] && !$this->popedom['add']){
+		if(!$this->popedom["edit"] || !$this->popedom['add']){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$folder = $this->get('folder');
@@ -535,45 +683,83 @@ class admin_control extends \phpok_control
 	**/
 	public function unzip_f()
 	{
-		if(!$this->popedom["edit"] && !$this->popedom['add']){
+		if(!$this->session->val('admin2verify')){
+			$this->error(P_Lang('未经过二次密码确认，不能执行此操作'));
+		}
+		if(!$this->popedom["edit"] || !$this->popedom['add']){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$id = $this->get('id','int');
-		if(!$id){
-			$filename = $this->get('filename');
-			if(!$filename){
-				$this->error(P_Lang('附件不存在'));
-			}
-		}else{
-			$rs = $this->model('res')->get_one($id);
-			if(!$rs){
-				$this->error(P_Lang('附件不存在'));
-			}
-			$filename = $rs['filename'];
+		$title = $this->get("title");
+		if(!$title){
+			$this->error(P_Lang('未指定目录'));
 		}
-		$tmp = strtolower(substr($filename,-4));
+		$folder = $this->get("folder");
+		if(!$folder){
+			$folder = "/";
+		}
+		if($folder == '/'){
+			$file = $this->dir_root.$title;
+			$dir_root = $this->dir_root;
+		}else{
+			if(substr($folder,0,1) == '/'){
+				$folder = substr($folder,1);
+			}
+			if(substr($folder,-1) != '/'){
+				$folder .= "/";
+			}
+			$file = $this->dir_root.$folder.$title;
+			$dir_root = $this->dir_root.$folder;
+		}
+		if(!file_exists($file)){
+			$this->error(P_Lang('文件不存在'));
+		}
+		$tmp = strtolower(substr($file,-4));
 		if($tmp != '.zip'){
 			$this->error(P_Lang('非ZIP文件不支持在线解压'));
 		}
-		if(!file_exists($this->dir_root.$filename)){
+		
+		$this->lib('phpzip')->unzip($file,$dir_root);
+		$this->success();
+	}
+
+	public function zip_f()
+	{
+		if(!$this->session->val('admin2verify')){
+			$this->error(P_Lang('未经过二次密码确认，不能执行此操作'));
+		}
+		if(!$this->popedom["edit"] || !$this->popedom['add']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$title = $this->get("title");
+		if(!$title){
+			$this->error(P_Lang('未指定目录'));
+		}
+		$folder = $this->get("folder");
+		if(!$folder){
+			$folder = "/";
+		}
+		if($folder == '/'){
+			$file = $this->dir_root.$title;
+			$dir_root = $this->dir_root;
+		}else{
+			if(substr($folder,0,1) == '/'){
+				$folder = substr($folder,1);
+			}
+			if(substr($folder,-1) != '/'){
+				$folder .= "/";
+			}
+			$file = $this->dir_root.$folder.$title;
+			$dir_root = $this->dir_root.$folder;
+		}
+		if(!file_exists($file)){
 			$this->error(P_Lang('文件不存在'));
 		}
-		$info = $this->lib('phpzip')->zip_info($this->dir_root.$filename);
-		$info = current($info);
-		if(!$info['filename']){
-			$this->error(P_Lang('应用有异常'));
-		}
-		$info = explode('/',$info['filename']);
-		if(!$info[0]){
-			$this->error(P_Lang('应用有异常'));
-		}
-		if(file_exists($this->dir_app.$info[0])){
-			$this->error(P_Lang('应用已存在，不允许重复解压'));
-		}
-		$this->lib('phpzip')->unzip($this->dir_root.$filename,$this->dir_app);
-		$config = $this->model('appsys')->get_one($info[0]);
-		$config['installed'] = false;
-		$this->lib('xml')->save($config,$this->dir_app.$info[0].'/config.xml');
+		$tmp = explode(".",$title);
+		$tmpname = $tmp[0];
+		//接下来开始压缩
+		$zipname = $tmpname.'_'.date("YmdHis",$this->time).'.zip';
+		$this->lib('phpzip')->set_root($dir_root);
+		$this->lib('phpzip')->zip($file,$dir_root.$zipname);
 		$this->success();
 	}
 

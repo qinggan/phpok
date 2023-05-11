@@ -46,6 +46,19 @@
 				});
 			});
 		},
+		copy:function(folder,title)
+		{
+			var url = get_url("filemanage","copy","folder="+$.str.encode(folder)+"&title="+$.str.encode(title));
+			var lock = $.dialog.tips('正在操作，请稍候…',100).lock();
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					lock.content(rs.info).time(1.5);
+					return false;
+				}
+				lock.content('操作成功，请到目标文件夹进行粘贴').time(1.5);
+				return false;
+			});
+		},
 		del:function(id,folder,title)
 		{
 			$.dialog.confirm(p_lang('确定要删除文件（夹）{title}吗？<br>删除后是不能恢复的！','<span class="red">'+title+'</span> '),function(){
@@ -144,6 +157,37 @@
 			var notice = p_lang('将文件{title}改名为：<br><span class="red">仅支持字母、数字、下划线和点，注意扩展名必须填写</span>',' <span class="red">'+title+'</span> ');
 			this.rename(folder,title,notice);
 		},
+
+		move:function(folder,title)
+		{
+			var url = get_url("filemanage","move","folder="+$.str.encode(folder)+"&title="+$.str.encode(title));
+			var lock = $.dialog.tips('正在操作，请稍候…',100).lock();
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					lock.content(rs.info).time(1.5);
+					return false;
+				}
+				lock.content('操作成功，请到目标文件夹进行粘贴').time(1.5);
+				return false;
+			});
+		},
+
+		paste:function(folder)
+		{
+			var url = get_url("filemanage","paste","folder="+$.str.encode(folder));
+			var lock = $.dialog.tips('正在操作，请稍候…',100).lock();
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					lock.content(rs.info).time(1.5);
+					return false;
+				}
+				lock.setting('close',function(){
+					$.phpok.reload();
+				});
+				lock.content('粘贴成功').time(1.5);
+				return false;
+			});
+		},
 		
 		rename:function(folder,title,notice)
 		{
@@ -165,6 +209,25 @@
 					return false;
 				})
 			},title);
+		},
+		unzip:function(folder,title)
+		{
+			var tip = p_lang('确定要解压当前文件吗？{title}<br />解压后如果存在同名文件会直接覆盖不提示，请慎重','<span class="red">'+title+'</span>');
+			$.dialog.confirm(tip,function(){
+				var url = get_url("filemanage","unzip","folder="+$.str.encode(folder)+"&title="+$.str.encode(title));
+				var lock = $.dialog.tips('正在解压中，请稍候…',100).lock();
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						lock.content(rs.info).time(1.5);
+						return false;
+					}
+					lock.setting('close',function(){
+						$.phpok.reload();
+					});
+					lock.content('解压成功').time(1.5);
+					return false;
+				})
+			});
 		},
 		upfile:function(folder)
 		{
@@ -198,6 +261,22 @@
 				height: '60%',
 				resize: true
 			});
+		},
+		zip:function(folder,title)
+		{
+			var url = get_url("filemanage","zip","folder="+$.str.encode(folder)+"&title="+$.str.encode(title));
+			var tip = $.dialog.tips('正在压缩中，请稍候……',100).lock();
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					tip.content(rs.info).time(1.5);
+					return false;
+				}
+				tip.setting('close',function(){
+					$.phpok.reload();
+				});
+				tip.content('压缩成功').time(1.5);
+				return false;
+			})
 		}
 	}
 })(jQuery);
