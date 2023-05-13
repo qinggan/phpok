@@ -278,7 +278,7 @@ class project_control extends phpok_control
 				unset($dt_ext['sqlext']);
 			}
 			$dt = array_merge($dt,$dt_ext);
-		}		
+		}
 		$info = $this->call->phpok('_arclist',$dt);
 		$total_page = intval($info['total']/$dt['psize']);
 		if($info['total']%$dt['psize']){

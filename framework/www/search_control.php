@@ -105,22 +105,30 @@ class search_control extends phpok_control
 			$mids = array_unique($mids);
 			$condition = "l.project_id IN(".implode(",",$pids).") AND l.module_id IN(".implode(",",$mids).") ";
 			if($keywords){
-				foreach($mids as $key=>$value){
-					$module = $this->model('module')->get_one($value);
-					if($module && !$module['mtype'] && $module['tbl'] == 'list'){
-						$my_mids[] = $module['id'];
-						$flist = $this->model('fields')->flist($module['id']);
-						if($flist){
-							foreach($flist as $k=>$v){
-								if($v['search'] == 1){
-									$kc_ext[$value][] = " ext.".$v['identifier']."='".$keywords."' ";
-								}elseif($v['search'] == 2){
-									$kc_ext[$value][] = " ext.".$v['identifier']." LIKE '%".str_replace(' ','%',$keywords)."%' ";
+				$kwlist = explode(" ",$keywords);
+				foreach($kwlist as $k=>$v){
+					$v = trim($v);
+					if($v == ''){
+						continue;
+					}
+					foreach($mids as $key=>$value){
+						$module = $this->model('module')->get_one($value);
+						if($module && !$module['mtype'] && $module['tbl'] == 'list'){
+							$my_mids[] = $module['id'];
+							$flist = $this->model('fields')->flist($module['id']);
+							if($flist){
+								foreach($flist as $k=>$v){
+									if($v['search'] == 1){
+										$kc_ext[$value][] = " ext.".$v['identifier']."='".$v."' ";
+									}elseif($v['search'] == 2){
+										$kc_ext[$value][] = " ext.".$v['identifier']." LIKE '%".$v."%' ";
+									}
 								}
 							}
 						}
 					}
 				}
+				unset($kwlist);
 			}
 		}
 		$this->assign('searchurl',substr($pageurl,0,-1));
@@ -128,6 +136,10 @@ class search_control extends phpok_control
 			$klist = explode(" ",$keywords);
 			$kwlist = array();
 			foreach($klist as $key=>$value){
+				$value = trim($value);
+				if($value == ''){
+					continue;
+				}
 				$kwlist[] = '<i>'.$value.'</i>';
 				if($my_mids && is_array($my_mids)){
 					foreach($my_mids as $k=>$v){
@@ -150,6 +162,7 @@ class search_control extends phpok_control
 			}
 			$pageurl .= "keywords=".rawurlencode($keywords)."&";
 		}
+		
 		$this->plugin("system_search_condition");
 		$dt_ext = $this->tpl->val('dt');
 		if($dt_ext && $dt_ext['sqlext']){

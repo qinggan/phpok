@@ -681,29 +681,32 @@ class phpok_call extends _init_auto
 			}
 			unset($tag_condition,$list);
 		}
-		if($rs['keywords']){
-			$keywords = str_replace(" ","%",$rs['keywords']);
-			$k_condition = array();
-			$k_condition [] = " l.seo_title LIKE '%".$keywords."%'";
-			$k_condition [] = " l.seo_keywords LIKE '%".$keywords."%'";
-			$k_condition [] = " l.seo_desc LIKE '%".$keywords."%'";
-			$k_condition [] = " l.title LIKE '%".$keywords."%'";
-			$k_condition [] = " l.tag LIKE '%".$keywords."%'";
+		if($rs['keywords'] && trim($rs['keywords'])){
+			$rs['keywords'] = trim($rs['keywords']);
+			$kwlist = explode(" ",$rs['keywords']);
+			$search_fields = array('l.seo_title','l.seo_keywords','l.seo_desc','l.title','l.tag');
 			if($fields && is_array($fields)){
 				foreach($fields as $k=>$v){
-					if($v['search'] && ($v['search'] == 1 || $v['search'] == 2)){
-						if($v['search'] == 1){
-							if(!in_array($v['field_type'],array('int','float'))){
-								$k_condition[] = " ext.".$v['identifier']."='".$keywords."' ";
-							}
-						}else{
-							$k_condition[] = " ext.".$v['identifier']." LIKE '%".$keywords."%' ";
-						}
+					if(!$v['search']){
+						continue;
 					}
+					$search_fields[] = 'ext.'.$v['identifier'];
 				}
 			}
-			$condition .= "AND (".implode(" OR ",$k_condition).") ";
-			unset($k_condition,$keywords);
+			$k_condition = array();
+			$search_field = 'CONCAT('.implode(",",$search_fields).')';
+			foreach($kwlist as $key=>$value){
+				$value = trim($value);
+				if($value == ''){
+					continue;
+				}
+				$k_condition [] = " ".$search_field." LIKE '%".$value."%'";
+			}
+			unset($kwlist);
+			if($k_condition && count($k_condition)>0){
+				$condition .= "AND ".implode(" AND ",$k_condition)." ";
+				unset($k_condition);
+			}
 		}
 		if($rs['fields_need']){
 			$list = explode(",",$rs['fields_need']);
@@ -913,8 +916,8 @@ class phpok_call extends _init_auto
 			return $arc;
 		}
 		$cate = array();
-		if($arc['cateid']){
-			$cate = $this->call->phpok('_cate',array('pid'=>$arc['project_id'],'cateid'=>$arc['cateid']));
+		if($arc['cate_id']){
+			$cate = $this->call->phpok('_cate',array('pid'=>$arc['project_id'],'cateid'=>$arc['cate_id']));
 		}
 		//针对点击事件的
 		if($project['quick-comment-status']){
