@@ -40,6 +40,7 @@
 			<p>【插件】卸载，需要到【插件中心】进行卸载操作后才能在云市场卸载</p>
 			<p>【应用】仅仅是将文件放到 _app 目录下，需要到【应用中心】进行安装操作</p>
 			<p>【应用】卸载，需要到【应用中心】进行卸载操作后才能在云市场卸载</p>
+			<p>扩展关联不影响现有安装，卸载需要单独自行卸载</p>
 		</blockquote>
 		<!-- if $errinfo -->
 		<div style="padding:30px;text-align:center">{$errinfo}</div>
@@ -58,7 +59,16 @@
 		<tr>
 			<td width="24"><a href="javascript:$.admin_yunmarket.info('{$value.id}','{$value.title}');void(0)"><img src="{$value.thumb ? $value.thumb : 'images/ext.png'}" width="24" /></a></td>
 			<td><a href="javascript:$.admin_yunmarket.info('{$value.id}','{$value.title}');void(0)">{$value.title}</a></td>
-			<td class="gray">{$value.note}</td>
+			<td class="gray">
+				{$value.note}
+				<!-- if $value.extlist -->
+				<br />关联扩展：
+				<!-- loop from=$value.extlist key=$k value=$v id=$idxx -->
+				<a href="javascript:$.admin_yunmarket.info('{$v.id}','{$v.title}');void(0)">{$v.title}</a>
+				<!-- if $idxx.num != $idxx.total --> | <!-- /if -->
+				<!-- /loop -->
+				<!-- /if -->
+			</td>
 			<td><!-- if $value.price>0 --><span class="red">{$value.price} 元</span><!-- else -->免费<!-- /if --></td>
 			<td>
 				<!-- if $value.action -->

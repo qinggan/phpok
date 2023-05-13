@@ -25,6 +25,7 @@ class yunmarket_control extends phpok_control
 	public function __construct()
 	{
 		parent::control();
+		$this->linkurl = $this->config['url'];
 	}
 
 	/**
@@ -125,6 +126,13 @@ class yunmarket_control extends phpok_control
 					$tmp['md5'] = $value['md5'];
 					$tmp['folder'] = $value['folder'];
 					$tmp['price'] = price_format_val($value['price']);
+					if($value['extlib']){
+						$extlist = array();
+						foreach($value['extlib'] as $k=>$v){
+							$extlist[] = array('id'=>$v['id'],'title'=>$v['title']);
+						}
+						$tmp['extlist'] = $extlist;
+					}
 					//判断是否已购物
 					$tmp['is_buy'] = true;
 					if($value['price'] && $value['price']>0 && !in_array($value['id'],$get_buys)){
@@ -273,7 +281,6 @@ class yunmarket_control extends phpok_control
 		if($arc['project_id'] != $pid){
 			$this->error(P_Lang('项目不符合系统要求'));
 		}
-		$cate = phpok("_cate","cateid=".$arc['cate_id']);
 		$content = $arc['content'];
 		if($content){
 			$content = $this->img2full($content);
@@ -283,8 +290,8 @@ class yunmarket_control extends phpok_control
 		$rs['title'] = $arc['title'];
 		$rs['content'] = $content ? $content : '';
 		$rs['cate_id'] = $arc['cate_id'];
-		if($cate){
-			$rs['cate_title'] = $cate['title'];
+		if($arc['cate']){
+			$rs['cate_title'] = $arc['cate']['title'];
 		}
 		$rs['thumb'] = '';
 		$rs['note'] = '';
@@ -299,6 +306,13 @@ class yunmarket_control extends phpok_control
 		$rs['md5'] = $arc['md5'];
 		$rs['folder'] = $arc['folder'];
 		$rs['price'] = price_format_val($arc['price']);
+		if($arc['extlib']){
+			$extlist = array();
+			foreach($arc['extlib'] as $key=>$value){
+				$extlist[] = array('id'=>$value['id'],'title'=>$value['title']);
+			}
+			$rs['extlist'] = $extlist;
+		}
 		//判断是否已购物
 		$rs['is_buy'] = true;
 		$get_buys = $this->model('yunmarket')->get_buy($user['id'],$domain,$rs['id']);
@@ -396,38 +410,34 @@ class yunmarket_control extends phpok_control
 		$rs['download'] = base64_encode($content);
 		//安装相应的扩展应用
 		if($arc['extlib']){
-			$tmps = explode(",",$arc['extlib']);
-			$dt = array();
-			$dt['sqlext'] = "ext.folder IN('".implode("','",$tmps)."')";
-			$dt['is_usercp'] = true;
-			$elist = phpok($this->phpok_id_list,$dt);
-			if($elist && $elist['rslist']){
-				$extlist = array();
-				foreach($elist['rslist'] as $key=>$value){
-					$app_chk = substr($value['folder'],0,5);
-					$plugin_chk = substr($value['folder'],0,8);
-					//插件和应用不允许当成合并库使用
-					if($app_chk == '_app/' || $plugin_chk == 'plugins/'){
-						continue;
-					}
-					if(!$value['soft']){
-						continue;
-					}
-					if(!file_exists($this->dir_root.$value['soft']['filename'])){
-						continue;
-					}
-					$tmp = array();
-					$tmp['id'] = $value['id'];
-					$tmp['folder'] = $value['folder'];
-					$tmp['version'] = $value['version'];
-					$tmp['version_update'] = $value['version_update'];
-					$tmp['md5'] = $value['md5'];
-					$tmp['download'] = base64_encode(file_get_contents($this->dir_root.$value['soft']['filename']));
-					$extlist[] = $tmp;
+			$extlist = array();
+			foreach($arc['extlib'] as $key=>$value){
+				$tmp = phpok("arc","title_id=".$value['id']);
+				if(!$tmp){
+					continue;
 				}
-				if($extlist && count($extlist)>0){
-					$rs['extlist'] = $extlist;
+				$app_chk = substr($tmp['folder'],0,5);
+				$plugin_chk = substr($tmp['folder'],0,8);
+				if($app_chk == '_app/' || $plugin_chk == 'plugins/'){
+					continue;
 				}
+				if(!$tmp['soft']){
+					continue;
+				}
+				if(!file_exists($this->dir_root.$tmp['soft']['filename'])){
+					continue;
+				}
+				$einfo = array();
+				$einfo['id'] = $tmp['id'];
+				$einfo['folder'] = $tmp['folder'];
+				$einfo['version'] = $tmp['version'];
+				$einfo['version_update'] = $tmp['version_update'];
+				$einfo['md5'] = $tmp['md5'];
+				$einfo['download'] = base64_encode(file_get_contents($this->dir_root.$tmp['soft']['filename']));
+				$extlist[] = $einfo;
+			}
+			if($extlist && count($extlist)>0){
+				$rs['extlist'] = $extlist;
 			}
 		}
 		$this->success($rs);
