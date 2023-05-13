@@ -256,12 +256,11 @@ class user_model_base extends phpok_model
 	**/
 	public function fields_all($condition="",$pri_id="")
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ftype='user' ";
+		$mycondition = "ftype='user'";
 		if($condition){
-			$sql .= " AND ".$condition;
+			$mycondition .= " AND ".$condition;
 		}
-		$sql.= " ORDER BY taxis ASC,id DESC";
-		return $this->db->get_all($sql,$pri_id);
+		return $this->model('fields')->get_all($mycondition,0,999,$pri_id);
 	}
 
 	/**

@@ -2,7 +2,6 @@
 /**
  * 字段增删查改
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
@@ -34,8 +33,13 @@ class fields_model_base extends phpok_model
 			$rs = $id;
 		}
 		$this->del_module_fields($rs);
+		if($rs['ftype'] == 'user'){
+			$field = $rs["identifier"];
+			$sql = "ALTER TABLE ".$this->db->prefix."user_ext DROP `".$field."`";
+			$this->db->query($sql);
+		}
 		//删除扩展存储器里的字段
-		if(!is_numeric($rs['ftype']) && $rs['ftype'] != 'default'){
+		if(!is_numeric($rs['ftype']) && $rs['ftype'] != 'default' && $rs['ftype'] != 'user'){
 			$sql = "DELETE FROM ".$this->db->prefix."extc WHERE id='".$rs['id']."'";
 			$this->db->query($sql);
 		}
@@ -170,7 +174,18 @@ class fields_model_base extends phpok_model
 			$offset = intval($offset);
 			$sql .= " LIMIT ".$offset.",".intval($psize);
 		}
-		return $this->db->get_all($sql,$pri);
+		$rslist = $this->db->get_all($sql,$pri);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			$ext = $this->fields_ext_all($value['id']);
+			if($ext){
+				$value = array_merge($ext,$value);
+			}
+			$rslist[$key] = $value;
+		}
+		return $rslist;
 	}
 
 	public function get_from_identifier($identifier,$module)

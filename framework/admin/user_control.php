@@ -228,15 +228,9 @@ class user_control extends phpok_control
 		//创建扩展字段的表单
 		//读取扩展属性
 		$this->lib("form")->cssjs();
-		$ext_list = $this->model('user')->fields_all();
+		$ext_list = $this->model('fields')->flist('user');
 		$extlist = array();
 		foreach(($ext_list ? $ext_list : array()) as $key=>$value){
-			if($value["ext"]){
-				$ext = unserialize($value["ext"]);
-				foreach($ext AS $k=>$v){
-					$value[$k] = $v;
-				}
-			}
 			$idlist[] = strtolower($value["identifier"]);
 			if($rs[$value["identifier"]]){
 				$value["content"] = $rs[$value["identifier"]];

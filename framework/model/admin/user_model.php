@@ -91,12 +91,7 @@ class user_model extends user_model_base
 		if(!$id){
 			return false;
 		}
-		$rs = $this->field_one($id);
-		$field = $rs["identifier"];
-		$sql = "ALTER TABLE ".$this->db->prefix."user_ext DROP `".$field."`";
-		$this->db->query($sql);
-		$sql = "DELETE FROM ".$this->db->prefix."fields WHERE id='".$id."'";
-		return $this->db->query($sql);
+		return $this->model('fields')->del($id);
 	}
 
 	//后台显示
