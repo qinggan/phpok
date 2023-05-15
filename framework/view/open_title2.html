@@ -12,8 +12,10 @@ function select_input(val)
 		for(var i in rs.info){
 			if(rs.info[i].type == 'select_more'){
 				opener.$.phpok_form_select.change(rs.info[i].gid,i,rs.info[i].value,rs.info[i].gtype);
+			}else if(rs.info[i].type == 'radio'){
+				opener.$("input[name="+i+"][value="+rs.info[i].value+"]").attr("checked",true);
 			}else{
-				opener.$("#"+i).val(rs.info[i].value);
+				opener.$("input[name="+i+"]").val(rs.info[i].value);
 			}
 		}
 		$.dialog.close();
