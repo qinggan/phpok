@@ -3,11 +3,32 @@
 function select_input(val)
 {
 	var opener = $.dialog.opener;
-	opener.$("#{$id}").val(val);
-	$.dialog.close();
+	var url = get_url('open','content','fid={$id}&id='+val);
+	$.phpok.json(url,function(rs){
+		if(!rs.status){
+			$.dialog.tips(rs.info);
+			return false;
+		}
+		for(var i in rs.info){
+			if(rs.info[i].type == 'select_more'){
+				opener.$.phpok_form_select.change(rs.info[i].gid,i,rs.info[i].value,rs.info[i].gtype);
+			}else{
+				opener.$("#"+i).val(rs.info[i].value);
+			}
+		}
+		$.dialog.close();
+	});
 }
 </script>
 <div class="layui-card">
+	<div class="layui-card-header">
+		<form method="post" class="layui-form" action="{$formurl}" id="post_save">
+		<ul class="layout" style="padding-top:2px;">
+			<li><input type="text" name="keywords" id="keywords" value="{$keywords}" placeholder="输入搜索关键字" class="layui-input" /></li>
+			<li><div style="padding-top:4px;"><input type="submit" value="搜索" class="layui-btn layui-btn-sm" /></div></li>
+		</ul>
+		</form>
+	</div>
 	<div class="layui-card-body">
 		<table class="layui-table">
 		<thead>
@@ -31,7 +52,7 @@ function select_input(val)
 				<!-- /if -->
 			</td>
 			<!-- /loop -->
-			<td><input type="button" value="{lang确认}" onclick="select_input('{$value[$field]}')" class="layui-btn layui-btn-sm" /></td>
+			<td><input type="button" value="{lang确认}" onclick="select_input('{$value.id}')" class="layui-btn layui-btn-sm" /></td>
 		</tr>
 		<!-- /loop -->
 		</table>

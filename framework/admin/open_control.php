@@ -392,6 +392,7 @@ class open_control extends phpok_control
 
 	public function content_f()
 	{
+		$this->config('is_ajax',true);
 		$fid = $this->get('fid','int');
 		$id = $this->get('id','int');
 		if(!$fid || !$id){
@@ -467,7 +468,7 @@ class open_control extends phpok_control
 				$opt = explode(":",$new["option_list"]);
 				$data[$tmp[1]] = array('type'=>'select_more','value'=>$info[$tmp[0]],'gid'=>$opt[1],'gtype'=>$opt[0]);
 			}else{
-				$data[$tmp[1]] = array('type'=>$rs['form_type'],'value'=>$info[$tmp[0]]);
+				$data[$tmp[1]] = array('type'=>$new['form_type'],'value'=>$info[$tmp[0]]);
 			}
 		}
 		$this->success($data);

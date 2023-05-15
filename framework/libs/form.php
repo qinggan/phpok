@@ -92,6 +92,36 @@ class form_lib
 		exit(P_Lang('文件异常'));
 	}
 
+	public function ext($id)
+	{
+		global $app;
+		$obj = $this->cls($id);
+		if(!$obj){
+			return false;
+		}
+		$mlist = get_class_methods($obj);
+		if(in_array('phpok_ext',$mlist)){
+			$ext = $obj->phpok_ext();
+		}else{
+			$ext_form_id = $app->get("ext_form_id");
+			$ext = array();
+			if($ext_form_id){
+				$list = explode(",",$ext_form_id);
+				foreach($list as $key=>$value){
+					$val = explode(':',$value);
+					if($val[1] && $val[1] == "checkbox"){
+						$value = $val[0];
+						$ext[$value] = $app->get($value,"checkbox");
+					}else{
+						$value = $val[0];
+						$ext[$value] = $app->get($value,'html_js');
+					}
+				}
+			}
+		}
+		return $ext;
+	}
+
 	/**
 	 * 格式化表单信息
 	 * @参数 $rs 要格式化的内容
