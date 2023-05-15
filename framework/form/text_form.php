@@ -44,6 +44,36 @@ class text_form extends _init_auto
 	}
 
 	/**
+	 * 读取扩展字段
+	**/
+	public function phpok_ext()
+	{
+		$data = array();
+		$data['form_btn'] = $this->get('form_btn');
+		$data['btn_name'] = $this->get('btn_name');
+		$data['ext_format'] = $this->get('ext_format');
+		$data['ext_quick_words'] = $this->get('ext_quick_words');
+		$data['ext_quick_type'] = $this->get('ext_quick_type');
+		$data['ext_include_3'] = $this->get('ext_include_3');
+		$ext_field = $this->get('ext_field');
+		if($ext_field && is_array($ext_field)){
+			$list = array_chunk($ext_field,2);
+			$tmp = array();
+			foreach($list as $key=>$value)
+			{
+				if($value[0] == '' || $value[1] == ''){
+					continue;
+				}
+				$tmp[] = implode(":",$value);
+			}
+			$data['ext_field'] = implode(",",$tmp);
+		}
+		$data['ext_onlyone'] = $this->get('ext_onlyone');
+		$data['ext_layout'] = $this->get('ext_layout');
+		return $data;
+	}
+
+	/**
 	 * 格式化内容
 	 * @参数 $rs 数组，字段属性（对应module_fields里的一条记录属性信息）
 	 * @参数 $appid 入口，默认是admin
@@ -131,6 +161,9 @@ class text_form extends _init_auto
 				$rs['form_btn_pid'] = $tmp[1];
 				$t = $this->model('project')->get_one($tmp[1],false);
 				$rs['extitle'] = $t['title'];
+				if($rs['btn_name']){
+					$rs['extitle'] = $rs['btn_name'];
+				}
 			}
 		}
 		if($rs['ext_quick_words'] && trim($rs['ext_quick_words'])){

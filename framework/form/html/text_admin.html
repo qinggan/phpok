@@ -1,4 +1,4 @@
-<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_btn,ext_format,ext_quick_words,ext_quick_type,ext_include_3,ext_field,ext_onlyone,ext_layout" />
+<input type="hidden" name="ext_form_id" id="ext_form_id" value="form_btn,btn_name,ext_format,ext_quick_words,ext_quick_type,ext_include_3,ext_field,ext_onlyone,ext_layout" />
 <div class="layui-form-item">
 	<label class="layui-form-label">
 		{lang扩展按钮：}
@@ -34,44 +34,42 @@
 		{lang设置文本框后跟随的按钮}
 	</div>
 </div>
+<div class="layui-form-item">
+	<label class="layui-form-label">
+		{lang按钮别名：}
+	</label>
+	<div class="layui-input-inline default-auto">
+		<input type="text" name="btn_name" id="btn_name" value="{$rs.btn_name}" class="layui-input" />
+	</div>
+	<div class="layui-form-mid">
+		{lang留空使用系统默认}
+	</div>
+</div>
+
 <script type="text/javascript">
 $(document).ready(function(){
 	layui.form.on('select(form_btn)', function(data){
-		$._configForm.text('form_btn',data.value,'{$rs.ext_field}','{if $rs.ext_layout}{func implode , $rs.ext_layout}{/if}');
+		$._configForm.text('form_btn',data.value,'{$rs.ext_field}','{if $rs.ext_layout}{func implode , $rs.ext_layout}{/if}','{$rs.ftype}');
 	});
 });
 </script>
 <div id="ext_title_html"{if !$rs.form_btn || strpos($rs.form_btn,'title:') === false} class="hide"{/if}>
 	<div class="layui-form-item">
 		<label class="layui-form-label">
-			{lang弹窗布局}
+			{lang弹窗布局：}
 		</label>
 		<div class="layui-input-block gray" style="line-height:38px;">{lang设置弹出窗口要显示的主要字段}</div>
 		<div class="layui-input-block">
-			<ul class="layout" id="ext_layout">
-				<!-- loop from=$fields key=$key value=$value id=$tmpid -->
-				<li><label><input type="checkbox" lay-skin="primary" name="ext_layout[]" value="{$key}"{if $rs.ext_layout && in_array($key,$rs.ext_layout)} checked{/if} title="{$value}"/> {$value}</label></li>
-				<!-- /loop -->
-			</ul>
+			<ul class="layout" id="ext_layout"></ul>
 		</div>
 	</div>
 	<div class="layui-form-item">
 		<label class="layui-form-label">
-			{lang字段}
+			{lang关联字段：}
 		</label>
-		<div class="layui-input-inline default-auto">
-			<select name="ext_field" id="ext_field">
-				<option value="">{lang请选择…}</option>
-				<!-- loop from=$fields key=$key value=$value id=$tmpid -->
-				<option value="{$key}"{if $key == $rs.ext_field} selected{/if}>{$value}</option>
-				<!-- /loop -->
-			</select>
-		</div>
-		<div class="layui-form-mid">
-			{lang请选择文本框内容的字段}
+		<div class="layui-input-block" id="ext_field">
 		</div>
 	</div>
-
 </div>
 <div id="ext_quick_words_html"{if $rs.form_btn} class="hide"{/if}>
 	<div class="layui-form-item">
@@ -123,7 +121,7 @@ $(document).ready(function(){
 $(document).ready(function(){
 	var tmp = "{if $rs.form_btn && strpos($rs.form_btn,'title:') !== false}1{else}0{/if}";
 	if(tmp == 1){
-		$._configForm.text('form_btn','{$rs.form_btn}','{$rs.ext_field}','{if $rs.ext_layout}{func implode , $rs.ext_layout}{/if}');
+		$._configForm.text('form_btn','{$rs.form_btn}','{$rs.ext_field}','{if $rs.ext_layout}{func implode , $rs.ext_layout}{/if}','{$rs.ftype}');
 	}
 });
 </script>

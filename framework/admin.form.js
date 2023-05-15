@@ -9,7 +9,9 @@
 **/
 ;(function($){
 	$._configForm = {
-		text:function(id,val,ext_field,ext_layout)
+		plist:{},
+		mlist:{},
+		text:function(id,val,ext_field,ext_layout,mid)
 		{
 			if(id == 'form_btn'){
 				$("#ext_quick_words_html,#ext_color_html,#ext_title_html").hide();
@@ -25,28 +27,64 @@
 				}
 				var tmp = val.split(":");
 				if(tmp[0] == 'title' && tmp[1]){
-					var url = get_url('form','fields','pid='+tmp[1]);
+					var url = get_url('form','fields','pid='+tmp[1]+"&mid="+mid);
 					$.phpok.json(url,function(rs){
 						if(!rs.status){
+							$._configForm.plist = $._configForm.list = {};
 							var opt = '<option value="">'+rs.info+'</option>';
 							$("#ext_field").html(opt);
 							$("#ext_layout").html('<li>'+rs.info+'</li>');
 							layui.form.render();
 							return true;
 						}
-						var html = '<option value="">请选择…</option>';
-						var layout = '';
-						for(var i in rs.info){
-							html += '<option value="'+i+'"';
-							if(i == ext_field){
-								html += ' selected';
+						$._configForm.plist = rs.info.plist;
+						var plist = rs.info.plist;
+						var mlist = {};
+						if(rs.info.mlist && rs.info.mlist != 'undefined'){
+							$._configForm.mlist = rs.info.mlist;
+							mlist = rs.info.mlist;
+						}
+						var html = '<table class="layui-table"><thead><tr><th>原字段</th><th>目标字段</th><th><input type="button" value="添加" onclick="$._configForm.text_field_add(\'ext_field\')" class="layui-btn layui-btn-sm" /></th></tr></thead><tbody>';
+						if(ext_field){
+							var tlist = ext_field.split(',');
+							
+							for(var i in tlist){
+								html += '<tr>'
+								var tmp = (tlist[i]).split(":");
+								if(!tmp[1] || tmp[1] == 'undefined'){
+									tmp[1] = tmp[0];
+								}
+								html += '<td><select name="ext_field[]"><option value="">请选择…</option>';
+								for(var t in plist){
+									html += '<option value="'+t+'"';
+									if(t == tmp[0]){
+										html += ' selected';
+									}
+									html += '>'+plist[t]+'</option>';
+								}
+								html += '</select></td>';
+								html += '<td><select name="ext_field[]"><option value="">请选择…</option>';
+								for(var t in mlist){
+									html += '<option value="'+t+'"';
+									if(t == tmp[0]){
+										html += ' selected';
+									}
+									html += '>'+mlist[t]+'</option>';
+								}
+								html += '</select></td>';
+								html += '<td><input type="button" value="删除" onclick="$._configForm.text_field_delete(this)" class="layui-btn layui-btn-sm layui-btn-danger" /></td>';
+								html += '</tr>'
 							}
-							html += '>'+rs.info[i]+'</option>';
+							
+						}
+						html += '</tbody></table>';
+						var layout = '';
+						for(var i in plist){
 							layout += '<li><input type="checkbox" lay-skin="primary" name="ext_layout[]" value="'+i+'"';
 							if(ext_layout && ext_layout.indexOf(i)>-1){
 								layout += ' checked';
 							}
-							layout += ' title="'+rs.info[i]+'" /></li>';
+							layout += ' title="'+plist[i]+'" /></li>';
 						}
 						$("#ext_field").html(html);
 						$("#ext_layout").html(layout);
@@ -61,6 +99,31 @@
 			if(id == 'eqt'){
 				$("#ext_quick_type").val(val);
 			}
+			layui.form.render();
+		},
+		text_field_add:function(id)
+		{
+			var plist = $._configForm.plist;
+			var mlist = $._configForm.mlist;
+			var html = '<tr>';
+			html += '<td><select name="ext_field[]"><option value="">请选择…</option>';
+			for(var t in plist){
+				html += '<option value="'+t+'">'+plist[t]+'</option>';
+			}
+			html += '</select></td>';
+			html += '<td><select name="ext_field[]"><option value="">请选择…</option>';
+			for(var t in mlist){
+				html += '<option value="'+t+'">'+mlist[t]+'</option>';
+			}
+			html += '</select></td>';
+			html += '<td><input type="button" value="删除" onclick="$._configForm.text_field_delete(this)" class="layui-btn layui-btn-sm layui-btn-danger" /></td>';
+			html += '</tr>';
+			$("#"+id).find("tbody").append(html);
+			layui.form.render();
+		},
+		text_field_delete:function(obj)
+		{
+			$(obj).parent().parent().remove();
 			layui.form.render();
 		},
 

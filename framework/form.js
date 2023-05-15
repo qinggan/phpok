@@ -748,10 +748,11 @@ function go_to_page_action()
 		/**
 		 * 主题选择器
 		**/
-		text_button_title_select:function(id,pid,field,showid)
+		text_button_title:function(id)
 		{
-			$.dialog.open(get_url("open","title","id="+id+"&pid="+pid+"&field="+field+"&showid="+showid),{
-				title: p_lang('主题选择器'),
+			var url = get_url('open','title','id='+id);
+			$.dialog.open(url,{
+				title: p_lang('选择器'),
 				lock : true,
 				width: "90%",
 				height: "80%",

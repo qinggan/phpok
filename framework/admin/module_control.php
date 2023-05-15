@@ -27,126 +27,8 @@ class module_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
-	public function index_f()
-	{
-		if(!$this->popedom["list"]){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$rslist = $this->model('module')->get_all();
-		if($rslist){
-			$projects = $cates = array();
-			foreach($rslist as $key=>$value){
-				if($value['tbl'] == 'cate'){
-					$cates[] = $value['id'];
-				}else{
-					$projects[] = $value['id'];
-				}
-			}
-			if($projects){
-				$plist = $this->model('project')->projects_include_modules($projects);
-				if($plist){
-					foreach($rslist as $key=>$value){
-						if($plist[$value['id']]){
-							$rslist[$key]['link'] = $plist[$value['id']];
-						}
-					}
-				}
-			}
-			if($cates){
-				$clist = $this->model('cate')->cates_include_modules($cates);
-				if($clist){
-					foreach($rslist as $key=>$value){
-						if($clist[$value['id']]){
-							$rslist[$key]['link'] = $clist[$value['id']];
-						}
-					}
-				}
-			}
-		}
-		$this->assign("rslist",$rslist);
-		$this->view("module_index");
-	}
 
-	public function set_f()
-	{
-		if(!$this->popedom["set"]){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$id = $this->get('id','int');
-		if($id){
-			$this->assign("id",$id);
-			$rs = $this->model('module')->get_one($id);
-			$layout = !$rs['mtype'] ? array("hits","dateline") : array();
-			if($rs["layout"]){
-				$layout = explode(",",$rs["layout"]);
-			}
-			$this->assign("layout",$layout);
-			$used_list = $this->model('module')->fields_all($id,"identifier");
-			if($used_list){
-				foreach($used_list as $key=>$value){
-					$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
-					$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
-					$used_list[$key] = $value;
-				}
-			}
-			$this->assign("used_list",$used_list);
-		}else{
-			$taxis = $this->model('module')->module_next_taxis();
-			$rs = array('taxis'=>$taxis);
-		}
-		$this->assign("rs",$rs);
-		$tblist = $this->model('module')->tblist();
-		$this->assign('tblist',$tblist);
-		$tblid = 'list';
-		if($rs && $rs['tbl']){
-			$tblid = $rs['tbl'];
-		}
-		$this->assign('tblid',$tblid);
-		$this->view("module_set");
-	}
 
-	public function layout_f()
-	{
-		$id = $this->get("id");
-		if(!$id){
-			$this->error(P_Lang('未指定模块ID'));
-		}
-		$rs = $this->model('module')->get_one($id);
-		$this->assign("id",$id);
-		$this->assign("rs",$rs);
-		$layout = !$rs['mtype'] ? array("hits","dateline") : array();
-		if($rs["layout"]){
-			$layout = explode(",",$rs["layout"]);
-		}
-		$this->assign("layout",$layout);
-		$used_list = $this->model('module')->fields_all($id,"identifier");
-		if($used_list){
-			foreach($used_list AS $key=>$value){
-				$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
-				$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
-				$used_list[$key] = $value;
-			}
-		}
-		$this->assign("used_list",$used_list);
-		$this->view("module_layout");
-	}
-
-	public function layout_save_f()
-	{
-		$id = $this->get("id");
-		if(!$id){
-			$this->error(P_Lang('未指定模块ID'));
-		}
-		$layout = $this->get("layout");
-		if($layout && is_array($layout)){
-			$layout = implode(",",$layout);
-		}else{
-			$layout = '';
-		}
-		$array = array("layout"=>$layout);
-		$this->model('module')->save($array,$id);
-		$this->success();
-	}
 
 	/**
 	 * 模块复制
@@ -198,68 +80,63 @@ class module_control extends phpok_control
 		$this->success();
 	}
 
+
 	/**
-	 * 存储或更新模型
+	 * 删除模块
 	**/
-	public function save_f()
+	public function delete_f()
 	{
-		if(!$this->popedom["set"]){
+		if(!$this->popedom['set']){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
-		$title = $this->get("title");
-		if(!$title){
-			$this->error(P_Lang('模块名称不能为空'));
-		}
-		$note = $this->get("note");
-		$taxis = $this->get("taxis","int");
-		$array = array("title"=>$title,"note"=>$note,"taxis"=>$taxis);
-		if($id){
-			$old = $this->model('module')->get_one($id);
-			$layout = $this->get("layout");
-			if($layout && is_array($layout)){
-				$array['layout'] = implode(",",$layout);
-			}else{
-				$array['layout'] = '';
-			}
-			$array["mtype"] = $this->get('mtype','int');
-			$array['tbl'] = $this->get('tbl');
-			if($array['mtype'] != $old['mtype'] || $array['tbl'] != $old['tbl']){
-				//检测是否已被使用了
-				$chk = $this->model('project')->projects_include_modules($id);
-				if($chk){
-					$this->error(P_Lang('模块已使用，不允许更换类型'));
-				}
-			}
-			if($array['mtype']){
-				$array['tbl'] = 'list';
-			}
-			$this->model('module')->save($array,$id);
-			$oldtbl = $old['mtype'] ? $id : $old['tbl'].'_'.$id;
-			$mytbl = $oldtbl;
-			if($array["mtype"] != $old['mtype']){
-				$mytbl = $array["mtype"] ? $id : $array['tbl'].'_'.$id;
-			}else{
-				if(!$array['mtype']){
-					$mytbl = $array['tbl'].'_'.$id;
-				}
-			}
-			if($oldtbl != $newtbl){
-				$this->model('module')->rename_tbl($oldtbl,$mytbl);
-			}
-		}else{
-			$array["layout"] = "hits,dateline,sort";
-			$array["mtype"] = $this->get("mtype",'int');
-			if(!$array['mtype']){
-				$array['tbl'] = $this->get('tbl');
-			}
-			$id = $this->model('module')->save($array);
-		}
 		if(!$id){
-			$this->error(P_Lang('数据存储失败，请检查'));
+			$this->error(P_Lang('未指定要删除的模块'));
 		}
-		$this->model('module')->create_tbl($id);
+		$rs = $this->model('module')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('模块不存在'));
+		}
+		if($rs["status"] == '1'){
+			$this->error(P_Lang('模块使用中，请先停用模块信息'));
+		}
+		$this->model("module")->delete($id);
 		$this->success();
+	}
+
+	/**
+	 * 导出模块字段，此项仅用于导出XML配置文件，如果模块中绑定主题或其他一些选项，在这里不会被体现，需要您手动再绑定
+	 * @参数 $id，要导出的模块字段ID
+	**/
+	public function export_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'),$this->url('module'));
+		}
+		$rs = $this->model('module')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('模块数据不存在'),$this->url('module'));
+		}
+		unset($rs['id']);
+		$rslist = $this->model('module')->fields_all($id,'identifier');
+		if($rslist){
+			$tmplist = array();
+			foreach($rslist as $key=>$value){
+				unset($value['id'],$value['module_id']);
+				$tmplist[$key] = $value;
+			}
+			$rs['_fields'] = $tmplist;
+		}
+		//将数据写成XML
+		$tmpfile = $this->dir_cache.'module.xml';
+		$this->lib('xml')->save($rs,$tmpfile);
+		$this->lib('phpzip')->set_root($this->dir_cache);
+		$zipfile = $this->dir_cache.$this->time.'.zip';
+		$this->lib('phpzip')->zip($tmpfile,$zipfile);
+		$this->lib('file')->rm($tmpfile);
+		//下载zipfile
+		$this->lib('file')->download($zipfile,$rs['title']);
 	}
 
 	/**
@@ -464,19 +341,10 @@ class module_control extends phpok_control
 		$array['admin-list-sort'] = $this->get('admin-list-sort','int');
 		$array['admin-list-stat'] = $this->get('admin-list-stat','int');
 		$array['admin-history'] = $this->get('admin-history','int');
-		$ext_form_id = $this->get("ext_form_id");
-		$ext = array();
-		if($ext_form_id){
-			$list = explode(",",$ext_form_id);
-			foreach($list as $key=>$value){
-				$val = explode(':',$value);
-				if($val[1] && $val[1] == "checkbox"){
-					$value = $val[0];
-					$array[$value] = $this->get($value,"checkbox");
-				}else{
-					$value = $val[0];
-					$array[$value] = $this->get($value,'html_js');
-				}
+		$ext = $this->lib('form')->ext($array['form_type']);
+		if($ext && count($ext)>0){
+			foreach($ext as $key=>$value){
+				$array[$key] = $value;
 			}
 		}
 		$this->model('module')->fields_save($array);
@@ -533,6 +401,8 @@ class module_control extends phpok_control
 		}
 		$rs['identifier'] = $identifier;
 		$this->assign('rs',$rs);
+		$used_list = $this->model('module')->fields_all($mid,"identifier");
+		$this->assign('flist',$used_list);
 		$this->view('module_field_create');
 	}
 
@@ -549,6 +419,77 @@ class module_control extends phpok_control
 			$this->error(P_Lang('未指定要删除的字段'));
 		}
 		$this->model('module')->field_delete($id);
+		$this->success();
+	}
+
+
+	public function field_edit_f()
+	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get("id","int");
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('module')->field_one($id);
+		$this->assign("rs",$rs);
+		$m_rs = $this->model('module')->get_one($rs['module_id']);
+		$this->assign('m_rs',$m_rs);
+		$this->assign("id",$id);
+		$glist = $this->model('fields')->groups();
+		$this->assign('groups',$glist);
+		$this->view("module_field_set");
+	}
+
+
+	public function field_edit_save_f()
+	{
+		if(!$this->popedom['set']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('module')->field_one($id);
+		$module_id = $rs['module_id'];
+		$title = $this->get("title");
+		if(!$title){
+			$this->error(P_Lang('字段名称不能为空'));
+		}
+		$array = array();
+		$array["title"] = $title;
+		$array['field_type'] = $this->get('field_type');
+		$array["note"] = $this->get("note");
+		$array["form_type"] = $this->get("form_type");
+		$array["form_style"] = $this->get("form_style","html");
+		$array["format"] = $this->get("format");
+		$array["content"] = $this->get("content");
+		$array["taxis"] = $this->get("taxis","int");
+		$array['is_front'] = $this->get('is_front','int');
+		$array['search'] = $this->get('search','int');
+		$array['search_separator'] = $this->get('search_separator');
+		$array['onlyone'] = $this->get('onlyone','int');
+		$array['group_id'] = $this->get('group_id');
+		$array['filter'] = $this->get('filter','int');
+		$array['filter_join'] = $this->get('filter_join');
+		$array['filter_content'] = $this->get('filter_content');
+		$array['filter_title'] = $this->get('filter_title');
+		$array['admin-list-width'] = $this->get('admin-list-width','int');
+		$array['admin-list-edit'] = $this->get('admin-list-edit','int');
+		$array['admin-list-sort'] = $this->get('admin-list-sort','int');
+		$array['admin-list-stat'] = $this->get('admin-list-stat','int');
+		$array['admin-history'] = $this->get('admin-history','int');
+		//读取扩展字段
+		$ext = $this->lib('form')->ext($array["form_type"]);
+		if($ext && count($ext)>0){
+			foreach($ext as $key=>$value){
+				$array[$key] = $value;
+			}
+		}
+		$this->model('module')->fields_save($array,$id);
+		$this->model('module')->update_fields($id);
 		$this->success();
 	}
 
@@ -584,91 +525,6 @@ class module_control extends phpok_control
 	}
 
 	/**
-	 * 删除模块
-	**/
-	public function delete_f()
-	{
-		if(!$this->popedom['set']){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$id = $this->get("id","int");
-		if(!$id){
-			$this->error(P_Lang('未指定要删除的模块'));
-		}
-		$rs = $this->model('module')->get_one($id);
-		if(!$rs){
-			$this->error(P_Lang('模块不存在'));
-		}
-		if($rs["status"] == '1'){
-			$this->error(P_Lang('模块使用中，请先停用模块信息'));
-		}
-		$this->model("module")->delete($id);
-		$this->success();
-	}
-
-	/**
-	 * 更新模块状态
-	**/
-	public function status_f()
-	{
-		if(!$this->popedom["set"]){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$id = $this->get("id","int");
-		if(!$id){
-			$this->error(P_Lang('没有指定ID'));
-		}
-		$rs = $this->model('module')->get_one($id);
-		$status = $rs["status"];
-		$status++;
-		if($status>2){
-			$status = '0';
-		}
-		$action = $this->model('module')->update_status($id,$status);
-		if(!$action){
-			$this->error(P_Lang('操作失败，请检查SQL语句'));
-		}
-		$this->success($status);
-	}
-
-	/**
-	 * 更新模块排序
-	 * @参数 $id，数值，要排序的模块ID
-	 * @参数 $taxis，排序值
-	 * @返回 JSON
-	 * @更新时间 2016年07月12日
-	**/
-	public function taxis_f()
-	{
-		$taxis = $this->get('taxis','int');
-		$id = $this->get('id','int');
-		if(!$id){
-			$this->error(P_Lang('未指定ID'));
-		}
-		$this->model('module')->update_taxis($id,$taxis);
-		$this->success();
-	}
-
-	public function field_edit_f()
-	{
-		if(!$this->popedom["set"]){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$id = $this->get("id","int");
-		if(!$id){
-			$this->error(P_Lang('未指定ID'));
-		}
-		$rs = $this->model('module')->field_one($id);
-		$this->assign("rs",$rs);
-		$m_rs = $this->model('module')->get_one($rs['module_id']);
-		$this->assign('m_rs',$m_rs);
-		$this->assign("id",$id);
-		$glist = $this->model('fields')->groups();
-		$this->assign('groups',$glist);
-		$this->view("module_field_set");
-	}
-
-	/**
 	 * 保存更新的字段排序
 	 * @参数 $id，要排序的字段ID
 	 * @参数 $taxis，排序值
@@ -687,104 +543,49 @@ class module_control extends phpok_control
 		$this->success();
 	}
 
-	public function field_edit_save_f()
+	public function layout_save_f()
 	{
-		if(!$this->popedom['set']){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$id = $this->get('id','int');
+		$id = $this->get("id");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定模块ID'));
 		}
-		$rs = $this->model('module')->field_one($id);
-		$module_id = $rs['module_id'];
-		$title = $this->get("title");
-		if(!$title){
-			$this->error(P_Lang('字段名称不能为空'));
+		$layout = $this->get("layout");
+		if($layout && is_array($layout)){
+			$layout = implode(",",$layout);
+		}else{
+			$layout = '';
 		}
-		$ext_form_id = $this->get("ext_form_id");
-		$ext = array();
-		if($ext_form_id){
-			$list = explode(",",$ext_form_id);
-			foreach($list as $key=>$value){
-				$val = explode(':',$value);
-				if($val[1] && $val[1] == "checkbox"){
-					$value = $val[0];
-					$ext[$value] = $this->get($value,"checkbox");
-				}else{
-					$value = $val[0];
-					$ext[$value] = $this->get($value,'html_js');
-				}
-			}
-		}
-		$array = array();
-		$array["title"] = $title;
-		$array['field_type'] = $this->get('field_type');
-		$array["note"] = $this->get("note");
-		$array["form_type"] = $this->get("form_type");
-		$array["form_style"] = $this->get("form_style","html");
-		$array["format"] = $this->get("format");
-		$array["content"] = $this->get("content");
-		$array["taxis"] = $this->get("taxis","int");
-		$array['is_front'] = $this->get('is_front','int');
-		$array['search'] = $this->get('search','int');
-		$array['search_separator'] = $this->get('search_separator');
-		$array['onlyone'] = $this->get('onlyone','int');
-		$array['group_id'] = $this->get('group_id');
-		$array['filter'] = $this->get('filter','int');
-		$array['filter_join'] = $this->get('filter_join');
-		$array['filter_content'] = $this->get('filter_content');
-		$array['filter_title'] = $this->get('filter_title');
-		$array['admin-list-width'] = $this->get('admin-list-width','int');
-		$array['admin-list-edit'] = $this->get('admin-list-edit','int');
-		$array['admin-list-sort'] = $this->get('admin-list-sort','int');
-		$array['admin-list-stat'] = $this->get('admin-list-stat','int');
-		$array['admin-history'] = $this->get('admin-history','int');
-		if($ext && count($ext)>0){
-			foreach($ext as $key=>$value){
-				$array[$key] = $value;
-			}
-		}
-		$this->model('module')->fields_save($array,$id);
-		$this->model('module')->update_fields($id);
+		$array = array("layout"=>$layout);
+		$this->model('module')->save($array,$id);
 		$this->success();
 	}
 
-
-	/**
-	 * 导出模块字段，此项仅用于导出XML配置文件，如果模块中绑定主题或其他一些选项，在这里不会被体现，需要您手动再绑定
-	 * @参数 $id，要导出的模块字段ID
-	**/
-	public function export_f()
+	public function layout_f()
 	{
-		$id = $this->get('id');
+		$id = $this->get("id");
 		if(!$id){
-			$this->error(P_Lang('未指定ID'),$this->url('module'));
+			$this->error(P_Lang('未指定模块ID'));
 		}
 		$rs = $this->model('module')->get_one($id);
-		if(!$rs){
-			$this->error(P_Lang('模块数据不存在'),$this->url('module'));
+		$this->assign("id",$id);
+		$this->assign("rs",$rs);
+		$layout = !$rs['mtype'] ? array("hits","dateline") : array();
+		if($rs["layout"]){
+			$layout = explode(",",$rs["layout"]);
 		}
-		unset($rs['id']);
-		$rslist = $this->model('module')->fields_all($id,'identifier');
-		if($rslist){
-			$tmplist = array();
-			foreach($rslist as $key=>$value){
-				unset($value['id'],$value['module_id']);
-				$tmplist[$key] = $value;
+		$this->assign("layout",$layout);
+		$used_list = $this->model('module')->fields_all($id,"identifier");
+		if($used_list){
+			foreach($used_list AS $key=>$value){
+				$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
+				$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
+				$used_list[$key] = $value;
 			}
-			$rs['_fields'] = $tmplist;
 		}
-		//将数据写成XML
-		$tmpfile = $this->dir_cache.'module.xml';
-		$this->lib('xml')->save($rs,$tmpfile);
-		$this->lib('phpzip')->set_root($this->dir_cache);
-		$zipfile = $this->dir_cache.$this->time.'.zip';
-		$this->lib('phpzip')->zip($tmpfile,$zipfile);
-		$this->lib('file')->rm($tmpfile);
-		//下载zipfile
-		$this->lib('file')->download($zipfile,$rs['title']);
+		$this->assign("used_list",$used_list);
+		$this->view("module_layout");
 	}
+
 
 	/**
 	 * 模块导入
@@ -839,4 +640,193 @@ class module_control extends phpok_control
 		$this->lib('file')->rm($this->dir_root.$zipfile);
 		$this->success();
 	}
+
+	public function index_f()
+	{
+		if(!$this->popedom["list"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$rslist = $this->model('module')->get_all();
+		if($rslist){
+			$projects = $cates = array();
+			foreach($rslist as $key=>$value){
+				if($value['tbl'] == 'cate'){
+					$cates[] = $value['id'];
+				}else{
+					$projects[] = $value['id'];
+				}
+			}
+			if($projects){
+				$plist = $this->model('project')->projects_include_modules($projects);
+				if($plist){
+					foreach($rslist as $key=>$value){
+						if($plist[$value['id']]){
+							$rslist[$key]['link'] = $plist[$value['id']];
+						}
+					}
+				}
+			}
+			if($cates){
+				$clist = $this->model('cate')->cates_include_modules($cates);
+				if($clist){
+					foreach($rslist as $key=>$value){
+						if($clist[$value['id']]){
+							$rslist[$key]['link'] = $clist[$value['id']];
+						}
+					}
+				}
+			}
+		}
+		$this->assign("rslist",$rslist);
+		$this->view("module_index");
+	}
+
+	/**
+	 * 存储或更新模型
+	**/
+	public function save_f()
+	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get("id","int");
+		$title = $this->get("title");
+		if(!$title){
+			$this->error(P_Lang('模块名称不能为空'));
+		}
+		$note = $this->get("note");
+		$taxis = $this->get("taxis","int");
+		$array = array("title"=>$title,"note"=>$note,"taxis"=>$taxis);
+		if($id){
+			$old = $this->model('module')->get_one($id);
+			$layout = $this->get("layout");
+			if($layout && is_array($layout)){
+				$array['layout'] = implode(",",$layout);
+			}else{
+				$array['layout'] = '';
+			}
+			$array["mtype"] = $this->get('mtype','int');
+			$array['tbl'] = $this->get('tbl');
+			if($array['mtype'] != $old['mtype'] || $array['tbl'] != $old['tbl']){
+				//检测是否已被使用了
+				$chk = $this->model('project')->projects_include_modules($id);
+				if($chk){
+					$this->error(P_Lang('模块已使用，不允许更换类型'));
+				}
+			}
+			if($array['mtype']){
+				$array['tbl'] = 'list';
+			}
+			$this->model('module')->save($array,$id);
+			$oldtbl = $old['mtype'] ? $id : $old['tbl'].'_'.$id;
+			$mytbl = $oldtbl;
+			if($array["mtype"] != $old['mtype']){
+				$mytbl = $array["mtype"] ? $id : $array['tbl'].'_'.$id;
+			}else{
+				if(!$array['mtype']){
+					$mytbl = $array['tbl'].'_'.$id;
+				}
+			}
+			if($oldtbl != $newtbl){
+				$this->model('module')->rename_tbl($oldtbl,$mytbl);
+			}
+		}else{
+			$array["layout"] = "hits,dateline,sort";
+			$array["mtype"] = $this->get("mtype",'int');
+			if(!$array['mtype']){
+				$array['tbl'] = $this->get('tbl');
+			}
+			$id = $this->model('module')->save($array);
+		}
+		if(!$id){
+			$this->error(P_Lang('数据存储失败，请检查'));
+		}
+		$this->model('module')->create_tbl($id);
+		$this->success();
+	}
+
+	public function set_f()
+	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','int');
+		if($id){
+			$this->assign("id",$id);
+			$rs = $this->model('module')->get_one($id);
+			$layout = !$rs['mtype'] ? array("hits","dateline") : array();
+			if($rs["layout"]){
+				$layout = explode(",",$rs["layout"]);
+			}
+			$this->assign("layout",$layout);
+			$used_list = $this->model('module')->fields_all($id,"identifier");
+			if($used_list){
+				foreach($used_list as $key=>$value){
+					$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
+					$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
+					$used_list[$key] = $value;
+				}
+			}
+			$this->assign("used_list",$used_list);
+		}else{
+			$taxis = $this->model('module')->module_next_taxis();
+			$rs = array('taxis'=>$taxis);
+		}
+		$this->assign("rs",$rs);
+		$tblist = $this->model('module')->tblist();
+		$this->assign('tblist',$tblist);
+		$tblid = 'list';
+		if($rs && $rs['tbl']){
+			$tblid = $rs['tbl'];
+		}
+		$this->assign('tblid',$tblid);
+		$this->view("module_set");
+	}
+
+	/**
+	 * 更新模块状态
+	**/
+	public function status_f()
+	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get("id","int");
+		if(!$id){
+			$this->error(P_Lang('没有指定ID'));
+		}
+		$rs = $this->model('module')->get_one($id);
+		$status = $rs["status"];
+		$status++;
+		if($status>2){
+			$status = '0';
+		}
+		$action = $this->model('module')->update_status($id,$status);
+		if(!$action){
+			$this->error(P_Lang('操作失败，请检查SQL语句'));
+		}
+		$this->success($status);
+	}
+
+	/**
+	 * 更新模块排序
+	 * @参数 $id，数值，要排序的模块ID
+	 * @参数 $taxis，排序值
+	 * @返回 JSON
+	 * @更新时间 2016年07月12日
+	**/
+	public function taxis_f()
+	{
+		$taxis = $this->get('taxis','int');
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$this->model('module')->update_taxis($id,$taxis);
+		$this->success();
+	}
+
+
+
+
 }

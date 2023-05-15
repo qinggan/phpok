@@ -274,27 +274,28 @@ class open_control extends phpok_control
 		$this->assign("pagelist",$pagelist);
 	}
 
+	/**
+	 * 弹出按钮选择主题框
+	**/
 	public function title_f()
 	{
-		$id = $this->get('id');
+		$id = $this->get('id','int');
 		if(!$id){
-			$this->error('未指定标识');
+			$this->error('未指定ID');
 		}
-		$pid = $this->get('pid');
-		if(!$pid){
-			$this->error('未指定项目');
+		$rs = $this->model('fields')->one($id);
+		if(!$rs){
+			$this->error(P_Lang('字段不存在'));
 		}
-		$field = $this->get('field');
-		if(!$field){
-			$this->error('未指定字段');
+		if(!$rs['form_btn']){
+			$this->error(P_Lang('无扩展按钮'));
 		}
-		$showid = $this->get('showid');
-		if(!$showid || $showid == 'undefined'){
-			$showid = $field;
+		$tmp = explode(":",$rs['form_btn']);
+		if($tmp[0] != 'title' || !$tmp[1]){
+			$this->error(P_Lang('未指定项目'));
 		}
-		//
-
-		$url = $this->url('open','title','id='.$id.'&pid='.$pid.'&field='.$field.'&showid='.$showid);
+		$pid = intval($tmp[1]);
+		$formurl = $url = $this->url('open','title','id='.$id);
 		$project = $this->model('project')->get_one($pid);
 		if(!$project){
 			$this->error('项目不存在');
@@ -316,17 +317,26 @@ class open_control extends phpok_control
 		if(!$module['mtype']){
 			$list['title'] = $project['alias_title'] ? $project['alias_title'] : P_Lang('主题');
 		}
-		if(!$list[$field]){
-			$this->error('字段不存在');
-		}
 		$pageid = $this->get($this->config['pageid'],'int');
 		if(!$pageid){
 			$pageid = 1;
 		}
 		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
 		$offset = ($pageid-1) * $psize;
+		$keywords = $this->get('keywords');
+		if($keywords){
+			$url .= "&keywords=".rawurlencode($keywords);
+			$this->assign('keywords',$keywords);
+		}
 		if($module['mtype']){
 			$condition = "project_id='".$project['id']."'";
+			if($keywords){
+				$tmp_c = array();
+				foreach($list as $key=>$value){
+					$tmp_c[] = $key." LIKE '%".$keywords."%'";
+				}
+				$condition .= " AND (".implode(" OR ",$tmp_c).")";
+			}
 			$total = $this->model('list')->single_count($module['id'],$condition);
 			if($total>0){
 				$tmp = array($field);
@@ -340,6 +350,18 @@ class open_control extends phpok_control
 			}
 		}else{
 			$condition = "l.project_id='".$project['id']."'";
+			if($keywords){
+				$tmp_c = array();
+				foreach($list as $key=>$value){
+					if($key == 'title'){
+						$tmp_c[] = 'l.'.$key." LIKE '%".$keywords."%'";
+					}else{
+						$tmp_c[] = 'ext.'.$key." LIKE '%".$keywords."%'";
+					}
+					
+				}
+				$condition .= " AND (".implode(" OR ",$tmp_c).")";
+			}
 			$total = $this->model('list')->get_total($module['id'],$condition);
 			if($total>0){
 				$rslist = $this->model('list')->get_list($module['id'],$condition,$offset,$psize,$project['orderby']);
@@ -354,19 +376,101 @@ class open_control extends phpok_control
 		$pagelist = phpok_page($url,$total,$pageid,$psize,$string);
 		$this->assign("pagelist",$pagelist);
 		$this->assign("pageurl",$url);
-		$this->assign('field',$field);
+		$this->assign("formurl",$formurl);
+		$this->assign('field',$rs['ext_field']);
 		$this->assign('pid',$pid);
 		$this->assign('id',$id);
-		$tmp = explode(",",$showid);
-		$showlist = explode(",",$showid);
+		$showlist = $rs['ext_layout'];
 		$showlist = array_unique($showlist);
 		$tmplist = array();
 		foreach($showlist as $key=>$value){
 			$tmplist[$value] = $list[$value];
 		}
 		$this->assign('showlist',$tmplist);
-		$this->assign('field_title',$list[$field]);
 		$this->view('open_title2');
+	}
+
+	public function content_f()
+	{
+		$fid = $this->get('fid','int');
+		$id = $this->get('id','int');
+		if(!$fid || !$id){
+			$this->error('参数不完整');
+		}
+		$rs = $this->model('fields')->one($fid);
+		if(!$rs){
+			$this->error(P_Lang('字段不存在'));
+		}
+		if(!$rs['form_btn']){
+			$this->error(P_Lang('无扩展按钮'));
+		}
+		$tmp = explode(":",$rs['form_btn']);
+		if($tmp[0] != 'title' || !$tmp[1]){
+			$this->error(P_Lang('未指定项目'));
+		}
+		$pid = intval($tmp[1]);
+		$project = $this->model('project')->get_one($pid);
+		if(!$project){
+			$this->error('项目不存在');
+		}
+		if(!$project['module']){
+			$this->error('项目未绑定模块');
+		}
+		$module = $this->model('module')->get_one($project['module']);
+		if(!$module){
+			$this->error('模块信息不存在');
+		}
+		$module = $this->model('module')->get_one($project['module']);
+		if(!$module){
+			$this->error('模块信息不存在');
+		}
+		if($module['mtype']){
+			$info = $this->model('list')->single_one($id,$module['id']);
+		}else{
+			$info = $this->model('list')->get_one($id,false);
+		}
+		$olist = $this->model('fields')->flist($module['id'],'identifier');
+		$nlist = $this->model('fields')->flist($rs['ftype'],'identifier');
+		$field = $rs['ext_field'];
+		if(!$field){
+			$field = $rs['identifier'];
+		}
+		$data = array();
+		$list = explode(",",$field);
+		foreach($list as $key=>$value){
+			$value = trim($value);
+			if(!$value){
+				continue;
+			}
+			$tmp = explode(":",$value);
+			if(!$tmp[1]){
+				$tmp[1] = $tmp[0];
+			}
+			if($tmp[0] && $info[$tmp[0]] && $tmp[0] == 'title'){
+				$data[$tmp[1]] = array('type'=>'text','value'=>$info['title']);
+				continue;
+			}
+			$old = $olist[$tmp[0]];
+			$new = $nlist[$tmp[1]];
+			//判断新的是否有进阶
+			$tmplist = $this->model('form')->optlist($new);
+			$is_step = false;
+			if($tmplist){
+				foreach($tmplist as $k=>$v){
+					if($v["parent_id"]){
+						$is_step = true;
+						break;
+					}
+				}
+			}
+			if($is_step){
+				$opt = explode(":",$new["option_list"]);
+				$data[$tmp[1]] = array('type'=>'select_more','value'=>$info[$tmp[0]],'gid'=>$opt[1],'gtype'=>$opt[0]);
+			}else{
+				$data[$tmp[1]] = array('type'=>$rs['form_type'],'value'=>$info[$tmp[0]]);
+			}
+		}
+		$this->success($data);
 	}
 
 	/**

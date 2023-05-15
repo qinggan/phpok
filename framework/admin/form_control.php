@@ -41,7 +41,7 @@ class form_control extends phpok_control
 		}
 		$project = $this->model('project')->get_one($pid,false);
 		if(!$project['module']){
-			$this->error(P_Lang('未张定模块'));
+			$this->error(P_Lang('未指定模块'));
 		}
 		$module = $this->model('module')->get_one($project['module']);
 		if(!$module){
@@ -57,7 +57,19 @@ class form_control extends phpok_control
 				$list[$value['identifier']] = $value['title'];
 			}
 		}
-		$this->success($list);
+		$data = array('plist'=>$list);
+		$mid = $this->get('mid','int');
+		if($mid){
+			$list = array();
+			$fields = $this->model('fields')->flist($mid);
+			if($fields){
+				foreach($fields as $key=>$value){
+					$list[$value['identifier']] = $value['title'];
+				}
+			}
+			$data['mlist'] = $list;
+		}
+		$this->success($data);
 	}
 
 	private function _getinfo($eid=0,$etype='ext')
