@@ -195,21 +195,28 @@ class list_model_base extends phpok_model
 					}
 					$value['wholesale'] = $pricelist[$value['id']];
 					$min = $max = 0;
+					$min_qty = $value['min_qty'];
 					foreach($value['wholesale'] as $k=>$v){
 						if(!$min){
 							$min = $v;
 						}
 						if(!$max){
 							$max = $v;
+							$min_qty = $k;
 						}
 						if($min>$v){
 							$min = $v;
 						}
 						if($max<$v){
 							$max = $v;
+							$min_qty = $k;
 						}
 					}
 					$value['price2'] = $min.'-'.$max;
+					if($value['price']<0.0001){
+						$value['min_qty'] = $min_qty;
+						$value['price'] = $min;
+					}
 					$rslist[$key] = $value;
 				}
 			}
@@ -1216,21 +1223,28 @@ class list_model_base extends phpok_model
 					}
 					$value['wholesale'] = $pricelist[$value['id']];
 					$min = $max = 0;
+					$min_qty = $value['min_qty'];
 					foreach($value['wholesale'] as $k=>$v){
 						if(!$min){
 							$min = $v;
 						}
 						if(!$max){
 							$max = $v;
+							$min_qty = $k;
 						}
 						if($min>$v){
 							$min = $v;
 						}
 						if($max<$v){
 							$max = $v;
+							$min_qty = $k;
 						}
 					}
 					$value['price2'] = $min.'-'.$max;
+					if($value['price']<0.0001){
+						$value['min_qty'] = $min_qty;
+						$value['price'] = $max;
+					}
 					$rslist[$key] = $value;
 				}
 			}

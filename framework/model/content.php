@@ -60,6 +60,7 @@ class content_model_base extends phpok_model
 		}
 		//读取产品的属性
 		$tmplist = $this->model('stock')->val_all($rs['id']);
+		$chkprice = $rs['price'];
 		if($tmplist){
 			//产品属性价格
 			$min = $max = 0;
@@ -110,7 +111,21 @@ class content_model_base extends phpok_model
 			$rs = array_merge($rs,$ext);
 		}
 		//批发价
-
+		$min_qty = $rs['min_qty'];
+		if($rs['wholesale'] && $chkprice<0.0001){
+			$price = 0;
+			$min_qty = 0;
+			foreach($rs['wholesale'] as $key=>$value){
+				if($value['price']>$price){
+					$price = $value['price'];
+					$min_qty = $value['qty'];
+				}
+			}
+			$chkprice = $price;
+			$min_qty = $min_qty;
+		}
+		$rs['price'] = $chkprice;
+		$rs['min_qty'] = $min_qty;
 		return $rs;
 	}
 
@@ -185,7 +200,7 @@ class content_model_base extends phpok_model
 				return false;
 			}
 			$price = $rs['price'];
-			if($rs['attrs'][$attr]['price'] > $price){
+			if($rs['attrs'][$attr]['price'] != $price){
 				$price = $rs['attrs'][$attr]['price'];
 			}
 			$stock = $rs['attrs'][$attr]['qty'];
@@ -208,6 +223,13 @@ class content_model_base extends phpok_model
 		}
 		if(!$attr){
 			$price = $rs['price'];
+			if($rs['wholesale']){
+				foreach($rs['wholesale'] as $key=>$value){
+					if($qty>=$value['qty']){
+						$price = $value['price'];
+					}
+				}
+			}
 			$price_format = price_format($price,$rs['currency_id'],$this->site['currency_id']);
 			$price_val = price_format_val($price,$rs['currency_id'],$this->site['currency_id']);
 			$data = array();
