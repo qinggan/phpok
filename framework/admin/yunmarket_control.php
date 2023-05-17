@@ -327,9 +327,12 @@ class yunmarket_control extends phpok_control
 		if(substr($rs['folder'],-1) == '/'){
 			$rs['folder'] = substr($rs['folder'],0,-1);
 		}
-		$tmpfolder = $this->dir_root.$rs['folder'].'/';
+		$basename = basename($rs['folder']);
+		$strlen = strlen($basename);
+		$tmpfolder = $this->dir_root.substr($rs['folder'],0,-$strlen);
+		//$tmpfolder = $this->dir_root.$rs['folder'].'/';
 		//如果目录类存在，则跳过
-		if(file_exists($tmpfolder)){
+		if(file_exists($tmpfolder.$basename)){
 			if($actype == 'install'){
 				$this->_errinfo = P_Lang('安装目录已存在，不支持覆盖安装');
 				return false;
@@ -352,9 +355,6 @@ class yunmarket_control extends phpok_control
 		$this->lib('file')->make($this->dir_data.'tmp/','folder');
 		$this->lib('phpzip')->unzip($this->dir_data.'tmp.zip',$this->dir_data.'tmp/');
 		$this->lib('file')->rm($this->dir_data.'tmp.zip');
-		if(!is_dir($tmpfolder)){
-			$this->lib('file')->make($tmpfolder);
-		}
 		$tmpname = basename($rs['folder']);
 		$strlen = strlen($this->dir_data."tmp/".$tmpname.'/');
 		$checkfile = $this->dir_data."tmp/".$tmpname;
@@ -362,17 +362,7 @@ class yunmarket_control extends phpok_control
 			$this->_errinfo = P_Lang('软件包异常，请检查');
 			return false;
 		}
-		$list = array();
-		$this->lib('file')->deep_ls($this->dir_data.'tmp/'.$tmpname,$list);
-		foreach($list as $key=>$value){
-			$tmp = substr($value,$strlen);
-			if(is_file($value)){
-				$this->lib('file')->mv($value,$tmpfolder.$tmp);
-			}
-			if(is_dir($value) && !is_dir($tmpfolder.$tmp)){
-				$this->lib('file')->make($tmpfolder.$tmp.'/','folder');
-			}
-		}
+		$this->lib('file')->mv($this->dir_data.'tmp/'.$tmpname,$tmpfolder);
 		//判断是否有 install 或 update
 		if($actype == 'install'){
 			$install_php = $this->dir_data.'tmp/install.php';
