@@ -583,12 +583,6 @@ class all_control extends phpok_control
 		if($extlist){
 			$tmp = array();
 			foreach($extlist as $key=>$value){
-				if($value["ext"]){
-					$ext = unserialize($value["ext"]);
-					foreach($ext as $k=>$v){
-						$value[$k] = $v;
-					}
-				}
 				$tmp[] = $this->lib('form')->format($value);
 				$this->lib('form')->cssjs($value);
 			}

@@ -294,26 +294,24 @@ class site_model_base extends phpok_model
 			$this->cache->save($cache_id,$rs);
 			return $rs;
 		}
-		$tmp = $tmp2 = array();
-		foreach($list AS $key=>$value){
-			$tmp[$value["identifier"]] = "all-".$value["id"];
-			$tmp2["all-".$value["id"]] = $value["identifier"];
-		}
-		$tmp = implode("','",$tmp);
-		$sql = "SELECT ext.id,ext.identifier,ext.form_type,extc.content,ext.ext,ext.ftype FROM ".$this->db->prefix."fields ext ";
-		$sql.= "JOIN ".$this->db->prefix."extc extc ON(ext.id=extc.id) ";
-		$sql.= "WHERE ext.ftype IN('".$tmp."') ORDER BY ext.taxis ASC,ext.id DESC";
-		$rslist = $this->db->get_all($sql);
-		if(!$rslist){
-			$this->cache->save($cache_id,$rs);
-			return $rs;
-		}
-		$info = false;
-		foreach($rslist as $key=>$value){
-			if(!$tmp2[$value["ftype"]]){
+		foreach($list as $key=>$value){
+			$tmplist = $this->model('fields')->flist('all-'.$value['id'],'identifier');
+			if(!$tmplist){
 				continue;
 			}
-			$rs[$tmp2[$value["ftype"]]][$value["identifier"]] = $this->lib('form')->show($value);
+			$rs[$value['identifier']] = array();
+			$ids = array();
+			foreach($tmplist as $k=>$v){
+				$ids[] = $v['id'];
+			}
+			$sql = "SELECT * FROM ".$this->db->prefix."extc WHERE id IN(".implode(",",$ids).")";
+			$tmpdata = $this->db->get_all($sql,'id');
+			foreach($tmplist as $k=>$v){
+				if($tmpdata && $tmpdata[$v['id']] != ''){
+					$v['content'] = $tmpdata[$v['id']]['content'];
+				}
+				$rs[$value['identifier']][$v['identifier']] = $this->lib('form')->show($v);
+			}
 		}
 		$this->cache->save($cache_id,$rs);
 		return $rs;

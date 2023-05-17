@@ -193,12 +193,12 @@ class ext_control extends phpok_control
 		$array["content"] = $rs["content"];
 		$array["taxis"] = $taxis;
 		if($rs['ext']){
-			if(is_array($rs['ext'])){
-				$rs['ext'] = serialize($rs['ext']);
-			}else{
-				$rs['ext'] = serialize(unserialize($rs["ext"]));
+			if(!is_array){
+				$rs['ext'] = unserialize($rs['ext']);
 			}
-			$array['ext'] = $rs['ext'];
+			foreach($rs['ext'] as $key=>$value){
+				$array[$key] = $value;
+			}
 		}
 		$this->model('ext')->save($array);
 		$this->success();
