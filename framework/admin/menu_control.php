@@ -135,6 +135,7 @@ class menu_control extends phpok_control
 				$project = $this->model('project')->get_one($rs['project_id']);
 				if($project){
 					$catelist = $this->model('cate')->get_all($project['site_id'],false,$project['cate']);
+					$catelist = $this->model('cate')->cate_option_list($catelist);
 					$this->assign('catelist',$catelist);
 				}
 			}
@@ -194,6 +195,7 @@ class menu_control extends phpok_control
 		if(!$catelist){
 			$this->error(P_Lang('暂无分类信息'));
 		}
+		$catelist = $this->model('cate')->cate_option_list($catelist);
 		$this->success($catelist);
 	}
 
