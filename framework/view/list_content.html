@@ -192,7 +192,7 @@ function list_content_search(obj)
 			<!-- loop from=$layout key=$key value=$value -->
 			<th lay-data="{field:'{$key}'{if $value.width},width:{$value.width}{/if}{if $popedom.modify},edit:{$value.edit}{/if},sort:{$value.sort},align:'{$value.align}',totalRow:{$value.stat}{if $value.stat_title},totalRowText:'{$value.stat_title}'{/if}}">{$value.title}</th>
 			<!-- /loop -->
-			<th lay-data="{field:'_action', width:{if $rs.comment_status && $rs.subtopics}230{elseif !$rs.comment_status && $rs.subtopics}200{elseif $rs.comment_status && !$rs.subtopics}170{else}140{/if},align:'left',fixed:'right',unresize:true}">{lang操作}</th>
+			<th lay-data="{field:'_action', width:{if $rs.comment_status && $rs.subtopics}240{elseif !$rs.comment_status && $rs.subtopics}210{elseif $rs.comment_status && !$rs.subtopics}180{else}150{/if},align:'left',fixed:'right',unresize:true}">{lang操作}</th>
 		</tr>
 		</thead>
 		<!-- php:$tmp_m = 0 -->
