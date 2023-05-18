@@ -551,6 +551,9 @@ class curl_lib
 		if($url){
 			$this->exec($url,$is_binary);
 		}
+		if($this->http_code != '200'){
+			return false;
+		}
 		return $this->http_body;
 	}
 

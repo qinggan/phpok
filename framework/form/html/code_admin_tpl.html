@@ -24,10 +24,7 @@ $(document).ready(function(){
 		indentWithTabs	: true,
 		indentUnit		: 4,
 		theme			: '{$_rs.theme ? $_rs.theme : "default"}'
-	});
-	code_editor_{$_rs.identifier}.on("change",function(obj){
-		$("#{$_rs.identifier}").val(obj.getValue());
-	});
+	}).on("change",function(obj){obj.save()});
 });
 </script>
 <!-- if $_rs.js_admin -->

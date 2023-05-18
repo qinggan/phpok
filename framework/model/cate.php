@@ -349,10 +349,10 @@ class cate_model_base extends phpok_model
 		foreach($list as $key=>$value){
 			$value["_space"] = "";
 			for($i=0;$i<$value["_layer"];$i++){
-				$value["_space"] .= "&nbsp; &nbsp;│";
+				$value["_space"] .= "　　│";
 			}
 			if($value["_is_end"] && $value["_layer"]){
-				$value["_space"] .= "&nbsp; &nbsp;├";
+				$value["_space"] .= "　　├";
 			}
 			$rslist[$key] = $value;
 		}

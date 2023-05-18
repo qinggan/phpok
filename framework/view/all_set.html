@@ -18,7 +18,7 @@
 				{$value.title}
 				<div class="darkblue"><small>[{$value.identifier}]</small></div>
 			</label>
-			<!-- if $value.note --><div class="layui-input-block gray">{$value.note}</div><!-- /if -->
+			<!-- if $value.note && $value.form_type != 'text' --><div class="layui-input-block gray">{$value.note}</div><!-- /if -->
 			<div class="layui-input-block">
 				{$value.html}
 			</div>
