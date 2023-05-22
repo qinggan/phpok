@@ -75,7 +75,7 @@
 					<!-- if $value.is_buy -->
 					<div class="layui-btn-group">
 						<!-- if !$value.is_install -->
-						<input type="button" value="安装" onclick="$.admin_yunmarket.install('{$value.id}')" class="layui-btn layui-btn-xs" />
+						<input type="button" value="安装" onclick="$.admin_yunmarket.install('{$value.id}','{$value.title}',{$value.extlist ? 'true' : false})" class="layui-btn layui-btn-xs" />
 						<!-- /if -->
 						<!-- if $value.is_install -->
 						<!-- if $value.is_update --><input type="button" value="升级" onclick="$.admin_yunmarket.update('{$value.id}','{$value.title}')" class="layui-btn layui-btn-xs" /><!-- /if -->

@@ -361,6 +361,7 @@ class menu_control extends phpok_control
 				$data[] = array('value'=>'cate_title','title'=>P_Lang('读子分类及主题'));
 			}
 		}
+		$data[] = array('value'=>'subproject','title'=>P_Lang('读子项目'));
 		$this->success($data);
 	}
 	

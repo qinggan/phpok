@@ -39,25 +39,32 @@
 				'height':'500px'
 			});
 		},
-		install:function(id)
+		install:function(id,title,is_ext)
 		{
-			var url = get_url('yunmarket','install','id='+id);
-			var lock = $.dialog.tips('正在安装，请稍候…',100).lock();
-			$.phpok.json(url,function(rs){
-				if(!rs.status){
-					lock.content(rs.info).time(1.5);
-					return false;
-				}
-				lock.setting('close',function(){
-					if(rs.info == 'app'){
-						$.win('应用中心',get_url('appsys'));
+			var tip = '确定要安装【<span class="red">'+title+'</span>】吗？<br/>';
+			if(is_ext){
+				tip += '<span class="red"><b>涉及到关联扩展会自动安装！</b></span><br/>';
+			}
+			tip += '点【确定】即同意安装';
+			$.dialog.confirm(tip,function(){
+				var url = get_url('yunmarket','install','id='+id);
+				var lock = $.dialog.tips('正在安装，请稍候…',100).lock();
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						lock.content(rs.info).time(1.5);
+						return false;
 					}
-					if(rs.info == 'plugin'){
-						$.win('插件中心',get_url('plugin'));
-					}
-					$.phpok.reload();
-				});
-				lock.content('安装成功，请稍候…').time(1.5);
+					lock.setting('close',function(){
+						if(rs.info == 'app'){
+							$.win('应用中心',get_url('appsys'));
+						}
+						if(rs.info == 'plugin'){
+							$.win('插件中心',get_url('plugin'));
+						}
+						$.phpok.reload();
+					});
+					lock.content('安装成功，请稍候…').time(1.5);
+				});				
 			});
 			return false;
 		},
