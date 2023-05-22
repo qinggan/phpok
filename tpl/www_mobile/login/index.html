@@ -1,4 +1,40 @@
 <!-- include tpl=login/header title=用户登录 -->
+<script type="text/javascript">
+var uni_load = false;
+function weixin_ap_login()
+{
+	if(!uni_load){
+		$.dialog.tips('环境未加载守成，请稍候…');
+		return false;
+	}
+	var url = "/pages/wxlogin/index";
+	uni.reLaunch({
+		"url":url,
+		"success":function(){
+			console.log('接口调用成功');
+		},
+		"fail":function(res){
+			console.log('接口调用失败'+JSON.stringify(res));
+		},
+		"complete":function(){
+			console.log('执行操作完成');
+		}
+	});
+}
+function weixin_mp_login()
+{
+	console.log('微信公众号用户登录')
+}
+$(document).ready(function(){
+	document.addEventListener('UniAppJSBridgeReady', function() {  
+		console.log('成功加载UniAPP');
+		uni_load = true;
+		uni.getEnv(function(res) {
+			console.log('当前环境：' + JSON.stringify(res))
+		});
+	});
+});
+</script>
 <section class="container pt-4 mb-4">
 	<div class="row justify-content-center">
 		<div class="col col-sm-6 p-4 m-4 bg-white border shadow">
@@ -50,6 +86,18 @@
 					</div>
 					<!-- /if -->
 				</div>
+				<!-- if $platform && $platform == 'weixin' -->
+				<!-- if $program == 'ap' -->
+				<div class="m-1">
+					<button type="button" class="btn btn-primary btn-block" onclick="weixin_ap_login()">微信登录1</button>
+				</div>
+				<!-- /if -->
+				<!-- if $program == 'mp' -->
+				<div class="m-1">
+					<button type="button" class="btn btn-primary btn-block" onclick="weixin_mp_login()">微信登录2</button>
+				</div>
+				<!-- /if -->
+				<!-- /if -->
 			</form>
 		</div>
 	</div>
