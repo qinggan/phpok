@@ -212,7 +212,14 @@ class module_control extends phpok_control
 		if(!$fid){
 			$this->error(P_Lang('未指定要添加的字段ID'));
 		}
-		$rs = $this->model('module')->get_one($id);
+		if(is_numeric($id)){
+			$rs = $this->model('module')->get_one($id);
+		}else{
+			if($id != 'user'){
+				$this->error(P_Lang('模块异常'));
+			}
+			$rs = array('id'=>'user','title'=>P_Lang('用户扩展字段'));
+		}
 		if(!$rs){
 			$this->error(P_Lang('模型不存在'));
 		}
@@ -248,13 +255,14 @@ class module_control extends phpok_control
 			}
 		}
 		$this->model('module')->fields_save($tmp_array);
-
-		$tbl_exists = $this->model('module')->chk_tbl_exists($id,$rs['mtype'],$rs['tbl']);
-		if(!$tbl_exists){
-			$this->model('module')->create_tbl($id);
-			$tbl_exists2 = $this->model('module')->chk_tbl_exists($id,$rs['mtype'],$rs['tbl']);
-			if(!$tbl_exists2){
-				$this->error(P_Lang('模块：[title]创建表失败',array('title'=>$rs['title'])));
+		if(is_numeric($id)){
+			$tbl_exists = $this->model('module')->chk_tbl_exists($id,$rs['mtype'],$rs['tbl']);
+			if(!$tbl_exists){
+				$this->model('module')->create_tbl($id);
+				$tbl_exists2 = $this->model('module')->chk_tbl_exists($id,$rs['mtype'],$rs['tbl']);
+				if(!$tbl_exists2){
+					$this->error(P_Lang('模块：[title]创建表失败',array('title'=>$rs['title'])));
+				}
 			}
 		}
 		$list = $this->model('module')->fields_all($id);
