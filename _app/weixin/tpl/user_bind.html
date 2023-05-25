@@ -1,0 +1,72 @@
+<!-- include tpl=head -->
+<script type="text/javascript">
+function bind_login(obj)
+{
+	$("#login_submit").attr("disabled",true);
+	var act = $.dialog.tips('正在执行，请稍候…',100).lock();
+	var nickname = $("input[name=nickname]").val();
+	var mobile = $("input[name=mobile]").val();
+	if(!mobile){
+		$("#login_submit").attr("disabled",false);
+		act.content('手机号不能为空').time(1);
+		return false;
+	}
+	var code = $("input[name=_chkcode]").val();
+	if(!code){
+		$("#login_submit").attr("disabled",false);
+		act.content('验证码不能为空').time(1);
+		return false;
+	}
+	var data = {};
+	data['mobile'] = mobile;
+	data['_chkcode'] = code;
+	data['nickname'] = nickname;
+	data['data'] = $("input[name=data]").val();
+	var url = api_url('weixin','bind');
+	$.phpok.json(url,function(rs){
+		$("#login_submit").attr("disabled",false);
+		act.close();
+		if(rs.status){
+			$.phpok.go(webroot);
+			return true;
+		}
+		$.dialog.alert(rs.info,true,'error');
+		return false;
+	},data);
+	return false;
+}
+</script>
+<section class="container pt-4 mb-4">
+	<div class="row justify-content-center">
+		<div class="col pt-4 pb-4 pl-2 pr-2 m-4 bg-white border shadow">
+			<h3 class="text-center">完善个人信息</h3>
+			<hr />
+			<form onsubmit="return bind_login(this)" method="post" id="login-submit">
+				<input type="hidden" name="data" value="{$data}" />
+				<!-- if !$wx.user_id -->
+				<div class="form-group">
+					<label>称呼</label>
+					<input type="text" class="form-control" required name="nickname" placeholder="请填写用户称呼" />
+				</div>
+				<!-- /if -->
+				<div class="form-group">
+					<label for="mobile">手机号</label>
+					<div class="row">
+						<div class="col"><input type="text" class="form-control" id="mobile" name="mobile" placeholder="请输入手机号" /></div>
+						<div class="col"><input type="button" value="发送手机验证码" onclick="$.vcode.sms(this,'mobile','login')" class="btn btn-light btn-block btn-sm mt-1" id="mobile_send_status" /></div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="_chkcode">手机验证码</label>
+					<input type="text" name="_chkcode" class="form-control" placeholder="请输入手机上收到的验证码" />
+				</div>
+				<div class="row">
+					<div class="col">
+						<button type="submit" class="btn btn-primary btn-block">登录</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</section>
+<!-- include tpl=foot -->

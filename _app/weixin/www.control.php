@@ -105,6 +105,33 @@ class www_control extends \phpok_control
 		$this->_to_back($wxuser['id']);
 	}
 
+	public function bind_f()
+	{
+		$data = $this->get('data','html');
+		if(!$data){
+			$this->error('参数异常',$this->url('index'));
+		}
+		$this->assign('data',$data);
+		$api_code = $this->model('config')->get_one('api_code',$this->site['id']);
+		if(!$api_code){
+			$this->error(P_Lang("系统未启用接口功能"));
+		}
+		$this->lib('token')->etype('api_code');
+		$this->lib('token')->expiry(24*60*60);
+		$this->lib('token')->keyid($api_code);
+		$info = $this->lib('token')->decode($data);
+		if(!$info || !$info['openid']){
+			$this->error('参数异常，请检查');
+		}
+		$openid = $info['openid'];
+		$wx = $this->model('weixin')->user_one($openid);
+		if(!$wx){
+			$this->error('信息不存在');
+		}
+		$this->assign('wx',$wx);
+		$this->display('user_bind');
+	}
+
 	/**
 	 * 接收信息
 	 * @参数 echostr 存在用于较检接口是否连通

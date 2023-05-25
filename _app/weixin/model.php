@@ -256,6 +256,14 @@ class model extends \phpok_model
 		$this->db->query($sql);
 	}
 
+	public function user_update($data,$id=0)
+	{
+		if(!$data || !is_array($data) || !$id){
+			return false;
+		}
+		$this->db->update($data,'weixin_user',array('id'=>$id));
+	}
+
 	/**
 	 * 更新 openid 与 用户ID 的关联
 	**/

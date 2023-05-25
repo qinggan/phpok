@@ -2,7 +2,6 @@
 /**
  * 接入节点_集成微信所有接口功能，包括公众号（mp），开放平台（op），小程序（ap）等相关服务
  * @作者 phpok.com <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 5.x
  * @许可 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
@@ -85,7 +84,12 @@ class nodes_phpok extends \_init_auto
 		if(isset($rs['op']['app_secret'])){
 			unset($rs['op']['app_secret']);
 		}
+		//判断平台
+		$p = $this->platform();
+		$this->assign('platform',$p['platform']);
+		$this->assign('program',$p['program']);
 	}
+
 
 	/**
 	 * 删除主题时触发删除这个应用事件
@@ -121,4 +125,25 @@ class nodes_phpok extends \_init_auto
 		return true;
 	}
 
+	//判断是什么平台
+	private function platform()
+	{
+		$platform='h5';
+		$program= '';
+		$a_strtolower = strtolower($_SERVER['HTTP_USER_AGENT']);
+		if(strpos($a_strtolower, "micromessenger"))//公众号MicroMessenger
+		{
+			$platform = 'weixin';
+			if(strpos($a_strtolower, "miniprogram")){
+				$program = 'ap';
+			}else{
+				$program = 'mp';
+			}
+		}
+		elseif(strpos($a_strtolower, "uni-app") || strpos($a_strtolower, "Html5Plus"))//app
+		{
+			$platform = 'app';
+		}
+		return array('platform'=>$platform,'program'=>$program);
+	}
 }
