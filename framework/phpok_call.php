@@ -12,7 +12,7 @@ if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class phpok_call extends _init_auto
 {
 	private $mlist;
-	private $_cache;
+	private $_cache = array();
 	public function __construct()
 	{
 		parent::__construct();
@@ -27,7 +27,12 @@ class phpok_call extends _init_auto
 		if($this->_cache && $this->_cache[$id]){
 			return $this->_cache[$id];
 		}
-		$this->_cache = $this->model('call')->all($siteid,'identifier');
+		$tmplist = $this->model('call')->all($siteid);
+		if($tmplist){
+			foreach($tmplist as $key=>$value){
+				$this->_cache['datacall-'.$value['identifier']] = $value;
+			}
+		}
 		if($this->_cache && $this->_cache[$id]){
 			return $this->_cache[$id];
 		}
@@ -60,6 +65,7 @@ class phpok_call extends _init_auto
 		$array[] = 'total';
 		$array[] = 'user';
 		$array[] = 'userlist';
+		$array[] = 'module'; //模块基本信息
 		return array_unique($array);
 	}
 
@@ -88,16 +94,13 @@ class phpok_call extends _init_auto
 		}
 		if($rs['site'] != $this->site['id']){
 			$siteinfo = $this->model('site')->get_one($rs['site']);
+			$baseurl = '//'.$siteinfo['domain'].$siteinfo['dir'];
 		}else{
 			$siteinfo = $this->site;
+			$baseurl = $this->url;
 		}
 		if(!$siteinfo){
 			return false;
-		}
-		if($rs['site'] != $this->site['id']){
-			$baseurl = 'http://'.$siteinfo['domain'].$siteinfo['dir'];
-		}else{
-			$baseurl = $this->url;
 		}
 		if($rs['cate_id'] && !isset($rs['cateid'])){
 			$rs['cateid'] = $rs['cate_id'];
@@ -106,7 +109,7 @@ class phpok_call extends _init_auto
 		$rs['_baseurl'] = $baseurl;
 		$this->model('url')->base_url($baseurl);
 		if(substr($id,0,1) != '_'){
-			$call_rs = $this->load_phpoklist($id,$rs['site']);
+			$call_rs = $this->load_phpoklist('datacall-'.$id,$rs['site']);
 			if(!$call_rs){
 				return false;
 			}
@@ -159,7 +162,7 @@ class phpok_call extends _init_auto
 			$project = $rs['project'];
 			unset($rs['project']);
 		}else{
-			$project = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+			$projecg = $this->phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
 			if(!$project || !$project['status'] || !$project['module']){
 				return false;
 			}
@@ -209,11 +212,11 @@ class phpok_call extends _init_auto
 			unset($rs);
 			return false;
 		}
-		$project = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+		$project = $this->phpok("_project",array('pid'=>$rs['pid'],'site'=>$rs['site']));
 		if(!$project || !$project['status'] || !$project['module']){
 			return false;
 		}
-		$module = $this->model('module')->get_one($project['module']);
+		$module = $this->phpok('_module',array('id'=>$project['module']));
 		if(!$module || $module['status'] != 1){
 			return false;
 		}
@@ -223,9 +226,10 @@ class phpok_call extends _init_auto
 		}
 		$array = array('project'=>$project);
 		$this->model('list')->is_biz($project['is_biz']);
-		$this->model('list')->multiple_cate(0);
 		if($project['cate']){
 			$this->model('list')->multiple_cate($project['cate_multiple']);
+		}else{
+			$this->model('list')->multiple_cate(0);
 		}
 		if($project['cate'] || $rs['cateid']){
 			$cateid = $rs['cateid'] ? $rs['cateid'] : $project['cate'];
@@ -395,10 +399,10 @@ class phpok_call extends _init_auto
 		return $array;
 	}
 
-	private function _arclist_single($rs,$cache_id,$project='',$module='')
+	private function _arclist_single($rs,$cache_id='',$project='',$module='')
 	{
 		if(!$project){
-			$project = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+			$project = $this->phpok("_project",array('pid'=>$rs['pid'],'site'=>$rs['site']));
 			if(!$project || !$project['status'] || !$project['module']){
 				return false;
 			}
@@ -857,7 +861,7 @@ class phpok_call extends _init_auto
 			unset($rs);
 			return false;
 		}
-		$project = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+		$project = $this->phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
 		if(!$project || !$project['status'] || !$project['module']){
 			return false;
 		}
@@ -1127,7 +1131,7 @@ class phpok_call extends _init_auto
 		if(!$rs['pid']){
 			return false;
 		}
-		$project_rs = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+		$project_rs = $this->phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
 		if(!$project_rs || !$project_rs['status'] || !$project_rs['cate']){
 			return false;
 		}
@@ -1340,6 +1344,25 @@ class phpok_call extends _init_auto
 		return $array;
 	}
 
+	/**
+	 * 获取模块信息，仅限内部使用
+	**/
+	private function _module($rs,$cache_id='')
+	{
+		if(!$rs['id']){
+			return false;
+		}
+		$module = $this->model('module')->get_one($rs['id']);
+		if(!$module){
+			return false;
+		}
+		if($cache_id){
+	 		$this->cache->key_list($cache_id,$this->db->prefix.'module');
+			$this->cache->save($cache_id,$module);
+		}
+ 		return $module;
+	}
+
 	//取得上一级项目
 	private function _parent($rs)
 	{
@@ -1356,16 +1379,14 @@ class phpok_call extends _init_auto
 		if(!$rs['pid']){
 			return false;
 		}
-		$project = $this->_project($rs);
-		if(!$project || !$project['status'] || !$project['parent_id']){
+		$project = $this->phpok('_project',$rs);
+		if(!$project || !$project['status']){
 			return false;
 		}
-		$rs['pid'] = $project['parent_id'];
-		$project = $this->_project($rs);
-		if(!$project || !$project['status'] || !$project['parent_id']){
-			return false;
+		if(!$project['parent_id']){
+			return $project;
 		}
-		return $project;
+		return $this->_parent(array('pid'=>$project['parent_id']));
 	}
 
 	//读取当前项目下的子项目，支持多级
@@ -1431,7 +1452,7 @@ class phpok_call extends _init_auto
 		}
 		$project = array();
 		if($rs['pid']){
-			$project_rs = $this->_project(array('pid'=>$rs['pid'],'site'=>$rs['site']));
+			$project_rs = $this->_phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
 			if($project_rs && $project_rs['status'] && $project_rs['cate']){
 				$project = $project_rs;
 				if(!$rs['cateid'] && !$rs['cate'] && !$rs['phpok']){

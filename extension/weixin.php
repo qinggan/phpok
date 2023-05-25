@@ -867,4 +867,29 @@ EOT;
 		}
 		return $dataObj;
     }
+
+    public function getPhoneNumber($code)
+    {
+	    $access_token = $this->access_token();
+	    if(!$access_token){
+		    return false;
+	    }
+	    $url = 'https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token='.$access_token;
+	    $result = $this->curl($url,array('code'=>$code));
+	    if(!$result){
+            if($this->debug){
+                phpok_log($result['errcode'].':'.$result['errmsg'].'异常：获取数据失败');
+            }
+            return false;
+        }
+        $info = json_decode($result,true);
+        if($info['errcode'] || $info['errmsg'] != 'ok'){
+            if($this->debug){
+                phpok_log($info['errcode'].':'.$info['errmsg']);
+            }
+            $this->error = $info['errcode'].':'.$info['errmsg'];
+            return false;
+        }
+        return $info['phone_info'];
+    }
 }
