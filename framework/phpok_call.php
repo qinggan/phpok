@@ -1452,7 +1452,7 @@ class phpok_call extends _init_auto
 		}
 		$project = array();
 		if($rs['pid']){
-			$project_rs = $this->_phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
+			$project_rs = $this->phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
 			if($project_rs && $project_rs['status'] && $project_rs['cate']){
 				$project = $project_rs;
 				if(!$rs['cateid'] && !$rs['cate'] && !$rs['phpok']){
