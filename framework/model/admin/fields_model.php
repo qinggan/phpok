@@ -84,4 +84,57 @@ class fields_model extends fields_model_base
 		return true;
 	}
 
+
+	/**
+	 * 后台读取模块下的所有扩展字段信息，返回的 ext 信息已自动转成数组模式
+	 * @参数 $ftype 模块ID 或 模块类型
+	 * @参数 $primary 自定义 key 键，默认为空，支持 id 和 identifier
+	**/
+	public function flist($ftype,$primary='')
+	{
+		if(!$ftype){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ftype='".$ftype."' ORDER BY taxis ASC,id DESC";
+		$rslist = $this->db->get_all($sql,$primary);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			$ext = $this->fields_ext_all($value['id']);
+			if($ext){
+				$value = array_merge($ext,$value);
+			}
+			$rslist[$key] = $value;
+		}
+		return $rslist;
+	}
+
+	/**
+	 * 后台：读取指定字段下的扩展字段配置，无缓存
+	 * @参数 $fields_id 字段ID
+	 * @返回 数组，为空返回 false
+	**/
+
+	public function fields_ext_all($fields_id=0)
+	{
+		if(!$fields_id){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."fields_ext WHERE fields_id='".$fields_id."'";
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		$rs = array();
+		foreach($rslist as $key=>$value){
+			$tmp = $value['keydata'];
+			if(strpos($tmp,'{') !== false && strpos($tmp,':') !== false && substr($tmp,-1) == '}'){
+				$tmp = unserialize($tmp);
+			}
+			$rs[$value['keyname']] = $tmp;
+		}
+		return $rs;
+	}
+
 }

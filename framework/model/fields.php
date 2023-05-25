@@ -59,19 +59,45 @@ class fields_model_base extends phpok_model
 		if(!$ftype){
 			return false;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."fields WHERE ftype='".$ftype."' ORDER BY taxis ASC,id DESC";
-		$rslist = $this->db->get_all($sql,$primary);
+		$sql = "SELECT * FROM ".$this->db->prefix."fields ORDER BY taxis ASC,id DESC";
+		$cache_id = $this->cache->id($sql.'-'.$primary);
+		if($cache_id){
+			$info = $this->cache->get($cache_id);
+			if($info){
+				if($info[$ftype]){
+					return $info[$ftype];
+				}
+				return false;
+			}
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."fields ORDER BY taxis ASC,id DESC";
+		$rslist = $this->db->get_all($sql);
 		if(!$rslist){
 			return false;
 		}
+		$datalist = array();
 		foreach($rslist as $key=>$value){
 			$ext = $this->fields_ext_all($value['id']);
 			if($ext){
 				$value = array_merge($ext,$value);
 			}
-			$rslist[$key] = $value;
+			if(!isset($datalist[$value['ftype']])){
+				$datalist[$value['ftype']] = array();
+			}
+			if($primary && isset($value[$primary])){
+				$datalist[$value['ftype']][$value[$primary]] = $value;
+			}else{
+				$datalist[$value['ftype']][] = $value;
+			}
 		}
-		return $rslist;
+		if($cache_id){
+			$this->cache->key_list($cache_id,array($this->db->prefix."fields",$this->db->prefix."fields_ext"));
+			$this->cache->save($cache_id,$datalist);
+		}
+		if($datalist[$ftype]){
+			return $datalist[$ftype];
+		}
+		return false;
 	}
 
 	public function fields_count($words,$type="")
@@ -94,7 +120,6 @@ class fields_model_base extends phpok_model
 		if(!$fields_id){
 			return false;
 		}
-		//$this->fields_ext_delete($fields_id);
 		foreach($data as $key=>$value){
 			if($value && is_array($value)){
 				$value = serialize($value);
@@ -121,20 +146,40 @@ class fields_model_base extends phpok_model
 		if(!$fields_id){
 			return false;
 		}
-		$sql = "SELECT * FROM ".$this->db->prefix."fields_ext WHERE fields_id='".$fields_id."'";
+		$sql = "SELECT * FROM ".$this->db->prefix."fields_ext";
+		$cache_id = $this->cache->id($sql);
+		if($cache_id){
+			$info = $this->cache->get($cache_id);
+			if($info){
+				if($info[$fields_id]){
+					return $info[$fields_id];
+				}
+				return false;
+			}
+		}
 		$rslist = $this->db->get_all($sql);
 		if(!$rslist){
 			return false;
 		}
-		$rs = array();
+		$datalist = array();
 		foreach($rslist as $key=>$value){
 			$tmp = $value['keydata'];
 			if(strpos($tmp,'{') !== false && strpos($tmp,':') !== false && substr($tmp,-1) == '}'){
 				$tmp = unserialize($tmp);
 			}
-			$rs[$value['keyname']] = $tmp;
+			if(isset($datalist[$value['fields_id']])){
+				$datalist[$value['fields_id']] = array();
+			}
+			$datalist[$value['fields_id']][$value['keyname']] = $tmp;
 		}
-		return $rs;
+		if($cache_id){
+			$this->cache->key_list($cache_id,$this->db->prefix."fields_ext");
+			$this->cache->save($cache_id,$datalist);
+		}
+		if($datalist[$fields_id]){
+			return $datalist[$fields_id];
+		}
+		return false;
 	}
 
 	/**
