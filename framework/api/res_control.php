@@ -69,6 +69,57 @@ class res_control extends phpok_control
 		$this->success();
 	}
 
+	public function title_f()
+	{
+		$id = $this->get("id","int");
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('res')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('附件不存在'));
+		}
+		if(!$rs['user_id'] && !$rs['session_id']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		if($this->session->val('user_id') && $rs['user_id'] != $this->session->val('user_id')){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		if(!$this->session->val('user_id') && $rs['session_id'] != $this->session->sessid()){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$title = $this->get("title");
+		if(!$title){
+			$this->error(P_Lang('名称不能为空'));
+		}
+		$this->model('res')->update_title($title,$id);
+		$this->success();
+	}
+
+	public function note_f()
+	{
+		$id = $this->get("id","int");
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$rs = $this->model('res')->get_one($id);
+		if(!$rs){
+			$this->error(P_Lang('附件不存在'));
+		}
+		if(!$rs['user_id'] && !$rs['session_id']){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		if($this->session->val('user_id') && $rs['user_id'] != $this->session->val('user_id')){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		if(!$this->session->val('user_id') && $rs['session_id'] != $this->session->sessid()){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$note = $this->get("note");
+		$this->model('res')->update_note($note,$id);
+		$this->success();
+	}
+
 	public function update_title_note_f()
 	{
 		$id = $this->get("id","int");
