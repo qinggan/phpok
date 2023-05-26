@@ -1,4 +1,5 @@
-<!-- include tpl=usercp/head title=分享推荐 -->
+<!-- include tpl=usercp/header title=分享推荐 -->
+<script type="text/javascript" src="js/clipboard.min.js"></script>
 <script type="text/javascript">
 function relation_reload(val)
 {
@@ -9,60 +10,82 @@ function relation_reload(val)
 	$.phpok.go(url);
 }
 </script>
-<div class="layui-card">
-	<div class="layui-card-header">
-		推广链接
-	</div>
-	<div class="layui-card-body">
-		<div class="content">{$vlink}</div>
-	</div>
-</div>
-<div class="layui-card">
-	<div class="layui-card-header">
-		邀请码<small class="gray">（仅限平台开启邀请注册时才有效）</small>
-		<div class="float-right">
-			<button type="button" class="layui-btn layui-btn-sm" onclick="$.user.vcode()">更新邀请码</button>
+<section class="container">
+	<div class="row m-3">
+		<div class="col-2">
+			<!-- include tpl=usercp/left -->
+		</div>
+		<div class="col-10">
+			<div class="card mb-2">
+				<div class="card-header">
+					推广链接
+					<div class="float-end">
+						<button type="button"  data-clipboard-text="{$vlink}" class="btn btn-sm btn-primary phpok-copy">复制链接</button>
+					</div>
+				</div>
+				<div class="card-body">
+					{$vlink}
+				</div>
+			</div>
+			<div class="card mb-2">
+				<div class="card-header">
+					邀请码<small class="text-light">（仅限平台开启邀请注册时才有效）</small>
+					<div class="float-end">
+						<button type="button" class="btn btn-sm btn-danger" onclick="$.user.vcode()">更新邀请码</button>
+					</div>
+				</div>
+				<div class="card-body">
+					{$me.code}
+				</div>
+			</div>
+			<!-- if $monthlist -->
+			<div class="card mb-2">
+				<div class="card-header">
+					统计报表
+					<div class="float-end">
+						<select class="form-control" onchange="relation_reload(this.value)">
+							<option value="">请选择</option>
+							<!-- loop from=$monthlist key=$key value=$value id=$tmpid -->
+							<option value="{$value.month}"{if $month == $value.month} selected{/if}>{func substr $value.month 0 4}年{func substr $value.month -2}月 ({$value.total}人)</option>
+							<!-- /loop -->
+						</select>
+					</div>
+				</div>
+				<div class="card-body">
+					<table class="table mb-0">
+					<thead>
+					<tr>
+						<th>用户账号</th>
+						<th>注册时间</th>
+						<th>姓名</th>
+					</tr>
+					</thead>
+					<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+					<tr>
+						<td>{$value.user}</td>
+						<td>{func time_format $value.regtime}</td>
+						<td>{$value.fullname}</td>
+					</tr>
+					<!-- /loop -->
+					</table>
+					
+				</div>
+			</div>
+			<div class="m-2"><!-- include tpl=usercp/pagelist --></div>
+			<!-- /if -->
 		</div>
 	</div>
-	<div class="layui-card-body">
-		{$me.code}
-		<br />
-		
-	</div>
-</div>
-<!-- if $monthlist -->
-<div class="layui-card">
-	<div class="layui-card-header">
-		统计报表
-		<div class="float-right">
-			<select class="form-control" onchange="relation_reload(this.value)">
-				<option value="">请选择</option>
-				<!-- loop from=$monthlist key=$key value=$value id=$tmpid -->
-				<option value="{$value.month}"{if $month == $value.month} selected{/if}>{func substr $value.month 0 4}年{func substr $value.month -2}月 ({$value.total}人)</option>
-			<!-- /loop -->
-			</select>
-		</div>
-	</div>
-	<div class="layui-card-body">
-		<table class="table">
-		<thead>
-		<tr>
-			<th>用户账号</th>
-			<th>注册时间</th>
-			<th>姓名</th>
-		</tr>
-		</thead>
-		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-		<tr>
-			<td>{$value.user}</td>
-			<td>{func time_format $value.regtime}</td>
-			<td>{$value.fullname}</td>
-		</tr>
-		<!-- /loop -->
-		</table>
-		<!-- include tpl=usercp/pagelist -->
-	</div>
-</div>
-<!-- /if -->
-
-<!-- include tpl=usercp/foot -->
+</section>
+<script type="text/javascript">
+$(document).ready(function(){
+	var clipboard = new Clipboard('.phpok-copy');
+	clipboard.on('success', function(e){
+		$.dialog.tips(p_lang('复制成功'));
+		e.clearSelection();
+	});
+	clipboard.on('error', function(e){
+		$.dialog.tips(p_lang('复制失败'));
+	});
+});
+</script>
+<!-- include tpl=usercp/footer -->

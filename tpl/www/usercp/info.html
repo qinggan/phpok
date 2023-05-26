@@ -1,33 +1,36 @@
-<!-- include tpl=usercp/head -->
-<form method="post" class="layui-form" id="post_save" onsubmit="return $.user.info(this)">
-<div class="layui-card">
-	<div class="layui-card-header">
-		个人信息
-	</div>
-	<div class="layui-card-body">
-			<input type="hidden" name="avatar" id="avatar" value="{$rs.avatar}" />
-			<!-- loop from=$extlist key=$key value=$value -->
-			<div class="layui-form-item">
-				<label class="layui-form-label">
-					{$value.title}
-				</label>
-				<div class="layui-input-inline default-auto"{if $value.form_type == 'radio' || $value.form_type == 'checkbox'} style="padding-top:10px;"{/if}>
-					{$value.html}
+<!-- include tpl=usercp/header title=修改个人信息 -->
+<div class="container">
+	<div class="row m-3">
+		<div class="col-2">
+			<!-- include tpl=usercp/left -->
+		</div>
+		<div class="col-10">
+			<div class="card">
+				<div class="card-header">
+					个人信息
+				</div>
+				<div class="card-body">
+					<form method="post" id="post_save" onsubmit="return $.user.info(this)">
+					<input type="hidden" name="avatar" id="avatar" value="{$rs.avatar}" />
+					<!-- loop from=$extlist key=$key value=$value -->
+					<div class="form-group row">
+						<label for="{$value.identifier}" class="col col-sm-3 text-end">{$value.title}：</label>
+						<div class="col col-sm-5">
+							{$value.html}
+						</div>
+					</div>
+					<!-- /loop -->
+					<div class="form-group row">
+						<div class="col col-sm-3"></div>
+						<div class="col col-sm-5">
+							<button type="submit" class="btn btn-primary">提交修改</button>
+						</div>
+					</div>
+					</form>
 				</div>
 			</div>
-			<!-- /loop -->		
-	</div>
-</div>
-<div class="submit-info-clear"></div>
-<div class="submit-info">
-	<div class="layui-form-item">
-		<label class="layui-form-label"></label>
-		<div>
-			<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
-			<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
-			<span style="padding-left:2em;color:#ccc;">保存不会关闭页面，请手动关闭</span>
 		</div>
 	</div>
 </div>
-</form>
-<!-- include tpl=usercp/foot -->
+
+<!-- include tpl=usercp/footer -->

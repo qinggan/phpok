@@ -1,21 +1,26 @@
-<!-- include tpl=usercp/head title=资产 -->
-<div class="layui-card">
-	<div class="layui-card-header">
-		资产信息
-	</div>
-	<div class="layui-card-body">
-		<div class="layui-row">
-			<!-- loop from=$me.wealth key=$key value=$value id=$tmpid -->
-			<a class="layui-col-md3 text-center" href="javascript:$.win('{$value.title}','{url ctrl=usercp func=wealth_log id=$value.id/}');void(0)">
-		    	<h4>{$value.title}</h4>
-				{$value.val} {$value.unit}
-			</a>
-			<!-- /loop -->
-			<div class="layui-col-md3">
-				
+<!-- include tpl=usercp/header title=我的资产 -->
+<section class="container">
+	<div class="row m-3">
+		<div class="col-2">
+			<!-- include tpl=usercp/left -->
+		</div>
+		<div class="col-10">
+			<div class="card">
+				<div class="card-header">
+					我的资产
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<!-- loop from=$me.wealth key=$key value=$value id=$tmpid -->
+						<a href="{url ctrl=usercp func=wealth_log id=$value.id/}" class="col text-center">
+							<div class="p-2">{$value.title}</div>
+							<div>{$value.val} {$value.unit}</div>
+						</a>
+						<!-- /loop -->
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
-
-<!-- include tpl=usercp/foot -->
+</section>
+<!-- include tpl=usercp/footer -->

@@ -1,109 +1,83 @@
-<!-- include tpl=usercp/head title=$title -->
-<div class="layui-card">
-	<div class="layui-card-header" style="line-height:38px;height:46px;padding-top:7px;">
-		<!-- if $parent_id -->
-		{$title}
-		<!-- else -->
-		<form method="post" action="{url ctrl=usercp func=comments/}" class="layui-form">
-		<div class="layui-form-item">
-			<div class="layui-input-inline">
-				<select  name="status" id="status" >
-					<option value="0">{lang全部}</option>
-					<option value="1"{if $status == 1} selected{/if}>{lang已审核}</option>
-					<option value="2"{if $status && $status != 1} selected{/if}>{lang未审核}</option>
-				</select>
-			</div>
-			<div class="layui-input-inline">
-				<input type="text" id="keywords" name="keywords" placeholder="{lang输入关键字}" value="{$keywords}" class="layui-input">
-			</div>
-			<div class="layui-inline">
-				<input type="submit" value="{lang搜索}" class="layui-btn layui-btn-sm" />
-				<input type="button" value="{lang取消搜索}" class="layui-btn layui-btn-sm layui-btn-danger" onclick="$.phpok.go('{url ctrl=usercp func=comments/}')" />
-			</div>
+<!-- include tpl=usercp/header title=我的评论 -->
+<section class="container">
+	<div class="row m-3">
+		<div class="col-2">
+			<!-- include tpl=usercp/left -->
 		</div>
-		</form>
-		<!-- /if -->
-	</div>
-	<div class="layui-card-body">
-		<table class="layui-table">
-		<thead>
-		<tr>
-			<th colspan="2">ID</th>
-			<th>{lang星数}</th>
-			<th>{lang主题}</th>
-			<th>{lang快评}</th>
-			<th>{lang图片}</th>
-			<th>{lang时间}</th>
-			<th width="50">{lang评论}</th>
-			<th width="50"></th>
-		</tr>
-		</thead>
-		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-		<tr data-id="replylist_{$value.id}">
-			<td>{$value.id}</td>
-			<td>
-				<span class="status{$value.status}" id="status_{$value.id}" style="cursor:default" title="{if $value.status}已审核{else}未审核{/if}"></span>
-			</td>
-			<td>
-				<!-- if $value.star == 1 --><div class="layui-tips" lay-tips="{lang一星}">★☆☆☆☆</div><!-- /if -->
-				<!-- if $value.star == 2 --><div class="layui-tips" lay-tips="{lang二星}">★★☆☆☆</div><!-- /if -->
-				<!-- if $value.star == 3 --><div class="layui-tips" lay-tips="{lang三星}">★★★☆☆</div><!-- /if -->
-				<!-- if $value.star == 4 --><div class="layui-tips" lay-tips="{lang四星}">★★★★☆</div><!-- /if -->
-				<!-- if $value.star == 5 --><div class="layui-tips" lay-tips="{lang五星}">★★★★★</div><!-- /if -->
-			</td>
-			<td>
-				<div><!-- if $value.vtype == 'title' -->
-				[{lang主题}]
-				<a href="{$sys.www_file}?id={$value.tid}" target="_blank">{$value.title}</a>
-				<!-- else -->
-					<!-- if $value.vtype == 'project' -->[{lang项目}]<!-- /if -->
-					<!-- if $value.vtype == 'cate' -->[{lang分类}]<!-- /if -->
-					<!-- if $value.vtype == 'order' -->[{lang订单}]<!-- /if -->
-					{$value.title}
-				<!-- /if -->
-				<!-- if $value.parent_id --><span class="red">[{lang引用}]</span><!-- /if -->
+		<div class="col-10">
+			<div class="card">
+				<div class="card-header">
+					我的评论
 				</div>
-				<div>[{lang内容}] {func phpok_cut $value.content 150 …}</div>
-			</td>
-			<td>
-				<!-- loop from=$value.click_list key=$k value=$v id=$idxx -->
-				<div style="margin-bottom:5px;white-space: nowrap;">{$v.title} <small>({$v.total})</small></div>
+				<table class="table mb-0">
+				<thead>
+				<tr>
+					<th colspan="2">ID</th>
+					<th>{lang星数}</th>
+					<th>{lang主题}</th>
+					<th>{lang快评}</th>
+					<th>{lang时间}</th>
+					<th width="50"></th>
+				</tr>
+				</thead>
+				<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+				<tr data-id="replylist_{$value.id}">
+					<td>{$value.id}</td>
+					<td>
+						<!-- if $value.status -->
+						<span><img src="{$tpl.dir}usercp/static/status1.png" /></span>
+						<!-- else -->
+						<span><img src="{$tpl.dir}usercp/static/status0.png" /></span>
+						<!-- /if -->
+					</td>
+					<td>
+						<!-- if $value.star == 1 --><div class="layui-tips" lay-tips="{lang一星}">★☆☆☆☆</div><!-- /if -->
+						<!-- if $value.star == 2 --><div class="layui-tips" lay-tips="{lang二星}">★★☆☆☆</div><!-- /if -->
+						<!-- if $value.star == 3 --><div class="layui-tips" lay-tips="{lang三星}">★★★☆☆</div><!-- /if -->
+						<!-- if $value.star == 4 --><div class="layui-tips" lay-tips="{lang四星}">★★★★☆</div><!-- /if -->
+						<!-- if $value.star == 5 --><div class="layui-tips" lay-tips="{lang五星}">★★★★★</div><!-- /if -->
+					</td>
+					<td>
+						<div><!-- if $value.vtype == 'title' -->
+						[{lang主题}]
+						<a href="{$sys.www_file}?id={$value.tid}" target="_blank">{$value.title}</a>
+						<!-- else -->
+							<!-- if $value.vtype == 'project' -->[{lang项目}]<!-- /if -->
+							<!-- if $value.vtype == 'cate' -->[{lang分类}]<!-- /if -->
+							<!-- if $value.vtype == 'order' -->[{lang订单}]<!-- /if -->
+							{$value.title}
+						<!-- /if -->
+						<!-- if $value.parent_id --><span class="red">[{lang引用}]</span><!-- /if -->
+						</div>
+						<div>[{lang内容}] {func phpok_cut $value.content 150 …}</div>
+					</td>
+					<td>
+						<!-- loop from=$value.click_list key=$k value=$v id=$idxx -->
+						<div style="margin-bottom:5px;white-space: nowrap;">{$v.title} <small>({$v.total})</small></div>
+						<!-- /loop -->
+					</td>
+					<td>{func date 'Y-m-d H:i:s' $value.addtime}</td>
+					<td>
+						<input type="button" value="{lang删除}" onclick="$.comment.del({$value.id})" class="btn btn-sm btn-danger" />
+					</td>
+				</tr>
+				<!-- loop from=$value.adm_reply key=$k value=$v id=$idxx -->
+				<tr data-id="replylist_{$value.id}" id="adm_reply_{$v.id}">
+					<td colspan="2">&nbsp;</td>
+					<td colspan="5">
+						<div class="m-1 p-1">
+							<span class="text-danger">{lang管理员回复} - {$idxx.num}</span>
+							<small class="text-body">{lang回复时间} {func date 'Y-m-d H:i:s' $value.addtime}</small>
+							{$v.content}
+						</div>
+					</td>
+				</tr>
 				<!-- /loop -->
-			</td>
-			<td>
-				<div class="layui-row">
-					<!-- loop from=$value.res key=$k value=$v id=$idxx -->
-					<div class="layui-col-sm6">
-						<img src="{$v.ico}" width="100%" class="hand" onclick="$.admin_reply.preview_attr({$v.id})" />
-					</div>
-					<!-- /loop -->
-				</div>
-				
-			</td>
-			<td>{func date 'Y-m-d H:i:s' $value.addtime}</td>
-			<td>
-				<!-- if $value.reply_total -->
-				<input type="button" value="{lang评论} ({$value.reply_total})" onclick="$.phpok.open('{url ctrl=content func=comment id=$value.tid parent_id=$value.id/}')" class="layui-btn layui-btn-sm" />
-				<!-- /if -->
-				
-			</td>
-			<td>
-				<input type="button" value="{lang删除}" onclick="$.admin_reply.del({$value.id})" class="layui-btn layui-btn-sm layui-btn-danger" />
-			</td>
-		</tr>
-		<!-- loop from=$value.adm_reply key=$k value=$v id=$idxx -->
-		<tr data-id="replylist_{$value.id}" id="adm_reply_{$v.id}">
-			<td>-</td>
-			<td colspan="8">
-				<span class="red">{lang管理员回复} - {$idxx.num}</span>
-				<small class="gray">{lang回复时间} {func date 'Y-m-d H:i:s' $value.addtime}</small>
-				{$v.content}
-			</td>
-		</tr>
-		<!-- /loop -->
-		<!-- /loop -->
-		</table>
-		<div class="center"><!-- include tpl=usercp/pagelist --></div>
+				<!-- /loop -->
+				</table>
+			</div>
+			<div class="m-2"><!-- include tpl=usercp/pagelist --></div>
+		</div>
 	</div>
-</div>
-<!-- include tpl=usercp/foot -->
+</section>
+<!-- include tpl=usercp/footer -->

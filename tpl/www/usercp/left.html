@@ -1,0 +1,63 @@
+<div class="card mb-2">
+	<div class="card-header">
+		账户信息
+	</div>
+	<div class="list-group list-group-flush">
+		<a href="{url ctrl=usercp func=info /}" class="list-group-item">个人信息</a>
+		<a href="{url ctrl=usercp func=avatar /}" class="list-group-item">更换头像</a>
+		<a href="{url ctrl=usercp func=email /}" class="list-group-item">更换邮箱</a>
+		<a href="{url ctrl=usercp func=mobile /}" class="list-group-item">更换手机号</a>
+		<a href="{url ctrl=usercp func=passwd /}" class="list-group-item">修改密码</a>
+		<a href="{url ctrl=usercp func=wealth/}" class="list-group-item">我的资产</a>
+		<a href="{url ctrl=usercp func=comments /}" class="list-group-item">我的评论</a>
+		<a href="{url ctrl=usercp func=introducer/}" class="list-group-item">分享推荐</a>
+		<a href="{url ctrl=usercp func=destory /}" class="list-group-item">用户注销</a>
+	</div>
+</div>
+<div class="card mb-2">
+	<div class="card-header">
+		订单信息
+	</div>
+	<div class="list-group list-group-flush">
+		<a href="{url ctrl=order /}" class="list-group-item">我的订单</a>
+		<a href="{url ctrl=usercp func=address /}" class="list-group-item">收货地址</a>
+	</div>
+</div>
+<!-- php:$list = project_groups() -->
+<!-- loop from=$list key=$key value=$value id=$tmpid -->
+<div class="card mb-2">
+	<div class="card-header">
+		{$value.title}
+	</div>
+	<div class="list-group list-group-flush">
+		<!-- loop from=$value.rslist key=$k value=$v id=$idxx -->
+		<a href="{url ctrl=usercp func=list id=$v.identifier/}" class="list-group-item">{$v.title}</a>
+		<!-- /loop -->
+	</div>
+</div>
+<!-- /loop -->
+<!-- php:$typelist = usercp_typelist() -->
+<!-- if $typelist -->
+<div class="card mb-2">
+	<div class="card-header">
+		资源
+	</div>
+	<div class="list-group list-group-flush">
+		<!-- loop from=$typelist key=$key value=$value id=$tmpid -->
+		<a href="{url ctrl=usercp func=media type=$key/}" class="list-group-item">{$value.title}</a>
+		<!-- /loop -->
+	</div>
+</div>
+<!-- /if -->
+<!-- loop from=$apps key=$k value=$v id=$idxx -->
+<div data-name="apps-{$v.id}" class="card mb-2">
+	<div class="card-header">
+		{$v.title}
+	</div>
+	<div class="list-group list-group-flush">
+		<!-- loop from=$v.rslist key=$key value=$value id=$tmpid -->
+		<a pid="media-{$value.id}" data-name="apps-{$value.id}" href="{$value.url}" class="list-group-item">{$value.title}</a>
+		<!-- /loop -->
+	</div>
+</div>
+<!-- /loop -->

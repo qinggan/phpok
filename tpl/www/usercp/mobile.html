@@ -1,60 +1,57 @@
-<!-- include tpl=usercp/head title=更换手机号 -->
-<form method="post" class="layui-form" id="post_save" onsubmit="return $.user.mobile(this)">
-<div class="layui-card">
-	<div class="layui-card-header">
-		更换手机号
+<!-- include tpl=usercp/header title=更换手机号 -->
+<section class="container">
+	<div class="row m-3">
+		<div class="col-2">
+			<!-- include tpl=usercp/left -->
+		</div>
+		<div class="col-10">
+			<div class="card">
+				<div class="card-header">
+					更换手机号
+				</div>
+				<div class="card-body">
+					<form method="post" id="post_save" onsubmit="return $.user.mobile(this)">
+					<!-- if $me.mobile -->
+					<div class="form-group row">
+						<div class="col col-sm-3 text-end">原手机号：</div>
+						<div class="col col-sm-5">
+							<input type="text" class="form-control" disabled value="{$rs.mobile}" />
+						</div>
+					</div>
+					<!-- /if -->
+					<div class="form-group row">
+						<div class="col col-sm-3 text-end">登录密码：</div>
+						<div class="col col-sm-5">
+							<input type="password" name="pass" id="pass" placeholder="请输入登录密码" class="form-control" />
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="col col-sm-3 text-end">新邮箱：</div>
+						<div class="col col-sm-5">
+							<input type="text" name="mobile" id="mobile" placeholder="请输入新手机号码"  class="form-control" />
+						</div>
+					</div>
+					<!-- if $sendsms -->
+					<div class="form-group row">
+						<div class="col col-sm-3 text-end">验证码：</div>
+						<div class="col col-sm-2">
+							<input type="text" name="chkcode" id="chkcode" class="form-control" placeholder="邮箱验证码" />
+						</div>
+						<div class="col col-sm-3">
+							<button type="button" class="btn btn-secondary" onclick="$.vcode.sms(this,'mobile','register')">获取验证码</button>
+						</div>
+					</div>
+					<!-- /if -->
+					<div class="form-group row">
+						<div class="col col-sm-3"></div>
+						<div class="col col-sm-3">
+							<button type="sumbit" class="btn btn-primary"> 确认提交修改 </button>
+						</div>
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="layui-card-body">
-		<!-- if $me.mobile -->
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				原手机号
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" class="layui-input" disabled value="{$me.mobile}" />
-			</div>
-		</div>
-		<!-- /if -->
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				登录密码
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="password" name="pass" id="pass" placeholder="请输入登录密码" class="layui-input" />
-			</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				新手机号
-			</label>
-			<div class="layui-input-inline default-auto">
-				<input type="text" name="mobile" id="mobile" placeholder="请输入新手机号码"  class="layui-input" />
-			</div>
-		</div>
-		<!-- if $sendsms -->
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				验证码
-			</label>
-			<div class="layui-input-inline short">
-				<input type="text" name="chkcode" id="chkcode" class="layui-input" placeholder="邮箱验证码" />
-			</div>
-			<div class="layui-input-inline auto gray lh38">
-				<button type="button" class="layui-btn" onclick="$.vcode.sms(this,'mobile','register')">获取验证码</button>
-			</div>
-		</div>
-		<!-- /if -->
-	</div>
-</div>
-
-<div class="submit-info-clear"></div>
-<div class="submit-info">
-	<div style="margin-left:160px">
-		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
-		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
-		<span style="padding-left:2em;color:#ccc;">保存不会关闭页面，请手动关闭</span>
-	</div>
-</div>
-</form>
-
-<!-- include tpl=usercp/foot -->
+</section>
+<!-- include tpl=usercp/footer -->
