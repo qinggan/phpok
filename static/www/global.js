@@ -734,6 +734,35 @@
 				});
 			});
 		},
+		res_rename:function(id,old)
+		{
+			if(!id || id == 'undefined'){
+				return false;
+			}
+			if(!old || old == 'undefined'){
+				old = '';
+			}
+			$.dialog.prompt('请填写新的名称',function(val){
+				var url = api_url('res','title','id='+id);
+				if(!val || val == ''){
+					$.dialog.tips(p_lang('名称不能为空'));
+					return false;
+				}
+				if(val == old){
+					$.dialog.tips(p_lang('新旧名称一样，不需要修改'));
+					return false;
+				}
+				$.phpok.json(api_url('res','title'),function(rs){
+					if(!rs.status){
+						$.dialog.tips(rs.info);
+						return false;
+					}
+					$.dialog.tips('修改成功',function(){
+						$.phpok.reload();
+					}).lock();
+				},{'id':id,'title':val});
+			},old)
+		},
 		post_save:function(obj,tipinfo)
 		{
 			if(!tipinfo || tipinfo == 'undefined'){
