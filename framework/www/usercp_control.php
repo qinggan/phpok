@@ -575,11 +575,15 @@ class usercp_control extends phpok_control
 			$this->assign('pageurl',$this->url('usercp','media','type='.$type));
 			$this->assign('total',$total);
 		}
+
+		$btn = form_edit('picture','','upload','ext[cate_id]='.$type.'&is_refresh=1');
+		$this->assign('button',$btn);
 		
 		$tplfile = $this->model('site')->tpl_file($this->ctrl,$this->func);
 		if(!$tplfile){
 			$tplfile = 'usercp_media';
 		}
+		
 		$this->view($tplfile);
 	}
 
@@ -600,7 +604,7 @@ class usercp_control extends phpok_control
 		if(!$tplfile){
 			$tplfile = 'usercp_media_add';
 		}
-		$btn = form_edit('picture','','upload','ext[cate_id]='.$type.'&is_multiple=1');
+		$btn = form_edit('picture','','upload','ext[cate_id]='.$type.'&is_refresh=1');
 		$this->assign('button',$btn);
 		$this->view($tplfile);
 	}
