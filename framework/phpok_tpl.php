@@ -187,6 +187,9 @@ class phpok_template
 		$this->assign("get",$_GET);
 		$this->assign("post",$_POST);
 		$this->assign("cookie",$_COOKIE);
+		$tpl_info = array();
+		$tpl_info['dir'] = $this->dir_tpl;
+		$this->assign('tpl',$tpl_info);
 		if($this->path_change){
 			$tmp_path_list = explode(",",$this->path_change);
 			$tmp_path_list = array_unique($tmp_path_list);
