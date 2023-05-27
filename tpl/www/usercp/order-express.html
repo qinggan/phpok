@@ -1,0 +1,37 @@
+<!-- include tpl=usercp/head title=$rs.sn -->
+<section class="container">
+	<div class="m-4">
+		<h3 class="m-4 text-center">订单 #{$rs.sn}</h3>
+		<!-- include tpl=usercp/order-baseinfo -->
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<div class="card mt-2">
+			<div class="card-header">
+				{$value.title} - {$value.code}
+			</div>
+			<table class="table mb-0">
+			<thead>
+			<tr>
+				<th>说明</th>
+				<th width="200" class="text-center">时间</th>
+				<th width="150" class="text-center">操作人</th>
+			</tr>
+			</thead>
+			<!-- loop from=$value.rslist key=$k value=$v id=$idxx -->
+			<tr>
+				<td>{$v.note}</td>
+				<td class="text-center">{func time_format $v.addtime}</td>
+				<td class="text-center">{$v.who}</td>
+			</tr>
+			<!-- /loop -->
+			</table>
+		</div>
+		<!-- /loop -->
+	</div>
+</section>
+<div class="submit-info">
+	<div class="m-4 text-center">
+		<button type="button" onclick="window.close()" class="btn btn-danger">关闭窗口</button>
+	</div>
+</div>
+
+<!-- include tpl=usercp/foot -->

@@ -1,0 +1,34 @@
+<!-- include tpl=usercp/head title=订单日志 -->
+<section class="container">
+	<div class="m-4">
+		<h3 class="m-4 text-center">订单 #{$rs.sn}</h3>
+		<!-- include tpl=usercp/order-baseinfo -->
+		<div class="card mt-2">
+			<div class="card-header">
+				日志
+			</div>
+			<table class="table mb-0">
+			<thead>
+			<tr>
+				<th>说明</th>
+				<th>时间</th>
+				<th>操作人</th>
+			</tr>
+			</thead>
+			<!-- loop from=$loglist key=$key value=$value id=$tmpid -->
+			<tr>
+				<td>{$value.note}</td>
+				<td>{func time_format $value.addtime}</td>
+				<td>{$value.who}</td>
+			</tr>
+			<!-- /loop -->
+			</table>
+		</div>
+	</div>
+</section>
+<div class="submit-info">
+	<div class="m-4 text-center">
+		<button type="button" onclick="window.close()" class="btn btn-danger">关闭窗口</button>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

@@ -1,43 +1,33 @@
 <!-- include tpl=header title=微信扫码支付 -->
 <input type="hidden" name="logid" id="logid" value="{$order.id}" />
 <input type="hidden" name="sn" id="sn" value="{$rs.sn}" />
-<div class="main" style="width:500px;margin:10px auto;">
-	<div class="am-panel am-panel-default">
-		<div class="am-panel-hd">订单信息</div>
-		<ul class="am-list am-list-static">
-			<li>
-				<div class="am-g">
-					<div class="am-u-sm-4 am-text-right">订单编号</div>
-					<div class="am-u-sm-8">{$order.sn}</div>
-				</div>
-			</li>
-			<!-- if $orderinfo -->
-			<li>
-				<div class="am-g">
-					<div class="am-u-sm-4 am-text-right">订单金额</div>
-					<div class="am-u-sm-8 am-text-primary">{func price_format $orderinfo.price $orderinfo.currency_id}</div>
-				</div>
-			</li>
-			<!-- /if -->
-			<!-- if $paid_price -->
-			<li>
-				<div class="am-g">
-					<div class="am-u-sm-4 am-text-right">已付金额</div>
-					<div class="am-u-sm-8">{func price_format $paid_price $order.currency_id}</div>
-				</div>
-			</li>
-			<!-- /if -->
-			<!-- if $unpaid_price -->
-			<li>
-				<div class="am-g">
-					<div class="am-u-sm-4 am-text-right">还需付款</div>
-					<div class="am-u-sm-8 am-text-danger">{func price_format $unpaid_price $order.currency_id}</div>
-				</div>
-			</li>
-			<!-- /if -->
-		</ul>
+<div class="container">
+	<div class="m-4">
+		<h3 class="p-4 text-center">订单信息</h3>
+		<div class="row">
+			<div class="col text-end">订单编号</div>
+			<div class="col">{$order.sn}</div>
+		</div>
+		<!-- if $orderinfo -->
+		<div class="row">
+			<div class="col text-end">订单金额</div>
+			<div class="col text-primary">{func price_format $orderinfo.price $orderinfo.currency_id}</div>
+		</div>
+		<!-- /if -->
+		<!-- if $paid_price -->
+		<div class="row">
+			<div class="col text-end">已付金额</div>
+			<div class="col">{func price_format $paid_price $order.currency_id}</div>
+		</div>
+		<!-- /if -->
+		<!-- if $unpaid_price -->
+		<div class="row">
+			<div class="col text-end">还需付款</div>
+			<div class="col am-text-danger">{func price_format $unpaid_price $order.currency_id}</div>
+		</div>
+		<!-- /if -->
+		<div class="m-4 text-center"><img src="api.php?f=qrcode&data={func rawurlencode $info.code_url}" border="0" width="300px" /></div>
 	</div>
-	<div style="text-align:center;padding:10px;"><img src="api.php?f=qrcode&data={func rawurlencode $info.code_url}" border="0" /></div>
 </div>
 <script type="text/javascript">
 function pending()

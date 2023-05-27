@@ -1,0 +1,53 @@
+<div class="card">
+	<div class="card-header">
+		订单基本信息
+	</div>
+	<div class="card-body">
+		<div class="row">
+			<div class="col col-sm-4 text-end">订单编号：</div>
+			<div class="col">{$rs.sn}</div>
+		</div>
+		<div class="row">
+			<div class="col col-sm-4 text-end">下单时间：</div>
+			<div class="col">{func time_format $rs.addtime}</div>
+		</div>
+		<div class="row">
+			<div class="col col-sm-4 text-end">订单金额：</div>
+			<div class="col">{func price_format $rs.price $rs.currency_id}</div>
+		</div>
+		<div class="row">
+			<div class="col col-sm-4 text-end">订单状态：</div>
+			<div class="col">{$rs.status_info ? $rs.status_info : '-'}</div>
+		</div>
+		<!-- if $rs.email -->
+		<div class="row">
+			<div class="col col-sm-4 text-end">收件人邮箱：</div>
+			<div class="col">{$rs.email}</div>
+		</div>
+		<!-- /if -->
+		<!-- if $rs.mobile -->
+		<div class="row">
+			<div class="col col-sm-4 text-end">手机号：</div>
+			<div class="col">{$rs.mobile}</div>
+		</div>
+		<!-- /if -->
+		<!-- if $rs.fullname -->
+		<div class="row">
+			<div class="col col-sm-4 text-end">联系人：</div>
+			<div class="col">{$rs.fullname}</div>
+		</div>
+		<!-- /if -->
+		<!-- loop from=$rs.ext key=$key value=$value id=$tmpid -->
+		<div class="row">
+			<div class="col col-sm-4 text-end">{$key}：</div>
+			<div class="col">{$value}</div>
+		</div>
+		<!-- /loop -->
+		<!-- if $rs.note -->
+		<div class="row">
+			<div class="col col-sm-4 text-end">备注：</div>
+			<div class="col">{func nl2br $rs.note}</div>
+		</div>
+		<!-- /if -->
+	</div>
+</div>

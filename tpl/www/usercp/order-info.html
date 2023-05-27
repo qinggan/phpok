@@ -1,0 +1,200 @@
+<!-- include tpl=usercp/head title=$rs.sn -->
+<script type="text/javascript" src="{#js#}/clipboard.min.js"></script>
+<section class="container">
+	<div class="m-4">
+		<h3 class="m-4 text-center">订单 #{$rs.sn}</h3>
+		<!-- include tpl=usercp/order-baseinfo -->
+		<!-- if $billing -->
+		<div class="card mt-2">
+			<div class="card-header">
+				账单地址<small class="float-end"><small>非收货地址</small></small>
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col col-sm-4 text-end">姓名：</div>
+					<div class="col"><!-- if $billing.fullname -->{$billing.fullname}<!-- else -->{$billing.lastname}{$billing.firstname}<!-- /if --></div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-4 text-end">联系方式：</div>
+					<div class="col">
+						{$billing.tel}<!-- if $billing.tel && $billing.mobile --> / <!-- /if -->{$billinbilling.mobile}
+						<!-- if $billing.email --> / {$billing.email}<!-- /if -->
+					</div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-4 text-end">地址：</div>
+					<div class="col">
+						{$billing.province}
+						<!-- if $billing.province != $billing.city -->
+						{$billing.city}
+						<!-- /if -->
+						{$billing.county}
+						{$billing.address}
+						<!-- if $billing.address2 -->{$billing.address2}<!-- /if -->
+						<!-- if $billing.zipcode --><i>（邮编：{$billing.zipcode}）</i><!-- /if -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /if -->
+		<!-- if $address -->
+		<div class="card mt-2">
+			<div class="card-header">
+				收货人信息
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col col-sm-4 text-end">姓名：</div>
+					<div class="col"><!-- if $address.fullname -->{$address.fullname}<!-- else -->{$address.lastname}{$address.firstname}<!-- /if --></div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-4 text-end">联系方式：</div>
+					<div class="col">
+						{$address.tel}<!-- if $address.tel && $address.mobile --> / <!-- /if -->{$address.mobile}
+						<!-- if $address.email --> / {$address.email}<!-- /if -->
+					</div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-4 text-end">地址：</div>
+					<div class="col">
+						{$address.province}
+						<!-- if $address.province != $address.city -->
+						{$address.city}
+						<!-- /if -->
+						{$address.county}
+						{$address.address}
+						<!-- if $address.address2 -->{$address.address2}<!-- /if -->
+						<!-- if $address.zipcode --><i>（邮编：{$address.zipcode}）</i><!-- /if -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /if -->
+		<div class="card mt-2">
+			<div class="card-header">
+				产品信息
+			</div>
+			<table class="table mb-0">
+			<thead>
+				<tr>
+					<th>图片</th>
+					<th>信息</th>
+					<th>数量</th>
+					<th>价格</th>
+				</tr>
+			</thead>
+			<!-- loop from=$rslist key=$key value=$value -->
+			<tr>
+				<td>
+					<!-- if $value.thumb && file_exists($value.thumb) -->
+					<img src="{$value.thumb}" width="50" height="50" border="0" />
+					<!-- else -->
+					<img src="{$tpl.dir}usercp/static/nopic.png" width="80" border="0" />
+					<!-- /if -->
+				</td>
+				<td>
+					<div><b>{$value.title}</b></div>
+					<!-- loop from=$value.ext key=$k value=$v id=$tmpid -->
+					<div>{$v.title}：{$v.content}</div>
+					<!-- /loop -->
+					<div>售价：{func price_format $value.price $rs.currency_id $rs.currency_id}</div>
+				</td>
+				<td>{$value.qty}</td>
+				<td>
+					<!-- if $value.discount>0 -->
+					<div><del>{func price_format $value.price*$value.qty $rs.currency_id $rs.currency_id}</del></div>
+					<!-- /if -->
+					<div>{func price_format $value.price_total $rs.currency_id}</div>
+					<!-- if $value.discount_note -->
+					<div><small style="color:#848484">{$value.discount_note}</small></div>
+					<!-- /if -->
+				</td>
+			</tr>
+			<!-- /loop -->
+			<!-- loop from=$pricelist key=$key value=$value id=$tmpid -->
+			<tr>
+				<td colspan="3" class="text-end">{$value.title}：</td>
+				<td>{$value.price}</td>
+			</tr>
+			<!-- /loop -->
+			<!-- if $paid_price -->
+			<tr>
+				<td colspan="3" class="text-end">已付款：</td>
+				<td>{func price_format $paid_price $rs.currency_id $rs.currency_id}</td>
+			</tr>
+			<tr>
+				<td colspan="3" class="text-end">还需付款：</td>
+				<td>{func price_format $unpaid_price $rs.currency_id $rs.currency_id}</td>
+			</tr>
+			<!-- /if -->
+			<tr>
+				<td colspan="3" class="text-end">订单总价：</td>
+				<td>{func price_format $rs.price $rs.currency_id $rs.currency_id}</td>
+			</tr>
+			</table>
+		</div>
+		<!-- if $invoice -->
+		<div class="card mt-2">
+			<div class="card-header">
+				发票信息
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col col-sm-4 text-end">类型：</div>
+					<div class="col">{$invoice.type}</div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-4 text-end">抬头：</div>
+					<div class="col">{$invoice.title}</div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-4 text-end">内容：</div>
+					<div class="col">{$invoice.content}</div>
+				</div>
+			</div>
+		</div>
+		<!-- /if -->
+	</div>
+</section>
+
+
+<div class="submit-info">
+	<div class="m-4 text-center">
+		<!-- if !$pay_end -->
+			<!-- if $session.user_id -->
+			<a href="{url ctrl=order func=payment id=$rs.id/}" target="_blank" class="btn btn-primary">在线支付</a>
+			<!-- else -->
+			<a href="{url ctrl=order func=payment sn=$rs.sn passwd=$rs.passwd/}" target="_blank" class="btn btn-primary">在线支付</a>
+				
+			<!-- /if -->
+		<!-- /if -->
+		<!-- if $shipping -->
+			<!-- if $session.user_id -->
+			<a href="{url ctrl=order func=logistics id=$rs.id /}" target="_blank" class="btn btn-primary">物流快递</a>
+			<!-- else -->
+			<a href="{url ctrl=order func=logistics sn=$rs.sn passwd=$rs.passwd/}" target="_blank" class="btn btn-primary">物流快递</a>
+			<!-- /if -->
+		<!-- /if -->
+		<button type="button" class="btn btn-primary phpok-copy" data-clipboard-text="{$sys.url}?{$sys.ctrl_id}=order&{$sys.func_id}=info&sn={$rs.sn}&passwd={$rs.passwd}">复制分享</button>
+		<!-- if !$session.user_id -->
+		<a href="{$sys.url}" class="btn btn-danger">网站首页</a>
+		<!-- else -->
+		<button type="button" onclick="window.close()" class="btn btn-danger">关闭窗口</button>
+		<!-- /if -->
+	</div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	var clipboard = new Clipboard('.phpok-copy');
+	clipboard.on('success', function(e){
+		$.dialog.tips(p_lang('复制成功'));
+		e.clearSelection();
+	});
+	clipboard.on('error', function(e){
+		$.dialog.tips(p_lang('复制失败'));
+	});
+});
+</script>
+
+<!-- include tpl=usercp/foot -->

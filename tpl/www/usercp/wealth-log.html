@@ -7,7 +7,12 @@
 		<div class="col-10">
 			<div class="card">
 				<div class="card-header">
-					我的资产
+					我的资产：{$rs.title}
+					<!-- if $rs.ifpay -->
+					<div class="float-end">
+						<a href="{url ctrl=payment id=$rs.id /}" target="_blank" class="btn btn-sm btn-primary">在线充值</a>
+					</div>
+					<!-- /if -->
 				</div>
 				<table class="table mb-0">
 				<thead>

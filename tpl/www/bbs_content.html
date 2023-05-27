@@ -20,16 +20,13 @@
 			</div>
 			<!-- /if -->
 		</div>
-		<div class="card-footer text-end">
-			楼主
-		</div>
 	</div>
 	<!-- /if -->
 	<!-- loop from=$comment.rslist key=$key value=$value id=tmpid -->
 	<div class="card mt-3">
 		<div class="card-header">
-			<a href="{url ctrl=user uid=$value.uid.id/}" target="_blank"><img class="mr-1" alt="{$value.uid.nickname ? $value.uid.nickname : $value.uid.user}" src="{$value.uid.avatar ? $value.uid.avatar : 'images/avatar.gif'}" style="width:30px;" /></a>
-			<a href="{url ctrl=user id=$value.uid.id/}" target="_blank">{$value.uid.user}</a> 于 <time>{func time_format $value.addtime}</time> 回复
+			<a href="{url ctrl=user uid=$value.uid/}" target="_blank"><img class="mr-1 rounded-circle" alt="{$value.user}" src="{$value.avatar ? $value.avatar : 'assets/images/avatar.png'}" style="width:30px;" /></a>
+			<a href="{url ctrl=user id=$value.uid.id/}" target="_blank">{$value.user}</a> 于 <time>{func time_format $value.addtime}</time> 回复
 		</div>
 		<div class="card-body">
 			<p class="card-text content">{$value.content}</p>
@@ -47,16 +44,13 @@
 			</fieldset>
 			<!-- /loop -->
 		</div>
-		<div class="card-footer text-end">
-			{$value._layer}
-		</div>
 	</div>
 	<!-- /loop -->
 
 	<!-- if $session.user_id -->
 	
 
-	<form method="post" id="comment-post" class="am-form mt-2">
+	<form method="post" id="comment-post" class="mt-2">
 		<input type="hidden" name="tid" value="{$rs.id}" />
 		<input type="hidden" name="vtype" value="title" />
 		<!-- if $comment.uid -->

@@ -6,16 +6,16 @@
 			<form onsubmit="return $.login.ok(this)" method="post" id="login-submit">
 				<input type="hidden" name="_back" id="_back" value="{$_back}" />
 				<div class="form-group">
-					<label for="doc-ipt-email-1">账号</label>
+					<label class="mb-2" for="doc-ipt-email-1">账号</label>
 					<input type="text" class="form-control" required id="doc-ipt-email-1" name="user" placeholder="请输入账号/邮箱/手机号" />
 				</div>
 				<div class="form-group">
-					<label for="doc-ipt-pwd-1">密码</label>
+					<label class="mb-2" for="doc-ipt-pwd-1">密码</label>
 					<input type="password" class="form-control" required id="doc-ipt-pwd-1" name="pass" placeholder="请输入密码" />
 				</div>
 				<!-- if $is_vcode -->
 				<div class="form-group">
-					<label for="_chkcode">验证码 <img src="{#images#}/blank.gif" border="0" align="absmiddle" id="vcode" class="hand" /></label>
+					<label class="mb-2" for="_chkcode">验证码 <img src="{#images#}/blank.gif" border="0" align="absmiddle" id="vcode" class="hand" /></label>
 					<input type="text" class="form-control" required name="_chkcode" id="_chkcode" placeholder="请输入图片上的字符" />
 				</div>
 				<!-- /if -->

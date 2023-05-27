@@ -1,0 +1,25 @@
+<!-- include tpl=usercp/head title=扫码支付 -->
+<input type="hidden" name="sn" id="sn" value="{$rs.sn}-{$rs.id}" />
+<script type="text/javascript">
+var obj;
+function order_check()
+{
+	var url = api_url('payment','query','sn='+$("#sn").val());
+	$.phpok.json(url,function(rs){
+		if(!rs.status){
+			console.log(rs.info);
+			return false;
+		}
+		clearInterval(obj);
+		$.dialog.tips('付款成功，请稍候…').lock();
+		top.$.phpok.reload();
+	});
+}
+$(document).ready(function(){
+	obj = setInterval(function(){
+		order_check();
+	}, 2000);
+});
+</script>
+<div style="width:100%;height:600px"><iframe src="{url ctrl=payment func=submit id=$rs.id/}" style="width:100%;height:100%;overflow:hidden;" frameborder="0" scrolling="no"></iframe></div>
+<!-- include tpl=usercp/foot -->

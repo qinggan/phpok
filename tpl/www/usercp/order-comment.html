@@ -1,0 +1,146 @@
+<!-- include tpl=usercp/head title=订单评论 -->
+<script type="text/javascript">
+function save_comment(tid)
+{
+	var url = api_url('comment','save','tid='+tid+"&order_id={$rs.id}&vtype=order");
+	var comment = $("#comment_"+tid).val();
+	if(!comment){
+		$.dialog.tips('评论内容不能为空');
+		return false;
+	}
+	url += '&comment='+$.str.encode(comment);
+	var pic = $("#pic_"+tid).val();
+	if(pic){
+		url += "&pictures="+$.str.encode(pic);
+	}
+	$.phpok.json(url,function(rs){
+		if(!rs.status){
+			$.dialog.tips(rs.info);
+			return false;
+		}
+		$.dialog.tips('评论提交成功',function(){
+			$.phpok.reload();
+		}).lock();
+	});
+	return false;
+}
+</script>
+<section class="container">
+	<div class="m-4">
+		<h3 class="m-4 text-center">订单 #{$rs.sn}</h3>
+		<!-- include tpl=usercp/order-baseinfo -->
+		<!-- if $tip_info -->
+		<div class="card mt-2">
+			<div class="card-body">
+				<!-- loop from=$tip_info key=$key value=$value id=$tmpid -->
+				<blockquote class="blockquote">{$value}</blockquote>
+				<!-- /loop -->
+			</div>
+		</div>
+		<!-- /if -->
+		<!-- if $is_comment -->
+		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+		<div class="card mt-2">
+			<div class="card-header">
+				评论产品：#{$tmpid.num}
+			</div>
+			<table class="table mb-0">
+			<thead>
+			<tr>
+				<th width="100">图片</th>
+				<th>基本信息</th>
+				<th width="80">数量</th>
+				<th width="150">价格</th>
+			</tr>
+			</thead>
+			<tr>
+				<td>
+					<!-- if $value.thumb -->
+					<img src="{$value.thumb}" width="70" height="70" border="0" />
+					<!-- else -->
+					<img src="{#images#}/blank.gif" width="70" height="70" border="0" />
+					<!-- /if -->
+				</td>
+				<td>
+					<div>{$value.title}</div>
+					<!-- loop from=$value.ext key=$k value=$v id=$tmpid3 -->
+					<div>{$v.title}：{$v.content}</div>
+					<!-- /loop -->
+				</td>
+				<td>{$value.qty}</td>
+				<td>{func price_format $value.price $rs.currency_id $rs.currency_id}</td>
+			</tr>
+			<!-- if $value.comment -->
+			<thead>
+			<tr>
+				<th colspan="4">评论信息</th>
+			</tr>
+			</thead>
+			<tr>
+				<td colspan="4">
+					<!-- loop from=$value.comment key=$k value=$v id=$tmpid2 -->
+					<div class="card m-2">
+						<div class="card-body">
+							<p class="card-text">{$v.content}</p>
+							<!-- if $v.res -->
+							<div class="row">
+								<!-- loop from=$v.res key=$kk value=$vv id=$idxx -->
+								<div class="col">
+							    	<a href="{$vv.gd.auto}" target="_blank"><img src="{$vv.ico}" alt="{$v.title}" class="border p-1 rounded" style="width:50px" /></a>
+								</div>
+								<!-- /loop -->
+							</div>
+							<!-- /if -->
+							<!-- loop from=$v.adm_reply key=$kk value=$vv id=$idxx -->
+							<blockquote class="blockquote">
+								<div><small>管理员回复 <time>{func time_format $vv.addtime}</time></small></div>
+								<div class="content">{$vv.content}</div>
+							</blockquote>
+							<!-- /loop -->
+						</div>
+						<div class="card-footer text-center">
+							<small>{func time_format $v.addtime} 发评论</small>
+						</div>
+					</div>
+					<!-- /loop -->
+				</td>
+			</tr>
+			
+			<!-- /if -->
+			<thead>
+			<tr>
+				<th colspan="4">发评论</th>
+			</tr>
+			</thead>
+			<tr>
+				<td colspan="4">
+					<form method="post" onsubmit="return save_comment('{$value.tid}')">
+					<div class="m-2"><textarea name="comment" id="comment_{$value.tid}" class="form-control" style="resize:none;"></textarea></div>
+					<div class="m-3">
+						<div class="row">
+							<div class="col col-sm-8">
+						    	<!-- php:$field = 'pic_'.$value.tid -->
+								<!-- php:$tmp = '' -->
+								{func form_edit $field $tmp upload is_multiple=1}
+							</div>
+							<div class="col text-end">
+								<input type="submit" value="提交评论" class="btn btn-sm btn-primary" />
+							</div>
+						</div>
+					</form>
+				</td>
+			</tr>
+			</table>
+		</div>
+		<!-- /loop -->
+		<!-- /if -->
+	</div>
+</section>
+
+
+<div class="submit-info">
+	<div class="m-4 text-center">
+		<button type="button" onclick="window.close()" class="btn btn-danger">关闭窗口</button>
+	</div>
+</div>
+<!-- include tpl=usercp/foot -->

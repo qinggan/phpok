@@ -1,0 +1,137 @@
+<!-- include tpl=usercp/header title=我的订单 -->
+<section class="container">
+	<div class="row m-3">
+		<div class="col-2">
+			<!-- include tpl=usercp/left -->
+		</div>
+		<div class="col-10">
+			<div class="card">
+				<div class="card-header">
+					<div class="row">
+						<div class="col">
+							我的订单
+						</div>
+						<div class="col text-end">
+							<div class="d-flex justify-content-end">
+								<div class="me-3"><a href="{url ctrl=order/}"{if !$status} class="text-danger"{/if}>全部订单</a></div>
+								<div class="me-3"><a href="{url ctrl=order status=create,unpaid /}"{if $status == 'create,unpaid'} class="text-danger"{/if}>待付款</a></div>
+								<div class="me-3"><a href="{url ctrl=order status=paid /}"{if $status == 'paid'} class="text-danger"{/if}>待发货</a></div>
+								<div class="me-3"><a href="{url ctrl=order status=shipping /}"{if $status == 'shipping'} class="text-danger"{/if}>待收货</a></div>
+								<div class="me-3"><a href="{url ctrl=order status=received,end /}"{if $status == 'received,end'} class="text-danger"{/if}>已完成</a></div>
+								<div class="me-3"><a href="{url ctrl=order status=cancel,stop /}"{if $status == 'cancel,stop'} class="text-danger"{/if}>已关闭</a></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card-body">
+					<form method="post" id="post_save" action="{url ctrl=order /}" onsubmit="return check_order(this)">
+					<div class="row">
+						<div class="col">
+							<select class="form-select" name="status">
+						    	<option value="">不限</option>
+						    	<option value="create,unpaid"{if $status == 'create,unpaid'} selected{/if}>待付款</option>
+						    	<option value="paid"{if $status == 'paid'} selected{/if}>待发货</option>
+						    	<option value="shipping"{if $status == 'shipping'} selected{/if}>待收货</option>
+						    	<option value="received,end"{if $status == 'received,end'} selected{/if}>已完成</option>
+						    	<option value="cancel,stop"{if $status == 'cancel,stop'} selected{/if}>已关闭</option>
+					    	</select>
+						</div>
+						<div class="col">
+							<select class="form-select" name="days" id="days">
+						    	<option value="">不限</option>
+						    	<!-- loop from=$yearlist key=$key value=$value id=$tmpid -->
+						    	<option value="{$value.content}"{if $value.content == $days} selected{/if}>{$value.title}</option>
+						    	<!-- /loop -->
+					    	</select>
+						</div>
+						<div class="col">
+							<input type="text" class="form-control" name="keywords" id="keywords" value="{$keywords}" placeholder="输入订单号或产品名称" />
+						</div>
+						<div class="col-1"><input type="submit" value="搜索" class="btn btn-sm btn-primary" /></div>
+					</div>
+					</form>
+				</div>
+			</div>
+			<!-- loop from=$rslist key=$key value=$value -->
+			<table class="table table-bordered mt-3">
+				<colgroup>
+					<col>
+					<col width="130">
+					<col width="150">
+					<col width="150">
+					<col width="80">
+				</colgroup>
+			<thead>
+			<tr class="bg-light">
+				<th colspan="5">
+					<div class="d-flex justify-content-between">
+						<a href="{url ctrl=order func=info id=$value.id/}" target="_blank">{$value.sn}</a>
+						<div class="text-end">{func time_format $value.addtime}</div>
+					</div>
+				</th>
+			</tr>
+			</thead>
+			<!-- loop from=$value.product key=$k value=$v id=$idxx -->
+			<tr>
+				<td>
+					<div class="d-flex justify-content-between">
+						<div>
+							<div class="d-flex justify-content-start">
+								<div class="me-2" style="width:80px;min-width:80px"><img src="{if $v.thumb}{$v.thumb}{else}{$tpl.dir}usercp/static/nopic.png{/if}" class="w-100" /></div>
+								<div>
+									<div>{$v.title}</div>
+									<!-- loop from=$v.ext key=$kk value=$vv id=$idx -->
+									<div class="text-secondary"><small>{$vv.title}：{$vv.content}</small></div>
+									<!-- /loop -->
+								</div>
+							</div>
+						</div>
+						<div style="width:80px;" class="text-end text-secondary">
+							×{$v.qty}
+						</div>
+					</div>
+				</td>
+				<!-- if !$idxx.index -->
+				<td rowspan="{$idxx.total}">{$value.fullname}</td>
+				<td rowspan="{$idxx.total}">{func price_format $value.price $value.currency_id $value.currency_id}</td>
+				<td rowspan="{$idxx.total}">{$value.status_info}</td>
+				<td rowspan="{$idxx.total}" class="text-center">
+					<div>
+						<input type="button" value="查看" onclick="$.phpok.open('{url ctrl=order func=info id=$value.id/}')" class="btn btn-sm btn-primary" />
+					</div>
+					<div style="margin-top:5px">
+						<input type="button" value="日志" onclick="$.phpok.open('{url ctrl=order func=log id=$value.id/}')" class="btn btn-sm btn-primary" />
+					</div>
+					<div style="margin-top:5px">
+						<input type="button" value="评论" onclick="$.phpok.open('{url ctrl=order func=comment id=$value.id/}')" class="btn btn-sm btn-primary" />
+					</div>
+					<!-- if $value.status == 'unpaid' || $value.status == 'create' -->
+					<div style="margin-top:5px">
+						<input type="button" value="取消" onclick="$.order.cancel('{$value.id}')" class="btn btn-sm btn-danger" />
+					</div>
+					<!-- /if -->
+				</td>
+				<!-- /if -->
+			</tr>
+			<!-- /loop -->
+			</table>
+			<!-- /loop -->
+		</div>
+	</div>
+	<!-- include tpl=usercp/pagelist -->
+
+</section>
+<script type="text/javascript">
+function check_order(obj)
+{
+	var t = $(obj).find('input[name=keywords]').val();
+	var days = $("#days").val();
+	if(!t && !days){
+		$.dialog.tips('搜索关键字或筛选时间范围');
+		return false;
+	}
+	return true;
+}
+</script>
+
+<!-- include tpl=usercp/footer -->
