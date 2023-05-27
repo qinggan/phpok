@@ -42,7 +42,7 @@ class express_control extends phpok_control
 			$this->success();
 		}
 		$rate = $express['rate'] ? $express['rate'] : 6;
-		if($rs['last_query_time']){
+		if($rs['last_query_time'] && !$this->session->val('admin_id')){
 			$time = strtotime(date("Y-m-d H:i",$rs['last_query_time']));
 			$time += $rate * 3600;
 			if($time >= $this->time){
