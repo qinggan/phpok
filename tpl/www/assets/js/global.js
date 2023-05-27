@@ -154,6 +154,10 @@ $(document).ready(function(){
 	}
 	$(document).off('click.bs.dropdown.data-api');
 	dropdownOpen();//调用
+
+	setTimeout(function(){
+		$.cart.total();
+	}, 500);
 	
 
 	/**

@@ -211,9 +211,9 @@
 			$.phpok.json(api_url('cart','total'),function(rs){
 				if(rs.status){
 					if(rs.info){
-						$("#head_cart_num").html(rs.info).show();
+						$(".head_cart_num").html(rs.info).show();
 					}else{
-						$("#head_cart_num").html('0').hide();
+						$(".head_cart_num").html('0').hide();
 					}
 					if(func && func != 'undefined'){
 						(func)(rs);
