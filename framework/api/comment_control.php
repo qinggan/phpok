@@ -389,15 +389,17 @@ class comment_control extends phpok_control
 		if(!$comment['tid']){
 			$this->error(P_Lang('未指定主题ID'));
 		}
-		$rs = $this->model('list')->call_one($comment['tid']);
-		if(!$rs || !$rs['status']){
-			$this->error(P_Lang('主题不存在'));
-		}
-		if(!$rs['user_id']){
-			$this->error(P_Lang('您没有权限操作此功能(2)'));
-		}
-		if($rs['user_id'] != $uid && $comment['uid'] != $uid){
-			$this->error(P_Lang('您没有权限操作此功能(3)'));			
+		if(!$comment['uid'] || $comment['uid'] != $uid){
+			$rs = $this->model('list')->call_one($comment['tid']);
+			if(!$rs || !$rs['status']){
+				$this->error(P_Lang('主题不存在'));
+			}
+			if(!$rs['user_id']){
+				$this->error(P_Lang('您没有权限操作此功能(2)'));
+			}
+			if($rs['user_id'] != $uid && $comment['uid'] != $uid){
+				$this->error(P_Lang('您没有权限操作此功能(3)'));			
+			}
 		}
 		$this->model('reply')->delete($id);
 		$this->model('log')->save(P_Lang('删除回复操作'));
