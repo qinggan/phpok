@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.4.15.10
--- https://www.phpmyadmin.net
+-- version 4.9.11
+-- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: 2023-05-11 10:24:25
+-- 主机： 127.0.0.1
+-- 生成日期： 2023-05-27 16:35:30
 -- 服务器版本： 5.7.26
--- PHP Version: 5.6.27
+-- PHP 版本： 5.6.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -17,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `phpok6`
+-- 数据库： `phpok6`
 --
 
 -- --------------------------------------------------------
@@ -26,22 +28,22 @@ SET time_zone = "+00:00";
 -- 表的结构 `qinggan_77`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_77` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '状态',
-  `hidden` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '隐藏',
-  `sort` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发布时间',
-  `hits` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '查看次数',
+CREATE TABLE `qinggan_77` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态',
+  `hidden` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '隐藏',
+  `sort` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序',
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `hits` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '查看次数',
   `sitename` varchar(255) NOT NULL DEFAULT '' COMMENT '网站名称',
   `linkurl` varchar(255) NOT NULL DEFAULT '' COMMENT '自定义链接',
   `target` varchar(255) NOT NULL DEFAULT '_blank' COMMENT '链接目标',
   `logo` varchar(255) NOT NULL DEFAULT '' COMMENT '网站LOGO',
   `tel` varchar(255) NOT NULL DEFAULT '' COMMENT '联系电话',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID'
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='友情链接';
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='友情链接';
 
 --
 -- 转存表中的数据 `qinggan_77`
@@ -58,37 +60,58 @@ INSERT INTO `qinggan_77` (`id`, `site_id`, `project_id`, `status`, `hidden`, `so
 -- 表的结构 `qinggan_114`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_114` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '状态',
-  `hidden` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '隐藏',
-  `sort` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发布时间',
-  `hits` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '查看次数',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_114` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态',
+  `hidden` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '隐藏',
+  `sort` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序',
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `hits` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '查看次数',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `name` varchar(255) NOT NULL DEFAULT '' COMMENT '参数名称',
   `info` longtext NOT NULL COMMENT '参数',
   `note` longtext NOT NULL COMMENT '摘要'
-) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='规格参数';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='规格参数';
 
 --
 -- 转存表中的数据 `qinggan_114`
 --
 
 INSERT INTO `qinggan_114` (`id`, `site_id`, `project_id`, `status`, `hidden`, `sort`, `dateline`, `hits`, `cate_id`, `name`, `info`, `note`) VALUES
-(1, 1, 456, 0, 0, 0, 0, 0, 0, '主要参数', 'a:2:{s:5:"title";a:3:{i:0;s:8:"名称\r\n";i:1;s:8:"内容\r\n";i:2;s:6:"备注";}s:7:"content";a:14:{i:0;a:3:{i:0;s:9:"传播名";i:1;s:10:"HUAWEI P40";i:2;s:31:"电池额定容量为3700mAh。";}i:1;a:3:{i:0;s:12:"电池容量";i:1;s:22:"3800mAh（典型值）";i:2;s:78:"不同模式的照片和视频的像素可能有差异，请以实际为准。";}i:2;a:3:{i:0;s:15:"后置摄像头";i:1;s:203:"超感知徕卡三摄：5000万像素超感知摄像头（广角， f/1.9光圈 ）+ 1600万像素超广角摄像头（f/2.2光圈）+ 800万像素长焦摄像头（f/2.4光圈，支持OIS光学防抖）";i:2;s:0:"";}i:3;a:3:{i:0;s:15:"前置摄像头";i:1;s:47:"3200万像素（f/2.0光圈）+ 红外摄像头";i:2;s:78:"不同模式的照片和视频的像素可能有差异，请以实际为准。";}i:4;a:3:{i:0;s:12:"屏幕尺寸";i:1;s:9:"6.1英寸";i:2;s:129:"显示屏采用圆角设计，按照标准矩形测量时，屏幕的对角线长度是6.1英寸（实际可视区域略小）。";}i:5;a:3:{i:0;s:12:"上市时间";i:1;s:11:"2020年4月";i:2;s:0:"";}i:6;a:3:{i:0;s:12:"屏幕色彩";i:1;s:28:"1670万色，DCI-P3广色域";i:2;s:0:"";}i:7;a:3:{i:0;s:21:"运行内存（RAM）";i:1;s:3:"6GB";i:2;s:75:"可使用的内存容量小于此值，因为手机软件占用的空间。";}i:8;a:3:{i:0;s:21:"机身内存（ROM）";i:1;s:5:"128GB";i:2;s:75:"可使用的内存容量小于此值，因为手机软件占用的空间。";}i:9;a:3:{i:0;s:9:"分辨率";i:1;s:24:"FHD+ 2340 × 1080 像素";i:2;s:66:"该分辨率对应标准矩形，实际屏幕有效像素略少。";}i:10;a:3:{i:0;s:18:"最大支持扩展";i:1;s:50:"256GB NM存储卡（非标配，需另行购买）";i:2;s:0:"";}i:11;a:3:{i:0;s:9:"CPU型号";i:1;s:33:"HUAWEI Kirin 990 5G(麒麟990 5G)";i:2;s:0:"";}i:12;a:3:{i:0;s:9:"CPU核数";i:1;s:6:"八核";i:2;s:0:"";}i:13;a:3:{i:0;s:6:"双卡";i:1;s:12:"双卡双待";i:2;s:0:"";}}}', ''),
-(2, 1, 456, 0, 0, 0, 0, 0, 0, '主体', 'a:2:{s:5:"title";a:3:{i:0;s:8:"名称\r\n";i:1;s:8:"内容\r\n";i:2;s:6:"备注";}s:7:"content";a:14:{i:0;a:3:{i:0;s:6:"品牌";i:1;s:13:"华为 HUAWEI";i:2;s:0:"";}i:1;a:3:{i:0;s:6:"型号";i:1;s:8:"ANA-AN00";i:2;s:0:"";}i:2;a:3:{i:0;s:9:"传播名";i:1;s:10:"HUAWEI P40";i:2;s:0:"";}i:3;a:3:{i:0;s:12:"上市时间";i:1;s:11:"2020年4月";i:2;s:0:"";}i:4;a:3:{i:0;s:12:"操作系统";i:1;s:31:"EMUI 10.1（基于Android 10）";i:2;s:0:"";}i:5;a:3:{i:0;s:12:"用户界面";i:1;s:9:"EMUI 10.1";i:2;s:0:"";}i:6;a:3:{i:0;s:9:"CPU型号";i:1;s:33:"HUAWEI Kirin 990 5G(麒麟990 5G)";i:2;s:0:"";}i:7;a:3:{i:0;s:9:"CPU核数";i:1;s:6:"八核";i:2;s:0:"";}i:8;a:3:{i:0;s:9:"CPU主频";i:1;s:78:"2*Cortex-A76 Based 2.86GHz + 2*Cortex-A76 Based 2.36GHz + 4*Cortex-A55 1.95GHz";i:2;s:0:"";}i:9;a:3:{i:0;s:3:"GPU";i:1;s:8:"Mali-G76";i:2;s:0:"";}i:10;a:3:{i:0;s:3:"NPU";i:1;s:48:"双大核NPU+微核NPU(神经网络处理单元)";i:2;s:0:"";}i:11;a:3:{i:0;s:6:"双卡";i:1;s:12:"双卡双待";i:2;s:0:"";}i:12;a:3:{i:0;s:12:"特色功能";i:1;s:496:"隔空操控、AI信息保护、多屏协同、畅连通话、多彩灭屏显示、深色模式、智慧分屏、人脸解锁、 智慧剪辑、智能截屏、小艺智慧语音、智慧视觉、情景智能、华为分享、无线投屏、支付保护中心、天际通、运动健康、 单手操作、皮套模式、 杂志锁屏、玩机技巧、应用锁、 应用分身、隐私空间、密码保险箱、三重备份与恢复（云空间, 外部存储, 华为手机助手）、手机克隆";i:2;s:0:"";}i:13;a:3:{i:0;s:18:"系统导航方式";i:1;s:51:"手势导航、屏幕内三键导航、悬浮导航";i:2;s:0:"";}}}', ''),
-(3, 1, 456, 0, 0, 0, 0, 0, 0, '网络', 'a:2:{s:5:"title";a:3:{i:0;s:8:"名称\r\n";i:1;s:8:"内容\r\n";i:2;s:6:"备注";}s:7:"content";a:9:{i:0;a:3:{i:0;s:12:"网络制式";i:1;s:57:"支持联通/电信 5G/4G+/4G/3G/2G，移动 5G/4G+/4G/2G";i:2;s:285:"*卡槽1, 2可以任意切换为默认移动数据卡。*如果两张都是电信卡，副卡（非默认移动数据卡）必须开通电信VoLTE业务，才能同时使用电信双卡。 *5G/4G网络使用，需要根据运营商网络和相关业务部署情况确定是否支持。";}i:1;a:3:{i:0;s:14:"5G网络制式";i:1;s:48:"移动5G（NR）/联通5G（NR）/电信5G（NR)";i:2;s:0:"";}i:2;a:3:{i:0;s:14:"4G网络制式";i:1;s:53:"移动/联通/电信4G主副卡 支持 TD-LTE/LTE FDD";i:2;s:0:"";}i:3;a:3:{i:0;s:14:"3G网络制式";i:1;s:83:"主卡：联通3G（WCDMA）/电信3G（CDMA 2000）；副卡：联通3G（WCDMA）";i:2;s:0:"";}i:4;a:3:{i:0;s:14:"2G网络制式";i:1;s:135:"主卡：移动2G（GSM）/联通2G（GSM）/电信2G（CDMA 1X）；副卡：移动2G（GSM）/联通2G（GSM）/电信2G（CDMA 1X）";i:2;s:75:"*电信双卡时，副卡（非默认移动数据卡）不支持电信2G。";}i:5;a:3:{i:0;s:12:"网络频率";i:1;s:578:"主卡：5G NR：n1/n3/n41(2515M-2690MHz)/n77/n78/n79，FDD-LTE：B1/B2/B3/B4/B5/B6/B7/B8/B9/B12/B17/B18/B19/B20/B26；TD-LTE：B34/B38/B39/B40/B41；UMTS（WCDMA）/HSPA+/DC-HSDPA：B1/B2/B4/B5/B6/B8/B19；CDMA（主副卡二选一）：BC0（ 800MHz）；（仅限中国电信（中国大陆+澳门））GSM： B2/B3/B5/B8（850/900/1800/1900 MHz）。副卡：FDD-LTE：B1/B2/B3/B4/B5/B6/B7/B8/B9/B12/B17/B18/B19/B20/B26；TD-LTE：B34/B38/B39/B40/B41；WCDMA：B1/B2/B4/B5/B6/B8/B19；CDMA： BC0（800MHz）（仅限中国电信（中国大陆+澳门））GSM：B2/B3/B5/B8";i:2;s:356:"主卡：各个地区的网络和频段可能有所不同，具体取决于当地运营商以及您所在的位置。如果同时插入两张电信卡，只有一张电信卡可以使用2G/3G/4G/5G，另一张电信卡只能使用4G LTE。副卡：各个地区的网络和频段可能有所不同，具体取决于当地运营商以及您所在的位置。";}i:6;a:3:{i:0;s:12:"数据业务";i:1;s:83:"5G NR/TD-LTE/FDD-LTE/WCDMA/HSPA+/DC-HSDPA/EVDO/CDMA1X/EDGE/GPRS，支持VoLTE/ViLTE";i:2;s:223:"*各个地区的网络和频段可能有所不同，具体取决于当地运营商以及您所在的位置。*CDMA仅限中国电信（中国大陆+澳门）。*VoLTE/ViLTE依赖运营商网络支持并开通相关业务。";}i:7;a:3:{i:0;s:9:"浏览器";i:1;s:32:"支持（华为EMUI 浏览器）";i:2;s:0:"";}i:8;a:3:{i:0;s:24:"副卡是否可以上网";i:1;s:6:"支持";i:2;s:683:"*支持盲插，数据账户与5G账户设置绑定；*用户需打开“智能切换上网卡”的开关，主卡不能上网时自动切换到副卡上网；*副卡VOLTE通话，依赖运营商网络是否开通相关业务；*使用中国移动或者中国联通作为默认移动数据主卡，主卡支持5G网络，若副卡是中国移动卡，则支持2G/4G网络；若副卡是中国联通或者中国电信卡，则支持2G/3G/4G网络；*使用中国电信作为默认移动数据主卡，主卡支持5G网络，若副卡是中国电信卡，则支持4G网络，若副卡是中国移动卡，则支持2G/4G网络；若副卡是中国联通卡，则支持2G/3G/4G网络。";}}}', ''),
-(4, 1, 456, 0, 0, 0, 0, 0, 0, '屏幕', 'a:2:{s:5:"title";a:3:{i:0;s:8:"名称\r\n";i:1;s:8:"内容\r\n";i:2;s:6:"备注";}s:7:"content";a:5:{i:0;a:3:{i:0;s:12:"屏幕尺寸";i:1;s:9:"6.1英寸";i:2;s:138:"备注：显示屏采用圆角设计，按照标准矩形测量时，屏幕的对角线长度是6.1英寸（实际可视区域略小）。";}i:1;a:3:{i:0;s:12:"屏幕色彩";i:1;s:28:"1670万色，DCI-P3广色域";i:2;s:0:"";}i:2;a:3:{i:0;s:9:"分辨率";i:1;s:24:"FHD+ 2340 × 1080 像素";i:2;s:75:"备注：该分辨率对应标准矩形，实际屏幕有效像素略少。";}i:3;a:3:{i:0;s:12:"屏幕类型";i:1;s:4:"OLED";i:2;s:0:"";}i:4;a:3:{i:0;s:9:"触摸屏";i:1;s:47:"多点触控触摸屏，最多支持10点触控";i:2;s:0:"";}}}', ''),
-(5, 1, 456, 0, 0, 0, 0, 0, 0, '传感器', 'a:2:{s:5:"title";a:3:{i:0;s:8:"名称\r\n";i:1;s:8:"内容\r\n";i:2;s:6:"备注";}s:7:"content";a:9:{i:0;a:3:{i:0;s:15:"重力感应器";i:1;s:6:"支持";i:2;s:0:"";}i:1;a:3:{i:0;s:18:"环境光传感器";i:1;s:6:"支持";i:2;s:0:"";}i:2;a:3:{i:0;s:15:"指纹传感器";i:1;s:12:"屏内指纹";i:2;s:0:"";}i:3;a:3:{i:0;s:15:"霍尔传感器";i:1;s:6:"支持";i:2;s:0:"";}i:4;a:3:{i:0;s:9:"陀螺仪";i:1;s:6:"支持";i:2;s:0:"";}i:5;a:3:{i:0;s:9:"指南针";i:1;s:6:"支持";i:2;s:0:"";}i:6;a:3:{i:0;s:18:"接近光传感器";i:1;s:6:"支持";i:2;s:0:"";}i:7;a:3:{i:0;s:15:"重力传感器";i:1;s:6:"支持";i:2;s:0:"";}i:8;a:3:{i:0;s:15:"其他传感器";i:1;s:63:"姿态感应器、Camera激光对焦传感器、色温传感器";i:2;s:0:"";}}}', ''),
-(6, 1, 456, 0, 0, 0, 0, 0, 0, '存储', 'a:2:{s:5:"title";a:3:{i:0;s:8:"名称\r\n";i:1;s:8:"内容\r\n";i:2;s:6:"备注";}s:7:"content";a:4:{i:0;a:3:{i:0;s:21:"运行内存（RAM）";i:1;s:3:"6GB";i:2;s:84:"备注：可使用的内存容量小于此值，因为手机软件占用的空间。";}i:1;a:3:{i:0;s:21:"机身内存（ROM）";i:1;s:5:"128GB";i:2;s:84:"备注：可使用的内存容量小于此值，因为手机软件占用的空间。";}i:2;a:3:{i:0;s:15:"存储卡类型";i:1;s:11:"NM存储卡";i:2;s:0:"";}i:3;a:3:{i:0;s:18:"最大支持扩展";i:1;s:50:"256GB NM存储卡（非标配，需另行购买）";i:2;s:0:"";}}}', ''),
-(7, 1, 456, 0, 0, 0, 0, 0, 0, '娱乐功能', 'a:2:{s:5:"title";a:3:{i:0;s:8:"名称\r\n";i:1;s:8:"内容\r\n";i:2;s:6:"备注";}s:7:"content";a:1:{i:0;a:3:{i:0;s:6:"音效";i:1;s:12:"华为Histen";i:2;s:0:"";}}}', ''),
-(8, 1, 456, 0, 0, 0, 0, 0, 0, '主要参数', 'a:2:{s:5:"title";a:3:{i:0;s:6:"名称";i:1;s:6:"内容";i:2;s:6:"备注";}s:7:"content";a:13:{i:0;a:3:{i:0;s:9:"传播名";i:1;s:12:"荣耀X40 GT";i:2;s:0:"";}i:1;a:3:{i:0;s:12:"屏幕尺寸";i:1;s:10:"6.81英寸";i:2;s:0:"";}i:2;a:3:{i:0;s:12:"上市时间";i:1;s:12:"2022年10月";i:2;s:0:"";}i:3;a:3:{i:0;s:12:"屏幕色域";i:1;s:22:"1670万色，色域85%";i:2;s:0:"";}i:4;a:3:{i:0;s:15:"后置摄像头";i:1;s:138:"后置三摄：5000万像素主摄摄像头（f/1.8光圈）+200万景深摄像头（f/2.4光圈）+200万微距摄像头（f/2.4光圈）";i:2;s:72:"不同拍照模式的照片像素可能有差异，请以实际为准。";}i:5;a:3:{i:0;s:15:"前置摄像头";i:1;s:40:"1600万像素摄像头（f/2.45光圈）";i:2;s:72:"不同拍照模式的照片像素可能有差异，请以实际为准。";}i:6;a:3:{i:0;s:9:"CPU型号";i:1;s:9:"骁龙888";i:2;s:0:"";}i:7;a:3:{i:0;s:15:"屏幕分辨率";i:1;s:10:"2388×1080";i:2;s:0:"";}i:8;a:3:{i:0;s:9:"CPU核数";i:1;s:6:"八核";i:2;s:0:"";}i:9;a:3:{i:0;s:12:"电池容量";i:1;s:22:"4800mAh（典型值）";i:2;s:29:"电池额定容量为 4700mAh";}i:10;a:3:{i:0;s:21:"运行内存（RAM）";i:1;s:3:"8GB";i:2;s:0:"";}i:11;a:3:{i:0;s:21:"机身内存（ROM）";i:1;s:5:"256GB";i:2;s:0:"";}i:12;a:3:{i:0;s:6:"双卡";i:1;s:18:"双卡双待单通";i:2;s:0:"";}}}', ''),
-(10, 1, 456, 0, 0, 0, 0, 0, 0, '主体', 'a:2:{s:5:"title";a:3:{i:0;s:6:"名称";i:1;s:6:"内容";i:2;s:6:"备注";}s:7:"content";a:12:{i:0;a:3:{i:0;s:6:"品牌";i:1;s:6:"荣耀";i:2;s:0:"";}i:1;a:3:{i:0;s:12:"认证型号";i:1;s:8:"ADT-AN00";i:2;s:0:"";}i:2;a:3:{i:0;s:9:"传播名";i:1;s:12:"荣耀X40 GT";i:2;s:0:"";}i:3;a:3:{i:0;s:12:"上市时间";i:1;s:12:"2022年10月";i:2;s:0:"";}i:4;a:3:{i:0;s:12:"操作系统";i:1;s:34:"Magic UI 6.1（基于Android 12）";i:2;s:0:"";}i:5;a:3:{i:0;s:9:"CPU型号";i:1;s:9:"骁龙888";i:2;s:0:"";}i:6;a:3:{i:0;s:9:"CPU核数";i:1;s:6:"八核";i:2;s:0:"";}i:7;a:3:{i:0;s:9:"CPU频率";i:1;s:66:"1×Cortex-X1 2.84GHz + 3×Cortex-A78 2.42GHz+ 4×Cortex-A55 1.8GHz";i:2;s:0:"";}i:8;a:3:{i:0;s:3:"GPU";i:1;s:10:"Adreno 660";i:2;s:0:"";}i:9;a:3:{i:0;s:6:"双卡";i:1;s:18:"双卡双待单通";i:2;s:0:"";}i:10;a:3:{i:0;s:12:"机身尺寸";i:1;s:21:"166.1mmX75.8mmX8.45mm";i:2;s:126:"手机厚度不包含摄像头凸起部分，实际尺寸依配置、制造工艺、测量方法的不同可能有所差异。";}i:11;a:3:{i:0;s:12:"机身重量";i:1;s:27:"约199.5g克（含电池）";i:2;s:81:"实际重量依配置、制造工艺、测量方法的不同可能有所差异。";}}}', ''),
-(11, 1, 456, 0, 0, 0, 0, 0, 0, '主要参数', 'a:2:{s:5:"title";a:3:{i:0;s:6:"名称";i:1;s:6:"内容";i:2;s:6:"备注";}s:7:"content";a:10:{i:0;a:3:{i:0;s:12:"手机型号";i:1;s:7:"iQOO 11";i:2;s:0:"";}i:1;a:3:{i:0;s:9:"处理器";i:1;s:28:"第二代骁龙8移动平台";i:2;s:0:"";}i:2;a:3:{i:0;s:8:"5G网络";i:1;s:6:"支持";i:2;s:0:"";}i:3;a:3:{i:0;s:12:"运行内存";i:1;s:21:"8GB,LPDDR5X 四通道";i:2;s:93:"由于手机系统和预装的程序占据了部分运存空间，实际运存空间少于8GB";}i:4;a:3:{i:0;s:12:"机身存储";i:1;s:13:"256GB,UFS 4.0";i:2;s:95:"由于手机系统和预装的程序占据了部分存储空间，可用存储空间少于256GB";}i:5;a:3:{i:0;s:27:"电池容量（典型值）";i:1;s:14:"等效5000*mAh";i:2;s:119:"本产品采用双电芯串联设计：典型容量：2500mAh(7.78V)，等效于5000mAh(3.89V)。典型能量：19.45Wh";}i:6;a:3:{i:0;s:27:"电池容量（额定值）";i:1;s:14:"等效4880*mAh";i:2;s:119:"本产品采用双电芯串联设计：额定容量：2440mAh(7.78V)，等效于4880mAh(3.89V)。额定能量：18.98Wh";}i:7;a:3:{i:0;s:12:"充电规格";i:1;s:16:"120W超快闪充";i:2;s:114:"支持最大输入充电规格20V/6A，兼容20V/4A、20V/3.3A、11V/6A、11V/5A、11V/4A、11V/3A、9V/2A或5V/2A";}i:8;a:3:{i:0;s:12:"屏幕尺寸";i:1;s:10:"6.78英寸";i:2;s:0:"";}i:9;a:3:{i:0;s:15:"屏幕分辨率";i:1;s:10:"3200×1440";i:2;s:0:"";}}}', ''),
-(12, 1, 456, 0, 0, 0, 0, 0, 0, '外观', 'a:2:{s:5:"title";a:3:{i:0;s:6:"名称";i:1;s:6:"内容";i:2;s:6:"备注";}s:7:"content";a:4:{i:0;a:3:{i:0;s:12:"机身尺寸";i:1;s:101:"164.86mm×77.07mm×8.40mm（赛道版）；164.86mm×77.07mm×8.72mm（传奇版、曼岛特别版）";i:2;s:0:"";}i:1;a:3:{i:0;s:12:"机身重量";i:1;s:60:"赛道版：约208g；传奇版、曼岛特别版：约 205g";i:2;s:93:"实际尺寸与重量可能会因工艺、测量方法、材料供应商变更而略有不同";}i:2;a:3:{i:0;s:12:"中框材质";i:1;s:9:"铝合金";i:2;s:0:"";}i:3;a:3:{i:0;s:12:"后盖材质";i:1;s:24:"曼岛特别版：素皮";i:2;s:0:"";}}}', '');
+(1, 1, 456, 0, 0, 0, 0, 0, 0, '主要参数', 'a:2:{s:5:\"title\";a:3:{i:0;s:8:\"名称\r\n\";i:1;s:8:\"内容\r\n\";i:2;s:6:\"备注\";}s:7:\"content\";a:14:{i:0;a:3:{i:0;s:9:\"传播名\";i:1;s:10:\"HUAWEI P40\";i:2;s:31:\"电池额定容量为3700mAh。\";}i:1;a:3:{i:0;s:12:\"电池容量\";i:1;s:22:\"3800mAh（典型值）\";i:2;s:78:\"不同模式的照片和视频的像素可能有差异，请以实际为准。\";}i:2;a:3:{i:0;s:15:\"后置摄像头\";i:1;s:203:\"超感知徕卡三摄：5000万像素超感知摄像头（广角， f/1.9光圈 ）+ 1600万像素超广角摄像头（f/2.2光圈）+ 800万像素长焦摄像头（f/2.4光圈，支持OIS光学防抖）\";i:2;s:0:\"\";}i:3;a:3:{i:0;s:15:\"前置摄像头\";i:1;s:47:\"3200万像素（f/2.0光圈）+ 红外摄像头\";i:2;s:78:\"不同模式的照片和视频的像素可能有差异，请以实际为准。\";}i:4;a:3:{i:0;s:12:\"屏幕尺寸\";i:1;s:9:\"6.1英寸\";i:2;s:129:\"显示屏采用圆角设计，按照标准矩形测量时，屏幕的对角线长度是6.1英寸（实际可视区域略小）。\";}i:5;a:3:{i:0;s:12:\"上市时间\";i:1;s:11:\"2020年4月\";i:2;s:0:\"\";}i:6;a:3:{i:0;s:12:\"屏幕色彩\";i:1;s:28:\"1670万色，DCI-P3广色域\";i:2;s:0:\"\";}i:7;a:3:{i:0;s:21:\"运行内存（RAM）\";i:1;s:3:\"6GB\";i:2;s:75:\"可使用的内存容量小于此值，因为手机软件占用的空间。\";}i:8;a:3:{i:0;s:21:\"机身内存（ROM）\";i:1;s:5:\"128GB\";i:2;s:75:\"可使用的内存容量小于此值，因为手机软件占用的空间。\";}i:9;a:3:{i:0;s:9:\"分辨率\";i:1;s:24:\"FHD+ 2340 × 1080 像素\";i:2;s:66:\"该分辨率对应标准矩形，实际屏幕有效像素略少。\";}i:10;a:3:{i:0;s:18:\"最大支持扩展\";i:1;s:50:\"256GB NM存储卡（非标配，需另行购买）\";i:2;s:0:\"\";}i:11;a:3:{i:0;s:9:\"CPU型号\";i:1;s:33:\"HUAWEI Kirin 990 5G(麒麟990 5G)\";i:2;s:0:\"\";}i:12;a:3:{i:0;s:9:\"CPU核数\";i:1;s:6:\"八核\";i:2;s:0:\"\";}i:13;a:3:{i:0;s:6:\"双卡\";i:1;s:12:\"双卡双待\";i:2;s:0:\"\";}}}', ''),
+(2, 1, 456, 0, 0, 0, 0, 0, 0, '主体', 'a:2:{s:5:\"title\";a:3:{i:0;s:8:\"名称\r\n\";i:1;s:8:\"内容\r\n\";i:2;s:6:\"备注\";}s:7:\"content\";a:14:{i:0;a:3:{i:0;s:6:\"品牌\";i:1;s:13:\"华为 HUAWEI\";i:2;s:0:\"\";}i:1;a:3:{i:0;s:6:\"型号\";i:1;s:8:\"ANA-AN00\";i:2;s:0:\"\";}i:2;a:3:{i:0;s:9:\"传播名\";i:1;s:10:\"HUAWEI P40\";i:2;s:0:\"\";}i:3;a:3:{i:0;s:12:\"上市时间\";i:1;s:11:\"2020年4月\";i:2;s:0:\"\";}i:4;a:3:{i:0;s:12:\"操作系统\";i:1;s:31:\"EMUI 10.1（基于Android 10）\";i:2;s:0:\"\";}i:5;a:3:{i:0;s:12:\"用户界面\";i:1;s:9:\"EMUI 10.1\";i:2;s:0:\"\";}i:6;a:3:{i:0;s:9:\"CPU型号\";i:1;s:33:\"HUAWEI Kirin 990 5G(麒麟990 5G)\";i:2;s:0:\"\";}i:7;a:3:{i:0;s:9:\"CPU核数\";i:1;s:6:\"八核\";i:2;s:0:\"\";}i:8;a:3:{i:0;s:9:\"CPU主频\";i:1;s:78:\"2*Cortex-A76 Based 2.86GHz + 2*Cortex-A76 Based 2.36GHz + 4*Cortex-A55 1.95GHz\";i:2;s:0:\"\";}i:9;a:3:{i:0;s:3:\"GPU\";i:1;s:8:\"Mali-G76\";i:2;s:0:\"\";}i:10;a:3:{i:0;s:3:\"NPU\";i:1;s:48:\"双大核NPU+微核NPU(神经网络处理单元)\";i:2;s:0:\"\";}i:11;a:3:{i:0;s:6:\"双卡\";i:1;s:12:\"双卡双待\";i:2;s:0:\"\";}i:12;a:3:{i:0;s:12:\"特色功能\";i:1;s:496:\"隔空操控、AI信息保护、多屏协同、畅连通话、多彩灭屏显示、深色模式、智慧分屏、人脸解锁、 智慧剪辑、智能截屏、小艺智慧语音、智慧视觉、情景智能、华为分享、无线投屏、支付保护中心、天际通、运动健康、 单手操作、皮套模式、 杂志锁屏、玩机技巧、应用锁、 应用分身、隐私空间、密码保险箱、三重备份与恢复（云空间, 外部存储, 华为手机助手）、手机克隆\";i:2;s:0:\"\";}i:13;a:3:{i:0;s:18:\"系统导航方式\";i:1;s:51:\"手势导航、屏幕内三键导航、悬浮导航\";i:2;s:0:\"\";}}}', ''),
+(3, 1, 456, 0, 0, 0, 0, 0, 0, '网络', 'a:2:{s:5:\"title\";a:3:{i:0;s:8:\"名称\r\n\";i:1;s:8:\"内容\r\n\";i:2;s:6:\"备注\";}s:7:\"content\";a:9:{i:0;a:3:{i:0;s:12:\"网络制式\";i:1;s:57:\"支持联通/电信 5G/4G+/4G/3G/2G，移动 5G/4G+/4G/2G\";i:2;s:285:\"*卡槽1, 2可以任意切换为默认移动数据卡。*如果两张都是电信卡，副卡（非默认移动数据卡）必须开通电信VoLTE业务，才能同时使用电信双卡。 *5G/4G网络使用，需要根据运营商网络和相关业务部署情况确定是否支持。\";}i:1;a:3:{i:0;s:14:\"5G网络制式\";i:1;s:48:\"移动5G（NR）/联通5G（NR）/电信5G（NR)\";i:2;s:0:\"\";}i:2;a:3:{i:0;s:14:\"4G网络制式\";i:1;s:53:\"移动/联通/电信4G主副卡 支持 TD-LTE/LTE FDD\";i:2;s:0:\"\";}i:3;a:3:{i:0;s:14:\"3G网络制式\";i:1;s:83:\"主卡：联通3G（WCDMA）/电信3G（CDMA 2000）；副卡：联通3G（WCDMA）\";i:2;s:0:\"\";}i:4;a:3:{i:0;s:14:\"2G网络制式\";i:1;s:135:\"主卡：移动2G（GSM）/联通2G（GSM）/电信2G（CDMA 1X）；副卡：移动2G（GSM）/联通2G（GSM）/电信2G（CDMA 1X）\";i:2;s:75:\"*电信双卡时，副卡（非默认移动数据卡）不支持电信2G。\";}i:5;a:3:{i:0;s:12:\"网络频率\";i:1;s:578:\"主卡：5G NR：n1/n3/n41(2515M-2690MHz)/n77/n78/n79，FDD-LTE：B1/B2/B3/B4/B5/B6/B7/B8/B9/B12/B17/B18/B19/B20/B26；TD-LTE：B34/B38/B39/B40/B41；UMTS（WCDMA）/HSPA+/DC-HSDPA：B1/B2/B4/B5/B6/B8/B19；CDMA（主副卡二选一）：BC0（ 800MHz）；（仅限中国电信（中国大陆+澳门））GSM： B2/B3/B5/B8（850/900/1800/1900 MHz）。副卡：FDD-LTE：B1/B2/B3/B4/B5/B6/B7/B8/B9/B12/B17/B18/B19/B20/B26；TD-LTE：B34/B38/B39/B40/B41；WCDMA：B1/B2/B4/B5/B6/B8/B19；CDMA： BC0（800MHz）（仅限中国电信（中国大陆+澳门））GSM：B2/B3/B5/B8\";i:2;s:356:\"主卡：各个地区的网络和频段可能有所不同，具体取决于当地运营商以及您所在的位置。如果同时插入两张电信卡，只有一张电信卡可以使用2G/3G/4G/5G，另一张电信卡只能使用4G LTE。副卡：各个地区的网络和频段可能有所不同，具体取决于当地运营商以及您所在的位置。\";}i:6;a:3:{i:0;s:12:\"数据业务\";i:1;s:83:\"5G NR/TD-LTE/FDD-LTE/WCDMA/HSPA+/DC-HSDPA/EVDO/CDMA1X/EDGE/GPRS，支持VoLTE/ViLTE\";i:2;s:223:\"*各个地区的网络和频段可能有所不同，具体取决于当地运营商以及您所在的位置。*CDMA仅限中国电信（中国大陆+澳门）。*VoLTE/ViLTE依赖运营商网络支持并开通相关业务。\";}i:7;a:3:{i:0;s:9:\"浏览器\";i:1;s:32:\"支持（华为EMUI 浏览器）\";i:2;s:0:\"\";}i:8;a:3:{i:0;s:24:\"副卡是否可以上网\";i:1;s:6:\"支持\";i:2;s:683:\"*支持盲插，数据账户与5G账户设置绑定；*用户需打开“智能切换上网卡”的开关，主卡不能上网时自动切换到副卡上网；*副卡VOLTE通话，依赖运营商网络是否开通相关业务；*使用中国移动或者中国联通作为默认移动数据主卡，主卡支持5G网络，若副卡是中国移动卡，则支持2G/4G网络；若副卡是中国联通或者中国电信卡，则支持2G/3G/4G网络；*使用中国电信作为默认移动数据主卡，主卡支持5G网络，若副卡是中国电信卡，则支持4G网络，若副卡是中国移动卡，则支持2G/4G网络；若副卡是中国联通卡，则支持2G/3G/4G网络。\";}}}', ''),
+(4, 1, 456, 0, 0, 0, 0, 0, 0, '屏幕', 'a:2:{s:5:\"title\";a:3:{i:0;s:8:\"名称\r\n\";i:1;s:8:\"内容\r\n\";i:2;s:6:\"备注\";}s:7:\"content\";a:5:{i:0;a:3:{i:0;s:12:\"屏幕尺寸\";i:1;s:9:\"6.1英寸\";i:2;s:138:\"备注：显示屏采用圆角设计，按照标准矩形测量时，屏幕的对角线长度是6.1英寸（实际可视区域略小）。\";}i:1;a:3:{i:0;s:12:\"屏幕色彩\";i:1;s:28:\"1670万色，DCI-P3广色域\";i:2;s:0:\"\";}i:2;a:3:{i:0;s:9:\"分辨率\";i:1;s:24:\"FHD+ 2340 × 1080 像素\";i:2;s:75:\"备注：该分辨率对应标准矩形，实际屏幕有效像素略少。\";}i:3;a:3:{i:0;s:12:\"屏幕类型\";i:1;s:4:\"OLED\";i:2;s:0:\"\";}i:4;a:3:{i:0;s:9:\"触摸屏\";i:1;s:47:\"多点触控触摸屏，最多支持10点触控\";i:2;s:0:\"\";}}}', ''),
+(5, 1, 456, 0, 0, 0, 0, 0, 0, '传感器', 'a:2:{s:5:\"title\";a:3:{i:0;s:8:\"名称\r\n\";i:1;s:8:\"内容\r\n\";i:2;s:6:\"备注\";}s:7:\"content\";a:9:{i:0;a:3:{i:0;s:15:\"重力感应器\";i:1;s:6:\"支持\";i:2;s:0:\"\";}i:1;a:3:{i:0;s:18:\"环境光传感器\";i:1;s:6:\"支持\";i:2;s:0:\"\";}i:2;a:3:{i:0;s:15:\"指纹传感器\";i:1;s:12:\"屏内指纹\";i:2;s:0:\"\";}i:3;a:3:{i:0;s:15:\"霍尔传感器\";i:1;s:6:\"支持\";i:2;s:0:\"\";}i:4;a:3:{i:0;s:9:\"陀螺仪\";i:1;s:6:\"支持\";i:2;s:0:\"\";}i:5;a:3:{i:0;s:9:\"指南针\";i:1;s:6:\"支持\";i:2;s:0:\"\";}i:6;a:3:{i:0;s:18:\"接近光传感器\";i:1;s:6:\"支持\";i:2;s:0:\"\";}i:7;a:3:{i:0;s:15:\"重力传感器\";i:1;s:6:\"支持\";i:2;s:0:\"\";}i:8;a:3:{i:0;s:15:\"其他传感器\";i:1;s:63:\"姿态感应器、Camera激光对焦传感器、色温传感器\";i:2;s:0:\"\";}}}', ''),
+(6, 1, 456, 0, 0, 0, 0, 0, 0, '存储', 'a:2:{s:5:\"title\";a:3:{i:0;s:8:\"名称\r\n\";i:1;s:8:\"内容\r\n\";i:2;s:6:\"备注\";}s:7:\"content\";a:4:{i:0;a:3:{i:0;s:21:\"运行内存（RAM）\";i:1;s:3:\"6GB\";i:2;s:84:\"备注：可使用的内存容量小于此值，因为手机软件占用的空间。\";}i:1;a:3:{i:0;s:21:\"机身内存（ROM）\";i:1;s:5:\"128GB\";i:2;s:84:\"备注：可使用的内存容量小于此值，因为手机软件占用的空间。\";}i:2;a:3:{i:0;s:15:\"存储卡类型\";i:1;s:11:\"NM存储卡\";i:2;s:0:\"\";}i:3;a:3:{i:0;s:18:\"最大支持扩展\";i:1;s:50:\"256GB NM存储卡（非标配，需另行购买）\";i:2;s:0:\"\";}}}', ''),
+(7, 1, 456, 0, 0, 0, 0, 0, 0, '娱乐功能', 'a:2:{s:5:\"title\";a:3:{i:0;s:8:\"名称\r\n\";i:1;s:8:\"内容\r\n\";i:2;s:6:\"备注\";}s:7:\"content\";a:1:{i:0;a:3:{i:0;s:6:\"音效\";i:1;s:12:\"华为Histen\";i:2;s:0:\"\";}}}', ''),
+(8, 1, 456, 0, 0, 0, 0, 0, 0, '主要参数', 'a:2:{s:5:\"title\";a:3:{i:0;s:6:\"名称\";i:1;s:6:\"内容\";i:2;s:6:\"备注\";}s:7:\"content\";a:13:{i:0;a:3:{i:0;s:9:\"传播名\";i:1;s:12:\"荣耀X40 GT\";i:2;s:0:\"\";}i:1;a:3:{i:0;s:12:\"屏幕尺寸\";i:1;s:10:\"6.81英寸\";i:2;s:0:\"\";}i:2;a:3:{i:0;s:12:\"上市时间\";i:1;s:12:\"2022年10月\";i:2;s:0:\"\";}i:3;a:3:{i:0;s:12:\"屏幕色域\";i:1;s:22:\"1670万色，色域85%\";i:2;s:0:\"\";}i:4;a:3:{i:0;s:15:\"后置摄像头\";i:1;s:138:\"后置三摄：5000万像素主摄摄像头（f/1.8光圈）+200万景深摄像头（f/2.4光圈）+200万微距摄像头（f/2.4光圈）\";i:2;s:72:\"不同拍照模式的照片像素可能有差异，请以实际为准。\";}i:5;a:3:{i:0;s:15:\"前置摄像头\";i:1;s:40:\"1600万像素摄像头（f/2.45光圈）\";i:2;s:72:\"不同拍照模式的照片像素可能有差异，请以实际为准。\";}i:6;a:3:{i:0;s:9:\"CPU型号\";i:1;s:9:\"骁龙888\";i:2;s:0:\"\";}i:7;a:3:{i:0;s:15:\"屏幕分辨率\";i:1;s:10:\"2388×1080\";i:2;s:0:\"\";}i:8;a:3:{i:0;s:9:\"CPU核数\";i:1;s:6:\"八核\";i:2;s:0:\"\";}i:9;a:3:{i:0;s:12:\"电池容量\";i:1;s:22:\"4800mAh（典型值）\";i:2;s:29:\"电池额定容量为 4700mAh\";}i:10;a:3:{i:0;s:21:\"运行内存（RAM）\";i:1;s:3:\"8GB\";i:2;s:0:\"\";}i:11;a:3:{i:0;s:21:\"机身内存（ROM）\";i:1;s:5:\"256GB\";i:2;s:0:\"\";}i:12;a:3:{i:0;s:6:\"双卡\";i:1;s:18:\"双卡双待单通\";i:2;s:0:\"\";}}}', ''),
+(10, 1, 456, 0, 0, 0, 0, 0, 0, '主体', 'a:2:{s:5:\"title\";a:3:{i:0;s:6:\"名称\";i:1;s:6:\"内容\";i:2;s:6:\"备注\";}s:7:\"content\";a:12:{i:0;a:3:{i:0;s:6:\"品牌\";i:1;s:6:\"荣耀\";i:2;s:0:\"\";}i:1;a:3:{i:0;s:12:\"认证型号\";i:1;s:8:\"ADT-AN00\";i:2;s:0:\"\";}i:2;a:3:{i:0;s:9:\"传播名\";i:1;s:12:\"荣耀X40 GT\";i:2;s:0:\"\";}i:3;a:3:{i:0;s:12:\"上市时间\";i:1;s:12:\"2022年10月\";i:2;s:0:\"\";}i:4;a:3:{i:0;s:12:\"操作系统\";i:1;s:34:\"Magic UI 6.1（基于Android 12）\";i:2;s:0:\"\";}i:5;a:3:{i:0;s:9:\"CPU型号\";i:1;s:9:\"骁龙888\";i:2;s:0:\"\";}i:6;a:3:{i:0;s:9:\"CPU核数\";i:1;s:6:\"八核\";i:2;s:0:\"\";}i:7;a:3:{i:0;s:9:\"CPU频率\";i:1;s:66:\"1×Cortex-X1 2.84GHz + 3×Cortex-A78 2.42GHz+ 4×Cortex-A55 1.8GHz\";i:2;s:0:\"\";}i:8;a:3:{i:0;s:3:\"GPU\";i:1;s:10:\"Adreno 660\";i:2;s:0:\"\";}i:9;a:3:{i:0;s:6:\"双卡\";i:1;s:18:\"双卡双待单通\";i:2;s:0:\"\";}i:10;a:3:{i:0;s:12:\"机身尺寸\";i:1;s:21:\"166.1mmX75.8mmX8.45mm\";i:2;s:126:\"手机厚度不包含摄像头凸起部分，实际尺寸依配置、制造工艺、测量方法的不同可能有所差异。\";}i:11;a:3:{i:0;s:12:\"机身重量\";i:1;s:27:\"约199.5g克（含电池）\";i:2;s:81:\"实际重量依配置、制造工艺、测量方法的不同可能有所差异。\";}}}', ''),
+(11, 1, 456, 0, 0, 0, 0, 0, 0, '主要参数', 'a:2:{s:5:\"title\";a:3:{i:0;s:6:\"名称\";i:1;s:6:\"内容\";i:2;s:6:\"备注\";}s:7:\"content\";a:10:{i:0;a:3:{i:0;s:12:\"手机型号\";i:1;s:7:\"iQOO 11\";i:2;s:0:\"\";}i:1;a:3:{i:0;s:9:\"处理器\";i:1;s:28:\"第二代骁龙8移动平台\";i:2;s:0:\"\";}i:2;a:3:{i:0;s:8:\"5G网络\";i:1;s:6:\"支持\";i:2;s:0:\"\";}i:3;a:3:{i:0;s:12:\"运行内存\";i:1;s:21:\"8GB,LPDDR5X 四通道\";i:2;s:93:\"由于手机系统和预装的程序占据了部分运存空间，实际运存空间少于8GB\";}i:4;a:3:{i:0;s:12:\"机身存储\";i:1;s:13:\"256GB,UFS 4.0\";i:2;s:95:\"由于手机系统和预装的程序占据了部分存储空间，可用存储空间少于256GB\";}i:5;a:3:{i:0;s:27:\"电池容量（典型值）\";i:1;s:14:\"等效5000*mAh\";i:2;s:119:\"本产品采用双电芯串联设计：典型容量：2500mAh(7.78V)，等效于5000mAh(3.89V)。典型能量：19.45Wh\";}i:6;a:3:{i:0;s:27:\"电池容量（额定值）\";i:1;s:14:\"等效4880*mAh\";i:2;s:119:\"本产品采用双电芯串联设计：额定容量：2440mAh(7.78V)，等效于4880mAh(3.89V)。额定能量：18.98Wh\";}i:7;a:3:{i:0;s:12:\"充电规格\";i:1;s:16:\"120W超快闪充\";i:2;s:114:\"支持最大输入充电规格20V/6A，兼容20V/4A、20V/3.3A、11V/6A、11V/5A、11V/4A、11V/3A、9V/2A或5V/2A\";}i:8;a:3:{i:0;s:12:\"屏幕尺寸\";i:1;s:10:\"6.78英寸\";i:2;s:0:\"\";}i:9;a:3:{i:0;s:15:\"屏幕分辨率\";i:1;s:10:\"3200×1440\";i:2;s:0:\"\";}}}', ''),
+(12, 1, 456, 0, 0, 0, 0, 0, 0, '外观', 'a:2:{s:5:\"title\";a:3:{i:0;s:6:\"名称\";i:1;s:6:\"内容\";i:2;s:6:\"备注\";}s:7:\"content\";a:4:{i:0;a:3:{i:0;s:12:\"机身尺寸\";i:1;s:101:\"164.86mm×77.07mm×8.40mm（赛道版）；164.86mm×77.07mm×8.72mm（传奇版、曼岛特别版）\";i:2;s:0:\"\";}i:1;a:3:{i:0;s:12:\"机身重量\";i:1;s:60:\"赛道版：约208g；传奇版、曼岛特别版：约 205g\";i:2;s:93:\"实际尺寸与重量可能会因工艺、测量方法、材料供应商变更而略有不同\";}i:2;a:3:{i:0;s:12:\"中框材质\";i:1;s:9:\"铝合金\";i:2;s:0:\"\";}i:3;a:3:{i:0;s:12:\"后盖材质\";i:1;s:24:\"曼岛特别版：素皮\";i:2;s:0:\"\";}}}', '');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `qinggan_119`
+--
+
+CREATE TABLE `qinggan_119` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态',
+  `hidden` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '隐藏',
+  `sort` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序',
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `hits` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '查看次数',
+  `keyid` varchar(255) NOT NULL DEFAULT '' COMMENT '密钥',
+  `qcount` int(11) NOT NULL DEFAULT '0' COMMENT '执行次数',
+  `qtime` int(11) NOT NULL COMMENT '最后执行时间'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='OpenAI密钥库';
 
 -- --------------------------------------------------------
 
@@ -96,19 +119,19 @@ INSERT INTO `qinggan_114` (`id`, `site_id`, `project_id`, `status`, `hidden`, `s
 -- 表的结构 `qinggan_adm`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_adm` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '管理员ID，系统自增',
+CREATE TABLE `qinggan_adm` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '管理员ID，系统自增',
   `account` varchar(50) NOT NULL COMMENT '管理员账号',
   `pass` varchar(100) NOT NULL COMMENT '管理员密码',
   `email` varchar(50) NOT NULL COMMENT '管理员邮箱',
   `note` varchar(50) NOT NULL COMMENT '管理员角色',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0未审核1正常2管理员锁定',
-  `if_system` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '系统管理员',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未审核1正常2管理员锁定',
+  `if_system` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '系统管理员',
   `vpass` varchar(50) NOT NULL COMMENT '二次验证密码，两次MD5加密',
   `fullname` varchar(100) NOT NULL COMMENT '姓名',
   `close_tip` varchar(255) NOT NULL COMMENT '关闭窗口前弹出的提示',
   `open_id` varchar(255) NOT NULL COMMENT '系统生成的OpenID，用于实现扫码登录'
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='管理员信息';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='管理员信息';
 
 --
 -- 转存表中的数据 `qinggan_adm`
@@ -123,9 +146,9 @@ INSERT INTO `qinggan_adm` (`id`, `account`, `pass`, `email`, `note`, `status`, `
 -- 表的结构 `qinggan_adm_popedom`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_adm_popedom` (
-  `id` int(10) unsigned NOT NULL COMMENT '管理员ID',
-  `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '权限ID，对应popedom表里的id'
+CREATE TABLE `qinggan_adm_popedom` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '管理员ID',
+  `pid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '权限ID，对应popedom表里的id'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='管理员权限分配表';
 
 --
@@ -143,16 +166,16 @@ INSERT INTO `qinggan_adm_popedom` (`id`, `pid`) VALUES
 -- 表的结构 `qinggan_all`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_all` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+CREATE TABLE `qinggan_all` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `identifier` varchar(100) NOT NULL COMMENT '标识串',
   `title` varchar(200) NOT NULL COMMENT '分类名称',
   `ico` varchar(255) NOT NULL COMMENT '图标',
-  `is_system` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0普通１系统',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否前台调用',
-  `is_api` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0禁用API，1启用API'
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='分类管理';
+  `is_system` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0普通１系统',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否前台调用',
+  `is_api` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0禁用API，1启用API'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='分类管理';
 
 --
 -- 转存表中的数据 `qinggan_all`
@@ -167,16 +190,16 @@ INSERT INTO `qinggan_all` (`id`, `site_id`, `identifier`, `title`, `ico`, `is_sy
 -- 表的结构 `qinggan_apps`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_apps` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
+CREATE TABLE `qinggan_apps` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
   `folder` varchar(60) NOT NULL COMMENT '应用文件夹',
   `identifier` varchar(60) NOT NULL COMMENT '应用标识，用于映射',
   `title` varchar(255) NOT NULL COMMENT '应用名称',
   `note` varchar(255) NOT NULL COMMENT '摘要',
   `thumb` varchar(255) NOT NULL COMMENT '图片地址，一般放在 res/apps/ 下',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0不启用，1启用中',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '安装时间',
-  `lastdate` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '最后更新时间',
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '安装时间',
+  `lastdate` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后更新时间',
   `version` varchar(30) NOT NULL COMMENT '更新版本，如3.1.2'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='已安装的应用';
 
@@ -186,12 +209,12 @@ CREATE TABLE IF NOT EXISTS `qinggan_apps` (
 -- 表的结构 `qinggan_attr`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_attr` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '站点ID',
+CREATE TABLE `qinggan_attr` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
   `title` varchar(100) NOT NULL COMMENT '属性名称',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序'
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='产品属性';
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='产品属性';
 
 --
 -- 转存表中的数据 `qinggan_attr`
@@ -208,14 +231,14 @@ INSERT INTO `qinggan_attr` (`id`, `site_id`, `title`, `taxis`) VALUES
 -- 表的结构 `qinggan_attr_values`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_attr_values` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `aid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '属性ID',
+CREATE TABLE `qinggan_attr_values` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `aid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '属性ID',
   `title` varchar(200) NOT NULL COMMENT '参数名称',
   `pic` varchar(200) NOT NULL COMMENT '参数图片',
-  `taxis` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `taxis` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序',
   `val` varchar(255) NOT NULL COMMENT '值'
-) ENGINE=MyISAM AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='属性参数管理';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='属性参数管理';
 
 --
 -- 转存表中的数据 `qinggan_attr_values`
@@ -259,20 +282,20 @@ INSERT INTO `qinggan_attr_values` (`id`, `aid`, `title`, `pic`, `taxis`, `val`) 
 -- 表的结构 `qinggan_cart`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_cart` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID号',
+CREATE TABLE `qinggan_cart` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
   `session_id` varchar(255) NOT NULL COMMENT 'SESSION_ID号',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示游客',
-  `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `coupon_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '优惠码ID（仅当优惠码有效时体现）'
-) ENGINE=MyISAM AUTO_INCREMENT=76 DEFAULT CHARSET=utf8 COMMENT='购物车';
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示游客',
+  `addtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `coupon_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '优惠码ID（仅当优惠码有效时体现）'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='购物车';
 
 --
 -- 转存表中的数据 `qinggan_cart`
 --
 
 INSERT INTO `qinggan_cart` (`id`, `session_id`, `user_id`, `addtime`, `coupon_id`) VALUES
-(75, 'b4tdopb6ij1v6827um3t6k0b60', 23, 1683767374, 0);
+(76, 'aot0silg3ffqabjd9amdnistg3', 23, 1685176442, 0);
 
 -- --------------------------------------------------------
 
@@ -280,23 +303,30 @@ INSERT INTO `qinggan_cart` (`id`, `session_id`, `user_id`, `addtime`, `coupon_id
 -- 表的结构 `qinggan_cart_product`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_cart_product` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID号',
-  `cart_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '购物车ID号',
-  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+CREATE TABLE `qinggan_cart_product` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+  `cart_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '购物车ID号',
+  `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `title` varchar(255) NOT NULL COMMENT '产品名称',
   `price` float NOT NULL COMMENT '产品单价',
   `qty` int(11) NOT NULL DEFAULT '0' COMMENT '产品数量',
   `ext` text NOT NULL COMMENT '扩展属性',
-  `weight` float unsigned NOT NULL DEFAULT '0' COMMENT '重量',
-  `volume` float unsigned NOT NULL DEFAULT '0' COMMENT '体积',
+  `weight` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '重量',
+  `volume` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '体积',
   `thumb` varchar(255) NOT NULL COMMENT '缩略图',
-  `is_virtual` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0实物1虚拟或服务',
+  `is_virtual` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0实物1虚拟或服务',
   `unit` varchar(50) NOT NULL COMMENT '单位',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '最后操作时间',
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后操作时间',
   `apps` varchar(255) NOT NULL COMMENT '应用管理器',
-  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID，不为0表示这是一个捆绑销售'
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='购物车里的产品信息';
+  `parent_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID，不为0表示这是一个捆绑销售'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='购物车里的产品信息';
+
+--
+-- 转存表中的数据 `qinggan_cart_product`
+--
+
+INSERT INTO `qinggan_cart_product` (`id`, `cart_id`, `tid`, `title`, `price`, `qty`, `ext`, `weight`, `volume`, `thumb`, `is_virtual`, `unit`, `dateline`, `apps`, `parent_id`) VALUES
+(1, 76, 2455, 'iQOO 11 12GB+256GB 传奇版', 4099, 1, '16,25', 0, 0, 'res/202303/07/993dd997bed2a7ce.png', 0, '部', 0, '', 0);
 
 -- --------------------------------------------------------
 
@@ -304,25 +334,25 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart_product` (
 -- 表的结构 `qinggan_cate`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_cate` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `parent_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID，0为根分类',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0不使用1正常使用',
+CREATE TABLE `qinggan_cate` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `parent_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID，0为根分类',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不使用1正常使用',
   `title` varchar(200) NOT NULL COMMENT '分类名称',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '分类排序，值越小越往前靠',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '分类排序，值越小越往前靠',
   `tpl_list` varchar(255) NOT NULL COMMENT '列表模板',
   `tpl_content` varchar(255) NOT NULL COMMENT '内容模板',
-  `psize` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '列表每页数量',
+  `psize` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '列表每页数量',
   `seo_title` varchar(255) NOT NULL COMMENT 'SEO标题',
   `seo_keywords` varchar(255) NOT NULL COMMENT 'SEO关键字',
   `seo_desc` varchar(255) NOT NULL COMMENT 'SEO描述',
   `identifier` varchar(255) NOT NULL COMMENT '分类标识串',
   `tag` varchar(255) NOT NULL COMMENT '自身Tag设置',
   `style` varchar(255) NOT NULL COMMENT 'CSS样式',
-  `module_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '模块ID',
-  `psize_api` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'API接口读取的数量'
-) ENGINE=MyISAM AUTO_INCREMENT=704 DEFAULT CHARSET=utf8 COMMENT='分类管理';
+  `module_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '模块ID',
+  `psize_api` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'API接口读取的数量'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='分类管理';
 
 --
 -- 转存表中的数据 `qinggan_cate`
@@ -353,17 +383,17 @@ INSERT INTO `qinggan_cate` (`id`, `site_id`, `parent_id`, `status`, `title`, `ta
 -- 表的结构 `qinggan_click`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_click` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+CREATE TABLE `qinggan_click` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `code` varchar(20) NOT NULL COMMENT '字段标识',
   `tbl` varchar(30) NOT NULL COMMENT '用户表，不含前缀',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID',
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID',
   `session_id` varchar(100) NOT NULL COMMENT 'SessionID',
   `ip` varchar(100) NOT NULL COMMENT '用户IP',
   `val` int(11) NOT NULL DEFAULT '0' COMMENT '值，仅支持整数',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '最后点击时间（游客3小时内重复操作会取消）'
-) ENGINE=MyISAM AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='主题点击记录';
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后点击时间（游客3小时内重复操作会取消）'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='主题点击记录';
 
 --
 -- 转存表中的数据 `qinggan_click`
@@ -384,7 +414,8 @@ INSERT INTO `qinggan_click` (`id`, `tid`, `code`, `tbl`, `user_id`, `session_id`
 (27, 2292, 'zan', 'list', 0, 'c9pdng2b3ier9pg6bkf61q90t6', '::1', 1, 1677901105),
 (28, 2292, 'zan', 'list', 0, 'g37m57o7mvgle9qkje87sonqn2', '127.0.0.1', 1, 1683361535),
 (29, 39, 'zan', 'reply', 0, 'vbclhuj6rqij2b6emkd8aie2k6', '127.0.0.1', 1, 1683514085),
-(30, 43, 'zan', 'reply', 23, 'vbclhuj6rqij2b6emkd8aie2k6', '127.0.0.1', 1, 1683514768);
+(30, 43, 'zan', 'reply', 23, 'vbclhuj6rqij2b6emkd8aie2k6', '127.0.0.1', 1, 1683514768),
+(31, 44, 'zan', 'reply', 23, 'sjo767dsh4dge20ors1td5vjt4', '127.0.0.1', 1, 1685110096);
 
 -- --------------------------------------------------------
 
@@ -392,13 +423,13 @@ INSERT INTO `qinggan_click` (`id`, `tid`, `code`, `tbl`, `user_id`, `session_id`
 -- 表的结构 `qinggan_config`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_config` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '站点ID',
+CREATE TABLE `qinggan_config` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
   `identifier` varchar(50) NOT NULL COMMENT '变量标识',
   `langid` varchar(10) NOT NULL COMMENT '语言ID',
   `content` text NOT NULL COMMENT '变量内容'
-) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COMMENT='系统变量参数';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统变量参数';
 
 --
 -- 转存表中的数据 `qinggan_config`
@@ -413,7 +444,7 @@ INSERT INTO `qinggan_config` (`id`, `site_id`, `identifier`, `langid`, `content`
 (12, 1, 'ok_appid', '', '3'),
 (13, 1, 'ok_appkey', '', 'vhDsxyZSsHnBeXlV'),
 (16, 1, 'chktype', '', 'rsa'),
-(17, 1, 'ok_links', '', 'a:2:{s:7:"ip2city";s:0:"";s:9:"translate";s:0:"";}');
+(17, 1, 'ok_links', '', 'a:2:{s:7:\"ip2city\";s:0:\"\";s:9:\"translate\";s:0:\"\";}');
 
 -- --------------------------------------------------------
 
@@ -421,19 +452,19 @@ INSERT INTO `qinggan_config` (`id`, `site_id`, `identifier`, `langid`, `content`
 -- 表的结构 `qinggan_currency`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_currency` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '货币ID',
+CREATE TABLE `qinggan_currency` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '货币ID',
   `code` varchar(3) NOT NULL COMMENT '货币标识，仅限三位数的大写字母',
-  `val` decimal(13,8) unsigned NOT NULL COMMENT '货币转化',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
+  `val` decimal(13,8) UNSIGNED NOT NULL COMMENT '货币转化',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
   `title` varchar(50) NOT NULL COMMENT '名称',
   `symbol_left` varchar(24) NOT NULL COMMENT '价格左侧',
   `symbol_right` varchar(24) NOT NULL COMMENT '价格右侧',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0不使用1使用',
-  `hidden` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0不隐藏1隐藏',
+  `hidden` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不隐藏1隐藏',
   `code_num` varchar(5) NOT NULL COMMENT '币种数值',
-  `dpl` int(10) unsigned NOT NULL DEFAULT '2' COMMENT 'Decimal point length 简写，即小数点长度'
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='货币管理';
+  `dpl` int(10) UNSIGNED NOT NULL DEFAULT '2' COMMENT 'Decimal point length 简写，即小数点长度'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='货币管理';
 
 --
 -- 转存表中的数据 `qinggan_currency`
@@ -453,31 +484,31 @@ INSERT INTO `qinggan_currency` (`id`, `code`, `val`, `taxis`, `title`, `symbol_l
 -- 表的结构 `qinggan_design`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_design` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
+CREATE TABLE `qinggan_design` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
   `title` varchar(120) NOT NULL COMMENT '名称',
   `note` text NOT NULL COMMENT '摘要',
   `img` varchar(255) NOT NULL COMMENT '图片',
   `code` varchar(255) NOT NULL COMMENT '用于生成模板文件',
   `vtype` varchar(50) NOT NULL COMMENT '组件类型',
   `ext` text COMMENT '组件扩展参数'
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='组件设计器';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='组件设计器';
 
 --
 -- 转存表中的数据 `qinggan_design`
 --
 
 INSERT INTO `qinggan_design` (`id`, `title`, `note`, `img`, `code`, `vtype`, `ext`) VALUES
-(1, '图文列表', '支持图片+主题+摘要模式\r\n图片使用变量 thumb，附件类型，调用的是缩略图 thumb\r\n标题使用 title 变量，摘要使用 note 变量\r\n支持Tag标签', 'images/design/about.png', 'arclist', 'calldata', 'a:6:{s:8:"calldata";s:0:"";s:5:"video";s:0:"";s:6:"iframe";s:0:"";s:5:"width";s:0:"";s:6:"height";s:0:"";s:6:"res_id";s:0:"";}'),
-(2, '经典图片轮播', '图片字段是 thumb，调用生成的图片也是 banner，非此字段不能显示', 'images/design/picplayer.png', 'picplayer', 'calldata', 'a:6:{s:8:"calldata";s:0:"";s:5:"video";s:0:"";s:6:"iframe";s:0:"";s:5:"width";s:0:"";s:6:"height";s:0:"";s:6:"res_id";s:0:"";}'),
-(3, '关于我们', '适用于首页的关于我们信息调用', 'images/design/about.png', 'aboutus', 'calldata', 'a:6:{s:8:"calldata";s:7:"aboutus";s:5:"video";s:0:"";s:6:"iframe";s:0:"";s:5:"width";s:0:"";s:6:"height";s:0:"";s:6:"res_id";s:0:"";}'),
-(4, '联系我们', '读取联系我们的数据', 'images/design/about.png', 'contactus', 'calldata', 'a:6:{s:8:"calldata";s:0:"";s:5:"video";s:0:"";s:6:"iframe";s:0:"";s:5:"width";s:0:"";s:6:"height";s:0:"";s:6:"res_id";s:0:"";}'),
-(5, '友情链接', '适用于放文本链接', 'images/design/links.png', 'link', 'calldata', 'a:6:{s:8:"calldata";s:0:"";s:5:"video";s:0:"";s:6:"iframe";s:0:"";s:5:"width";s:0:"";s:6:"height";s:0:"";s:6:"res_id";s:0:"";}'),
-(6, '图片列表', '手机小屏1列，手机大屏2列，平板3列，电脑4列，有开启价格且价格大于0显示价格，图片字段使用thumb', 'images/design/pictures-4.png', 'piclist', 'calldata', 'a:6:{s:8:"calldata";s:0:"";s:5:"video";s:0:"";s:6:"iframe";s:0:"";s:5:"width";s:0:"";s:6:"height";s:0:"";s:6:"res_id";s:0:"";}'),
-(7, '新闻列表', '简单的新闻列表', 'images/design/news.png', 'list', 'calldata', 'a:6:{s:8:"calldata";s:0:"";s:5:"video";s:0:"";s:6:"iframe";s:0:"";s:5:"width";s:0:"";s:6:"height";s:0:"";s:6:"res_id";s:0:"";}'),
-(8, '图片', '仅限单一图片，可以自定义宽高及调用的类型', 'images/design/picture.png', 'image', 'image', 'a:6:{s:8:"calldata";s:0:"";s:5:"video";s:0:"";s:6:"iframe";s:0:"";s:5:"width";s:0:"";s:6:"height";s:0:"";s:6:"res_id";s:3:"436";}'),
-(9, '代码编辑', '用于直接编写HTML代码', 'images/design/codemirror.png', 'codemirror', 'code', 'a:6:{s:8:"calldata";s:0:"";s:5:"video";s:0:"";s:6:"iframe";s:0:"";s:5:"width";s:0:"";s:6:"height";s:0:"";s:6:"res_id";s:0:"";}'),
-(10, '可视化编辑器', '可像操作Word那样进行内容编写', 'images/design/ckeditor.png', 'ckeditor', 'editor', 'a:6:{s:8:"calldata";s:0:"";s:5:"video";s:0:"";s:6:"iframe";s:0:"";s:5:"width";s:0:"";s:6:"height";s:0:"";s:6:"res_id";s:0:"";}');
+(1, '图文列表', '支持图片+主题+摘要模式\r\n图片使用变量 thumb，附件类型，调用的是缩略图 thumb\r\n标题使用 title 变量，摘要使用 note 变量\r\n支持Tag标签', 'images/design/about.png', 'arclist', 'calldata', 'a:6:{s:8:\"calldata\";s:0:\"\";s:5:\"video\";s:0:\"\";s:6:\"iframe\";s:0:\"\";s:5:\"width\";s:0:\"\";s:6:\"height\";s:0:\"\";s:6:\"res_id\";s:0:\"\";}'),
+(2, '经典图片轮播', '图片字段是 thumb，调用生成的图片也是 banner，非此字段不能显示', 'images/design/picplayer.png', 'picplayer', 'calldata', 'a:6:{s:8:\"calldata\";s:0:\"\";s:5:\"video\";s:0:\"\";s:6:\"iframe\";s:0:\"\";s:5:\"width\";s:0:\"\";s:6:\"height\";s:0:\"\";s:6:\"res_id\";s:0:\"\";}'),
+(3, '关于我们', '适用于首页的关于我们信息调用', 'images/design/about.png', 'aboutus', 'calldata', 'a:6:{s:8:\"calldata\";s:7:\"aboutus\";s:5:\"video\";s:0:\"\";s:6:\"iframe\";s:0:\"\";s:5:\"width\";s:0:\"\";s:6:\"height\";s:0:\"\";s:6:\"res_id\";s:0:\"\";}'),
+(4, '联系我们', '读取联系我们的数据', 'images/design/about.png', 'contactus', 'calldata', 'a:6:{s:8:\"calldata\";s:0:\"\";s:5:\"video\";s:0:\"\";s:6:\"iframe\";s:0:\"\";s:5:\"width\";s:0:\"\";s:6:\"height\";s:0:\"\";s:6:\"res_id\";s:0:\"\";}'),
+(5, '友情链接', '适用于放文本链接', 'images/design/links.png', 'link', 'calldata', 'a:6:{s:8:\"calldata\";s:0:\"\";s:5:\"video\";s:0:\"\";s:6:\"iframe\";s:0:\"\";s:5:\"width\";s:0:\"\";s:6:\"height\";s:0:\"\";s:6:\"res_id\";s:0:\"\";}'),
+(6, '图片列表', '手机小屏1列，手机大屏2列，平板3列，电脑4列，有开启价格且价格大于0显示价格，图片字段使用thumb', 'images/design/pictures-4.png', 'piclist', 'calldata', 'a:6:{s:8:\"calldata\";s:0:\"\";s:5:\"video\";s:0:\"\";s:6:\"iframe\";s:0:\"\";s:5:\"width\";s:0:\"\";s:6:\"height\";s:0:\"\";s:6:\"res_id\";s:0:\"\";}'),
+(7, '新闻列表', '简单的新闻列表', 'images/design/news.png', 'list', 'calldata', 'a:6:{s:8:\"calldata\";s:0:\"\";s:5:\"video\";s:0:\"\";s:6:\"iframe\";s:0:\"\";s:5:\"width\";s:0:\"\";s:6:\"height\";s:0:\"\";s:6:\"res_id\";s:0:\"\";}'),
+(8, '图片', '仅限单一图片，可以自定义宽高及调用的类型', 'images/design/picture.png', 'image', 'image', 'a:6:{s:8:\"calldata\";s:0:\"\";s:5:\"video\";s:0:\"\";s:6:\"iframe\";s:0:\"\";s:5:\"width\";s:0:\"\";s:6:\"height\";s:0:\"\";s:6:\"res_id\";s:3:\"436\";}'),
+(9, '代码编辑', '用于直接编写HTML代码', 'images/design/codemirror.png', 'codemirror', 'code', 'a:6:{s:8:\"calldata\";s:0:\"\";s:5:\"video\";s:0:\"\";s:6:\"iframe\";s:0:\"\";s:5:\"width\";s:0:\"\";s:6:\"height\";s:0:\"\";s:6:\"res_id\";s:0:\"\";}'),
+(10, '可视化编辑器', '可像操作Word那样进行内容编写', 'images/design/ckeditor.png', 'ckeditor', 'editor', 'a:6:{s:8:\"calldata\";s:0:\"\";s:5:\"video\";s:0:\"\";s:6:\"iframe\";s:0:\"\";s:5:\"width\";s:0:\"\";s:6:\"height\";s:0:\"\";s:6:\"res_id\";s:0:\"\";}');
 
 -- --------------------------------------------------------
 
@@ -485,36 +516,36 @@ INSERT INTO `qinggan_design` (`id`, `title`, `note`, `img`, `code`, `vtype`, `ex
 -- 表的结构 `qinggan_email`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_email` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID，0表示全部网站',
+CREATE TABLE `qinggan_email` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID，0表示全部网站',
   `identifier` varchar(255) NOT NULL COMMENT '发送标识',
   `title` varchar(200) NOT NULL COMMENT '邮件主题',
   `content` text NOT NULL COMMENT '邮件内容',
   `note` varchar(255) NOT NULL COMMENT '备注'
-) ENGINE=MyISAM AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COMMENT='邮件内容';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='邮件内容';
 
 --
 -- 转存表中的数据 `qinggan_email`
 --
 
 INSERT INTO `qinggan_email` (`id`, `site_id`, `identifier`, `title`, `content`, `note`) VALUES
-(4, 1, 'register_code', '获取会员注册资格', '<p>您好，{$email}</p><p>您将注册成为网站【{$config.title} 】会员，请点击下面的地址，进入下一步注册：</p><p><br/></p><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><p><a href="{$link}" target="_blank">{$link}</a></p><p>（此链接24小时内有效）</p></blockquote><p><br/></p><p><br/></p><p>感谢您对本站的关注，茫茫人海中，能有缘走到一起。</p>', ''),
-(5, 1, 'getpass', '取回密码操作', '<p>您好，{$user.account}</p><p>您执行了忘记密码操作功能，请点击下面的链接执行下一步：</p><p><br /></p><p><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><p><a href="{$link}" target="_blank">{$link}</a></p></blockquote><br /></p><p>感谢您对本站的支持，有什么问题您在登录后可以咨询我们的客服。</p>', ''),
-(6, 1, 'project_save', '主题添加通知', '<p>您好，管理员</p><blockquote><p>您的网站（<a href="http://{$sys.url}" target="_self">{$sys.url}</a>）新增了一篇主题，下述是主题的基本信息：<br/></p><p>主题名称：{$rs.title}</p><p>项目类型：{$page_rs.title}</p><p><br/></p><p>请登录网站查询</p></blockquote>', ''),
+(4, 1, 'register_code', '获取会员注册资格', '<p>您好，{$email}</p><p>您将注册成为网站【{$config.title} 】会员，请点击下面的地址，进入下一步注册：</p><p><br/></p><blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><p><a href=\"{$link}\" target=\"_blank\">{$link}</a></p><p>（此链接24小时内有效）</p></blockquote><p><br/></p><p><br/></p><p>感谢您对本站的关注，茫茫人海中，能有缘走到一起。</p>', ''),
+(5, 1, 'getpass', '取回密码操作', '<p>您好，{$user.account}</p><p>您执行了忘记密码操作功能，请点击下面的链接执行下一步：</p><p><br /></p><p><blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\"><p><a href=\"{$link}\" target=\"_blank\">{$link}</a></p></blockquote><br /></p><p>感谢您对本站的支持，有什么问题您在登录后可以咨询我们的客服。</p>', ''),
+(6, 1, 'project_save', '主题添加通知', '<p>您好，管理员</p><blockquote><p>您的网站（<a href=\"http://{$sys.url}\" target=\"_self\">{$sys.url}</a>）新增了一篇主题，下述是主题的基本信息：<br/></p><p>主题名称：{$rs.title}</p><p>项目类型：{$page_rs.title}</p><p><br/></p><p>请登录网站查询</p></blockquote>', ''),
 (7, 1, 'order_admin', '网站有新订单【{$order.sn}】', '<p>您好，管理员</p><blockquote><p>您的网站：{$sys.url} 收到一份新的订单，订单号是：{$order.sn}，请登录网站后台进行核验。</p></blockquote>', ''),
-(8, 1, 'user_order_create', '我们已收到您的订单【{$order.sn}】，欢迎您随时关注订单状态', '<p><strong>尊敬的{$fullname}，您好：</strong><br/></p><p><br/></p><p>感谢您在<span style="color: rgb(0, 112, 192);">{$config.title}</span>（{$sys.url}）购物。</p><p>我们已经收到您的订单<span style="color: rgb(0, 112, 192);">{$order.sn}</span>，建议您选择<span style="color: rgb(0, 112, 192);">在线支付</span>的支付配送方式。订单信息以个人中心里的“<span style="color: rgb(0, 112, 192);"><strong>我的订单</strong></span>”信息为准，您也可以随时进入订单详细进行查看修改等操作。</p><p><br/></p><p><strong>重要说明：</strong></p><p>本邮件仅表明销售方已收到了您提交的订单；销售方收到你的订单信息后，只有在销售方将您的订单中订购的商品从仓库实际直接向您发出时（以商品出库为标志），方视为您与销售方之间就实际直接向您发出的商品建立了合同关系；<br/>如果您在一份订单里订购了多种商品并且销售方只给您发出了部分商品时，您与销售方之间仅就实际直接向您发出的商品建立了合同关系；只有在销售方实际直接向您发出了订单中订购的其他商品时，您和销售方之间就订单中该其他已实际直接向您发出的商品建立了合同关系。<br/>您可以随时登陆您在京东注册的账户，查询您的订单状态。更多内容请见最新的京东网站用户注册协议及京东网站各类购物规则，我们建议您不时地浏览阅读。</p><p><br/></p><p><strong>账户安全提醒：</strong><br/>互联网账号存在被盗风险，为了保障您的账号及资金安全，我们提醒您访问 我的账户- &gt; 修改密码，尽量使用复杂密码，如字母+数字+特殊符号等。</p>', ''),
+(8, 1, 'user_order_create', '我们已收到您的订单【{$order.sn}】，欢迎您随时关注订单状态', '<p><strong>尊敬的{$fullname}，您好：</strong><br/></p><p><br/></p><p>感谢您在<span style=\"color: rgb(0, 112, 192);\">{$config.title}</span>（{$sys.url}）购物。</p><p>我们已经收到您的订单<span style=\"color: rgb(0, 112, 192);\">{$order.sn}</span>，建议您选择<span style=\"color: rgb(0, 112, 192);\">在线支付</span>的支付配送方式。订单信息以个人中心里的“<span style=\"color: rgb(0, 112, 192);\"><strong>我的订单</strong></span>”信息为准，您也可以随时进入订单详细进行查看修改等操作。</p><p><br/></p><p><strong>重要说明：</strong></p><p>本邮件仅表明销售方已收到了您提交的订单；销售方收到你的订单信息后，只有在销售方将您的订单中订购的商品从仓库实际直接向您发出时（以商品出库为标志），方视为您与销售方之间就实际直接向您发出的商品建立了合同关系；<br/>如果您在一份订单里订购了多种商品并且销售方只给您发出了部分商品时，您与销售方之间仅就实际直接向您发出的商品建立了合同关系；只有在销售方实际直接向您发出了订单中订购的其他商品时，您和销售方之间就订单中该其他已实际直接向您发出的商品建立了合同关系。<br/>您可以随时登陆您在京东注册的账户，查询您的订单状态。更多内容请见最新的京东网站用户注册协议及京东网站各类购物规则，我们建议您不时地浏览阅读。</p><p><br/></p><p><strong>账户安全提醒：</strong><br/>互联网账号存在被盗风险，为了保障您的账号及资金安全，我们提醒您访问 我的账户- &gt; 修改密码，尽量使用复杂密码，如字母+数字+特殊符号等。</p>', ''),
 (9, 1, 'sms_order_create', '会员下单成功后，短信通知', '<p>您的订单：{$order.sn} 已成功提交，请您及时完成支付操作。超过24小时未支付订单将会自动删除。感谢您对我们的支持！</p>', ''),
-(10, 1, 'order_user_paid', '您的订单【{$order.sn}】已支付成功', '<p><strong>尊敬的{$fullname}，您好：</strong></p><p style="white-space: normal;">感谢您在<span style="color: rgb(0, 112, 192);">{$config.title}</span>（{$sys.url}）购物。</p><p style="white-space: normal;">您的订单<span style="color: rgb(0, 112, 192);">{$order.sn}</span>已成功支付，请耐心等候，我们管理员正在核验付款信息。</p><p style="white-space: normal;">订单信息以个人中心里的“<span style="color: rgb(0, 112, 192);"><strong>我的订单</strong></span>”信息为准，您也可以随时进入订单详细进行查看修改等操作。</p><p style="white-space: normal;"><br/></p><p style="white-space: normal;"><strong>重要说明：</strong></p><p style="white-space: normal;">本邮件仅表明销售方已收到了您提交的订单；销售方收到你的订单信息后，只有在销售方将您的订单中订购的商品从仓库实际直接向您发出时（以商品出库为标志），方视为您与销售方之间就实际直接向您发出的商品建立了合同关系；<br/>如果您在一份订单里订购了多种商品并且销售方只给您发出了部分商品时，您与销售方之间仅就实际直接向您发出的商品建立了合同关系；只有在销售方实际直接向您发出了订单中订购的其他商品时，您和销售方之间就订单中该其他已实际直接向您发出的商品建立了合同关系。<br/>您可以随时登陆您在京东注册的账户，查询您的订单状态。更多内容请见最新的京东网站用户注册协议及京东网站各类购物规则，我们建议您不时地浏览阅读。</p><p style="white-space: normal;"><br/></p><p style="white-space: normal;"><strong>账户安全提醒：</strong><br/>互联网账号存在被盗风险，为了保障您的账号及资金安全，我们提醒您访问 我的账户- &gt; 修改密码，尽量使用复杂密码，如字母+数字+特殊符号等。</p><p><br/></p>', ''),
+(10, 1, 'order_user_paid', '您的订单【{$order.sn}】已支付成功', '<p><strong>尊敬的{$fullname}，您好：</strong></p><p style=\"white-space: normal;\">感谢您在<span style=\"color: rgb(0, 112, 192);\">{$config.title}</span>（{$sys.url}）购物。</p><p style=\"white-space: normal;\">您的订单<span style=\"color: rgb(0, 112, 192);\">{$order.sn}</span>已成功支付，请耐心等候，我们管理员正在核验付款信息。</p><p style=\"white-space: normal;\">订单信息以个人中心里的“<span style=\"color: rgb(0, 112, 192);\"><strong>我的订单</strong></span>”信息为准，您也可以随时进入订单详细进行查看修改等操作。</p><p style=\"white-space: normal;\"><br/></p><p style=\"white-space: normal;\"><strong>重要说明：</strong></p><p style=\"white-space: normal;\">本邮件仅表明销售方已收到了您提交的订单；销售方收到你的订单信息后，只有在销售方将您的订单中订购的商品从仓库实际直接向您发出时（以商品出库为标志），方视为您与销售方之间就实际直接向您发出的商品建立了合同关系；<br/>如果您在一份订单里订购了多种商品并且销售方只给您发出了部分商品时，您与销售方之间仅就实际直接向您发出的商品建立了合同关系；只有在销售方实际直接向您发出了订单中订购的其他商品时，您和销售方之间就订单中该其他已实际直接向您发出的商品建立了合同关系。<br/>您可以随时登陆您在京东注册的账户，查询您的订单状态。更多内容请见最新的京东网站用户注册协议及京东网站各类购物规则，我们建议您不时地浏览阅读。</p><p style=\"white-space: normal;\"><br/></p><p style=\"white-space: normal;\"><strong>账户安全提醒：</strong><br/>互联网账号存在被盗风险，为了保障您的账号及资金安全，我们提醒您访问 我的账户- &gt; 修改密码，尽量使用复杂密码，如字母+数字+特殊符号等。</p><p><br/></p>', ''),
 (11, 1, 'order_admin_paid', '客户{$user.user}订单【{$orser.sn}】付款成功', '<p>您好，管理员，请登录网站后台 {$sys.url} 核验订单【{$orser.sn}】支付是否成功</p>', ''),
 (12, 1, 'sms_order_paid', '订单付款成功后的通知', '<p>您的订单：{$order.sn} 已成功付款，我们正在核验中，请耐心等候！</p>', ''),
-(13, 1, 'order_user_shipped', '您的订单【{$order.sn}】已发货', '<p style="white-space: normal;"><strong>尊敬的{$fullname}，您好：</strong><br/></p><p style="white-space: normal;"><br/></p><p style="white-space: normal;">感谢您在<span style="color: rgb(0, 112, 192);">{$config.title}</span>（{$sys.url}）购物。</p><p style="white-space: normal;">您的订单<span style="color: rgb(0, 112, 192);">{$order.sn}</span>已经发货，请保持您的电话畅通，以方便快递人员能与您取得联系。</p><p style="white-space: normal;">订单信息以个人中心里的“<span style="color: rgb(0, 112, 192);"><strong>我的订单</strong></span>”信息为准，您也可以随时进入订单详细进行查看修改等操作。</p><p style="white-space: normal;"><br/></p><p style="white-space: normal;"><strong>重要说明：</strong></p><p style="white-space: normal;">本邮件仅表明销售方已收到了您提交的订单；销售方收到你的订单信息后，只有在销售方将您的订单中订购的商品从仓库实际直接向您发出时（以商品出库为标志），方视为您与销售方之间就实际直接向您发出的商品建立了合同关系；<br/>如果您在一份订单里订购了多种商品并且销售方只给您发出了部分商品时，您与销售方之间仅就实际直接向您发出的商品建立了合同关系；只有在销售方实际直接向您发出了订单中订购的其他商品时，您和销售方之间就订单中该其他已实际直接向您发出的商品建立了合同关系。<br/>您可以随时登陆您在京东注册的账户，查询您的订单状态。更多内容请见最新的京东网站用户注册协议及京东网站各类购物规则，我们建议您不时地浏览阅读。</p><p style="white-space: normal;"><br/></p><p style="white-space: normal;"><strong>账户安全提醒：</strong><br/>互联网账号存在被盗风险，为了保障您的账号及资金安全，我们提醒您访问 我的账户- &gt; 修改密码，尽量使用复杂密码，如字母+数字+特殊符号等。</p><p><br/></p>', ''),
+(13, 1, 'order_user_shipped', '您的订单【{$order.sn}】已发货', '<p style=\"white-space: normal;\"><strong>尊敬的{$fullname}，您好：</strong><br/></p><p style=\"white-space: normal;\"><br/></p><p style=\"white-space: normal;\">感谢您在<span style=\"color: rgb(0, 112, 192);\">{$config.title}</span>（{$sys.url}）购物。</p><p style=\"white-space: normal;\">您的订单<span style=\"color: rgb(0, 112, 192);\">{$order.sn}</span>已经发货，请保持您的电话畅通，以方便快递人员能与您取得联系。</p><p style=\"white-space: normal;\">订单信息以个人中心里的“<span style=\"color: rgb(0, 112, 192);\"><strong>我的订单</strong></span>”信息为准，您也可以随时进入订单详细进行查看修改等操作。</p><p style=\"white-space: normal;\"><br/></p><p style=\"white-space: normal;\"><strong>重要说明：</strong></p><p style=\"white-space: normal;\">本邮件仅表明销售方已收到了您提交的订单；销售方收到你的订单信息后，只有在销售方将您的订单中订购的商品从仓库实际直接向您发出时（以商品出库为标志），方视为您与销售方之间就实际直接向您发出的商品建立了合同关系；<br/>如果您在一份订单里订购了多种商品并且销售方只给您发出了部分商品时，您与销售方之间仅就实际直接向您发出的商品建立了合同关系；只有在销售方实际直接向您发出了订单中订购的其他商品时，您和销售方之间就订单中该其他已实际直接向您发出的商品建立了合同关系。<br/>您可以随时登陆您在京东注册的账户，查询您的订单状态。更多内容请见最新的京东网站用户注册协议及京东网站各类购物规则，我们建议您不时地浏览阅读。</p><p style=\"white-space: normal;\"><br/></p><p style=\"white-space: normal;\"><strong>账户安全提醒：</strong><br/>互联网账号存在被盗风险，为了保障您的账号及资金安全，我们提醒您访问 我的账户- &gt; 修改密码，尽量使用复杂密码，如字母+数字+特殊符号等。</p><p><br/></p>', ''),
 (14, 1, 'sms_order_shipped', '订单发货短信通知', '您的订单：{$order.sn} 已经发货，请保持电话畅通，以方便快递人员能与您取得联系。', ''),
 (15, 1, 'order_admin_recerved', '订单【{$order.sn}】已确认收货', '<p>您好，管理员，客户已对订单【{$order.sn}】执行确认收货操作，请登录后台核验</p>', ''),
 (16, 1, 'email_code', '【{$config.title}】邮件验证码', '<p>你的验证码是：{$code}，三十分钟内有效，请及时输入</p>', ''),
 (17, 1, 'sms_code', '短信验证码', '{$code}', ''),
 (18, 1, 'sms_paid_admin', '订单成功后管理员', '订单：{$order.sn}，客户已支付成功，请检查', ''),
-(34, 1, 'email_code', '您的验证码', '<p>您的验证码是：<span style="color: rgb(255, 0, 0);"><strong>{$code}</strong></span>，有效时间20分钟，请不要将验证码发送别人。<br/></p><p><br/></p>', ''),
+(34, 1, 'email_code', '您的验证码', '<p>您的验证码是：<span style=\"color: rgb(255, 0, 0);\"><strong>{$code}</strong></span>，有效时间20分钟，请不要将验证码发送别人。<br/></p><p><br/></p>', ''),
 (35, 1, 'sms_sendcloud_code', '4575', 'code:{$code}', 'SendCloud使用的验证码'),
 (37, 1, 'sms_61825160', 'SMS_61825160', 'code:{$code}', '阿里云：验证码'),
 (38, 1, 'email_toall', '您的留言 #{$rs.id}，管理员已经回复', '', '留言回复通知');
@@ -525,8 +556,8 @@ INSERT INTO `qinggan_email` (`id`, `site_id`, `identifier`, `title`, `content`, 
 -- 表的结构 `qinggan_express`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_express` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
+CREATE TABLE `qinggan_express` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
   `site_id` int(11) NOT NULL DEFAULT '0' COMMENT '站点ID，为0所有站点使用',
   `title` varchar(255) NOT NULL COMMENT '名称',
   `company` varchar(255) NOT NULL COMMENT '公司名称',
@@ -536,14 +567,15 @@ CREATE TABLE IF NOT EXISTS `qinggan_express` (
   `rate` int(11) NOT NULL DEFAULT '6' COMMENT '查询频率，用于减少请求',
   `ext` text NOT NULL COMMENT '扩展数据保存',
   `content` text NOT NULL COMMENT '公司介绍'
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='快递平台管理';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='快递平台管理';
 
 --
 -- 转存表中的数据 `qinggan_express`
 --
 
 INSERT INTO `qinggan_express` (`id`, `site_id`, `title`, `company`, `homepage`, `logo`, `code`, `rate`, `ext`, `content`) VALUES
-(4, 1, '顺丰速运', '顺丰速运(集团)有限公司', 'http://www.sf-express.com/', '', 'showapi', 4, 'a:3:{s:6:"app_id";s:6:"579892";s:10:"app_secret";s:32:"c0d32b2a550c45a2813fb03c6fcbf2ff";s:7:"app_com";s:8:"shunfeng";}', '');
+(4, 1, '顺丰速运', '顺丰速运(集团)有限公司', 'http://www.sf-express.com/', '', 'showapi', 4, 'a:3:{s:6:\"app_id\";s:6:\"579892\";s:10:\"app_secret\";s:32:\"c0d32b2a550c45a2813fb03c6fcbf2ff\";s:7:\"app_com\";s:8:\"shunfeng\";}', ''),
+(5, 1, '中通快递', '', '', '', 'showapi', 10, 'a:3:{s:6:\"app_id\";s:6:\"579892\";s:10:\"app_secret\";s:32:\"c0d32b2a550c45a2813fb03c6fcbf2ff\";s:7:\"app_com\";s:9:\"zhongtong\";}', '');
 
 -- --------------------------------------------------------
 
@@ -551,8 +583,8 @@ INSERT INTO `qinggan_express` (`id`, `site_id`, `title`, `company`, `homepage`, 
 -- 表的结构 `qinggan_extc`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_extc` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '内容值ID，对应ext表中的id',
+CREATE TABLE `qinggan_extc` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '内容值ID，对应ext表中的id',
   `content` longtext NOT NULL COMMENT '内容文本'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='扩展字段内容维护';
 
@@ -561,7 +593,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_extc` (
 --
 
 INSERT INTO `qinggan_extc` (`id`, `content`) VALUES
-(836, '<p style="text-align: center;">Powered By phpok.com 版权所有 &copy; 2004-2023, All right reserved.&nbsp; &nbsp;ICP证：<a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备14077223号</a></p>\r\n'),
+(836, '<p style=\"text-align: center;\">Powered By phpok.com 版权所有 &copy; 2004-2023, All right reserved.&nbsp; &nbsp;ICP证：<a href=\"https://beian.miit.gov.cn/\" target=\"_blank\">粤ICP备14077223号</a></p>\r\n'),
 (837, 'News'),
 (838, '1393'),
 (840, '1389'),
@@ -618,9 +650,10 @@ INSERT INTO `qinggan_extc` (`id`, `content`) VALUES
 (1373, '#FF0000'),
 (1374, '/pages/product/list'),
 (1384, ''),
-(1390, 'a:12:{s:3:"v10";s:2:"18";s:3:"v20";s:3:"年";s:3:"v30";s:12:"开发经验";s:3:"v11";s:3:"278";s:3:"v21";s:1:"+";s:3:"v31";s:12:"更新次数";s:3:"v12";s:4:"7800";s:3:"v22";s:1:"+";s:3:"v32";s:12:"日志记录";s:3:"v13";s:5:"63800";s:3:"v23";s:1:"+";s:3:"v33";s:9:"安装量";}'),
+(1390, 'a:12:{s:3:\"v10\";s:2:\"18\";s:3:\"v20\";s:3:\"年\";s:3:\"v30\";s:12:\"开发经验\";s:3:\"v11\";s:3:\"278\";s:3:\"v21\";s:1:\"+\";s:3:\"v31\";s:12:\"更新次数\";s:3:\"v12\";s:4:\"7800\";s:3:\"v22\";s:1:\"+\";s:3:\"v32\";s:12:\"日志记录\";s:3:\"v13\";s:5:\"63800\";s:3:\"v23\";s:1:\"+\";s:3:\"v33\";s:9:\"安装量\";}'),
 (1392, '791'),
-(1394, '812');
+(1394, '812'),
+(1404, '815,814,813,812,794');
 
 -- --------------------------------------------------------
 
@@ -628,8 +661,8 @@ INSERT INTO `qinggan_extc` (`id`, `content`) VALUES
 -- 表的结构 `qinggan_fields`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_fields` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '字段ID，自增',
+CREATE TABLE `qinggan_fields` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '字段ID，自增',
   `ftype` varchar(255) NOT NULL COMMENT '模型ID，当为数字时表示模块ID，非数表示其他模型的ID',
   `title` varchar(255) NOT NULL COMMENT '字段名称',
   `identifier` varchar(50) NOT NULL COMMENT '字段标识串',
@@ -639,19 +672,19 @@ CREATE TABLE IF NOT EXISTS `qinggan_fields` (
   `form_style` varchar(255) NOT NULL COMMENT '表单CSS',
   `format` varchar(100) NOT NULL COMMENT '格式化方式',
   `content` varchar(255) NOT NULL COMMENT '默认值',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序',
   `ext` text NOT NULL COMMENT '扩展内容',
-  `is_front` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0前端不可用1前端可用',
+  `is_front` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0前端不可用1前端可用',
   `search` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0不支持搜索1完全匹配搜索2模糊匹配搜索3区间搜索',
   `search_separator` varchar(10) NOT NULL COMMENT '分割符，仅限区间搜索时有效',
   `form_class` varchar(255) NOT NULL COMMENT '自定义表单Class',
-  `onlyone` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '唯一性检测，为1值时检测字段在当前项目是否唯一',
+  `onlyone` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '唯一性检测，为1值时检测字段在当前项目是否唯一',
   `group_id` varchar(255) NOT NULL DEFAULT 'main' COMMENT '字段所在组，默认是main',
-  `filter` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0不启用1单选2可多选',
+  `filter` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不启用1单选2可多选',
   `filter_join` varchar(20) NOT NULL COMMENT '连接符',
   `filter_content` text NOT NULL COMMENT '自定义筛选列表',
   `filter_title` varchar(255) NOT NULL COMMENT '筛选器名称'
-) ENGINE=MyISAM AUTO_INCREMENT=1400 DEFAULT CHARSET=utf8 COMMENT='字段管理器';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='字段管理器';
 
 --
 -- 转存表中的数据 `qinggan_fields`
@@ -727,7 +760,7 @@ INSERT INTO `qinggan_fields` (`id`, `ftype`, `title`, `identifier`, `field_type`
 (1223, 'project-41', '切换时间', 'delaytime', '200', '单位毫秒；切换效果持续时间（一次切换效果执行所用的时间长度）。', 'text', '', 'int', '500', 15, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
 (1224, 'user', '背景色', 'bgcolor', 'varchar', '应用到小程序的背景色', 'text', '', 'safe', '', 30, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
 (1225, 'user', '背景图片', 'bgimg', 'varchar', '应用于小程序的背景图片', 'text', '', 'safe', '', 50, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
-(1232, 'user', '性别', 'gender', 'varchar', '', 'radio', '', 'safe', '未知', 10, 'a:6:{s:11:"option_list";s:0:"";s:9:"put_order";s:1:"0";s:10:"ext_select";s:16:"男\r\n女\r\n未知";s:6:"is_add";s:1:"0";s:10:"field_show";s:0:"";s:11:"field_value";s:0:"";}', 1, 0, '', '', 0, 'main', 0, '', '', ''),
+(1232, 'user', '性别', 'gender', 'varchar', '', 'radio', '', 'safe', '未知', 10, 'a:6:{s:11:\"option_list\";s:0:\"\";s:9:\"put_order\";s:1:\"0\";s:10:\"ext_select\";s:16:\"男\r\n女\r\n未知\";s:6:\"is_add\";s:1:\"0\";s:10:\"field_show\";s:0:\"\";s:11:\"field_value\";s:0:\"\";}', 1, 0, '', '', 0, 'main', 0, '', '', ''),
 (1237, '21', '通栏图片', 'banner', 'varchar', '建议图片规格是1920x500', 'upload', '', 'safe', '', 20, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
 (1295, '24', '子标题', 'subtitle', 'varchar', '', 'text', '', 'safe', '', 10, '', 0, 2, '', '', 0, 'main', 0, '', '', ''),
 (1296, '24', '内容图片', 'contentpics', 'varchar', '用于放在内容区里的图片，一般图片宽度是1920，以确保图片精度', 'upload', '', 'safe', '', 255, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
@@ -751,7 +784,7 @@ INSERT INTO `qinggan_fields` (`id`, `ftype`, `title`, `identifier`, `field_type`
 (1323, '112', '内容', 'content', 'longtext', '', 'design', '', 'html_js', '', 255, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
 (1324, '112', 'PC大图', 'banner', 'varchar', '建议使用宽度1920规格的JPG图片，建议大小不超过300KB', 'upload', '', 'safe', '', 8, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
 (1392, 'cate-204', '缩略图', 'thumb', 'varchar', '', 'upload', '', 'safe', '', 25, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
-(1393, '22', '测试', 'demo', 'varchar', '', 'pca', '', 'safe', '', 60, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
+(1405, '22', '测试', 'demo', 'int', '', 'radio', '', 'int', '0', 60, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
 (1344, '114', '参数名称', 'name', 'varchar', '', 'text', '', 'safe', '', 5, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
 (1345, '114', '参数', 'info', 'longtext', '', 'param', '', 'safe', '', 10, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
 (1346, '114', '摘要', 'note', 'longtext', '简要文字描述', 'editor', '', 'html', '', 15, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
@@ -791,7 +824,12 @@ INSERT INTO `qinggan_fields` (`id`, `ftype`, `title`, `identifier`, `field_type`
 (1387, '112', '关联主题', 'links', 'longtext', '', 'title', '', 'safe', '', 15, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
 (1390, 'project-461', '计数器', 'statcount', '200', '用于表示平台的一些数据', 'blockhtml', '', 'safe', '', 20, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
 (1394, 'list-20', '地图图片', 'map', '200', '放在首页用于显示地图信息', 'upload', '', 'safe', '', 255, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
-(1395, '64', '客服账号', 'account', 'varchar', '可以填写QQ号或微信号或手机号', 'text', '', 'safe', '', 20, '', 0, 0, '', '', 0, 'main', 0, '', '', '');
+(1395, '64', '客服账号', 'account', 'varchar', '可以填写QQ号或微信号或手机号', 'text', '', 'safe', '', 20, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
+(1400, '119', '密钥', 'keyid', 'varchar', '', 'text', '', 'safe', '', 5, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
+(1401, '119', '执行次数', 'qcount', 'int', '', 'text', '', 'int', '0', 10, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
+(1402, '119', '最后执行时间', 'qtime', 'int', '', 'text', '', 'time', '', 15, '', 0, 0, '', '', 0, 'main', 0, '', '', ''),
+(1403, '120', '内容', 'content', 'longtext', '', 'textarea', '', 'html_js', '', 5, '', 0, 0, '', '', 0, '', 0, '', '', ''),
+(1404, 'all-4', '图片', 'pictures', 'varchar', '支持多图', 'upload', '', 'safe', '', 95, '', 0, 0, '', '', 0, 'main', 0, '', '', '');
 
 -- --------------------------------------------------------
 
@@ -799,12 +837,12 @@ INSERT INTO `qinggan_fields` (`id`, `ftype`, `title`, `identifier`, `field_type`
 -- 表的结构 `qinggan_fields_ext`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_fields_ext` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `fields_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '扩展字段ID',
+CREATE TABLE `qinggan_fields_ext` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `fields_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '扩展字段ID',
   `keyname` varchar(255) NOT NULL COMMENT '键名',
   `keydata` text NOT NULL COMMENT '键值'
-) ENGINE=MyISAM AUTO_INCREMENT=1104 DEFAULT CHARSET=utf8 COMMENT='字段扩展表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='字段扩展表';
 
 --
 -- 转存表中的数据 `qinggan_fields_ext`
@@ -816,12 +854,12 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (992, 1393, 'admin-list-sort', '0'),
 (991, 1393, 'admin-list-edit', '0'),
 (990, 1393, 'admin-list-width', '0'),
-(1006, 82, 'admin-list-width', '90'),
+(1251, 82, 'admin-list-width', '104'),
 (9, 83, 'height', '360'),
 (10, 83, 'is_code', ''),
 (11, 83, 'is_read', ''),
 (12, 83, 'inc_tag', '1'),
-(13, 83, 'btns', 'a:8:{s:5:"image";s:2:"on";s:5:"video";s:2:"on";s:5:"audio";s:2:"on";s:3:"map";s:2:"on";s:10:"insertcode";s:2:"on";s:9:"paragraph";s:2:"on";s:8:"fontsize";s:2:"on";s:10:"fontfamily";s:2:"on";}'),
+(13, 83, 'btns', 'a:8:{s:5:\"image\";s:2:\"on\";s:5:\"video\";s:2:\"on\";s:5:\"audio\";s:2:\"on\";s:3:\"map\";s:2:\"on\";s:10:\"insertcode\";s:2:\"on\";s:9:\"paragraph\";s:2:\"on\";s:8:\"fontsize\";s:2:\"on\";s:10:\"fontfamily\";s:2:\"on\";}'),
 (14, 83, 'is_float', '1'),
 (15, 83, 'auto_height', '1'),
 (815, 88, 'admin-list-width', '0'),
@@ -842,7 +880,7 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (32, 131, 'is_read', ''),
 (33, 131, 'inc_tag', ''),
 (34, 131, 'paste_text', ''),
-(35, 131, 'btns', 'a:6:{s:5:"image";s:1:"1";s:4:"info";s:1:"1";s:10:"insertcode";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";s:10:"fontfamily";s:1:"1";}'),
+(35, 131, 'btns', 'a:6:{s:5:\"image\";s:1:\"1\";s:4:\"info\";s:1:\"1\";s:10:\"insertcode\";s:1:\"1\";s:9:\"paragraph\";s:1:\"1\";s:8:\"fontsize\";s:1:\"1\";s:10:\"fontfamily\";s:1:\"1\";}'),
 (940, 141, 'admin-list-width', '253'),
 (938, 142, 'admin-list-width', '252'),
 (937, 143, 'admin-list-width', '132'),
@@ -852,7 +890,7 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (56, 144, 'is_read', ''),
 (57, 144, 'inc_tag', ''),
 (58, 144, 'paste_text', ''),
-(59, 144, 'btns', 'a:3:{s:5:"image";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";}'),
+(59, 144, 'btns', 'a:3:{s:5:\"image\";s:1:\"1\";s:9:\"paragraph\";s:1:\"1\";s:8:\"fontsize\";s:1:\"1\";}'),
 (781, 177, 'admin-list-edit', '0'),
 (780, 177, 'admin-list-width', '0'),
 (63, 221, 'width', '600'),
@@ -865,7 +903,7 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (70, 224, 'is_read', ''),
 (71, 224, 'inc_tag', ''),
 (72, 224, 'paste_text', ''),
-(73, 224, 'btns', 'a:3:{s:5:"image";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";}'),
+(73, 224, 'btns', 'a:3:{s:5:\"image\";s:1:\"1\";s:9:\"paragraph\";s:1:\"1\";s:8:\"fontsize\";s:1:\"1\";}'),
 (74, 226, 'form_btn', ''),
 (75, 226, 'width', '100'),
 (76, 227, 'form_btn', ''),
@@ -891,7 +929,7 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (96, 233, 'is_read', ''),
 (97, 233, 'inc_tag', ''),
 (98, 233, 'paste_text', ''),
-(99, 233, 'btns', 'a:4:{s:5:"image";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";s:10:"fontfamily";s:1:"1";}'),
+(99, 233, 'btns', 'a:4:{s:5:\"image\";s:1:\"1\";s:9:\"paragraph\";s:1:\"1\";s:8:\"fontsize\";s:1:\"1\";s:10:\"fontfamily\";s:1:\"1\";}'),
 (100, 234, 'option_list', 'opt:12'),
 (101, 234, 'put_order', '0'),
 (102, 234, 'ext_select', ''),
@@ -907,7 +945,7 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (113, 267, 'is_read', ''),
 (114, 267, 'inc_tag', ''),
 (115, 267, 'paste_text', ''),
-(116, 267, 'btns', 'a:3:{s:5:"image";s:1:"1";s:9:"paragraph";s:1:"1";s:8:"fontsize";s:1:"1";}'),
+(116, 267, 'btns', 'a:3:{s:5:\"image\";s:1:\"1\";s:9:\"paragraph\";s:1:\"1\";s:8:\"fontsize\";s:1:\"1\";}'),
 (117, 268, 'cate_id', '11'),
 (118, 268, 'cate_custom', '0'),
 (119, 268, 'is_multiple', '0'),
@@ -925,7 +963,7 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (134, 293, 'is_read', ''),
 (135, 293, 'inc_tag', ''),
 (136, 293, 'paste_text', '0'),
-(137, 293, 'btns', 'a:4:{s:5:"image";s:2:"on";s:9:"paragraph";s:2:"on";s:8:"fontsize";s:2:"on";s:10:"fontfamily";s:2:"on";}'),
+(137, 293, 'btns', 'a:4:{s:5:\"image\";s:2:\"on\";s:9:\"paragraph\";s:2:\"on\";s:8:\"fontsize\";s:2:\"on\";s:10:\"fontfamily\";s:2:\"on\";}'),
 (138, 293, 'is_float', ''),
 (139, 293, 'auto_height', '1'),
 (140, 389, 'form_btn', ''),
@@ -1135,7 +1173,7 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (979, 1298, 'is_read', ''),
 (980, 1298, 'inc_tag', ''),
 (356, 1298, 'paste_text', '1'),
-(981, 1298, 'btns', 'a:3:{s:5:"image";s:2:"on";s:9:"paragraph";s:2:"on";s:8:"fontsize";s:2:"on";}'),
+(981, 1298, 'btns', 'a:3:{s:5:\"image\";s:2:\"on\";s:9:\"paragraph\";s:2:\"on\";s:8:\"fontsize\";s:2:\"on\";}'),
 (982, 1298, 'is_float', ''),
 (983, 1298, 'auto_height', ''),
 (360, 1299, 'cate_id', '1'),
@@ -1274,7 +1312,7 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (501, 1346, 'is_code', ''),
 (502, 1346, 'is_read', ''),
 (503, 1346, 'inc_tag', ''),
-(504, 1346, 'btns', 'a:1:{s:8:"fontsize";s:2:"on";}'),
+(504, 1346, 'btns', 'a:1:{s:8:\"fontsize\";s:2:\"on\";}'),
 (505, 1346, 'is_float', ''),
 (506, 1346, 'auto_height', '1'),
 (749, 1296, 'admin-list-sort', '0'),
@@ -1451,12 +1489,12 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (684, 1385, 'is_multiple', '0'),
 (685, 1386, 'cate_id', '1'),
 (686, 1386, 'is_multiple', '0'),
-(687, 1387, 'optlist_id', 'a:5:{i:0;s:2:"43";i:1;s:2:"45";i:2;s:3:"144";i:3;s:3:"151";i:4;s:3:"452";}'),
+(687, 1387, 'optlist_id', 'a:5:{i:0;s:2:\"43\";i:1;s:2:\"45\";i:2;s:3:\"144\";i:3;s:3:\"151\";i:4;s:3:\"452\";}'),
 (688, 1387, 'is_multiple', '1'),
 (689, 1387, 'form_price', ''),
 (690, 1389, 'height', '200'),
-(704, 1390, 'cssfile', '<link rel="stylesheet" type="text/css" href="static/bootstrap/css/bootstrap.css" />\r\n<style>\r\n.numbers{\r\n	list-style:none;\r\n	margin:0;\r\n	padding:0;\r\n}\r\n.numbers li{\r\n	position: relative;\r\n	color:#1B1B1B;\r\n	text-align:center;\r\n}\r\n.numbers li .count{\r\n	font-size:60px;\r\n	font-weight:400;\r\n}\r\n.numbers li sup{\r\n	vertical-align: top;\r\n	font-size:30px;\r\n	top:0.5em;\r\n}\r\n.numbers li .title{\r\n	color:#525252;\r\n	font-size:20px;\r\n}\r\n</style>'),
-(703, 1390, 'codetpl', '<ul class="row numbers wow fadeInUpBig">\r\n	<!-- if $info.v10 -->\r\n	<li class="col">\r\n		<div class="p-4">\r\n			<div>\r\n				<span class="count" blockhtml-type="edit" blockhtml-name="v10" blockhtml-title="值10" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v10}</span>\r\n				<sup blockhtml-type="edit" blockhtml-name="v20" blockhtml-title="扩展10" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v20}</sup>\r\n			</div>\r\n			<div class="title" blockhtml-type="edit" blockhtml-name="v30" blockhtml-title="名称10" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v30}</div>\r\n		</div>\r\n	</li>\r\n	<!-- /if -->\r\n	<!-- if $info.v11 -->\r\n	<li class="col">\r\n		<div class="p-4">\r\n			<div>\r\n				<span class="count" blockhtml-type="edit" blockhtml-name="v11" blockhtml-title="值11" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v11}</span>\r\n				<sup blockhtml-type="edit" blockhtml-name="v21" blockhtml-title="扩展11" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v21}</sup>\r\n			</div>\r\n			<div class="title" blockhtml-type="edit" blockhtml-name="v31" blockhtml-title="名称11" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v31}</div>\r\n		</div>\r\n	</li>\r\n	<!-- /if -->\r\n	<!-- if $info.v12 -->\r\n	<li class="col">\r\n		<div class="p-4">\r\n			<div>\r\n				<span class="count" blockhtml-type="edit" blockhtml-name="v12" blockhtml-title="值12" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v12}</span>\r\n				<sup blockhtml-type="edit" blockhtml-name="v22" blockhtml-title="扩展12" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v22}</sup>\r\n			</div>\r\n			<div class="title" blockhtml-type="edit" blockhtml-name="v32" blockhtml-title="名称12" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v32}</div>\r\n		</div>\r\n	</li>\r\n	<!-- /if -->\r\n	<!-- if $info.v13 -->\r\n	<li class="col">\r\n		<div class="p-4">\r\n			<div>\r\n				<span class="count" blockhtml-type="edit" blockhtml-name="v13" blockhtml-title="值13" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v13}</span>\r\n				<sup blockhtml-type="edit" blockhtml-name="v23" blockhtml-title="扩展13" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v23}</sup>\r\n			</div>\r\n			<div class="title" blockhtml-type="edit" blockhtml-name="v33" blockhtml-title="名称13" blockhtml-alt="" blockhtml-value="" blockhtml-default="">{$info.v33}</div>\r\n		</div>\r\n	</li>\r\n	<!-- /if -->\r\n</ul>'),
+(704, 1390, 'cssfile', '<link rel=\"stylesheet\" type=\"text/css\" href=\"static/bootstrap/css/bootstrap.css\" />\r\n<style>\r\n.numbers{\r\n	list-style:none;\r\n	margin:0;\r\n	padding:0;\r\n}\r\n.numbers li{\r\n	position: relative;\r\n	color:#1B1B1B;\r\n	text-align:center;\r\n}\r\n.numbers li .count{\r\n	font-size:60px;\r\n	font-weight:400;\r\n}\r\n.numbers li sup{\r\n	vertical-align: top;\r\n	font-size:30px;\r\n	top:0.5em;\r\n}\r\n.numbers li .title{\r\n	color:#525252;\r\n	font-size:20px;\r\n}\r\n</style>'),
+(703, 1390, 'codetpl', '<ul class=\"row numbers wow fadeInUpBig\">\r\n	<!-- if $info.v10 -->\r\n	<li class=\"col\">\r\n		<div class=\"p-4\">\r\n			<div>\r\n				<span class=\"count\" blockhtml-type=\"edit\" blockhtml-name=\"v10\" blockhtml-title=\"值10\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v10}</span>\r\n				<sup blockhtml-type=\"edit\" blockhtml-name=\"v20\" blockhtml-title=\"扩展10\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v20}</sup>\r\n			</div>\r\n			<div class=\"title\" blockhtml-type=\"edit\" blockhtml-name=\"v30\" blockhtml-title=\"名称10\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v30}</div>\r\n		</div>\r\n	</li>\r\n	<!-- /if -->\r\n	<!-- if $info.v11 -->\r\n	<li class=\"col\">\r\n		<div class=\"p-4\">\r\n			<div>\r\n				<span class=\"count\" blockhtml-type=\"edit\" blockhtml-name=\"v11\" blockhtml-title=\"值11\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v11}</span>\r\n				<sup blockhtml-type=\"edit\" blockhtml-name=\"v21\" blockhtml-title=\"扩展11\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v21}</sup>\r\n			</div>\r\n			<div class=\"title\" blockhtml-type=\"edit\" blockhtml-name=\"v31\" blockhtml-title=\"名称11\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v31}</div>\r\n		</div>\r\n	</li>\r\n	<!-- /if -->\r\n	<!-- if $info.v12 -->\r\n	<li class=\"col\">\r\n		<div class=\"p-4\">\r\n			<div>\r\n				<span class=\"count\" blockhtml-type=\"edit\" blockhtml-name=\"v12\" blockhtml-title=\"值12\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v12}</span>\r\n				<sup blockhtml-type=\"edit\" blockhtml-name=\"v22\" blockhtml-title=\"扩展12\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v22}</sup>\r\n			</div>\r\n			<div class=\"title\" blockhtml-type=\"edit\" blockhtml-name=\"v32\" blockhtml-title=\"名称12\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v32}</div>\r\n		</div>\r\n	</li>\r\n	<!-- /if -->\r\n	<!-- if $info.v13 -->\r\n	<li class=\"col\">\r\n		<div class=\"p-4\">\r\n			<div>\r\n				<span class=\"count\" blockhtml-type=\"edit\" blockhtml-name=\"v13\" blockhtml-title=\"值13\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v13}</span>\r\n				<sup blockhtml-type=\"edit\" blockhtml-name=\"v23\" blockhtml-title=\"扩展13\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v23}</sup>\r\n			</div>\r\n			<div class=\"title\" blockhtml-type=\"edit\" blockhtml-name=\"v33\" blockhtml-title=\"名称13\" blockhtml-alt=\"\" blockhtml-value=\"\" blockhtml-default=\"\">{$info.v33}</div>\r\n		</div>\r\n	</li>\r\n	<!-- /if -->\r\n</ul>'),
 (705, 1390, 'tplfile', ''),
 (706, 1390, 'outhtml', '0'),
 (709, 239, 'admin-list-sort', '0'),
@@ -1508,7 +1546,7 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (809, 1312, 'is_code', ''),
 (810, 1312, 'is_read', ''),
 (811, 1312, 'inc_tag', ''),
-(812, 1312, 'btns', 'a:11:{s:5:"image";s:2:"on";s:4:"info";s:2:"on";s:4:"file";s:2:"on";s:5:"table";s:2:"on";s:7:"emotion";s:2:"on";s:3:"map";s:2:"on";s:8:"spechars";s:2:"on";s:10:"insertcode";s:2:"on";s:9:"paragraph";s:2:"on";s:8:"fontsize";s:2:"on";s:10:"fontfamily";s:2:"on";}'),
+(812, 1312, 'btns', 'a:11:{s:5:\"image\";s:2:\"on\";s:4:\"info\";s:2:\"on\";s:4:\"file\";s:2:\"on\";s:5:\"table\";s:2:\"on\";s:7:\"emotion\";s:2:\"on\";s:3:\"map\";s:2:\"on\";s:8:\"spechars\";s:2:\"on\";s:10:\"insertcode\";s:2:\"on\";s:9:\"paragraph\";s:2:\"on\";s:8:\"fontsize\";s:2:\"on\";s:10:\"fontfamily\";s:2:\"on\";}'),
 (813, 1312, 'is_float', '1'),
 (814, 1312, 'auto_height', '1'),
 (816, 88, 'admin-list-edit', '0'),
@@ -1523,8 +1561,8 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (830, 288, 'admin-list-edit', '0'),
 (829, 288, 'admin-list-width', '0'),
 (835, 288, 'is_multiple', '0'),
-(857, 1347, 'form_show_editing', 'a:3:{i:0;s:4:"name";i:1;s:4:"info";i:2;s:4:"note";}'),
-(856, 1347, 'form_field_used', 'a:3:{i:0;s:4:"name";i:1;s:4:"info";i:2;s:4:"note";}'),
+(857, 1347, 'form_show_editing', 'a:3:{i:0;s:4:\"name\";i:1;s:4:\"info\";i:2;s:4:\"note\";}'),
+(856, 1347, 'form_field_used', 'a:3:{i:0;s:4:\"name\";i:1;s:4:\"info\";i:2;s:4:\"note\";}'),
 (854, 1347, 'admin-history', '0'),
 (855, 1347, 'form_pid', '456'),
 (853, 1347, 'admin-list-stat', '0'),
@@ -1591,19 +1629,17 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (1020, 1232, 'is_add', '0'),
 (1021, 1232, 'field_show', ''),
 (1022, 1232, 'field_value', ''),
-(1038, 1395, 'admin-list-width', '178'),
-(1024, 1395, 'admin-list-edit', '0'),
-(1025, 1395, 'admin-list-sort', '0'),
-(1026, 1395, 'admin-list-stat', '0'),
-(1027, 1395, 'admin-history', '0'),
-(1028, 1395, 'form_btn', ''),
-(1029, 1395, 'ext_format', ''),
-(1030, 1395, 'ext_quick_words', ''),
-(1031, 1395, 'ext_quick_type', ''),
-(1032, 1395, 'ext_include_3', '0'),
-(1033, 1395, 'ext_field', ''),
-(1034, 1395, 'ext_onlyone', ''),
-(1035, 1395, 'ext_layout', ''),
+(1213, 1395, 'admin-list-width', '178'),
+(1214, 1395, 'admin-list-edit', '0'),
+(1215, 1395, 'admin-list-sort', '0'),
+(1216, 1395, 'admin-list-stat', '0'),
+(1217, 1395, 'admin-history', '0'),
+(1220, 1395, 'ext_format', ''),
+(1221, 1395, 'ext_quick_words', ''),
+(1222, 1395, 'ext_quick_type', ''),
+(1223, 1395, 'ext_include_3', '0'),
+(1218, 1395, 'form_btn', 'title:148'),
+(1225, 1395, 'ext_onlyone', ''),
 (1036, 910, 'admin-list-width', '98'),
 (1037, 912, 'admin-list-width', '104'),
 (1039, 1396, 'admin-list-width', '0'),
@@ -1657,7 +1693,82 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 (1100, 1399, 'ext_include_3', '0'),
 (1101, 1399, 'ext_field', ''),
 (1102, 1399, 'ext_onlyone', ''),
-(1103, 1399, 'ext_layout', '');
+(1103, 1399, 'ext_layout', ''),
+(1104, 1400, 'admin-list-width', '0'),
+(1105, 1400, 'admin-list-edit', '0'),
+(1106, 1400, 'admin-list-sort', '0'),
+(1107, 1400, 'admin-list-stat', '0'),
+(1108, 1400, 'admin-history', '0'),
+(1109, 1400, 'form_btn', ''),
+(1110, 1400, 'ext_format', ''),
+(1111, 1400, 'ext_quick_words', ''),
+(1112, 1400, 'ext_quick_type', ''),
+(1113, 1400, 'ext_include_3', '0'),
+(1114, 1400, 'ext_field', ''),
+(1115, 1400, 'ext_onlyone', ''),
+(1116, 1400, 'ext_layout', ''),
+(1143, 1401, 'admin-list-width', '111'),
+(1118, 1401, 'admin-list-edit', '0'),
+(1119, 1401, 'admin-list-sort', '0'),
+(1120, 1401, 'admin-list-stat', '0'),
+(1121, 1401, 'admin-history', '0'),
+(1122, 1401, 'form_btn', ''),
+(1123, 1401, 'ext_format', ''),
+(1124, 1401, 'ext_quick_words', ''),
+(1125, 1401, 'ext_quick_type', ''),
+(1126, 1401, 'ext_include_3', '0'),
+(1127, 1401, 'ext_field', ''),
+(1128, 1401, 'ext_onlyone', ''),
+(1129, 1401, 'ext_layout', ''),
+(1144, 1402, 'admin-list-width', '169'),
+(1131, 1402, 'admin-list-edit', '0'),
+(1132, 1402, 'admin-list-sort', '0'),
+(1133, 1402, 'admin-list-stat', '0'),
+(1134, 1402, 'admin-history', '0'),
+(1135, 1402, 'form_btn', 'datetime'),
+(1136, 1402, 'ext_format', ''),
+(1137, 1402, 'ext_quick_words', ''),
+(1138, 1402, 'ext_quick_type', ''),
+(1139, 1402, 'ext_include_3', '0'),
+(1140, 1402, 'ext_field', ''),
+(1141, 1402, 'ext_onlyone', ''),
+(1142, 1402, 'ext_layout', ''),
+(1167, 1403, 'width', '950'),
+(1168, 1403, 'height', '360'),
+(1147, 1403, 'is_code', ''),
+(1148, 1403, 'is_read', ''),
+(1149, 1403, 'inc_tag', ''),
+(1150, 1403, 'paste_text', ''),
+(1151, 1403, 'btns', ''),
+(1162, 1403, 'admin-list-width', '574'),
+(1163, 1403, 'admin-list-edit', '0'),
+(1164, 1403, 'admin-list-sort', '0'),
+(1165, 1403, 'admin-list-stat', '0'),
+(1166, 1403, 'admin-history', '0'),
+(1169, 1403, 'resize', 'both'),
+(1170, 1403, 'is_ubb', '0'),
+(1219, 1395, 'btn_name', ''),
+(1224, 1395, 'ext_field', 'account:account,qtype:qtype'),
+(1226, 1395, 'ext_layout', 'a:3:{i:0;s:5:\"title\";i:1;s:5:\"qtype\";i:2;s:7:\"account\";}'),
+(1229, 1404, 'cate_id', '1'),
+(1230, 1404, 'is_multiple', '1'),
+(1231, 1405, 'admin-list-width', '0'),
+(1232, 1405, 'admin-list-edit', '0'),
+(1233, 1405, 'admin-list-sort', '0'),
+(1234, 1405, 'admin-list-stat', '0'),
+(1235, 1405, 'admin-history', '0'),
+(1236, 1405, 'option_list', 'opt:4'),
+(1237, 1405, 'put_order', '0'),
+(1238, 1405, 'ext_select', ''),
+(1239, 1405, 'is_add', '0'),
+(1240, 1405, 'field_show', ''),
+(1241, 1405, 'field_value', ''),
+(1245, 82, 'admin-list-edit', '0'),
+(1246, 82, 'admin-list-sort', '0'),
+(1247, 82, 'admin-list-stat', '0'),
+(1248, 82, 'admin-history', '0'),
+(1249, 82, 'cate_id', '1'),
+(1250, 82, 'is_multiple', '0');
 
 -- --------------------------------------------------------
 
@@ -1665,15 +1776,15 @@ INSERT INTO `qinggan_fields_ext` (`id`, `fields_id`, `keyname`, `keydata`) VALUE
 -- 表的结构 `qinggan_freight`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_freight` (
-  `id` int(10) unsigned NOT NULL COMMENT '运费模板ID，自增ID',
-  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
+CREATE TABLE `qinggan_freight` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '运费模板ID，自增ID',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
   `title` varchar(100) NOT NULL COMMENT '模板名称，便于后台管理',
   `type` enum('weight','volume','number','fixed','price','vweight') NOT NULL DEFAULT 'weight' COMMENT 'weight重量volume体积number数量fixed固定值price价格vweight体积重',
   `currency_id` int(11) NOT NULL DEFAULT '0' COMMENT '货币ID',
   `taxis` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
-  `country_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '国家ID'
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='物流运费模板管理';
+  `country_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '国家ID'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='物流运费模板管理';
 
 --
 -- 转存表中的数据 `qinggan_freight`
@@ -1688,8 +1799,8 @@ INSERT INTO `qinggan_freight` (`id`, `site_id`, `title`, `type`, `currency_id`, 
 -- 表的结构 `qinggan_freight_price`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_freight_price` (
-  `zid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '区域ID',
+CREATE TABLE `qinggan_freight_price` (
+  `zid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '区域ID',
   `unit_val` varchar(20) NOT NULL COMMENT '单位量，如0.5kg，或1个或1立方米，取决于系统设定',
   `price` varchar(50) NOT NULL DEFAULT '0' COMMENT '运费价格，最低为0，不能为负数'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='单位体积价格';
@@ -1713,14 +1824,14 @@ INSERT INTO `qinggan_freight_price` (`zid`, `unit_val`, `price`) VALUES
 -- 表的结构 `qinggan_freight_zone`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_freight_zone` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `fid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '运费模板ID',
+CREATE TABLE `qinggan_freight_zone` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `fid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '运费模板ID',
   `title` varchar(100) NOT NULL COMMENT '名称',
-  `taxis` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `taxis` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序',
   `note` varchar(255) NOT NULL COMMENT '简单说明该区域信息',
   `area` longtext NOT NULL COMMENT '省份+城市'
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='运费模板区域设置';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='运费模板区域设置';
 
 --
 -- 转存表中的数据 `qinggan_freight_zone`
@@ -1741,26 +1852,26 @@ INSERT INTO `qinggan_freight_zone` (`id`, `fid`, `title`, `taxis`, `note`, `area
 -- 表的结构 `qinggan_gateway`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_gateway` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '站点ID，为0表示所有站点可用',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0不可用1可用',
-  `is_default` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '1表示默认使用',
+CREATE TABLE `qinggan_gateway` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID，为0表示所有站点可用',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不可用1可用',
+  `is_default` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1表示默认使用',
   `type` varchar(50) NOT NULL COMMENT '类型，gateway文件夹的子文件夹',
   `code` varchar(50) NOT NULL COMMENT '路由引挈',
   `title` varchar(255) NOT NULL COMMENT '名称',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序',
   `note` varchar(255) NOT NULL COMMENT '功能备注',
   `ext` text NOT NULL COMMENT '扩展参数'
-) ENGINE=MyISAM AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COMMENT='第三方网关路由引挈';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='第三方网关路由引挈';
 
 --
 -- 转存表中的数据 `qinggan_gateway`
 --
 
 INSERT INTO `qinggan_gateway` (`id`, `site_id`, `status`, `is_default`, `type`, `code`, `title`, `taxis`, `note`, `ext`) VALUES
-(13, 1, 1, 1, 'email', 'okmail', '邮件发送', 5, '', 'a:6:{s:6:"server";s:32:"https://www.phpok.com/apix-31134";s:2:"ip";s:0:"";s:6:"app_id";s:1:"3";s:7:"app_key";s:16:"vhDsxyZSsHnBeXlV";s:5:"reply";s:15:"qinggan@188.com";s:7:"siteurl";s:22:"https://www.phpok.com/";}'),
-(18, 1, 1, 1, 'sms', 'oksms', '短信验证码', 5, '', 'a:6:{s:6:"server";s:32:"https://www.phpok.com/apix-31566";s:2:"ip";s:13:"119.23.144.85";s:6:"app_id";s:1:"3";s:7:"app_key";s:16:"vhDsxyZSsHnBeXlV";s:7:"signame";s:0:"";s:7:"tplcode";s:0:"";}');
+(13, 1, 1, 1, 'email', 'okmail', '邮件发送', 5, '', 'a:6:{s:6:\"server\";s:32:\"https://www.phpok.com/apix-31134\";s:2:\"ip\";s:0:\"\";s:6:\"app_id\";s:1:\"3\";s:7:\"app_key\";s:16:\"vhDsxyZSsHnBeXlV\";s:5:\"reply\";s:15:\"qinggan@188.com\";s:7:\"siteurl\";s:22:\"https://www.phpok.com/\";}'),
+(18, 1, 1, 1, 'sms', 'oksms', '短信验证码', 5, '', 'a:6:{s:6:\"server\";s:32:\"https://www.phpok.com/apix-31566\";s:2:\"ip\";s:13:\"119.23.144.85\";s:6:\"app_id\";s:1:\"3\";s:7:\"app_key\";s:16:\"vhDsxyZSsHnBeXlV\";s:7:\"signame\";s:0:\"\";s:7:\"tplcode\";s:0:\"\";}');
 
 -- --------------------------------------------------------
 
@@ -1768,20 +1879,20 @@ INSERT INTO `qinggan_gateway` (`id`, `site_id`, `status`, `is_default`, `type`, 
 -- 表的结构 `qinggan_gd`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_gd` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID号',
+CREATE TABLE `qinggan_gd` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID号',
   `identifier` varchar(100) NOT NULL COMMENT '标识串',
   `title` varchar(255) NOT NULL COMMENT '类型名称，方便管理',
-  `width` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '图片宽度',
-  `height` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '图片高度',
+  `width` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '图片宽度',
+  `height` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '图片高度',
   `mark_picture` varchar(255) NOT NULL COMMENT '水印图片位置',
   `mark_position` varchar(100) NOT NULL COMMENT '水印位置',
-  `cut_type` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '图片生成方式，支持缩放法、裁剪法、等宽、等高及自定义五种，默认使用缩放法',
-  `quality` tinyint(3) unsigned NOT NULL DEFAULT '100' COMMENT '图片生成质量，默认是100',
+  `cut_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '图片生成方式，支持缩放法、裁剪法、等宽、等高及自定义五种，默认使用缩放法',
+  `quality` tinyint(3) UNSIGNED NOT NULL DEFAULT '100' COMMENT '图片生成质量，默认是100',
   `bgcolor` varchar(10) NOT NULL DEFAULT 'FFFFFF' COMMENT '补白背景色，默认是白色',
-  `trans` tinyint(3) unsigned NOT NULL DEFAULT '65' COMMENT '透明度',
-  `editor` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0普通1默认插入编辑器'
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COMMENT='上传图片自动生成方案';
+  `trans` tinyint(3) UNSIGNED NOT NULL DEFAULT '65' COMMENT '透明度',
+  `editor` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0普通1默认插入编辑器'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='上传图片自动生成方案';
 
 --
 -- 转存表中的数据 `qinggan_gd`
@@ -1801,32 +1912,32 @@ INSERT INTO `qinggan_gd` (`id`, `identifier`, `title`, `width`, `height`, `mark_
 -- 表的结构 `qinggan_list`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID号',
-  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '0为根主题，其他ID对应list表的id字段',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
-  `module_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '模块ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `site_id` mediumint(8) unsigned NOT NULL COMMENT '网站ID',
+CREATE TABLE `qinggan_list` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+  `parent_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0为根主题，其他ID对应list表的id字段',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `module_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '模块ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL COMMENT '网站ID',
   `title` varchar(255) NOT NULL COMMENT '主题',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发布时间',
-  `lastdate` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '最后修改时间',
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `lastdate` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后修改时间',
   `sort` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0未审核，1已审核',
-  `hidden` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0显示，1隐藏',
-  `hits` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '查看次数',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未审核，1已审核',
+  `hidden` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0显示，1隐藏',
+  `hits` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '查看次数',
   `tpl` varchar(255) NOT NULL COMMENT '自定义的模板',
   `seo_title` varchar(255) NOT NULL COMMENT 'SEO标题',
   `seo_keywords` varchar(255) NOT NULL COMMENT 'SEO关键字',
   `seo_desc` varchar(255) NOT NULL COMMENT 'SEO描述',
   `tag` varchar(255) NOT NULL COMMENT 'tag标签',
   `attr` varchar(255) NOT NULL COMMENT '主题属性',
-  `replydate` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '最后回复时间',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示管理员发布',
+  `replydate` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后回复时间',
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示管理员发布',
   `identifier` varchar(255) NOT NULL COMMENT '内容标识串',
-  `integral` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '财富基于，用于计算财富的基础量',
+  `integral` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '财富基于，用于计算财富的基础量',
   `style` varchar(255) NOT NULL COMMENT 'CSS样式'
-) ENGINE=MyISAM AUTO_INCREMENT=2513 DEFAULT CHARSET=utf8 COMMENT='内容主表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='内容主表';
 
 --
 -- 转存表中的数据 `qinggan_list`
@@ -1838,7 +1949,7 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (3, 0, 0, 21, 41, 1, '便捷操作，易二次开发', 1602247012, 1680002450, 30, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
 (2289, 0, 0, 64, 148, 1, '售后客服', 1672367278, 1683772918, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
 (2288, 0, 0, 64, 148, 1, '售前客服', 1672367110, 1683772941, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(2453, 0, 168, 24, 45, 1, '荣耀X40 GT 8GB+256GB 竞速黑 双卡 全网通版 骁龙888 144Hz高刷电竞屏 66W超级快充 满帧战神', 1678104767, 1680875288, 0, 1, 0, 60, '', '', '', '', '', 'n', 0, 0, '', 0, ''),
+(2453, 0, 168, 24, 45, 1, '荣耀X40 GT 8GB+256GB 竞速黑 双卡 全网通版 骁龙888 144Hz高刷电竞屏 66W超级快充 满帧战神', 1678104767, 1680875288, 0, 1, 0, 60, '', '', '', '', '', 'n', 1685166491, 0, '', 0, ''),
 (2454, 0, 168, 24, 45, 1, 'Redmi K60手机红米k60手机小米手机小米官方旗舰店官网新品正品redmik60', 1678160882, 1680875276, 0, 1, 0, 28, '', '', '', '', '', 'n', 0, 0, '', 0, ''),
 (12, 0, 8, 22, 43, 1, '升级包制作', 1539886018, 1602297017, 0, 1, 0, 38, '', '', '升级,操作,sql,一关,除非,涉及,判断,删除,执行,进行', '', 'phpok,升级包', '', 1670989506, 0, '', 0, ''),
 (13, 0, 68, 22, 43, 1, '浏览器25年之巨变：IE曾是真·王者 被Chrome夺走宝座', 1602266911, 1667124501, 0, 1, 0, 321, '', '', '浏览器,翻天覆地,巨变,夺走,宝座,冲浪,平板,台式机,王者,年间', '', '浏览器,IE,Chrome', '', 1667125577, 23, '', 0, ''),
@@ -1848,7 +1959,7 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (17, 0, 68, 22, 43, 1, '如何提高服务器的并发处理能力？', 1602267515, 1677901203, 0, 1, 0, 407, '', '', '服务器,能力,处理,并发,越多,请求,也就是,单位,提高,时间', '', '服务器,并发,处理能力', '', 1610172174, 0, '', 0, ''),
 (18, 0, 0, 40, 87, 1, '公司简介', 1602297289, 1680871726, 10, 1, 0, 126, '', '', '', '', '', '', 0, 0, 'aboutus', 0, ''),
 (19, 0, 0, 40, 87, 1, '发展历程', 1602297401, 1683359566, 20, 1, 0, 42, '', '', '', '', '', '', 0, 0, 'development-course', 0, ''),
-(20, 0, 0, 40, 87, 1, '联系我们', 1602298323, 1683012050, 30, 1, 0, 49, 'contactus', '', '', '', '', '', 0, 0, 'contactus', 0, ''),
+(20, 0, 0, 40, 87, 1, '联系我们', 1602298323, 1683012050, 30, 1, 0, 50, 'contactus', '', '', '', '', '', 0, 0, 'contactus', 0, ''),
 (41, 0, 0, 110, 451, 1, 'APP 隐私协议', 1610104099, 1678108149, 0, 1, 0, 67, '', '', '', '', '协议,隐私,保密,注册', '', 0, 0, 'application-privacy-agreement', 0, 'text-decoration:on;'),
 (42, 0, 0, 110, 451, 1, '用户注册协议', 1610113331, 1678108128, 0, 1, 0, 23, '', '', '', '', '', '', 0, 0, 'user-registration-agreement', 0, ''),
 (43, 0, 0, 110, 451, 1, '售后保障', 1610282650, 1678108104, 0, 1, 0, 3, '', '', '', '', '', '', 0, 0, 'after-sale-protection', 0, ''),
@@ -1864,8 +1975,8 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (2275, 0, 0, 116, 458, 1, '视频', 1643022377, 1643022543, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
 (2276, 0, 0, 116, 458, 1, '直播', 1643022461, 1643022461, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
 (2277, 0, 0, 46, 96, 1, '测试留言56464564645', 1646179636, 1678069170, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(2455, 0, 168, 24, 45, 1, 'iQOO 11 12GB+256GB 传奇版', 1678176792, 1680875259, 0, 1, 0, 42, '', '', '', '', '', 'n', 1683514715, 0, '', 0, ''),
-(2456, 0, 168, 24, 45, 1, '魅族 18X', 1678181321, 1680875243, 0, 1, 0, 7, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(2455, 0, 168, 24, 45, 1, 'iQOO 11 12GB+256GB 传奇版', 1678176792, 1680875259, 0, 1, 0, 49, '', '', '', '', '', 'n', 1685109468, 0, '', 0, ''),
+(2456, 0, 168, 24, 45, 1, '魅族 18X', 1678181321, 1683977147, 0, 1, 0, 10, '', '', '', '', '', '', 0, 0, '', 0, ''),
 (2457, 0, 0, 46, 96, 1, '测试', 1678182987, 0, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
 (2283, 0, 0, 117, 460, 1, '新闻资讯', 1651584373, 1651626558, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
 (2284, 0, 0, 117, 460, 1, '产品中心', 1651586131, 1651586131, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
@@ -1893,8 +2004,17 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 (2508, 0, 211, 68, 144, 1, '微信图片_2023030610375914', 1680875747, 0, 0, 1, 0, 1, '', '', '', '', '', '', 0, 0, '', 0, ''),
 (2509, 0, 211, 68, 144, 1, '微信图片_2023030610375826', 1680875747, 0, 0, 1, 0, 1, '', '', '', '', '', '', 0, 0, '', 0, ''),
 (2510, 0, 211, 68, 144, 1, '微信图片_2023030610375825', 1680875747, 0, 0, 1, 0, 1, '', '', '', '', '', '', 0, 0, '', 0, ''),
-(2511, 0, 204, 66, 152, 1, '测试', 1683519131, 0, 0, 1, 0, 2, '', '', '', '', '', '', 0, 23, '', 0, ''),
-(2512, 0, 0, 64, 148, 1, '售前咨询', 1683772965, 1683772984, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, '');
+(2512, 0, 0, 64, 148, 1, '售前咨询', 1683772965, 1683772984, 0, 1, 0, 0, '', '', '', '', '', '', 0, 0, '', 0, ''),
+(2519, 0, 0, 120, 463, 1, 'wordpress 市场占有率是多少', 1683970719, 0, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(2520, 0, 0, 120, 463, 1, '常见的CMS都有哪些', 1683970806, 0, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(2521, 0, 0, 120, 463, 1, '电子商务CMS都有哪些', 1683971084, 0, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(2518, 0, 0, 120, 463, 1, '介绍下PHPOK', 1683970510, 0, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(2522, 0, 0, 120, 463, 1, 'Drupal 市场占用率是多少！', 1683973126, 0, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(2523, 0, 0, 120, 463, 1, '介绍下 Zen Cart', 1683973421, 0, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(2524, 0, 0, 120, 463, 1, 'osCommerce 市场占有率是多少呢', 1683973694, 0, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(2525, 0, 0, 120, 463, 1, 'Magento 市场占有率大概是多少', 1683973787, 0, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(2527, 0, 0, 120, 463, 1, '介绍下 PrestaShop', 1683974719, 0, 0, 1, 0, 0, '', '', '', '', '', '', 0, 23, '', 0, ''),
+(2528, 0, 206, 66, 152, 1, '这个也是测试用的', 1685155182, 0, 0, 1, 0, 10, '', '', '', '', '', '', 1685155256, 23, '', 0, '');
 
 -- --------------------------------------------------------
 
@@ -1902,11 +2022,11 @@ INSERT INTO `qinggan_list` (`id`, `parent_id`, `cate_id`, `module_id`, `project_
 -- 表的结构 `qinggan_list_21`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_21` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_21` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `link` longtext NOT NULL COMMENT '链接',
   `target` varchar(255) NOT NULL DEFAULT '_blank' COMMENT '链接方式',
   `banner` varchar(255) NOT NULL DEFAULT '' COMMENT '通栏图片',
@@ -1928,11 +2048,11 @@ INSERT INTO `qinggan_list_21` (`id`, `site_id`, `project_id`, `cate_id`, `link`,
 -- 表的结构 `qinggan_list_22`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_22` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_22` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `thumb` int(11) NOT NULL COMMENT '缩略图',
   `content` longtext NOT NULL COMMENT '内容',
   `note` longtext NOT NULL COMMENT '摘要',
@@ -1941,7 +2061,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_22` (
   `linksite` varchar(255) NOT NULL DEFAULT '' COMMENT '网站',
   `video` varchar(255) NOT NULL DEFAULT '' COMMENT '视频',
   `audio` varchar(255) NOT NULL DEFAULT '' COMMENT '音频',
-  `demo` varchar(255) NOT NULL DEFAULT '' COMMENT '测试'
+  `demo` int(11) NOT NULL DEFAULT '0' COMMENT '测试'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文章资讯';
 
 --
@@ -1949,14 +2069,14 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_22` (
 --
 
 INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `content`, `note`, `plugin_vote`, `linkurl`, `linksite`, `video`, `audio`, `demo`) VALUES
-(12, 1, 43, 8, 0, '<h2>结构</h2><p>将要升级的文件按原目录结构存放</p><p><img src="https://www.phpok.com/res/201810/19/auto_10158.png" title="图片" alt="图片"/></p><p>和程序要一起打包的文件有：</p><blockquote><p>version.txt：版本信息</p><p>delete.txt：要删除的文件清单（一行一个文件）</p><p>table.sql：新版的数据表结构文件，用于执行比较新旧版本数据结构，并调整更改</p><p>update.sql：要执行的SQL文件（单独执行）</p><p>run.php：如果升级涉及到比较复杂的操作，可以在这里写PHP文件引入执行<br/></p></blockquote><h2>升级原理顺序<br/></h2><ol style="list-style-type: decimal;" class=" list-paddingleft-2"><li><p>远程获取升级包数据</p></li><li><p>将 ZIP 压缩包下载到 _data 目录下</p></li><li><p>将下载好的压缩包解压到 _data/update/ 目录下</p></li><li><p>归纳整理文件（主要是收集：version.txt，delete.txt，table.sql，update.sql，run.php）</p></li><li><p>将 framework 这个目录的文件及文件夹移到现有程序的核心框架（可能用户会因为安全原因改名）</p></li><li><p>移动其他目录文件（或创建目录）</p></li><li><p>删除delete.txt清单中的文件【非必须】</p></li><li><p>执行 table.sql 操作（比较表结构，更新到最新的表结构）【非必须】</p></li><li><p>运行 update.sql 或是其他的 sql 文件【非必须】</p></li><li><p>运行 run.php 执行复杂的升级操作【非必须】</p></li><li><p>删除 _data/update/ 下的文件</p></li><li><p>基于 version.txt 更新版本记录</p></li></ol><h2>特别说明</h2><p>table.sql 必须是完整的数据表结构，才能进行升级比较，基本上这个操作比较复杂，不推荐使用</p><p>delete.txt 主要是删除文件操作，除非涉及到安全漏洞，一般我们没必要执行删除操作</p><p>update.sql 这里执行的SQL是不进行判断的，如果涉及到升级一关失败了，可能会出错（除非SQL里有写好相应的判断）</p><p>run.php 重点在这里，这个文件意味着可以完全嵌入执行PHP，可以用PHP来写数据表的增删查改，也支持文件的删除，也支持数据表结构的更新等等！一般OK程序的升级都会有这个的（纯文件覆盖更新连这个都可以忽略的）</p>', 'table.sql 必须是完整的数据表结构，才能进行升级比较，基本上这个操作比较复杂，不推荐使用\r\ndelete.txt 主要是删除文件操作，除非涉及到安全漏洞，一般我们没必要执行删除操作\r\nupdate.sql 这里执行的SQL是不进行判断的，如果涉及到升级一关失败了，可能会出错（除非SQL里有写好相应的判断）', 0, '', '', '', '', ''),
-(13, 1, 43, 68, 0, '<p>浏览器是我们上网冲浪之必备工具，无论是台式机、平板、智能手机，你都离不开一款浏览器。</p>\r\n\r\n<p>在过去25年间，浏览器市场经历了翻天覆地的变化。</p>\r\n\r\n<p><strong>1995年，网景浏览器(Netscape )占据浏览器80.4%的份额</strong>，但是到1995年8月16日，微软推出了第一代Internet Explore浏览器，之后IE就一直作为Windows的默认浏览器，也是从那一年开始，IE开始了持续增长，不断蚕食网景的份额。</p>\r\n\r\n<p style="text-align:center"><img alt="图片" src="https://www.phpok.com/res/_cache/auto/14/14414.png" title="图片" /></p>\r\n\r\n<p><strong>2002年，IE浏览器迎来顶峰，市场份额高达95.4%</strong>。一家独大，是真正的浏览器王者，放眼全球，没有任何对手。</p>\r\n\r\n<p> </p>\r\n\r\n<p style="text-align:center"><img alt="图片" src="https://www.phpok.com/res/_cache/auto/14/14415.png" title="图片" /></p>\r\n\r\n<p>月圆则缺水满则溢，所谓盛极必衰就是IE了。2002年下半年，Firefox火狐问世，之后数年，它成了IE的唯一对手，2008年市场份额一度达到33.1%。</p>\r\n\r\n<p>然而，Safari和Chrome相继问世。尤其是Chrome，2008年一经问世便表现出了非凡的天赋，一路披荆斩棘所向披靡。</p>\r\n\r\n<p><strong>2011年，Chrome超越Firefox，2012年，又超越IE，成为全球第一大浏览器</strong>。</p>\r\n\r\n<p>2019年，Chrome市场份额57%，Safari排在第二位，份额为13.4%。其它较为知名的玩家还有Firefox、IE、Edge、Opera。</p>\r\n\r\n<p> </p>\r\n\r\n<p style="text-align:center"><img alt="图片" src="https://www.phpok.com/res/_cache/auto/14/14416.png" title="图片" /></p>\r\n\r\n<p>到了今年，Chrome依然牢牢占据第一的位置，第三方统计机构数据显示，<strong>仅仅在桌面领域，Chrome的市场份额就接近70%</strong>。</p>\r\n\r\n<p>现如今，曾经的王者IE已经被微软放弃，虽然仍旧可以使用，但实际上，微软已经将所有对浏览器的期待都放到了Edge身上。提一下，Edge是微软基于Chromium内核开发的新版浏览器，被预装在Windows 10中.</p>\r\n\r\n<p> </p>\r\n', '浏览器是我们上网冲浪之必备工具，无论是台式机、平板、智能手机，你都离不开一款浏览器。在过去25年间，浏览器市场经历了翻天覆地的变化。', 0, '', '', '', '', ''),
-(14, 1, 43, 68, 620, '<p>8月24日是 Windows 95 诞生 25 周年的纪念日，在这个有特殊意义的日子里，微软发布了一段回顾 Windows 95 的视频，向大众介绍了其中一些经典元素（开始菜单、回收站、扫雷和纸牌等）的改变和演进，以及系统整体视觉风格和 UI 设计上的变化。</p>\r\n\r\n<p style="text-align: center;"><img alt="图片" src="https://www.phpok.com/res/_cache/auto/14/14424.png" title="图片" /></p>\r\n\r\n<p>Windows 95 作为微软历史上具备里程碑意义的操作系统版本之一，拥有许多新功能和变化，简单回顾一下：</p>\r\n\r\n<ol>\r\n	<li>\r\n	<p>全新的&ldquo;开始&rdquo;按钮、菜单和任务栏</p>\r\n	</li>\r\n	<li>\r\n	<p>引入 Windows 资源管理器</p>\r\n	</li>\r\n	<li>\r\n	<p>改进多任务处理</p>\r\n	</li>\r\n	<li>\r\n	<p>引入即插即用机制，支持自动检测和安装硬件</p>\r\n	</li>\r\n	<li>\r\n	<p>支持长文件名（最多 250 个字符）</p>\r\n	</li>\r\n	<li>\r\n	<p>引入 Microsoft Network (MSN)，MSN 旨在通过拨号连接访问电子邮件、聊天室，新闻组和首个 WWW 主页</p>\r\n	</li>\r\n	<li>\r\n	<p>首次提出在多台计算机之间同步数据的想法，自带的&quot;My Briefcase&quot;程序旨在在笔记本电脑和台式计算机之间同步文件</p>\r\n	</li>\r\n	<li>\r\n	<p>首个搭售 Internet Explorer(IE) 的系统</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>以上的变化如今有的已被取代，例如 IE 浏览器；有的则继续被沿用着，例如开始菜单概念&mdash;&mdash;它甚至称得上 Windows 系统最具代表性且影响最深远的设计。话说影响一直持续至今的可能还有 Windows 95 这个名字，据说 Windows 9 就是因为它而被跳过，整个 Windows 家族命名方式的变化也是由此而起。</p>\r\n\r\n<p>1995年8月24日对于微软来说是重要的一天，杰伊&middot;莱诺(Jay Leno)与微软联合创始人比尔&middot;盖茨(Bill Gates)共同宣布了 Windows 95，整个 Windows 95 开发团队也登台亮相。</p>\r\n\r\n<p style="text-align: center;"><img src="https://www.phpok.com/res/202009/01/045bcb14fd6fbdc2_58_0.jpg" /></p>\r\n\r\n<p>为宣传这款系统，微软斥巨资铺天盖地在电视台投放搭配滚石乐队《Start Me Up》歌曲的广告，甚至还请来《老友记》演员 Jennifer Aniston（&ldquo;瑞秋&rdquo;饰演者）和 Matthew Perry（&ldquo;钱德勒&rdquo;饰演者）拍摄介绍 Windows 95 的长达一小时的情境短剧。</p>\r\n\r\n<p style="text-align: center;"><img src="https://www.phpok.com/res/202009/01/8408c4071b009add_84_1.png" /></p>\r\n\r\n<p>在微软的强力营销下，Windows 95 在前五周内就售出了 700 万份，市场一度出现午夜时分消费者在 CompUSA 和百思买排队购买 Windows 95 CD-ROM 副本的热闹场面。</p>\r\n\r\n<p style="text-align: center;"><img height="591" src="https://www.phpok.com/res/202009/01/ec3801b6f503f0a8_49_2.jpg" /></p>\r\n\r\n<p>现在想体验原汁原味的 Windows 95 并非易事，不过好在有开发者基于 Electron 打造了可在 macOS, Linux 和 Windows 上运行的 Windows 95，详情查看&nbsp;<a href="https://github.com/felixrieseberg/windows95" target="_blank">https://github.com/felixrieseberg/windows95</a>。</p>\r\n\r\n<h3>部分图集</h3>\r\n\r\n<p style="text-align: center;"><img src="https://www.phpok.com/res/202009/01/24a9437d34d61655_74_3.jpg" /></p>\r\n\r\n<p style="text-align: center;">▲ 比尔&middot;盖茨向世界推出了 Windows 95</p>\r\n\r\n<p style="text-align: center;"><img src="https://www.phpok.com/res/202009/01/318fe45380d1e826_46_4.jpg" /></p>\r\n\r\n<p style="text-align: center;">▲ 革命性的&ldquo;开始菜单&rdquo;</p>\r\n\r\n<p style="text-align: center;"><img src="https://www.phpok.com/res/202009/01/41b3395e4f37faf6_33_5.jpg" /></p>\r\n\r\n<p style="text-align: center;">▲ Windows 95 桌面</p>\r\n\r\n<p style="text-align: center;"><img height="612" src="https://www.phpok.com/res/202009/01/41d187d506be6882_30_6.jpg" /></p>\r\n\r\n<p style="text-align: center;">▲ Windows 95 零售副本</p>\r\n', '8月24日是 Windows 95 诞生 25 周年的纪念日，在这个有特殊意义的日子里，微软发布了一段回顾 Windows 95 的视频，向大众介绍了其中一些经典元素（开始菜单、回收站、扫雷和纸牌等）的改变和演进，以及系统整体视觉风格和 UI 设计上的变化。', 0, '', '', '', 'https://video.knowpet.cn/sv/34e3673b-17e91dd5d9c/34e3673b-17e91dd5d9c.mp4', ''),
-(15, 1, 43, 68, 0, '<p>2019年已经结束，年终总结愁到人头秃。效率惊人的苏宁率先发布了年终大数据报告，唤醒了“社畜们”难得的好奇心。</p><p>“你会在朋友圈买东西吗?”朋友急冲冲在微信上问我。</p><p>“看到好东西就会买啊，你问这个干啥?”</p><p>在我的追问下朋友告诉我，原来这两天“90后和00后的代沟有多大”冲上了热搜，她一边咆哮着我还没老，一边暗搓搓观察自己是不是真的跟00后有代沟，结果就看到了苏宁推客的年终大数据指出：会在朋友圈买东西的90后占了31.7%，80后占了37.0%，而00后只占了9.0%。</p><p style="text-align:center;"><img id="68437535" src="https://www.phpok.com/res/202001/02/affff7dc67d4b1cb_32_0.png" title="90后和00后代沟有多大？苏宁推客大数据告诉你" alt="90后和00后代沟有多大？苏宁推客大数据告诉你"/></p><p>“我不服!怎么也没想到我跟80后是一挂的……”朋友委屈巴巴抗议。</p><p>毕竟再过几天，第一批90后就要迈入“30岁大军”，2019仿佛就是他们的最后一条底裤，但是马上这条底裤就要像他们的头发一样离他们而去了，怎么能不让人难过呢?</p><p>正当我想要跟她抱头痛哭的时候，她突然发出了杠铃般的笑声，又给我发了一组数据，我抹干眼泪定睛一看：在朋友圈买东西的女性占比56.3%，男性占比43.7%..……Excuse me?男性占比43.7%?</p><p style="text-align:center;"><img id="68437537" src="https://www.phpok.com/res/202001/02/d5287c9070db15d6_95_1.png" title="90后和00后代沟有多大？苏宁推客大数据告诉你" alt="90后和00后代沟有多大？苏宁推客大数据告诉你"/></p><p>打扰了，现在的男生购物欲这么强的吗?谁能想到表面上仿佛只知道一日三餐的钢铁直男们，背地里在朋友圈买东西买的这么勤，还真是有两幅面孔呢!</p><p>这时我又想到了上个星期我爹说在网上买的那四斤流心柿子……打开朋友圈翻翻记录，远方二舅在卖……ok，破案了。</p><p>妈!我爸藏私房钱!!!</p><p>你以为奇妙操作仅限于此?NONONO!苏宁推客这组数据还指出：南京、上海、北京这三个地区的人在朋友圈买东西最多。这我就真实迷惑了，原本以为二三线城市的人才是朋友圈购物主力军，没想到一线城市才是大部队集结地。</p><p style="text-align:center;"><img id="68437539" src="https://www.phpok.com/res/202001/02/071c9d1d690cf9bb_9_2.png" title="90后和00后代沟有多大？苏宁推客大数据告诉你" alt="90后和00后代沟有多大？苏宁推客大数据告诉你"/></p><p>那么为什么无论男女、不限地域，大家都乐于在朋友圈购物呢?毕竟它不是一个为了“购物”而产生的平台。</p><p>我那偷偷藏私房钱的爹给了我三个答案。一是需求：我确实需要这样东西，看不见的时候我想不起来，看到朋友圈有人发我就想起来了。二是信任：我信任我朋友圈里的人，相信他不会骗我。三是人情：朋友圈里有很多我的亲朋好友，为了照顾他们的生意。</p><p>这么一听是不是就恍然大悟了?当零售跟社交结合起来，蕴含的能量是无限大的，任何人都可以成为一个“零售商”。2019年，国人的网购习惯依然与传统人情挂上了钩。</p><p>而说到人情，即将到来的春节才是“人情”高发段。为了满足国人的消费习惯，苏宁2020年货节已经全面启动，年货节期间，各品类品牌商将苏宁平台锁定为新品首发渠道，并专门为苏宁用户定制的专属商品，还有汽车、厨电等新品也将陆续登陆苏宁平台。（一鸣）</p><p><br/></p>', '2019年已经结束，年终总结愁到人头秃。效率惊人的苏宁率先发布了年终大数据报告，唤醒了“社畜们”难得的好奇心。', 0, 'https://tech.gmw.cn/2020-01/02/content_33449331.htm', '光明网', '', '', ''),
-(16, 1, 43, 68, 607, '<p style="text-align: center;"><img src="res/_cache/auto/26/262.png" /></p>\r\n\r\n<p>近两年，百度、腾讯、快手、爱奇艺、B站等巨头、先行者在知识领域的动作不约而同。</p>\r\n\r\n<p>2019年12月12日，百度知识垂类总经理阮瑜在“2019百度知识峰会”上披露：百度知识内容日均搜索量已达到15.4亿次，百度知识垂类产品每天服务用户突破2.3亿，用户日均浏览总时长超过6.3亿分钟。</p>\r\n\r\n<p>几乎同一时段，快手宣称其平台上的知识作品数量超过1.2亿，平均每秒诞生4个知识内容，平均每个作品获得一万多播放曝光。</p>\r\n\r\n<p>除此之外，爱奇艺、腾讯视频、优酷等纷纷上线知识频道，入局知识付费，更不用提B站摇身一变成为“一家神奇的学习网站”了。今年4月，B站公布了一组数据：过去一年有近2000万人在B站学习，相当于2018年高考人数的两倍。</p>\r\n\r\n<p>不久前，腾讯在ConTech技术大会上发布了内容产业趋势报告，其中提及，近4成用户反映，他们开始关心知识技能方面的内容。在用户挑选资讯内容的影响因素排名中，可以涨知识也超过了内容有趣。</p>\r\n\r\n<p>字节跳动副总裁张羽提到，人类的文明史就是知识的普及史。搜狗CTO杨洪涛认为，搜索的未来会走向专业化和服务化，掌握知识和完成服务一定是搜索整个领域未来发展的方向。</p>\r\n\r\n<p>以上动作和言论反映出背后知识形态的趋势变化：过去，知识是静态、独立、客观、集中的，是复刻现实的照片；如今，知识是动态、共创、主观、分散的，是自主生长的生命体。</p>\r\n\r\n<p>知识形态的变化，加之近几年罗振宇等人对知识服务进行的大规模宣贯，知识的价值得以被重新彰显，“与知识共生共长”被巨头平台们重视起来。</p>\r\n\r\n<p>“碎片化知识”更有价值？</p>\r\n\r\n<p>互联网改变了知识本身，即便知识被网络碾压得支离破碎，它们的好处也十分突出。这是最真实的知识形态——达尔文写作《物种起源》时，已经尽最大可能设想了各种意见，甚至模拟了无数假想敌，但一本书终究辩论不完，总有些人的意见不能被写入。</p>\r\n\r\n<p>一本已然封禁了知识的书可以成为经典，但无法做到与时俱进。</p>\r\n\r\n<p>书还有另外一种写法，就是开放，就是不写完。</p>\r\n\r\n<p>相对封装好的书本知识，互联网知识其实更容易用来存放，它们可以不断更新迭代，永远生猛鲜活。</p>\r\n\r\n<p>得到APP讲师万维钢曾说：“互联网时代，我们根本没必要把东西‘写完’。你应该只写下你认为这次应该写的，然后让这个文本保持开放状态，让读者添加评论和内容。”</p>\r\n\r\n<p>这种现代人创造和使用知识的方法，其实早就有了实现方式，即众所周知的——使用搜索引擎。或者说，如果搜索如此方便，人们完全可以在任何地方写下自己最新发现的知识。</p>\r\n\r\n<p style="text-align:center;"><img alt="巨头为什么一齐瞄准知识领域？" id="68428596" src="https://www.phpok.com/res/202001/02/5cd982af5e87fa59_29_1.png" title="巨头为什么一齐瞄准知识领域？" /></p>\r\n\r\n<p>的确，互联网甚至是更具象的搜索引擎，为知识创造了适宜的生长环境。新的语境下，原本为少数精英分子所掌握的知识壁垒被打破，普通民众可以随时释放自己在生产生活中的客观智慧。</p>\r\n\r\n<p>同时，因为群体的复杂力量交织、汇聚、共振，知识灵感不再是单点突破，而可以借助一整套发生范式——群众的力量是无穷的，因此孕育了知识的喷薄而生。</p>\r\n\r\n<p>在“把知识生产权交予用户”的逻辑下，一些头部视频平台正向视频形式的“喜马拉雅FM”靠拢。这正是快手、爱奇艺、腾讯视频、优酷、B站等视频、短视频平台押注知识领域的重要原因。</p>\r\n\r\n<p>腾讯副总裁陈菊红曾提到：“如果我们把中国3.2亿有涨知识需求的用户拿出来看，他们主要需求在哪里？日常生活技巧占第1位。接下来是健康生活、百科养生、疾病防控。第3位是文化知识、文学历史和社会常识，也是非常高的比例。”</p>\r\n\r\n<p>搜索引擎与这些信息、知识有更天然的连接属性，以百度为例，其历经15年的沉淀，形成了更浩如烟海的知识海洋。</p>\r\n\r\n<p>巨大的数据背后是每位网民逐条的生成、编辑和互动累积：百度在知道、百科、文库等方面积累了远超10亿的知识内容。因此，百度百科成为了全球最大的中文百科全书，拥有1600万个词条；百度知道成为了全球最大的互动问答平台，累积问答数达到5.5亿；百度文库的文档数也已超6亿。</p>\r\n\r\n<p>这些知识内容铸成极深的护城河，帮助百度成为了中国最大的以信息和知识为核心的移动生态。</p>\r\n\r\n<p>搜索引擎有什么“知识优势”？</p>\r\n\r\n<p>类似百度这样的搜索引擎中数量庞大的知识优势，实际上早已为我们的大脑赋能。</p>\r\n\r\n<p>学生时代，我们需要把知识存在脑子里，记忆力好的同学更容易拥有更多知识，通常能够外化为一个好成绩。现在，只要能在搜索引擎查询到的，都是体外知识，人人都能进行使用和管理。</p>\r\n\r\n<p style="text-align:center;"><img alt="巨头为什么一齐瞄准知识领域？" id="68428597" src="https://www.phpok.com/res/202001/02/cb5c11751add7491_59_2.png" title="巨头为什么一齐瞄准知识领域？" /></p>\r\n\r\n<p>培根有句名言“Knowledge is power”，被翻译为“知识就是力量”，但power不只有“力量”的含义，在那个年代，还代表着“权力”。</p>\r\n\r\n<p>知识是驱动社会发展的前进力量，掌握知识的人自然也掌握着社会的权力。</p>\r\n\r\n<p>这一概念后来演变为“知识鸿沟”。美国明尼苏达大学传播学者蒂奇纳等人最早提出了“知识鸿沟假说”，点明经济地位高者通常能比社会经济地位低者更快地获得信息。</p>\r\n\r\n<p>以国内高考为例，尽管通过单纯的成绩选拔已将各地区差异降低到最小，但国际学校双语教学的富二代和十几年没出过村落的孩子仍然有着明显的知识差异。两者接触的师资力量和书籍资料完全不同，由此引申的个体认知也在不断扩大差距。</p>\r\n\r\n<p>这样的知识鸿沟该如何解决？</p>\r\n\r\n<p>美国政府曾做过尝试：20世纪六十年代推出了益智电视节目《芝麻街》，节目不断向孩子传递知识，最终的结果却是，知识鸿沟不仅没有消失，反而日益扩大。因为贫穷的孩子根本无法接触这档节目，换言之，观看《芝麻街》的都是经济条件不错的孩子，对他们做再多的教育，也无法带来知识平等。</p>\r\n\r\n<p>长辈们总会讲这样的故事，因为小时候条件不好，无书可读，他们只能把亲戚朋友家的书借空，但读完之后，也就无可奈何地陷入书荒。</p>\r\n\r\n<p>图书馆是奢侈的，“如饥似渴，得了文学胃炎症”的作家木心就因此前所著书稿和相关资料被悉数烧毁，讲课时又没有课本，只能全凭记忆讲述。所幸，他的记忆力远超常人，文艺课开起来后，一讲就是五年，记录的讲义形成了厚重的五本，最终成就了著名的《文学回忆录》。</p>\r\n\r\n<p>木心这记忆力常人难以企及，我们的资料烧了也就烧了，哪有什么补救措施。</p>\r\n\r\n<p>但属于这一代人的幸运是，即便资料烧毁，丢失记忆，我们也还有互联网。</p>\r\n\r\n<p>如今，摆在课堂桌角的那本新华字典消失不见，取而代之的是离开学校也不会丢失的知识——太阳半径是6.955*10^5千米，雅鲁藏布江是中国最长的高原河流，重力加速度的数值是9.8，1785年瓦特制成的改良型蒸汽机投入使用……这些知识我们随时可以通过互联网查到。</p>\r\n\r\n<p>二十年时间，因为互联网的发展普及，知识获取方式经历了波折的颠覆性变革。</p>\r\n\r\n<p>1996年，搜狐定位于网络信息分类导航网站，提出“出门找地图，上网找搜狐”的说法，一些知识信息开始进入网络。</p>\r\n\r\n<p>但是，知识日益爆发式增长的现状和人们快速准确获取知识的需求之间的矛盾，使得搜狐人工信息分类的局限性逐渐暴露，搜索引擎root自动抓取、智能分类成了替代。</p>\r\n\r\n<p>2000年，中文搜索引擎百度面世，从最初的千万页索引内容（约等于一个小型图书馆），到如今百度阳泉数据中心成为亚洲单体规模最大的数据中心，用了20年时间。</p>\r\n\r\n<p>20年后的今天，百度阳泉数据中心已投产12万平方米，上线服务器超过15万台，超过300万个CPU核，存储容量超过6EB，可存储信息量相当于30多万个中国国家图书馆的藏书总量。</p>\r\n\r\n<p style="text-align:center;"><img alt="巨头为什么一齐瞄准知识领域？" id="68428598" src="https://www.phpok.com/res/202001/02/378edb22bf93184c_76_3.png" title="巨头为什么一齐瞄准知识领域？" /></p>\r\n\r\n<p>知识的获取方式发生了翻天覆地的变化，我们再也不用专程赶赴图书馆或购买众多书籍来完成知识的提取，原本耗时耗力还耗钱的过程被免费简便易用的“百度一下”取代，信息鸿沟被逐渐踏平。</p>\r\n\r\n<p>现在无论你身处何地，只要能联网，就能获取与更高阶层完全相同的知识，这在20年前完全不可想象，而这正是属于具备海量知识信息搜索引擎的独特知识优势。</p>\r\n\r\n<p>知识领域为什么被巨头盯上？</p>\r\n\r\n<p>作为硬通货的知识和技能被巨头平台们看上，有着共同的理由——知识网络是牢不可破的刚需城墙，不仅能带来知识平权的社会价值，还能铸造商业价值的护城河。</p>\r\n\r\n<p>相比娱乐性内容基础上，用户眼球的迅速转移，知识内容的稳定力量不容小觑。</p>\r\n\r\n<p>经过一些人的所思所想总结而来、未经过时间考验、不具备普适性的东西是不严谨的，更适合被称作包裹有娱乐、主观外壳的“见识”。</p>\r\n\r\n<p>几年前，人们曾是“见识”疯狂的拥趸。</p>\r\n\r\n<p>网友曾花费5000元在网络平台问王思聪问题，王思聪只用简单的几个字就将其收入囊中。人们愿意为自己的好奇和王思聪所在阶层的见识买单。</p>\r\n\r\n<p>王思聪的见识不一定正确，他说：9012年，难道还有人没坐过飞机？这就与真正的知识相悖：截至目前，中国其实还有10亿人没坐过飞机。</p>\r\n\r\n<p> </p>\r\n', '近两年，百度、腾讯、快手、爱奇艺、B站等巨头、先行者在知识领域的动作不约而同。\r\n2019年12月12日，百度知识垂类总经理阮瑜在“2019百度知识峰会”上披露：百度知识内容日均搜索量已达到15.4亿次，百度知识垂类产品每天服务用户突破2.3亿，用户日均浏览总时长超过6.3亿分钟。', 0, 'https://tech.gmw.cn/2019-12/30/content_33440672.htm', '光明网', '', '', ''),
-(17, 1, 43, 68, 0, '<p>有什么方法衡量服务器并发处理能力</p>\r\n\r\n<h3>1. 吞吐率<!--?php\r\necho "123456";</pre--></h3>\r\n\r\n<p>吞吐率，单位时间里服务器处理的最大请求数，单位req/s</p>\r\n\r\n<p>从服务器角度，实际并发用户数的可以理解为服务器当前维护的代表不同用户的文件描述符总数，也就是并发连接数。</p>\r\n\r\n<p>服务器一般会限制同时服务的最多用户数，比如apache的MaxClients参数。</p>\r\n\r\n<p>这里再深入一下，对于服务器来说，服务器希望支持高吞吐率，对于用户来说，用户只希望等待最少的时间，显然，双方不能满足，所以双方利益的平衡点，就是我们希望的最大并发用户数。</p>\r\n\r\n<h3>2. 压力测试<!--?php\r\necho "123456";</code--></h3>\r\n\r\n<p>有一个原理一定要先搞清楚，假如100个用户同时向服务器分别进行10个请求，与1个用户向服务器连续进行1000次请求，对服务器的压力是一样吗？</p>\r\n\r\n<p>实际上是不一样的，因对每一个用户，连续发送请求实际上是指发送一个请求并接收到响应数据后再发送下一个请求。</p>\r\n\r\n<p>这样对于1个用户向服务器连续进行1000次请求, 任何时刻服务器的网卡接收缓冲区中只有1个请求，而对于100个用户同时向服务器分别进行10个请求，服务器的网卡接收缓冲区最多有100个等待处理的请求，显然这时的服务器压力更大。</p>\r\n\r\n<p>压力测试前提考虑的条件</p>\r\n\r\n<ul>\r\n	<li>\r\n	<p>并发用户数: 指在某一时刻同时向服务器发送请求的用户总数(HttpWatch)</p>\r\n	</li>\r\n	<li>\r\n	<p>总请求数</p>\r\n	</li>\r\n	<li>\r\n	<p>请求资源描述</p>\r\n	</li>\r\n	<li>\r\n	<p>请求等待时间(用户等待时间)</p>\r\n	</li>\r\n	<li>\r\n	<p>用户平均请求的等待时间</p>\r\n	</li>\r\n	<li>\r\n	<p>服务器平均请求处理的时间</p>\r\n	</li>\r\n	<li>\r\n	<p>硬件环境</p>\r\n	</li>\r\n</ul>\r\n\r\n<p>压力测试中关心的时间又细分以下2种:</p>\r\n\r\n<ol>\r\n	<li>\r\n	<p>用户平均请求等待时间（这里暂不把数据在网络的传输时间，还有用户PC本地的计算时间计算入内）</p>\r\n	</li>\r\n	<li>\r\n	<p>服务器平均请求处理时间</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>用户平均请求等待时间主要用于衡量服务器在一定并发用户数下，单个用户的服务质量；而服务器平均请求处理时间就是吞吐率的倒数。</p>\r\n\r\n<p>一般来说，用户平均请求等待时间 = 服务器平均请求处理时间 * 并发用户数</p>\r\n\r\n<h3>怎么提高服务器的并发处理能力</h3>\r\n\r\n<h4>1. 提高CPU并发计算能力</h4>\r\n\r\n<p>服务器之所以可以同时处理多个请求，在于操作系统通过多执行流体系设计使得多个任务可以轮流使用系统资源。<br />\r\n这些资源包括CPU，内存以及I/O. 这里的I/O主要指磁盘I/O, 和网络I/O。</p>\r\n\r\n<p>多进程 &amp; 多线程</p>\r\n\r\n<p>多执行流的一般实现便是进程，多进程的好处可以对CPU时间的轮流使用，对CPU计算和IO操作重叠利用。这里的IO主要是指磁盘IO和网络IO，相对CPU而言，它们慢的可怜。</p>\r\n\r\n<p>而实际上，大多数进程的时间主要消耗在I/O操作上。</p>\r\n\r\n<p>现代计算机的DMA技术可以让CPU不参与I/O操作的全过程，比如进程通过系统调用，使得CPU向网卡或者磁盘等I/O设备发出指令，然后进程被挂起，释放出CPU资源，等待I/O设备完成工作后通过中断来通知进程重新就绪。</p>\r\n\r\n<p>对于单任务而言，CPU大部分时间空闲，这时候多进程的作用尤为重要。CPU 是怎么认识代码的？推荐大家看下。</p>\r\n\r\n<p>多进程不仅能够提高CPU的并发度。其优越性还体现在独立的内存地址空间和生命周期所带来的稳定性和健壮性，其中一个进程崩溃不会影响到另一个进程。<br />\r\n但是进程也有如下缺点：</p>\r\n\r\n<ol>\r\n	<li>\r\n	<p>fork()系统调用开销很大: prefork</p>\r\n	</li>\r\n	<li>\r\n	<p>进程间调度和上下文切换成本: 减少进程数量</p>\r\n	</li>\r\n	<li>\r\n	<p>庞大的内存重复：共享内存</p>\r\n	</li>\r\n	<li>\r\n	<p>IPC编程相对比较麻烦</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>减少进程切换</p>\r\n\r\n<p>当硬件上下文频繁装入和移出时，所消耗的时间是非常可观的。可用Nmon工具监视服务器每秒的上下文切换次数。</p>\r\n\r\n<p>为了尽量减少上下文切换次数，最简单的做法就是减少进程数，尽量使用线程并配合其它I/O模型来设计并发策略。</p>\r\n\r\n<p>还可以考虑使用进程绑定CPU技术，增加CPU缓存的命中率。若进程不断在各CPU上切换，这样旧的CPU缓存就会失效。</p>\r\n\r\n<p>减少使用不必要的锁</p>\r\n\r\n<p>服务器处理大量并发请求时，多个请求处理任务时存在一些资源抢占竞争，这时一般采用&ldquo;锁&rdquo;机制来控制资源的占用。到底什么是重入锁，推荐大家看下。</p>\r\n\r\n<p>当一个任务占用资源时，我们锁住资源，这时其它任务都在等待锁的释放，这个现象称为锁竞争。</p>\r\n\r\n<p>通过锁竞争的本质，我们要意识到尽量减少并发请求对于共享资源的竞争。</p>\r\n\r\n<p>比如在允许情况下关闭服务器访问日志，这可以大大减少在锁等待时的延迟时间。要最大程度减少无辜的等待时间。</p>\r\n\r\n<p>这里说下无锁编程，就是由内核完成这个锁机制，主要是使用原子操作替代锁来实现对共享资源的访问保护。</p>\r\n\r\n<p>使用原子操作时，在进行实际的写操作时，使用了lock指令，这样就可以阻止其他任务写这块内存，避免出现数据竞争现象。原子操作速度比锁快，一般要快一倍以上。</p>\r\n\r\n<p>例如fwrite(), fopen()，其是使用append方式写文件，其原理就是使用了无锁编程，无锁编程的复杂度高，但是效率快，而且发生死锁概率低。</p>\r\n\r\n<p>考虑进程优先级</p>\r\n\r\n<p>进程调度器会动态调整运行队列中进程的优先级，通过top观察进程的PR值</p>\r\n\r\n<p>考虑系统负载</p>\r\n\r\n<p>可在任何时刻查看/proc/loadavg, top中的load average也可看出</p>\r\n\r\n<p>考虑CPU使用率</p>\r\n\r\n<p>除了用户空间和内核空间的CPU使用率以外，还要关注I/O wait,它是指CPU空闲并且等待I/O操作完成的时间比例（top中查看wa的值）。</p>\r\n\r\n<h4>2. 考虑减少内存分配和释放</h4>\r\n\r\n<p>服务器的工作过程中，需要大量的内存，使得内存的分配和释放工作尤为重要。</p>\r\n\r\n<p>可以通过改善数据结构和算法复制度来适当减少中间临时变量的内存分配及数据复制时间，而服务器本身也使用了各自的策略来提高效率。</p>\r\n\r\n<p>例如Apache,在运行开始时一次申请大片的内存作为内存池，若随后需要时就在内存池中直接获取，不需要再次分配，避免了频繁的内存分配和释放引起的内存整理时间。</p>\r\n\r\n<p>再如Nginx使用多线程来处理请求，使得多个线程之间可以共享内存资源，从而令它的内存总体使用量大大减少。</p>\r\n\r\n<p>另外，Nginx分阶段的内存分配策略，按需分配，及时释放，使得内存使用量保持在很小的数量范围。</p>\r\n\r\n<p>另外，还可以考虑共享内存。</p>\r\n\r\n<p>共享内存指在多处理器的计算机系统中，可以被不同中央处理器（CPU）访问的大容量内存，也可以由不同进程共享，是非常快的进程通信方式。</p>\r\n\r\n<p>但是使用共享内存也有不好的地方，就是对于多机器时数据不好统一。</p>\r\n\r\n<p>shell命令ipcs可用来显示系统下共享内存的状态，函数shmget可以创建或打开一块共享内存区，函数shmat将一个存在的共享内存段连接到本进程空间, 函数shmctl可以对共享内存段进行多种操作，函数shmdt函数分离该共享内存。</p>\r\n\r\n<h4>3. 考虑使用持久连接</h4>\r\n\r\n<p>持久连接也为长连接，它本身是TCP通信的一种普通方式，即在一次TCP连接中持续发送多分数据而不断开连接。</p>\r\n\r\n<p>与它相反的方式称为短连接，也就是建立连接后发送一份数据就断开，然后再次建立连接发送下一份数据， 周而复始。</p>\r\n\r\n<p>是否采用持久连接，完全取决于应用特点。</p>\r\n\r\n<p>从性能角度看，建立TCP连接的操作本身是一项不小的开销，在允许的情况下，连接次数越少，越有利于性能的提升; 尤其对于密集型的图片或网页等小数据请求处理有明显的加速所用。</p>\r\n\r\n<p>HTTP长连接需要浏览器和web服务器的共同协作，目前浏览器普遍支持长连接，表现在其发出的HTTP请求数据头中包含关于长连接的声明，如下：Connection: Keep-Alive</p>\r\n\r\n<p>主流的web服务器都支持长连接，比如apache中，可以用KeepAlive off关闭长连接。</p>\r\n\r\n<p>对于长连接的有效使用，还有关键一点在于长连接超时时间的设置，即长连接在什么时候关闭吗？</p>\r\n\r\n<p>Apache的默认设置为5s, 若这个时间设置过长，则可能导致资源无效占有，维持大量空闲进程，影响服务器性能。</p>\r\n\r\n<h4>4. 改进I/O 模型</h4>\r\n\r\n<p>I/O操作根据设备的不同分为很多类型，比如内存I/O, 网络I/O, 磁盘I/O。详解 Java 中 4 种 I/O 模型，推荐大家看下。</p>\r\n\r\n<p>对于网络I/O和磁盘I/O, 它们的速度要慢很多，尽管使用RAID磁盘阵列可通过并行磁盘磁盘来加快磁盘I/O速度，购买大连独享网络带宽以及使用高带宽网络适配器可以提高网络I/O的速度。</p>\r\n\r\n<p>但这些I/O操作需要内核系统调用来完成，这些需要CPU来调度，这使得CPU不得不浪费宝贵的时间来等待慢速I/O操作。</p>\r\n\r\n<p>我们希望让CPU足够少的时间在i/O操作的调度上，如何让高速的CPU和慢速的I/O设备更好地协调工作，是现代计算机一直探讨的话题。各种I/O模型的本质区别在于CPU的参与方式。</p>\r\n\r\n<p>DMA技术</p>\r\n\r\n<p>I/O设备和内存之间的数据传输方式由DMA控制器完成。在DMA模式下，CPU只需向DMA下达命令，让DMA控制器来处理数据的传送，这样可以大大节省系统资源。</p>\r\n\r\n<p>异步I/O</p>\r\n\r\n<p>异步I/O指主动请求数据后便可以继续处理其它任务，随后等待I/O操作的通知，这样进程在数据读写时不发生阻塞。</p>\r\n\r\n<p>异步I/O是非阻塞的，当函数返回时，真正的I/O传输已经完成，这让CPU处理和I/O操作达到很好的重叠。</p>\r\n\r\n<p>I/O多路复用</p>\r\n\r\n<p>epoll服务器同时处理大量的文件描述符是必不可少的，若采用同步非阻塞I/O模型，若同时接收TCP连接的数据，就必须轮流对每个socket调用接收数据的方法，不管这些socket有没有可接收的数据，都要询问一次。</p>\r\n\r\n<p>假如大部分socket并没有数据可以接收，那么进程便会浪费很多CPU时间用于检查这些socket有没有可以接收的数据。</p>\r\n\r\n<p>多路I/O就绪通知的出现，提供了对大量文件描述符就绪检查的高性能方案，它允许进程通过一种方法同时监视所有文件描述符，并可以快速获得所有就绪的文件描述符，然后只针对这些文件描述符进行数据访问。</p>\r\n\r\n<p>epoll可以同时支持水平触发和边缘触发，理论上边缘触发性能更高，但是代码实现复杂，因为任何意外的丢失事件都会造成请求处理错误。</p>\r\n\r\n<p>epoll主要有2大改进：</p>\r\n\r\n<ol>\r\n	<li>\r\n	<p>epoll只告知就绪的文件描述符，而且当调用epoll_wait()获得文件描述符时，返回并不是实际的描述符，而是一个代表就绪描述符数量的值，然后只需去epoll指定的一个数组中依次取得相应数量的文件描述符即可。这里使用了内存映射(mmap)技术，这样彻底省掉了这些文件描述符在系统调用时复制的开销。</p>\r\n	</li>\r\n	<li>\r\n	<p>epoll采用基于事件的就绪通知方式。其事先通过epoll_ctrl()注册每一个文件描述符，一旦某个文件描述符就绪时，内核会采用类似callback的回调机制，当进程调用epoll_wait()时得到通知</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>关于IO模型，可以参考笔者前面写的相关文章Java NIO.2；关于epoll，可以参考笔者前面写的文章select、poll和epoll简介。</p>\r\n\r\n<p>Sendfile</p>\r\n\r\n<p>大多数时候，我们都向服务器请求静态文件，比如图片，样式表等。<br />\r\n在处理这些请求时，磁盘文件的数据先经过内核缓冲区，然后到用户内存空间，不需经过任何处理，其又被送到网卡对应的内核缓冲区，接着再被送入网卡进行发送。</p>\r\n\r\n<p>Linux提供sendfile()系统调用，可以讲磁盘文件的特定部分直接传送到代表客户端的socket描述符，加快了静态文件的请求速度，同时减少CPU和内存的开销。<br />\r\n适用场景：对于请求较小的静态文件，sendfile发挥的作用不那么明显，因发送数据的环节在整个过程中所占时间的比例相比于大文件请求时小很多。</p>\r\n\r\n<p>内存映射</p>\r\n\r\n<p>Linux内核提供一种访问磁盘文件的特殊方式，它可以将内存中某块地址空间和我们指定的磁盘文件相关联，从而对这块内存的访问转换为对磁盘文件的访问。这种技术称为内存映射。</p>\r\n\r\n<p>多数情况下，内存映射可以提高磁盘I/O的性能，无须使用read()或write()等系统调用来访问文件，而是通过mmap()系统调用来建立内存和磁盘文件的关联，然后像访问内存一样自由访问文件。</p>\r\n\r\n<p>缺点：在处理较大文件时，内存映射会导致较大的内存开销，得不偿失。</p>\r\n\r\n<p>直接I/O</p>\r\n\r\n<p>在linux 2.6中，内存映射和直接访问文件没有本质差异，因为数据需要经过2次复制，即在磁盘与内核缓冲区之间以及在内核缓冲区与用户态内存空间。</p>\r\n\r\n<p>引入内核缓冲区的目的在于提高磁盘文件的访问性能，然而对于一些复杂的应用，比如数据库服务器，它们为了进一步提高性能，希望绕过内核缓冲区，由自己在用户态空间实现并管理I/O缓冲区，比如数据库可根据更加合理的策略来提高查询缓存命中率。</p>\r\n\r\n<p>另一方面，绕过内核缓冲区也可以减少系统内存的开销，因内核缓冲区本身就在使用系统内存。</p>\r\n\r\n<p>Linux在open()系统调用中增加参数选项O_DIRECT,即可绕过内核缓冲区直接访问文件,实现直接I/O。</p>\r\n\r\n<p>在Mysql中，对于Innodb存储引擎，自身进行数据和索引的缓存管理，可在my.cnf配置中分配raw分区跳过内核缓冲区，实现直接I/O。</p>\r\n\r\n<h4>5. 改进服务器并发策略</h4>\r\n\r\n<p>服务器并发策略的目的，是让I/O操作和CPU计算尽量重叠进行，一方面让CPU在I/O等待时不要空闲，另一方面让CPU在I/O调度上尽量花最少的时间。</p>\r\n\r\n<p>一个进程处理一个连接，非阻塞I/O</p>\r\n\r\n<p>这样会存在多个并发请求同时到达时，服务器必然要准备多个进程来处理请求。其进程的开销限制了它的并发连接数。</p>\r\n\r\n<p>但从稳定性和兼容性的角度，则其相对安全，任何一个子进程的崩溃不会影响服务器本身，父进程可以创建新的子进程；这种策略典型的例子就是Apache的fork和prefork模式。</p>\r\n\r\n<p>对于并发数不高（如150以内）的站点同时依赖Apache其它功能时的应用选择Apache还是可以的。</p>\r\n\r\n<p>一个线程处理一个连接，非阻塞IO</p>\r\n\r\n<p>这种方式允许在一个进程中通过多个线程来处理多个连接，一个线程处理一个连接。Apache的worker模式就是这种典型例子，使其可支持更多的并发连接。不过这种模式的总体性能还不如prefork，所以一般不选用worker模式。推荐阅读：14个Java并发容器。</p>\r\n\r\n<p>一个进程处理多个连接，异步I/O</p>\r\n\r\n<p>一个线程同时处理多个连接，潜在的前提条件就是使用IO多路复用就绪通知。</p>\r\n\r\n<p>这种情况下，将处理多个连接的进程叫做worker进程或服务进程。worker的数量可以配置，如Nginx中的worker_processes 4。</p>\r\n\r\n<p>一个线程处理多个连接，异步IO</p>\r\n\r\n<p>即使有高性能的IO多路复用就绪通知，但磁盘IO的等待还是无法避免的。更加高效的方法是对磁盘文件使用异步IO，目前很少有Web服务器真正意义上支持这种异步IO。</p>\r\n\r\n<h4>6. 改进硬件环境</h4>\r\n\r\n<p>还有一点要提及的是硬件环境，服务器的硬件配置对应用程序的性能提升往往是最直接，也是最简单的方式，这就是所谓的scale up。这里不做论述。</p>\r\n', '一台服务器在单位时间里能处理的请求越多，服务器的能力越高，也就是服务器并发处理能力越强！', 0, 'http://www.itpub.net/2020/02/13/5225/', 'ITPUB', 'https://video.knowpet.cn/sv/34e3673b-17e91dd5d9c/34e3673b-17e91dd5d9c.mp4', '', ''),
-(2290, 1, 43, 68, 439, '<p style="text-align: center;"><img _width="232px" alt="图片" crossorigin="anonymous" data-fail="0" data-index="1" data-ratio="1.4006514657980456" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/G3LNmiaOGjaqibm5M81JU58m1fbCxodnyMiasibYRbSw9YsEJMJ1lNn3Z0qnj9H14sXaITibxAwGhsbMb7bZlLHpKiaw/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" data-type="png" data-w="614" src="res/_cache/auto/43/439.jpg" /></p>\r\n\r\n<section>《报告》显示，2022年全年，补天平台<strong>共收录白帽子报告的全国各类网站安全漏洞约16.8万个，较2021年的14.6万个增长约15.0%</strong>；漏洞共涉及网站约9.0万个，较2021年的11.5万个，减少了约21.7%。</section>\r\n\r\n<section>&nbsp;</section>\r\n\r\n<section>总体来看，<strong>补天平台每年收录网站漏洞的数量持续高速增长，这与国内机构日益重视、白帽子群体不断扩大、挖洞水平日益提升等多种因素有关</strong>。同时，优质白帽资源也正在不断向那些愿意投入资源做好SRC的企业集中，这是导致挖洞数量增长，漏洞涉及网站数量却不升反降的重要原因。这说明，健康的SRC运营对于企业漏洞响应乃至整个网络安全建设有着非常重要的意义。</section>\r\n\r\n<section>&nbsp;</section>\r\n\r\n<p><img _width="677px" alt="图片" crossorigin="anonymous" data-fail="0" data-index="2" data-ratio="0.53515625" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/G3LNmiaOGjaqibm5M81JU58m1fbCxodnyMtZUACJ8jMxqCzCiaXB0UnBSIaHYAylUPLzmrIzv6S8K6H4XMnZaAuibQ/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" data-type="png" data-w="1280" src="res/_cache/auto/44/440.jpg" /></p>\r\n\r\n<section>从漏洞行业分布来看，2022年补天平台收录的<strong>IT信息技术类网站漏洞数量最多</strong>，共有32088个，占比约为19.1%；<strong>其次是制造业网站</strong>，共收录漏洞15456个，占比约为9.2%；<strong>生活服务类网站排名第三</strong>，共收录漏洞12264个，占比约为7.3%。</section>\r\n\r\n<section>&nbsp;</section>\r\n\r\n<p><img _width="677px" alt="图片" crossorigin="anonymous" data-fail="0" data-index="3" data-ratio="0.53515625" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/G3LNmiaOGjaqibm5M81JU58m1fbCxodnyM1S0g2Hib1ft17ibQWhAEaYdQuebqjV4K0sjTqws7lQwuT7Q8m29syZrg/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" data-type="png" data-w="1280" src="res/_cache/auto/43/438.jpg" /></p>\r\n\r\n<section>从漏洞的风险等级来看，在补天平台2022年全年收录网站安全漏洞中，<strong>高危漏洞4.7万个，占比约为28.1%</strong>；中危漏洞9.2万个，占比约为54.8%；低危漏洞2.9万个，占比约为17.1%。</section>\r\n\r\n<section>&nbsp;</section>\r\n\r\n<p><img _width="677px" alt="图片" crossorigin="anonymous" data-fail="0" data-index="4" data-ratio="0.53515625" data-s="300,640" data-src="https://mmbiz.qpic.cn/mmbiz_png/G3LNmiaOGjaqibm5M81JU58m1fbCxodnyMDZKvk8mh1licNpHgkF5ibhlVaFtKarhMtAP9tjYzZay7hLMWFVjHRvYA/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" data-type="png" data-w="1280" src="res/_cache/auto/44/441.jpg" /></p>\r\n\r\n<section>值得关注的是，虽然漏洞本身是无法完全避免的，被发现存在安全漏洞也并不可怕，但漠视漏洞的存在却是网络遭到入侵的重要原因之一，及时的修复或者给出缓解措施十分关键。《报告》显示，<strong>尽管2022年补天平台收录漏洞的平均确认率约为97.2%，但从已注册厂商确认的漏洞修复情况来看，漏洞修复率仅达69.8%，尚有超过30%的漏洞尚未被修复</strong>。</section>\r\n', '近日，补天漏洞响应平台（简称：补天平台）正式发布了《2022年补天漏洞响应平台年度分析报告》（简称：《报告》）。《报告》从漏洞数量、类型等多个维度，详细展示了2022年平台的漏洞收集和处置情况。', 0, 'https://www.qianxin.com/threat/reportdetail?report_id=289', '奇安信', '', '', ''),
-(2292, 1, 43, 68, 0, '<p>Bootstrap 是一个免费的开源工具包，用于开发响应式网页和在线应用程序。 HTML、CSS 和 JavaScript 框架使创建响应式、移动优先的网站变得简单。 它的主要目标是解决跨浏览器的兼容性问题。 Bootstrap 是任何网站的核心，针对所有屏幕尺寸进行了优化，并且在所有现代浏览器中看起来都很棒。<br />\r\nBootstrap 5 包含自定义表单控件。 Bootstrap 4 的表单控件使用每个浏览器中可用的任何预设。 由于其自定义设计，Bootstrap 5 中的表单控件在所有浏览器中的外观和感觉将明显更加一致。<br />\r\n在 bootstrap 5 中，删除了一些类，这这些删除的类在 bootstrap 4 版本中可用。</p>\r\n\r\n<ul>\r\n	<li>row form</li>\r\n	<li>form inline</li>\r\n	<li>list inline</li>\r\n	<li>form inline</li>\r\n</ul>\r\n\r\n<p>在 bootstrap 5 中，某些类在 bootstrap 4 版本中不可用。</p>\r\n\r\n<ul>\r\n	<li><code>gx-*</code> ：水平/列间距宽度</li>\r\n	<li><code>gy-*</code> ：垂直/行间距宽度</li>\r\n	<li><code>g-*</code> ：水平和垂直间距宽度</li>\r\n	<li><code>rows-cols-auto</code></li>\r\n</ul>\r\n\r\n<h2 id="blogTitle0">Bootstrap 4 和 Bootstrap 5 的比较</h2>\r\n<link href="https://cdn.jsdelivr.net/npm/<a  data-cke-saved-href=" rel="stylesheet" />\r\n<link href="https://cdn .jsdelivr.net/npm/<a  data-cke-saved-href=" />\r\n<table>\r\n	<thead>\r\n		<tr>\r\n			<th>比较项</th>\r\n			<th>Bootstrap 4 版本</th>\r\n			<th>Bootstrap 5 版本</th>\r\n		</tr>\r\n	</thead>\r\n	<tbody>\r\n		<tr>\r\n			<td>发布日期</td>\r\n			<td>Bootstrap 4 于 2018 年 1 月发布，与之前的版本相比有了显着的进步。</td>\r\n			<td>Bootstrap 5 于 2021 年 5 月发布。这个版本是在 alpha 和 beta 版本的多次迭代之后发布的，因此，它具有许多重要的附加功能和新功能。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Grid</td>\r\n			<td>System Bootstrap 4 有五个级别：xs、sm、md、lg 和 xl。</td>\r\n			<td>Bootstrap 5 有六个级别：xs、sm、md、lg、xl 和 xxl。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Jquery 插件</td>\r\n			<td>Bootstrap 4 包括 jquery 和所有相关的插件。</td>\r\n			<td>在 Bootstrap 5 中，Jquery 已被删除并替换为 vanilla JS 和几个功能插件。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Color</td>\r\n			<td>Bootstrap 4 为网页提供了几种颜色。外观中插入了额外的颜色，并且升级了卡片的调色板。</td>\r\n			<td>Bootstrap 5 框架有多种颜色可供选择。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Internet Explorer</td>\r\n			<td>Bootstrap 4 与 Internet Explorer 10 和 11 兼容。</td>\r\n			<td>Bootstrap 5 不支持 Internet Explorer 10 和 11。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>表单单选按钮和复选框的元素</td>\r\n			<td>在不同的操作系统和浏览器中显示不同。该表单利用了可用的任何基本浏览器功能。使用不同的操作系统或浏览器时，表单元素的外观不会改变。</td>\r\n			<td>表单交替并添加表单控件；它们不依赖于浏览器。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>实用程序 API</td>\r\n			<td>无法更改 Bootstrap 4 中的实用程序。</td>\r\n			<td>Bootstrap 5 提供了调整和开发实用程序的能力。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>使用gutter</td>\r\n			<td>Bootstrap 4 使用 px 字体大小的 glutter。</td>\r\n			<td>在 Bootstrap 5 中使用 <code>.g*</code> 并将字体大小设置为 rem。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>垂直组</td>\r\n			<td>列可以相对于彼此定位。</td>\r\n			<td>列不能相对于彼此定位。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Bootstrap 的图标</td>\r\n			<td>Bootstrap 4 缺少 SVG 图标；必须依靠 font-awesome 来制作图标。</td>\r\n			<td>Bootstrap 5 有自己的一组 SVG 图标。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Jumbotron</td>\r\n			<td>Bootstrap 4 与 jumbotron 兼容。</td>\r\n			<td>它与 jumbotron 不兼容。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>卡片组</td>\r\n			<td>卡片组用于制作具有相同宽度和高度的一组卡片。</td>\r\n			<td>卡片组类已从 Bootstrap 5中删除。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Navbar</td>\r\n			<td>有 inline-block 属性，白色的下拉菜单将是 dropdown-menu-dark 类的默认值。</td>\r\n			<td>inline-block 属性已被删除，而 dropdown-menu-dark 类现在默认有一个黑色下拉菜单。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>静态网站生成器</td>\r\n			<td>Bootstrap 4 使用 Jekyll 软件。</td>\r\n			<td>Bootstrap 5 使用了一个快速的静态生成器，即 Hugo。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>grid</td>\r\n			<td>flexbox 让垂直设计更容易构建，列和行可以简单实现。</td>\r\n			<td>justify-center-content 类直接用于根据要求对齐。提供了更复杂的网格系统，并且列没有相对位置。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>CSS 可用性</td>\r\n			<td>Bootstrap 4 使用了更少的 CSS 属性。</td>\r\n			<td>Bootstrap 5 使用了更多的 CSS 属性。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>offcanvas 组件</td>\r\n			<td>没有 offcanvas 元素。</td>\r\n			<td>offcanvas 组件现在可用。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>RTL 支持</td>\r\n			<td>语言不启用 RTL(从右到左)切换。</td>\r\n			<td>它启用 RTL(从右到左)语言切换。</td>\r\n		</tr>\r\n	</tbody>\r\n</table>\r\n\r\n<h2> </h2>\r\n\r\n<h2 id="blogTitle1">结论</h2>\r\n\r\n<p>这两个引导框架有许多相似之处和不同之处。 Bootstrap 4 和 bootstrap 4 有各自的功能。 Bootstrap 5 是 bootstrap 4 框架的高级版本。可以根据功能的要求和可用性选择版本。<br />\r\n </p>\r\n', 'Bootstrap 是一个免费的开源工具包，用于开发响应式网页和在线应用程序。 HTML、CSS 和 JavaScript 框架使创建响应式、移动优先的网站变得简单。 它的主要目标是解决跨浏览器的兼容性问题。 Bootstrap 是任何网站的核心，针对所有屏幕尺寸进行了优化，并且在所有现代浏览器中看起来都很棒。', 0, 'https://www.vsdiffer.com/vs/bootstrap-4-vs-bootstrap-5-framework.html', 'VSDiffer', '', '', '');
+(12, 1, 43, 8, 0, '<h2>结构</h2><p>将要升级的文件按原目录结构存放</p><p><img src=\"https://www.phpok.com/res/201810/19/auto_10158.png\" title=\"图片\" alt=\"图片\"/></p><p>和程序要一起打包的文件有：</p><blockquote><p>version.txt：版本信息</p><p>delete.txt：要删除的文件清单（一行一个文件）</p><p>table.sql：新版的数据表结构文件，用于执行比较新旧版本数据结构，并调整更改</p><p>update.sql：要执行的SQL文件（单独执行）</p><p>run.php：如果升级涉及到比较复杂的操作，可以在这里写PHP文件引入执行<br/></p></blockquote><h2>升级原理顺序<br/></h2><ol style=\"list-style-type: decimal;\" class=\" list-paddingleft-2\"><li><p>远程获取升级包数据</p></li><li><p>将 ZIP 压缩包下载到 _data 目录下</p></li><li><p>将下载好的压缩包解压到 _data/update/ 目录下</p></li><li><p>归纳整理文件（主要是收集：version.txt，delete.txt，table.sql，update.sql，run.php）</p></li><li><p>将 framework 这个目录的文件及文件夹移到现有程序的核心框架（可能用户会因为安全原因改名）</p></li><li><p>移动其他目录文件（或创建目录）</p></li><li><p>删除delete.txt清单中的文件【非必须】</p></li><li><p>执行 table.sql 操作（比较表结构，更新到最新的表结构）【非必须】</p></li><li><p>运行 update.sql 或是其他的 sql 文件【非必须】</p></li><li><p>运行 run.php 执行复杂的升级操作【非必须】</p></li><li><p>删除 _data/update/ 下的文件</p></li><li><p>基于 version.txt 更新版本记录</p></li></ol><h2>特别说明</h2><p>table.sql 必须是完整的数据表结构，才能进行升级比较，基本上这个操作比较复杂，不推荐使用</p><p>delete.txt 主要是删除文件操作，除非涉及到安全漏洞，一般我们没必要执行删除操作</p><p>update.sql 这里执行的SQL是不进行判断的，如果涉及到升级一关失败了，可能会出错（除非SQL里有写好相应的判断）</p><p>run.php 重点在这里，这个文件意味着可以完全嵌入执行PHP，可以用PHP来写数据表的增删查改，也支持文件的删除，也支持数据表结构的更新等等！一般OK程序的升级都会有这个的（纯文件覆盖更新连这个都可以忽略的）</p>', 'table.sql 必须是完整的数据表结构，才能进行升级比较，基本上这个操作比较复杂，不推荐使用\r\ndelete.txt 主要是删除文件操作，除非涉及到安全漏洞，一般我们没必要执行删除操作\r\nupdate.sql 这里执行的SQL是不进行判断的，如果涉及到升级一关失败了，可能会出错（除非SQL里有写好相应的判断）', 0, '', '', '', '', 0),
+(13, 1, 43, 68, 0, '<p>浏览器是我们上网冲浪之必备工具，无论是台式机、平板、智能手机，你都离不开一款浏览器。</p>\r\n\r\n<p>在过去25年间，浏览器市场经历了翻天覆地的变化。</p>\r\n\r\n<p><strong>1995年，网景浏览器(Netscape )占据浏览器80.4%的份额</strong>，但是到1995年8月16日，微软推出了第一代Internet Explore浏览器，之后IE就一直作为Windows的默认浏览器，也是从那一年开始，IE开始了持续增长，不断蚕食网景的份额。</p>\r\n\r\n<p style=\"text-align:center\"><img alt=\"图片\" src=\"https://www.phpok.com/res/_cache/auto/14/14414.png\" title=\"图片\" /></p>\r\n\r\n<p><strong>2002年，IE浏览器迎来顶峰，市场份额高达95.4%</strong>。一家独大，是真正的浏览器王者，放眼全球，没有任何对手。</p>\r\n\r\n<p> </p>\r\n\r\n<p style=\"text-align:center\"><img alt=\"图片\" src=\"https://www.phpok.com/res/_cache/auto/14/14415.png\" title=\"图片\" /></p>\r\n\r\n<p>月圆则缺水满则溢，所谓盛极必衰就是IE了。2002年下半年，Firefox火狐问世，之后数年，它成了IE的唯一对手，2008年市场份额一度达到33.1%。</p>\r\n\r\n<p>然而，Safari和Chrome相继问世。尤其是Chrome，2008年一经问世便表现出了非凡的天赋，一路披荆斩棘所向披靡。</p>\r\n\r\n<p><strong>2011年，Chrome超越Firefox，2012年，又超越IE，成为全球第一大浏览器</strong>。</p>\r\n\r\n<p>2019年，Chrome市场份额57%，Safari排在第二位，份额为13.4%。其它较为知名的玩家还有Firefox、IE、Edge、Opera。</p>\r\n\r\n<p> </p>\r\n\r\n<p style=\"text-align:center\"><img alt=\"图片\" src=\"https://www.phpok.com/res/_cache/auto/14/14416.png\" title=\"图片\" /></p>\r\n\r\n<p>到了今年，Chrome依然牢牢占据第一的位置，第三方统计机构数据显示，<strong>仅仅在桌面领域，Chrome的市场份额就接近70%</strong>。</p>\r\n\r\n<p>现如今，曾经的王者IE已经被微软放弃，虽然仍旧可以使用，但实际上，微软已经将所有对浏览器的期待都放到了Edge身上。提一下，Edge是微软基于Chromium内核开发的新版浏览器，被预装在Windows 10中.</p>\r\n\r\n<p> </p>\r\n', '浏览器是我们上网冲浪之必备工具，无论是台式机、平板、智能手机，你都离不开一款浏览器。在过去25年间，浏览器市场经历了翻天覆地的变化。', 0, '', '', '', '', 0),
+(14, 1, 43, 68, 620, '<p>8月24日是 Windows 95 诞生 25 周年的纪念日，在这个有特殊意义的日子里，微软发布了一段回顾 Windows 95 的视频，向大众介绍了其中一些经典元素（开始菜单、回收站、扫雷和纸牌等）的改变和演进，以及系统整体视觉风格和 UI 设计上的变化。</p>\r\n\r\n<p style=\"text-align: center;\"><img alt=\"图片\" src=\"https://www.phpok.com/res/_cache/auto/14/14424.png\" title=\"图片\" /></p>\r\n\r\n<p>Windows 95 作为微软历史上具备里程碑意义的操作系统版本之一，拥有许多新功能和变化，简单回顾一下：</p>\r\n\r\n<ol>\r\n	<li>\r\n	<p>全新的&ldquo;开始&rdquo;按钮、菜单和任务栏</p>\r\n	</li>\r\n	<li>\r\n	<p>引入 Windows 资源管理器</p>\r\n	</li>\r\n	<li>\r\n	<p>改进多任务处理</p>\r\n	</li>\r\n	<li>\r\n	<p>引入即插即用机制，支持自动检测和安装硬件</p>\r\n	</li>\r\n	<li>\r\n	<p>支持长文件名（最多 250 个字符）</p>\r\n	</li>\r\n	<li>\r\n	<p>引入 Microsoft Network (MSN)，MSN 旨在通过拨号连接访问电子邮件、聊天室，新闻组和首个 WWW 主页</p>\r\n	</li>\r\n	<li>\r\n	<p>首次提出在多台计算机之间同步数据的想法，自带的&quot;My Briefcase&quot;程序旨在在笔记本电脑和台式计算机之间同步文件</p>\r\n	</li>\r\n	<li>\r\n	<p>首个搭售 Internet Explorer(IE) 的系统</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>以上的变化如今有的已被取代，例如 IE 浏览器；有的则继续被沿用着，例如开始菜单概念&mdash;&mdash;它甚至称得上 Windows 系统最具代表性且影响最深远的设计。话说影响一直持续至今的可能还有 Windows 95 这个名字，据说 Windows 9 就是因为它而被跳过，整个 Windows 家族命名方式的变化也是由此而起。</p>\r\n\r\n<p>1995年8月24日对于微软来说是重要的一天，杰伊&middot;莱诺(Jay Leno)与微软联合创始人比尔&middot;盖茨(Bill Gates)共同宣布了 Windows 95，整个 Windows 95 开发团队也登台亮相。</p>\r\n\r\n<p style=\"text-align: center;\"><img src=\"https://www.phpok.com/res/202009/01/045bcb14fd6fbdc2_58_0.jpg\" /></p>\r\n\r\n<p>为宣传这款系统，微软斥巨资铺天盖地在电视台投放搭配滚石乐队《Start Me Up》歌曲的广告，甚至还请来《老友记》演员 Jennifer Aniston（&ldquo;瑞秋&rdquo;饰演者）和 Matthew Perry（&ldquo;钱德勒&rdquo;饰演者）拍摄介绍 Windows 95 的长达一小时的情境短剧。</p>\r\n\r\n<p style=\"text-align: center;\"><img src=\"https://www.phpok.com/res/202009/01/8408c4071b009add_84_1.png\" /></p>\r\n\r\n<p>在微软的强力营销下，Windows 95 在前五周内就售出了 700 万份，市场一度出现午夜时分消费者在 CompUSA 和百思买排队购买 Windows 95 CD-ROM 副本的热闹场面。</p>\r\n\r\n<p style=\"text-align: center;\"><img height=\"591\" src=\"https://www.phpok.com/res/202009/01/ec3801b6f503f0a8_49_2.jpg\" /></p>\r\n\r\n<p>现在想体验原汁原味的 Windows 95 并非易事，不过好在有开发者基于 Electron 打造了可在 macOS, Linux 和 Windows 上运行的 Windows 95，详情查看&nbsp;<a href=\"https://github.com/felixrieseberg/windows95\" target=\"_blank\">https://github.com/felixrieseberg/windows95</a>。</p>\r\n\r\n<h3>部分图集</h3>\r\n\r\n<p style=\"text-align: center;\"><img src=\"https://www.phpok.com/res/202009/01/24a9437d34d61655_74_3.jpg\" /></p>\r\n\r\n<p style=\"text-align: center;\">▲ 比尔&middot;盖茨向世界推出了 Windows 95</p>\r\n\r\n<p style=\"text-align: center;\"><img src=\"https://www.phpok.com/res/202009/01/318fe45380d1e826_46_4.jpg\" /></p>\r\n\r\n<p style=\"text-align: center;\">▲ 革命性的&ldquo;开始菜单&rdquo;</p>\r\n\r\n<p style=\"text-align: center;\"><img src=\"https://www.phpok.com/res/202009/01/41b3395e4f37faf6_33_5.jpg\" /></p>\r\n\r\n<p style=\"text-align: center;\">▲ Windows 95 桌面</p>\r\n\r\n<p style=\"text-align: center;\"><img height=\"612\" src=\"https://www.phpok.com/res/202009/01/41d187d506be6882_30_6.jpg\" /></p>\r\n\r\n<p style=\"text-align: center;\">▲ Windows 95 零售副本</p>\r\n', '8月24日是 Windows 95 诞生 25 周年的纪念日，在这个有特殊意义的日子里，微软发布了一段回顾 Windows 95 的视频，向大众介绍了其中一些经典元素（开始菜单、回收站、扫雷和纸牌等）的改变和演进，以及系统整体视觉风格和 UI 设计上的变化。', 0, '', '', '', 'https://video.knowpet.cn/sv/34e3673b-17e91dd5d9c/34e3673b-17e91dd5d9c.mp4', 0),
+(15, 1, 43, 68, 0, '<p>2019年已经结束，年终总结愁到人头秃。效率惊人的苏宁率先发布了年终大数据报告，唤醒了“社畜们”难得的好奇心。</p><p>“你会在朋友圈买东西吗?”朋友急冲冲在微信上问我。</p><p>“看到好东西就会买啊，你问这个干啥?”</p><p>在我的追问下朋友告诉我，原来这两天“90后和00后的代沟有多大”冲上了热搜，她一边咆哮着我还没老，一边暗搓搓观察自己是不是真的跟00后有代沟，结果就看到了苏宁推客的年终大数据指出：会在朋友圈买东西的90后占了31.7%，80后占了37.0%，而00后只占了9.0%。</p><p style=\"text-align:center;\"><img id=\"68437535\" src=\"https://www.phpok.com/res/202001/02/affff7dc67d4b1cb_32_0.png\" title=\"90后和00后代沟有多大？苏宁推客大数据告诉你\" alt=\"90后和00后代沟有多大？苏宁推客大数据告诉你\"/></p><p>“我不服!怎么也没想到我跟80后是一挂的……”朋友委屈巴巴抗议。</p><p>毕竟再过几天，第一批90后就要迈入“30岁大军”，2019仿佛就是他们的最后一条底裤，但是马上这条底裤就要像他们的头发一样离他们而去了，怎么能不让人难过呢?</p><p>正当我想要跟她抱头痛哭的时候，她突然发出了杠铃般的笑声，又给我发了一组数据，我抹干眼泪定睛一看：在朋友圈买东西的女性占比56.3%，男性占比43.7%..……Excuse me?男性占比43.7%?</p><p style=\"text-align:center;\"><img id=\"68437537\" src=\"https://www.phpok.com/res/202001/02/d5287c9070db15d6_95_1.png\" title=\"90后和00后代沟有多大？苏宁推客大数据告诉你\" alt=\"90后和00后代沟有多大？苏宁推客大数据告诉你\"/></p><p>打扰了，现在的男生购物欲这么强的吗?谁能想到表面上仿佛只知道一日三餐的钢铁直男们，背地里在朋友圈买东西买的这么勤，还真是有两幅面孔呢!</p><p>这时我又想到了上个星期我爹说在网上买的那四斤流心柿子……打开朋友圈翻翻记录，远方二舅在卖……ok，破案了。</p><p>妈!我爸藏私房钱!!!</p><p>你以为奇妙操作仅限于此?NONONO!苏宁推客这组数据还指出：南京、上海、北京这三个地区的人在朋友圈买东西最多。这我就真实迷惑了，原本以为二三线城市的人才是朋友圈购物主力军，没想到一线城市才是大部队集结地。</p><p style=\"text-align:center;\"><img id=\"68437539\" src=\"https://www.phpok.com/res/202001/02/071c9d1d690cf9bb_9_2.png\" title=\"90后和00后代沟有多大？苏宁推客大数据告诉你\" alt=\"90后和00后代沟有多大？苏宁推客大数据告诉你\"/></p><p>那么为什么无论男女、不限地域，大家都乐于在朋友圈购物呢?毕竟它不是一个为了“购物”而产生的平台。</p><p>我那偷偷藏私房钱的爹给了我三个答案。一是需求：我确实需要这样东西，看不见的时候我想不起来，看到朋友圈有人发我就想起来了。二是信任：我信任我朋友圈里的人，相信他不会骗我。三是人情：朋友圈里有很多我的亲朋好友，为了照顾他们的生意。</p><p>这么一听是不是就恍然大悟了?当零售跟社交结合起来，蕴含的能量是无限大的，任何人都可以成为一个“零售商”。2019年，国人的网购习惯依然与传统人情挂上了钩。</p><p>而说到人情，即将到来的春节才是“人情”高发段。为了满足国人的消费习惯，苏宁2020年货节已经全面启动，年货节期间，各品类品牌商将苏宁平台锁定为新品首发渠道，并专门为苏宁用户定制的专属商品，还有汽车、厨电等新品也将陆续登陆苏宁平台。（一鸣）</p><p><br/></p>', '2019年已经结束，年终总结愁到人头秃。效率惊人的苏宁率先发布了年终大数据报告，唤醒了“社畜们”难得的好奇心。', 0, 'https://tech.gmw.cn/2020-01/02/content_33449331.htm', '光明网', '', '', 0),
+(16, 1, 43, 68, 607, '<p style=\"text-align: center;\"><img src=\"res/_cache/auto/26/262.png\" /></p>\r\n\r\n<p>近两年，百度、腾讯、快手、爱奇艺、B站等巨头、先行者在知识领域的动作不约而同。</p>\r\n\r\n<p>2019年12月12日，百度知识垂类总经理阮瑜在“2019百度知识峰会”上披露：百度知识内容日均搜索量已达到15.4亿次，百度知识垂类产品每天服务用户突破2.3亿，用户日均浏览总时长超过6.3亿分钟。</p>\r\n\r\n<p>几乎同一时段，快手宣称其平台上的知识作品数量超过1.2亿，平均每秒诞生4个知识内容，平均每个作品获得一万多播放曝光。</p>\r\n\r\n<p>除此之外，爱奇艺、腾讯视频、优酷等纷纷上线知识频道，入局知识付费，更不用提B站摇身一变成为“一家神奇的学习网站”了。今年4月，B站公布了一组数据：过去一年有近2000万人在B站学习，相当于2018年高考人数的两倍。</p>\r\n\r\n<p>不久前，腾讯在ConTech技术大会上发布了内容产业趋势报告，其中提及，近4成用户反映，他们开始关心知识技能方面的内容。在用户挑选资讯内容的影响因素排名中，可以涨知识也超过了内容有趣。</p>\r\n\r\n<p>字节跳动副总裁张羽提到，人类的文明史就是知识的普及史。搜狗CTO杨洪涛认为，搜索的未来会走向专业化和服务化，掌握知识和完成服务一定是搜索整个领域未来发展的方向。</p>\r\n\r\n<p>以上动作和言论反映出背后知识形态的趋势变化：过去，知识是静态、独立、客观、集中的，是复刻现实的照片；如今，知识是动态、共创、主观、分散的，是自主生长的生命体。</p>\r\n\r\n<p>知识形态的变化，加之近几年罗振宇等人对知识服务进行的大规模宣贯，知识的价值得以被重新彰显，“与知识共生共长”被巨头平台们重视起来。</p>\r\n\r\n<p>“碎片化知识”更有价值？</p>\r\n\r\n<p>互联网改变了知识本身，即便知识被网络碾压得支离破碎，它们的好处也十分突出。这是最真实的知识形态——达尔文写作《物种起源》时，已经尽最大可能设想了各种意见，甚至模拟了无数假想敌，但一本书终究辩论不完，总有些人的意见不能被写入。</p>\r\n\r\n<p>一本已然封禁了知识的书可以成为经典，但无法做到与时俱进。</p>\r\n\r\n<p>书还有另外一种写法，就是开放，就是不写完。</p>\r\n\r\n<p>相对封装好的书本知识，互联网知识其实更容易用来存放，它们可以不断更新迭代，永远生猛鲜活。</p>\r\n\r\n<p>得到APP讲师万维钢曾说：“互联网时代，我们根本没必要把东西‘写完’。你应该只写下你认为这次应该写的，然后让这个文本保持开放状态，让读者添加评论和内容。”</p>\r\n\r\n<p>这种现代人创造和使用知识的方法，其实早就有了实现方式，即众所周知的——使用搜索引擎。或者说，如果搜索如此方便，人们完全可以在任何地方写下自己最新发现的知识。</p>\r\n\r\n<p style=\"text-align:center;\"><img alt=\"巨头为什么一齐瞄准知识领域？\" id=\"68428596\" src=\"https://www.phpok.com/res/202001/02/5cd982af5e87fa59_29_1.png\" title=\"巨头为什么一齐瞄准知识领域？\" /></p>\r\n\r\n<p>的确，互联网甚至是更具象的搜索引擎，为知识创造了适宜的生长环境。新的语境下，原本为少数精英分子所掌握的知识壁垒被打破，普通民众可以随时释放自己在生产生活中的客观智慧。</p>\r\n\r\n<p>同时，因为群体的复杂力量交织、汇聚、共振，知识灵感不再是单点突破，而可以借助一整套发生范式——群众的力量是无穷的，因此孕育了知识的喷薄而生。</p>\r\n\r\n<p>在“把知识生产权交予用户”的逻辑下，一些头部视频平台正向视频形式的“喜马拉雅FM”靠拢。这正是快手、爱奇艺、腾讯视频、优酷、B站等视频、短视频平台押注知识领域的重要原因。</p>\r\n\r\n<p>腾讯副总裁陈菊红曾提到：“如果我们把中国3.2亿有涨知识需求的用户拿出来看，他们主要需求在哪里？日常生活技巧占第1位。接下来是健康生活、百科养生、疾病防控。第3位是文化知识、文学历史和社会常识，也是非常高的比例。”</p>\r\n\r\n<p>搜索引擎与这些信息、知识有更天然的连接属性，以百度为例，其历经15年的沉淀，形成了更浩如烟海的知识海洋。</p>\r\n\r\n<p>巨大的数据背后是每位网民逐条的生成、编辑和互动累积：百度在知道、百科、文库等方面积累了远超10亿的知识内容。因此，百度百科成为了全球最大的中文百科全书，拥有1600万个词条；百度知道成为了全球最大的互动问答平台，累积问答数达到5.5亿；百度文库的文档数也已超6亿。</p>\r\n\r\n<p>这些知识内容铸成极深的护城河，帮助百度成为了中国最大的以信息和知识为核心的移动生态。</p>\r\n\r\n<p>搜索引擎有什么“知识优势”？</p>\r\n\r\n<p>类似百度这样的搜索引擎中数量庞大的知识优势，实际上早已为我们的大脑赋能。</p>\r\n\r\n<p>学生时代，我们需要把知识存在脑子里，记忆力好的同学更容易拥有更多知识，通常能够外化为一个好成绩。现在，只要能在搜索引擎查询到的，都是体外知识，人人都能进行使用和管理。</p>\r\n\r\n<p style=\"text-align:center;\"><img alt=\"巨头为什么一齐瞄准知识领域？\" id=\"68428597\" src=\"https://www.phpok.com/res/202001/02/cb5c11751add7491_59_2.png\" title=\"巨头为什么一齐瞄准知识领域？\" /></p>\r\n\r\n<p>培根有句名言“Knowledge is power”，被翻译为“知识就是力量”，但power不只有“力量”的含义，在那个年代，还代表着“权力”。</p>\r\n\r\n<p>知识是驱动社会发展的前进力量，掌握知识的人自然也掌握着社会的权力。</p>\r\n\r\n<p>这一概念后来演变为“知识鸿沟”。美国明尼苏达大学传播学者蒂奇纳等人最早提出了“知识鸿沟假说”，点明经济地位高者通常能比社会经济地位低者更快地获得信息。</p>\r\n\r\n<p>以国内高考为例，尽管通过单纯的成绩选拔已将各地区差异降低到最小，但国际学校双语教学的富二代和十几年没出过村落的孩子仍然有着明显的知识差异。两者接触的师资力量和书籍资料完全不同，由此引申的个体认知也在不断扩大差距。</p>\r\n\r\n<p>这样的知识鸿沟该如何解决？</p>\r\n\r\n<p>美国政府曾做过尝试：20世纪六十年代推出了益智电视节目《芝麻街》，节目不断向孩子传递知识，最终的结果却是，知识鸿沟不仅没有消失，反而日益扩大。因为贫穷的孩子根本无法接触这档节目，换言之，观看《芝麻街》的都是经济条件不错的孩子，对他们做再多的教育，也无法带来知识平等。</p>\r\n\r\n<p>长辈们总会讲这样的故事，因为小时候条件不好，无书可读，他们只能把亲戚朋友家的书借空，但读完之后，也就无可奈何地陷入书荒。</p>\r\n\r\n<p>图书馆是奢侈的，“如饥似渴，得了文学胃炎症”的作家木心就因此前所著书稿和相关资料被悉数烧毁，讲课时又没有课本，只能全凭记忆讲述。所幸，他的记忆力远超常人，文艺课开起来后，一讲就是五年，记录的讲义形成了厚重的五本，最终成就了著名的《文学回忆录》。</p>\r\n\r\n<p>木心这记忆力常人难以企及，我们的资料烧了也就烧了，哪有什么补救措施。</p>\r\n\r\n<p>但属于这一代人的幸运是，即便资料烧毁，丢失记忆，我们也还有互联网。</p>\r\n\r\n<p>如今，摆在课堂桌角的那本新华字典消失不见，取而代之的是离开学校也不会丢失的知识——太阳半径是6.955*10^5千米，雅鲁藏布江是中国最长的高原河流，重力加速度的数值是9.8，1785年瓦特制成的改良型蒸汽机投入使用……这些知识我们随时可以通过互联网查到。</p>\r\n\r\n<p>二十年时间，因为互联网的发展普及，知识获取方式经历了波折的颠覆性变革。</p>\r\n\r\n<p>1996年，搜狐定位于网络信息分类导航网站，提出“出门找地图，上网找搜狐”的说法，一些知识信息开始进入网络。</p>\r\n\r\n<p>但是，知识日益爆发式增长的现状和人们快速准确获取知识的需求之间的矛盾，使得搜狐人工信息分类的局限性逐渐暴露，搜索引擎root自动抓取、智能分类成了替代。</p>\r\n\r\n<p>2000年，中文搜索引擎百度面世，从最初的千万页索引内容（约等于一个小型图书馆），到如今百度阳泉数据中心成为亚洲单体规模最大的数据中心，用了20年时间。</p>\r\n\r\n<p>20年后的今天，百度阳泉数据中心已投产12万平方米，上线服务器超过15万台，超过300万个CPU核，存储容量超过6EB，可存储信息量相当于30多万个中国国家图书馆的藏书总量。</p>\r\n\r\n<p style=\"text-align:center;\"><img alt=\"巨头为什么一齐瞄准知识领域？\" id=\"68428598\" src=\"https://www.phpok.com/res/202001/02/378edb22bf93184c_76_3.png\" title=\"巨头为什么一齐瞄准知识领域？\" /></p>\r\n\r\n<p>知识的获取方式发生了翻天覆地的变化，我们再也不用专程赶赴图书馆或购买众多书籍来完成知识的提取，原本耗时耗力还耗钱的过程被免费简便易用的“百度一下”取代，信息鸿沟被逐渐踏平。</p>\r\n\r\n<p>现在无论你身处何地，只要能联网，就能获取与更高阶层完全相同的知识，这在20年前完全不可想象，而这正是属于具备海量知识信息搜索引擎的独特知识优势。</p>\r\n\r\n<p>知识领域为什么被巨头盯上？</p>\r\n\r\n<p>作为硬通货的知识和技能被巨头平台们看上，有着共同的理由——知识网络是牢不可破的刚需城墙，不仅能带来知识平权的社会价值，还能铸造商业价值的护城河。</p>\r\n\r\n<p>相比娱乐性内容基础上，用户眼球的迅速转移，知识内容的稳定力量不容小觑。</p>\r\n\r\n<p>经过一些人的所思所想总结而来、未经过时间考验、不具备普适性的东西是不严谨的，更适合被称作包裹有娱乐、主观外壳的“见识”。</p>\r\n\r\n<p>几年前，人们曾是“见识”疯狂的拥趸。</p>\r\n\r\n<p>网友曾花费5000元在网络平台问王思聪问题，王思聪只用简单的几个字就将其收入囊中。人们愿意为自己的好奇和王思聪所在阶层的见识买单。</p>\r\n\r\n<p>王思聪的见识不一定正确，他说：9012年，难道还有人没坐过飞机？这就与真正的知识相悖：截至目前，中国其实还有10亿人没坐过飞机。</p>\r\n\r\n<p> </p>\r\n', '近两年，百度、腾讯、快手、爱奇艺、B站等巨头、先行者在知识领域的动作不约而同。\r\n2019年12月12日，百度知识垂类总经理阮瑜在“2019百度知识峰会”上披露：百度知识内容日均搜索量已达到15.4亿次，百度知识垂类产品每天服务用户突破2.3亿，用户日均浏览总时长超过6.3亿分钟。', 0, 'https://tech.gmw.cn/2019-12/30/content_33440672.htm', '光明网', '', '', 0),
+(17, 1, 43, 68, 0, '<p>有什么方法衡量服务器并发处理能力</p>\r\n\r\n<h3>1. 吞吐率<!--?php\r\necho \"123456\";</pre--></h3>\r\n\r\n<p>吞吐率，单位时间里服务器处理的最大请求数，单位req/s</p>\r\n\r\n<p>从服务器角度，实际并发用户数的可以理解为服务器当前维护的代表不同用户的文件描述符总数，也就是并发连接数。</p>\r\n\r\n<p>服务器一般会限制同时服务的最多用户数，比如apache的MaxClients参数。</p>\r\n\r\n<p>这里再深入一下，对于服务器来说，服务器希望支持高吞吐率，对于用户来说，用户只希望等待最少的时间，显然，双方不能满足，所以双方利益的平衡点，就是我们希望的最大并发用户数。</p>\r\n\r\n<h3>2. 压力测试<!--?php\r\necho \"123456\";</code--></h3>\r\n\r\n<p>有一个原理一定要先搞清楚，假如100个用户同时向服务器分别进行10个请求，与1个用户向服务器连续进行1000次请求，对服务器的压力是一样吗？</p>\r\n\r\n<p>实际上是不一样的，因对每一个用户，连续发送请求实际上是指发送一个请求并接收到响应数据后再发送下一个请求。</p>\r\n\r\n<p>这样对于1个用户向服务器连续进行1000次请求, 任何时刻服务器的网卡接收缓冲区中只有1个请求，而对于100个用户同时向服务器分别进行10个请求，服务器的网卡接收缓冲区最多有100个等待处理的请求，显然这时的服务器压力更大。</p>\r\n\r\n<p>压力测试前提考虑的条件</p>\r\n\r\n<ul>\r\n	<li>\r\n	<p>并发用户数: 指在某一时刻同时向服务器发送请求的用户总数(HttpWatch)</p>\r\n	</li>\r\n	<li>\r\n	<p>总请求数</p>\r\n	</li>\r\n	<li>\r\n	<p>请求资源描述</p>\r\n	</li>\r\n	<li>\r\n	<p>请求等待时间(用户等待时间)</p>\r\n	</li>\r\n	<li>\r\n	<p>用户平均请求的等待时间</p>\r\n	</li>\r\n	<li>\r\n	<p>服务器平均请求处理的时间</p>\r\n	</li>\r\n	<li>\r\n	<p>硬件环境</p>\r\n	</li>\r\n</ul>\r\n\r\n<p>压力测试中关心的时间又细分以下2种:</p>\r\n\r\n<ol>\r\n	<li>\r\n	<p>用户平均请求等待时间（这里暂不把数据在网络的传输时间，还有用户PC本地的计算时间计算入内）</p>\r\n	</li>\r\n	<li>\r\n	<p>服务器平均请求处理时间</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>用户平均请求等待时间主要用于衡量服务器在一定并发用户数下，单个用户的服务质量；而服务器平均请求处理时间就是吞吐率的倒数。</p>\r\n\r\n<p>一般来说，用户平均请求等待时间 = 服务器平均请求处理时间 * 并发用户数</p>\r\n\r\n<h3>怎么提高服务器的并发处理能力</h3>\r\n\r\n<h4>1. 提高CPU并发计算能力</h4>\r\n\r\n<p>服务器之所以可以同时处理多个请求，在于操作系统通过多执行流体系设计使得多个任务可以轮流使用系统资源。<br />\r\n这些资源包括CPU，内存以及I/O. 这里的I/O主要指磁盘I/O, 和网络I/O。</p>\r\n\r\n<p>多进程 &amp; 多线程</p>\r\n\r\n<p>多执行流的一般实现便是进程，多进程的好处可以对CPU时间的轮流使用，对CPU计算和IO操作重叠利用。这里的IO主要是指磁盘IO和网络IO，相对CPU而言，它们慢的可怜。</p>\r\n\r\n<p>而实际上，大多数进程的时间主要消耗在I/O操作上。</p>\r\n\r\n<p>现代计算机的DMA技术可以让CPU不参与I/O操作的全过程，比如进程通过系统调用，使得CPU向网卡或者磁盘等I/O设备发出指令，然后进程被挂起，释放出CPU资源，等待I/O设备完成工作后通过中断来通知进程重新就绪。</p>\r\n\r\n<p>对于单任务而言，CPU大部分时间空闲，这时候多进程的作用尤为重要。CPU 是怎么认识代码的？推荐大家看下。</p>\r\n\r\n<p>多进程不仅能够提高CPU的并发度。其优越性还体现在独立的内存地址空间和生命周期所带来的稳定性和健壮性，其中一个进程崩溃不会影响到另一个进程。<br />\r\n但是进程也有如下缺点：</p>\r\n\r\n<ol>\r\n	<li>\r\n	<p>fork()系统调用开销很大: prefork</p>\r\n	</li>\r\n	<li>\r\n	<p>进程间调度和上下文切换成本: 减少进程数量</p>\r\n	</li>\r\n	<li>\r\n	<p>庞大的内存重复：共享内存</p>\r\n	</li>\r\n	<li>\r\n	<p>IPC编程相对比较麻烦</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>减少进程切换</p>\r\n\r\n<p>当硬件上下文频繁装入和移出时，所消耗的时间是非常可观的。可用Nmon工具监视服务器每秒的上下文切换次数。</p>\r\n\r\n<p>为了尽量减少上下文切换次数，最简单的做法就是减少进程数，尽量使用线程并配合其它I/O模型来设计并发策略。</p>\r\n\r\n<p>还可以考虑使用进程绑定CPU技术，增加CPU缓存的命中率。若进程不断在各CPU上切换，这样旧的CPU缓存就会失效。</p>\r\n\r\n<p>减少使用不必要的锁</p>\r\n\r\n<p>服务器处理大量并发请求时，多个请求处理任务时存在一些资源抢占竞争，这时一般采用&ldquo;锁&rdquo;机制来控制资源的占用。到底什么是重入锁，推荐大家看下。</p>\r\n\r\n<p>当一个任务占用资源时，我们锁住资源，这时其它任务都在等待锁的释放，这个现象称为锁竞争。</p>\r\n\r\n<p>通过锁竞争的本质，我们要意识到尽量减少并发请求对于共享资源的竞争。</p>\r\n\r\n<p>比如在允许情况下关闭服务器访问日志，这可以大大减少在锁等待时的延迟时间。要最大程度减少无辜的等待时间。</p>\r\n\r\n<p>这里说下无锁编程，就是由内核完成这个锁机制，主要是使用原子操作替代锁来实现对共享资源的访问保护。</p>\r\n\r\n<p>使用原子操作时，在进行实际的写操作时，使用了lock指令，这样就可以阻止其他任务写这块内存，避免出现数据竞争现象。原子操作速度比锁快，一般要快一倍以上。</p>\r\n\r\n<p>例如fwrite(), fopen()，其是使用append方式写文件，其原理就是使用了无锁编程，无锁编程的复杂度高，但是效率快，而且发生死锁概率低。</p>\r\n\r\n<p>考虑进程优先级</p>\r\n\r\n<p>进程调度器会动态调整运行队列中进程的优先级，通过top观察进程的PR值</p>\r\n\r\n<p>考虑系统负载</p>\r\n\r\n<p>可在任何时刻查看/proc/loadavg, top中的load average也可看出</p>\r\n\r\n<p>考虑CPU使用率</p>\r\n\r\n<p>除了用户空间和内核空间的CPU使用率以外，还要关注I/O wait,它是指CPU空闲并且等待I/O操作完成的时间比例（top中查看wa的值）。</p>\r\n\r\n<h4>2. 考虑减少内存分配和释放</h4>\r\n\r\n<p>服务器的工作过程中，需要大量的内存，使得内存的分配和释放工作尤为重要。</p>\r\n\r\n<p>可以通过改善数据结构和算法复制度来适当减少中间临时变量的内存分配及数据复制时间，而服务器本身也使用了各自的策略来提高效率。</p>\r\n\r\n<p>例如Apache,在运行开始时一次申请大片的内存作为内存池，若随后需要时就在内存池中直接获取，不需要再次分配，避免了频繁的内存分配和释放引起的内存整理时间。</p>\r\n\r\n<p>再如Nginx使用多线程来处理请求，使得多个线程之间可以共享内存资源，从而令它的内存总体使用量大大减少。</p>\r\n\r\n<p>另外，Nginx分阶段的内存分配策略，按需分配，及时释放，使得内存使用量保持在很小的数量范围。</p>\r\n\r\n<p>另外，还可以考虑共享内存。</p>\r\n\r\n<p>共享内存指在多处理器的计算机系统中，可以被不同中央处理器（CPU）访问的大容量内存，也可以由不同进程共享，是非常快的进程通信方式。</p>\r\n\r\n<p>但是使用共享内存也有不好的地方，就是对于多机器时数据不好统一。</p>\r\n\r\n<p>shell命令ipcs可用来显示系统下共享内存的状态，函数shmget可以创建或打开一块共享内存区，函数shmat将一个存在的共享内存段连接到本进程空间, 函数shmctl可以对共享内存段进行多种操作，函数shmdt函数分离该共享内存。</p>\r\n\r\n<h4>3. 考虑使用持久连接</h4>\r\n\r\n<p>持久连接也为长连接，它本身是TCP通信的一种普通方式，即在一次TCP连接中持续发送多分数据而不断开连接。</p>\r\n\r\n<p>与它相反的方式称为短连接，也就是建立连接后发送一份数据就断开，然后再次建立连接发送下一份数据， 周而复始。</p>\r\n\r\n<p>是否采用持久连接，完全取决于应用特点。</p>\r\n\r\n<p>从性能角度看，建立TCP连接的操作本身是一项不小的开销，在允许的情况下，连接次数越少，越有利于性能的提升; 尤其对于密集型的图片或网页等小数据请求处理有明显的加速所用。</p>\r\n\r\n<p>HTTP长连接需要浏览器和web服务器的共同协作，目前浏览器普遍支持长连接，表现在其发出的HTTP请求数据头中包含关于长连接的声明，如下：Connection: Keep-Alive</p>\r\n\r\n<p>主流的web服务器都支持长连接，比如apache中，可以用KeepAlive off关闭长连接。</p>\r\n\r\n<p>对于长连接的有效使用，还有关键一点在于长连接超时时间的设置，即长连接在什么时候关闭吗？</p>\r\n\r\n<p>Apache的默认设置为5s, 若这个时间设置过长，则可能导致资源无效占有，维持大量空闲进程，影响服务器性能。</p>\r\n\r\n<h4>4. 改进I/O 模型</h4>\r\n\r\n<p>I/O操作根据设备的不同分为很多类型，比如内存I/O, 网络I/O, 磁盘I/O。详解 Java 中 4 种 I/O 模型，推荐大家看下。</p>\r\n\r\n<p>对于网络I/O和磁盘I/O, 它们的速度要慢很多，尽管使用RAID磁盘阵列可通过并行磁盘磁盘来加快磁盘I/O速度，购买大连独享网络带宽以及使用高带宽网络适配器可以提高网络I/O的速度。</p>\r\n\r\n<p>但这些I/O操作需要内核系统调用来完成，这些需要CPU来调度，这使得CPU不得不浪费宝贵的时间来等待慢速I/O操作。</p>\r\n\r\n<p>我们希望让CPU足够少的时间在i/O操作的调度上，如何让高速的CPU和慢速的I/O设备更好地协调工作，是现代计算机一直探讨的话题。各种I/O模型的本质区别在于CPU的参与方式。</p>\r\n\r\n<p>DMA技术</p>\r\n\r\n<p>I/O设备和内存之间的数据传输方式由DMA控制器完成。在DMA模式下，CPU只需向DMA下达命令，让DMA控制器来处理数据的传送，这样可以大大节省系统资源。</p>\r\n\r\n<p>异步I/O</p>\r\n\r\n<p>异步I/O指主动请求数据后便可以继续处理其它任务，随后等待I/O操作的通知，这样进程在数据读写时不发生阻塞。</p>\r\n\r\n<p>异步I/O是非阻塞的，当函数返回时，真正的I/O传输已经完成，这让CPU处理和I/O操作达到很好的重叠。</p>\r\n\r\n<p>I/O多路复用</p>\r\n\r\n<p>epoll服务器同时处理大量的文件描述符是必不可少的，若采用同步非阻塞I/O模型，若同时接收TCP连接的数据，就必须轮流对每个socket调用接收数据的方法，不管这些socket有没有可接收的数据，都要询问一次。</p>\r\n\r\n<p>假如大部分socket并没有数据可以接收，那么进程便会浪费很多CPU时间用于检查这些socket有没有可以接收的数据。</p>\r\n\r\n<p>多路I/O就绪通知的出现，提供了对大量文件描述符就绪检查的高性能方案，它允许进程通过一种方法同时监视所有文件描述符，并可以快速获得所有就绪的文件描述符，然后只针对这些文件描述符进行数据访问。</p>\r\n\r\n<p>epoll可以同时支持水平触发和边缘触发，理论上边缘触发性能更高，但是代码实现复杂，因为任何意外的丢失事件都会造成请求处理错误。</p>\r\n\r\n<p>epoll主要有2大改进：</p>\r\n\r\n<ol>\r\n	<li>\r\n	<p>epoll只告知就绪的文件描述符，而且当调用epoll_wait()获得文件描述符时，返回并不是实际的描述符，而是一个代表就绪描述符数量的值，然后只需去epoll指定的一个数组中依次取得相应数量的文件描述符即可。这里使用了内存映射(mmap)技术，这样彻底省掉了这些文件描述符在系统调用时复制的开销。</p>\r\n	</li>\r\n	<li>\r\n	<p>epoll采用基于事件的就绪通知方式。其事先通过epoll_ctrl()注册每一个文件描述符，一旦某个文件描述符就绪时，内核会采用类似callback的回调机制，当进程调用epoll_wait()时得到通知</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>关于IO模型，可以参考笔者前面写的相关文章Java NIO.2；关于epoll，可以参考笔者前面写的文章select、poll和epoll简介。</p>\r\n\r\n<p>Sendfile</p>\r\n\r\n<p>大多数时候，我们都向服务器请求静态文件，比如图片，样式表等。<br />\r\n在处理这些请求时，磁盘文件的数据先经过内核缓冲区，然后到用户内存空间，不需经过任何处理，其又被送到网卡对应的内核缓冲区，接着再被送入网卡进行发送。</p>\r\n\r\n<p>Linux提供sendfile()系统调用，可以讲磁盘文件的特定部分直接传送到代表客户端的socket描述符，加快了静态文件的请求速度，同时减少CPU和内存的开销。<br />\r\n适用场景：对于请求较小的静态文件，sendfile发挥的作用不那么明显，因发送数据的环节在整个过程中所占时间的比例相比于大文件请求时小很多。</p>\r\n\r\n<p>内存映射</p>\r\n\r\n<p>Linux内核提供一种访问磁盘文件的特殊方式，它可以将内存中某块地址空间和我们指定的磁盘文件相关联，从而对这块内存的访问转换为对磁盘文件的访问。这种技术称为内存映射。</p>\r\n\r\n<p>多数情况下，内存映射可以提高磁盘I/O的性能，无须使用read()或write()等系统调用来访问文件，而是通过mmap()系统调用来建立内存和磁盘文件的关联，然后像访问内存一样自由访问文件。</p>\r\n\r\n<p>缺点：在处理较大文件时，内存映射会导致较大的内存开销，得不偿失。</p>\r\n\r\n<p>直接I/O</p>\r\n\r\n<p>在linux 2.6中，内存映射和直接访问文件没有本质差异，因为数据需要经过2次复制，即在磁盘与内核缓冲区之间以及在内核缓冲区与用户态内存空间。</p>\r\n\r\n<p>引入内核缓冲区的目的在于提高磁盘文件的访问性能，然而对于一些复杂的应用，比如数据库服务器，它们为了进一步提高性能，希望绕过内核缓冲区，由自己在用户态空间实现并管理I/O缓冲区，比如数据库可根据更加合理的策略来提高查询缓存命中率。</p>\r\n\r\n<p>另一方面，绕过内核缓冲区也可以减少系统内存的开销，因内核缓冲区本身就在使用系统内存。</p>\r\n\r\n<p>Linux在open()系统调用中增加参数选项O_DIRECT,即可绕过内核缓冲区直接访问文件,实现直接I/O。</p>\r\n\r\n<p>在Mysql中，对于Innodb存储引擎，自身进行数据和索引的缓存管理，可在my.cnf配置中分配raw分区跳过内核缓冲区，实现直接I/O。</p>\r\n\r\n<h4>5. 改进服务器并发策略</h4>\r\n\r\n<p>服务器并发策略的目的，是让I/O操作和CPU计算尽量重叠进行，一方面让CPU在I/O等待时不要空闲，另一方面让CPU在I/O调度上尽量花最少的时间。</p>\r\n\r\n<p>一个进程处理一个连接，非阻塞I/O</p>\r\n\r\n<p>这样会存在多个并发请求同时到达时，服务器必然要准备多个进程来处理请求。其进程的开销限制了它的并发连接数。</p>\r\n\r\n<p>但从稳定性和兼容性的角度，则其相对安全，任何一个子进程的崩溃不会影响服务器本身，父进程可以创建新的子进程；这种策略典型的例子就是Apache的fork和prefork模式。</p>\r\n\r\n<p>对于并发数不高（如150以内）的站点同时依赖Apache其它功能时的应用选择Apache还是可以的。</p>\r\n\r\n<p>一个线程处理一个连接，非阻塞IO</p>\r\n\r\n<p>这种方式允许在一个进程中通过多个线程来处理多个连接，一个线程处理一个连接。Apache的worker模式就是这种典型例子，使其可支持更多的并发连接。不过这种模式的总体性能还不如prefork，所以一般不选用worker模式。推荐阅读：14个Java并发容器。</p>\r\n\r\n<p>一个进程处理多个连接，异步I/O</p>\r\n\r\n<p>一个线程同时处理多个连接，潜在的前提条件就是使用IO多路复用就绪通知。</p>\r\n\r\n<p>这种情况下，将处理多个连接的进程叫做worker进程或服务进程。worker的数量可以配置，如Nginx中的worker_processes 4。</p>\r\n\r\n<p>一个线程处理多个连接，异步IO</p>\r\n\r\n<p>即使有高性能的IO多路复用就绪通知，但磁盘IO的等待还是无法避免的。更加高效的方法是对磁盘文件使用异步IO，目前很少有Web服务器真正意义上支持这种异步IO。</p>\r\n\r\n<h4>6. 改进硬件环境</h4>\r\n\r\n<p>还有一点要提及的是硬件环境，服务器的硬件配置对应用程序的性能提升往往是最直接，也是最简单的方式，这就是所谓的scale up。这里不做论述。</p>\r\n', '一台服务器在单位时间里能处理的请求越多，服务器的能力越高，也就是服务器并发处理能力越强！', 0, 'http://www.itpub.net/2020/02/13/5225/', 'ITPUB', 'https://video.knowpet.cn/sv/34e3673b-17e91dd5d9c/34e3673b-17e91dd5d9c.mp4', '', 0),
+(2290, 1, 43, 68, 439, '<p style=\"text-align: center;\"><img _width=\"232px\" alt=\"图片\" crossorigin=\"anonymous\" data-fail=\"0\" data-index=\"1\" data-ratio=\"1.4006514657980456\" data-s=\"300,640\" data-src=\"https://mmbiz.qpic.cn/mmbiz_png/G3LNmiaOGjaqibm5M81JU58m1fbCxodnyMiasibYRbSw9YsEJMJ1lNn3Z0qnj9H14sXaITibxAwGhsbMb7bZlLHpKiaw/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1\" data-type=\"png\" data-w=\"614\" src=\"res/_cache/auto/43/439.jpg\" /></p>\r\n\r\n<section>《报告》显示，2022年全年，补天平台<strong>共收录白帽子报告的全国各类网站安全漏洞约16.8万个，较2021年的14.6万个增长约15.0%</strong>；漏洞共涉及网站约9.0万个，较2021年的11.5万个，减少了约21.7%。</section>\r\n\r\n<section>&nbsp;</section>\r\n\r\n<section>总体来看，<strong>补天平台每年收录网站漏洞的数量持续高速增长，这与国内机构日益重视、白帽子群体不断扩大、挖洞水平日益提升等多种因素有关</strong>。同时，优质白帽资源也正在不断向那些愿意投入资源做好SRC的企业集中，这是导致挖洞数量增长，漏洞涉及网站数量却不升反降的重要原因。这说明，健康的SRC运营对于企业漏洞响应乃至整个网络安全建设有着非常重要的意义。</section>\r\n\r\n<section>&nbsp;</section>\r\n\r\n<p><img _width=\"677px\" alt=\"图片\" crossorigin=\"anonymous\" data-fail=\"0\" data-index=\"2\" data-ratio=\"0.53515625\" data-s=\"300,640\" data-src=\"https://mmbiz.qpic.cn/mmbiz_png/G3LNmiaOGjaqibm5M81JU58m1fbCxodnyMtZUACJ8jMxqCzCiaXB0UnBSIaHYAylUPLzmrIzv6S8K6H4XMnZaAuibQ/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1\" data-type=\"png\" data-w=\"1280\" src=\"res/_cache/auto/44/440.jpg\" /></p>\r\n\r\n<section>从漏洞行业分布来看，2022年补天平台收录的<strong>IT信息技术类网站漏洞数量最多</strong>，共有32088个，占比约为19.1%；<strong>其次是制造业网站</strong>，共收录漏洞15456个，占比约为9.2%；<strong>生活服务类网站排名第三</strong>，共收录漏洞12264个，占比约为7.3%。</section>\r\n\r\n<section>&nbsp;</section>\r\n\r\n<p><img _width=\"677px\" alt=\"图片\" crossorigin=\"anonymous\" data-fail=\"0\" data-index=\"3\" data-ratio=\"0.53515625\" data-s=\"300,640\" data-src=\"https://mmbiz.qpic.cn/mmbiz_png/G3LNmiaOGjaqibm5M81JU58m1fbCxodnyM1S0g2Hib1ft17ibQWhAEaYdQuebqjV4K0sjTqws7lQwuT7Q8m29syZrg/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1\" data-type=\"png\" data-w=\"1280\" src=\"res/_cache/auto/43/438.jpg\" /></p>\r\n\r\n<section>从漏洞的风险等级来看，在补天平台2022年全年收录网站安全漏洞中，<strong>高危漏洞4.7万个，占比约为28.1%</strong>；中危漏洞9.2万个，占比约为54.8%；低危漏洞2.9万个，占比约为17.1%。</section>\r\n\r\n<section>&nbsp;</section>\r\n\r\n<p><img _width=\"677px\" alt=\"图片\" crossorigin=\"anonymous\" data-fail=\"0\" data-index=\"4\" data-ratio=\"0.53515625\" data-s=\"300,640\" data-src=\"https://mmbiz.qpic.cn/mmbiz_png/G3LNmiaOGjaqibm5M81JU58m1fbCxodnyMDZKvk8mh1licNpHgkF5ibhlVaFtKarhMtAP9tjYzZay7hLMWFVjHRvYA/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1\" data-type=\"png\" data-w=\"1280\" src=\"res/_cache/auto/44/441.jpg\" /></p>\r\n\r\n<section>值得关注的是，虽然漏洞本身是无法完全避免的，被发现存在安全漏洞也并不可怕，但漠视漏洞的存在却是网络遭到入侵的重要原因之一，及时的修复或者给出缓解措施十分关键。《报告》显示，<strong>尽管2022年补天平台收录漏洞的平均确认率约为97.2%，但从已注册厂商确认的漏洞修复情况来看，漏洞修复率仅达69.8%，尚有超过30%的漏洞尚未被修复</strong>。</section>\r\n', '近日，补天漏洞响应平台（简称：补天平台）正式发布了《2022年补天漏洞响应平台年度分析报告》（简称：《报告》）。《报告》从漏洞数量、类型等多个维度，详细展示了2022年平台的漏洞收集和处置情况。', 0, 'https://www.qianxin.com/threat/reportdetail?report_id=289', '奇安信', '', '', 0),
+(2292, 1, 43, 68, 0, '<p>Bootstrap 是一个免费的开源工具包，用于开发响应式网页和在线应用程序。 HTML、CSS 和 JavaScript 框架使创建响应式、移动优先的网站变得简单。 它的主要目标是解决跨浏览器的兼容性问题。 Bootstrap 是任何网站的核心，针对所有屏幕尺寸进行了优化，并且在所有现代浏览器中看起来都很棒。<br />\r\nBootstrap 5 包含自定义表单控件。 Bootstrap 4 的表单控件使用每个浏览器中可用的任何预设。 由于其自定义设计，Bootstrap 5 中的表单控件在所有浏览器中的外观和感觉将明显更加一致。<br />\r\n在 bootstrap 5 中，删除了一些类，这这些删除的类在 bootstrap 4 版本中可用。</p>\r\n\r\n<ul>\r\n	<li>row form</li>\r\n	<li>form inline</li>\r\n	<li>list inline</li>\r\n	<li>form inline</li>\r\n</ul>\r\n\r\n<p>在 bootstrap 5 中，某些类在 bootstrap 4 版本中不可用。</p>\r\n\r\n<ul>\r\n	<li><code>gx-*</code> ：水平/列间距宽度</li>\r\n	<li><code>gy-*</code> ：垂直/行间距宽度</li>\r\n	<li><code>g-*</code> ：水平和垂直间距宽度</li>\r\n	<li><code>rows-cols-auto</code></li>\r\n</ul>\r\n\r\n<h2 id=\"blogTitle0\">Bootstrap 4 和 Bootstrap 5 的比较</h2>\r\n<link href=\"https://cdn.jsdelivr.net/npm/<a  data-cke-saved-href=\" rel=\"stylesheet\" />\r\n<link href=\"https://cdn .jsdelivr.net/npm/<a  data-cke-saved-href=\" />\r\n<table>\r\n	<thead>\r\n		<tr>\r\n			<th>比较项</th>\r\n			<th>Bootstrap 4 版本</th>\r\n			<th>Bootstrap 5 版本</th>\r\n		</tr>\r\n	</thead>\r\n	<tbody>\r\n		<tr>\r\n			<td>发布日期</td>\r\n			<td>Bootstrap 4 于 2018 年 1 月发布，与之前的版本相比有了显着的进步。</td>\r\n			<td>Bootstrap 5 于 2021 年 5 月发布。这个版本是在 alpha 和 beta 版本的多次迭代之后发布的，因此，它具有许多重要的附加功能和新功能。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Grid</td>\r\n			<td>System Bootstrap 4 有五个级别：xs、sm、md、lg 和 xl。</td>\r\n			<td>Bootstrap 5 有六个级别：xs、sm、md、lg、xl 和 xxl。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Jquery 插件</td>\r\n			<td>Bootstrap 4 包括 jquery 和所有相关的插件。</td>\r\n			<td>在 Bootstrap 5 中，Jquery 已被删除并替换为 vanilla JS 和几个功能插件。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Color</td>\r\n			<td>Bootstrap 4 为网页提供了几种颜色。外观中插入了额外的颜色，并且升级了卡片的调色板。</td>\r\n			<td>Bootstrap 5 框架有多种颜色可供选择。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Internet Explorer</td>\r\n			<td>Bootstrap 4 与 Internet Explorer 10 和 11 兼容。</td>\r\n			<td>Bootstrap 5 不支持 Internet Explorer 10 和 11。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>表单单选按钮和复选框的元素</td>\r\n			<td>在不同的操作系统和浏览器中显示不同。该表单利用了可用的任何基本浏览器功能。使用不同的操作系统或浏览器时，表单元素的外观不会改变。</td>\r\n			<td>表单交替并添加表单控件；它们不依赖于浏览器。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>实用程序 API</td>\r\n			<td>无法更改 Bootstrap 4 中的实用程序。</td>\r\n			<td>Bootstrap 5 提供了调整和开发实用程序的能力。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>使用gutter</td>\r\n			<td>Bootstrap 4 使用 px 字体大小的 glutter。</td>\r\n			<td>在 Bootstrap 5 中使用 <code>.g*</code> 并将字体大小设置为 rem。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>垂直组</td>\r\n			<td>列可以相对于彼此定位。</td>\r\n			<td>列不能相对于彼此定位。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Bootstrap 的图标</td>\r\n			<td>Bootstrap 4 缺少 SVG 图标；必须依靠 font-awesome 来制作图标。</td>\r\n			<td>Bootstrap 5 有自己的一组 SVG 图标。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Jumbotron</td>\r\n			<td>Bootstrap 4 与 jumbotron 兼容。</td>\r\n			<td>它与 jumbotron 不兼容。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>卡片组</td>\r\n			<td>卡片组用于制作具有相同宽度和高度的一组卡片。</td>\r\n			<td>卡片组类已从 Bootstrap 5中删除。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>Navbar</td>\r\n			<td>有 inline-block 属性，白色的下拉菜单将是 dropdown-menu-dark 类的默认值。</td>\r\n			<td>inline-block 属性已被删除，而 dropdown-menu-dark 类现在默认有一个黑色下拉菜单。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>静态网站生成器</td>\r\n			<td>Bootstrap 4 使用 Jekyll 软件。</td>\r\n			<td>Bootstrap 5 使用了一个快速的静态生成器，即 Hugo。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>grid</td>\r\n			<td>flexbox 让垂直设计更容易构建，列和行可以简单实现。</td>\r\n			<td>justify-center-content 类直接用于根据要求对齐。提供了更复杂的网格系统，并且列没有相对位置。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>CSS 可用性</td>\r\n			<td>Bootstrap 4 使用了更少的 CSS 属性。</td>\r\n			<td>Bootstrap 5 使用了更多的 CSS 属性。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>offcanvas 组件</td>\r\n			<td>没有 offcanvas 元素。</td>\r\n			<td>offcanvas 组件现在可用。</td>\r\n		</tr>\r\n		<tr>\r\n			<td>RTL 支持</td>\r\n			<td>语言不启用 RTL(从右到左)切换。</td>\r\n			<td>它启用 RTL(从右到左)语言切换。</td>\r\n		</tr>\r\n	</tbody>\r\n</table>\r\n\r\n<h2> </h2>\r\n\r\n<h2 id=\"blogTitle1\">结论</h2>\r\n\r\n<p>这两个引导框架有许多相似之处和不同之处。 Bootstrap 4 和 bootstrap 4 有各自的功能。 Bootstrap 5 是 bootstrap 4 框架的高级版本。可以根据功能的要求和可用性选择版本。<br />\r\n </p>\r\n', 'Bootstrap 是一个免费的开源工具包，用于开发响应式网页和在线应用程序。 HTML、CSS 和 JavaScript 框架使创建响应式、移动优先的网站变得简单。 它的主要目标是解决跨浏览器的兼容性问题。 Bootstrap 是任何网站的核心，针对所有屏幕尺寸进行了优化，并且在所有现代浏览器中看起来都很棒。', 0, 'https://www.vsdiffer.com/vs/bootstrap-4-vs-bootstrap-5-framework.html', 'VSDiffer', '', '', 0);
 
 -- --------------------------------------------------------
 
@@ -1964,11 +2084,11 @@ INSERT INTO `qinggan_list_22` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`
 -- 表的结构 `qinggan_list_24`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_24` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_24` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `pictures` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
   `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
   `content` longtext NOT NULL COMMENT '内容',
@@ -1984,10 +2104,10 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_24` (
 --
 
 INSERT INTO `qinggan_list_24` (`id`, `site_id`, `project_id`, `cate_id`, `pictures`, `thumb`, `content`, `subtitle`, `contentpics`, `package`, `params`, `video`) VALUES
-(2453, 1, 45, 168, '636,635,637', '636', '', '【闪耀女神节】①限时优惠130元②享12期免息③可用挚爱礼100元优惠券', '633,634', 'a:2:{s:5:"title";a:8:{i:0;s:27:"手机（含内置电池）";i:1;s:26:"HONOR SuperCharge充电器";i:2;s:20:"USB Type-C 数据线";i:3;s:12:"快速指南";i:4;s:9:"取卡针";i:5;s:11:"TP保护膜";i:6;s:12:"TPU保护壳";i:7;s:12:"三包凭证";}s:7:"content";a:8:{i:0;s:1:"1";i:1;s:1:"1";i:2;s:1:"1";i:3;s:1:"1";i:4;s:1:"1";i:5;s:22:"1（出厂已粘贴）";i:6;s:1:"1";i:7;s:1:"1";}}', '8,10', ''),
-(2454, 1, 45, 168, '731,732,733', '733', '', '疯抢中！256GB首降至高省300元', '709,710', 'a:2:{s:5:"title";s:0:"";s:7:"content";s:0:"";}', '', ''),
-(2455, 1, 45, 168, '768,769,770', '768', '', '第二代骁龙 8|2K 144Hz E6 全感屏|自研芯片 V2|120W超快闪充|全感操控系统', '745,746', 'a:2:{s:5:"title";a:8:{i:0;s:6:"手机";i:1;s:9:"充电头";i:2;s:25:"Type-C to Type-C数据线";i:3;s:9:"保护壳";i:4;s:30:"原装膜（出厂已贴好）";i:5;s:9:"取卡针";i:6;s:18:"快速入门指南";i:7;s:15:"手机包装盒";}s:7:"content";a:8:{i:0;s:1:"1";i:1;s:1:"1";i:2;s:1:"1";i:3;s:1:"1";i:4;s:1:"1";i:5;s:1:"1";i:6;s:1:"1";i:7;s:1:"1";}}', '11,12', ''),
-(2456, 1, 45, 168, '784,785,786,791', '794', '', '高通骁龙 870 + UFS 3.1 强劲性能 | 10bit 120Hz OLED 屏幕 | Flyme 9.2 | 屏下光学指纹解锁', '773', 'a:2:{s:5:"title";s:0:"";s:7:"content";s:0:"";}', '', '');
+(2453, 1, 45, 168, '636,635,637', '636', '', '【闪耀女神节】①限时优惠130元②享12期免息③可用挚爱礼100元优惠券', '633,634', 'a:2:{s:5:\"title\";a:8:{i:0;s:27:\"手机（含内置电池）\";i:1;s:26:\"HONOR SuperCharge充电器\";i:2;s:20:\"USB Type-C 数据线\";i:3;s:12:\"快速指南\";i:4;s:9:\"取卡针\";i:5;s:11:\"TP保护膜\";i:6;s:12:\"TPU保护壳\";i:7;s:12:\"三包凭证\";}s:7:\"content\";a:8:{i:0;s:1:\"1\";i:1;s:1:\"1\";i:2;s:1:\"1\";i:3;s:1:\"1\";i:4;s:1:\"1\";i:5;s:22:\"1（出厂已粘贴）\";i:6;s:1:\"1\";i:7;s:1:\"1\";}}', '8,10', ''),
+(2454, 1, 45, 168, '731,732,733', '733', '', '疯抢中！256GB首降至高省300元', '709,710', 'a:2:{s:5:\"title\";s:0:\"\";s:7:\"content\";s:0:\"\";}', '', ''),
+(2455, 1, 45, 168, '768,769,770', '768', '', '第二代骁龙 8|2K 144Hz E6 全感屏|自研芯片 V2|120W超快闪充|全感操控系统', '745,746', 'a:2:{s:5:\"title\";a:8:{i:0;s:6:\"手机\";i:1;s:9:\"充电头\";i:2;s:25:\"Type-C to Type-C数据线\";i:3;s:9:\"保护壳\";i:4;s:30:\"原装膜（出厂已贴好）\";i:5;s:9:\"取卡针\";i:6;s:18:\"快速入门指南\";i:7;s:15:\"手机包装盒\";}s:7:\"content\";a:8:{i:0;s:1:\"1\";i:1;s:1:\"1\";i:2;s:1:\"1\";i:3;s:1:\"1\";i:4;s:1:\"1\";i:5;s:1:\"1\";i:6;s:1:\"1\";i:7;s:1:\"1\";}}', '11,12', ''),
+(2456, 1, 45, 168, '784,785,786,791', '794', '', '高通骁龙 870 + UFS 3.1 强劲性能 | 10bit 120Hz OLED 屏幕 | Flyme 9.2 | 屏下光学指纹解锁', '', 'a:2:{s:5:\"title\";s:0:\"\";s:7:\"content\";s:0:\"\";}', '', '');
 
 -- --------------------------------------------------------
 
@@ -1995,11 +2115,11 @@ INSERT INTO `qinggan_list_24` (`id`, `site_id`, `project_id`, `cate_id`, `pictur
 -- 表的结构 `qinggan_list_40`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_40` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_40` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `content` longtext NOT NULL COMMENT '内容'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关于我们';
 
@@ -2009,8 +2129,8 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_40` (
 
 INSERT INTO `qinggan_list_40` (`id`, `site_id`, `project_id`, `cate_id`, `content`) VALUES
 (18, 1, 87, 0, '<p>PHPOK工作室（简称<strong>工作室</strong>）是一家从事 互联网+ 规划、咨询、开发及运营的综合服务商，致力于互联网市场的探索与研究，推动企业电子商务转型发展。</p>\r\n\r\n<p><strong>互联网+ 强大企业</strong></p>\r\n\r\n<p>专注企业 互联网+ 发展，将互联网思维植入传统企业，帮 助企业搭建属于自己的互联网经营平台，引领商业新生态 的变革，帮助企业做大做强。我们为每个客户提供专业化 和定制化的互联网+方案，坚持以客户需求为导向，竭力 为客户带来最大的商业价值。相信我们是您值得信赖的合作伙伴！</p>\r\n\r\n<p><strong>一体化服务</strong></p>\r\n\r\n<p>整体设计 我们为企业提供“品牌包装、网站建设、运营推广”一体 化整体设计，并运用新的思想，新的技术，帮助企业实现二次腾飞。专业的技术力量及丰富的运营经验深受广大客 户的认可。</p>\r\n\r\n<p><strong>价值观</strong></p>\r\n\r\n<p>有偿服务，利人利己</p>\r\n\r\n<p>无私开源，共同发展</p>\r\n\r\n<p><strong>目标</strong></p>\r\n\r\n<p>助力客户成就梦想 完善自我，更上一层楼</p>\r\n'),
-(19, 1, 87, 0, '<table style="width: 100%;">\r\n	<tbody>\r\n		<tr>\r\n			<td colspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2023年03月</strong></span></td>\r\n			<td colspan="1">PHPOK6.4发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2022年11月</strong></span></td>\r\n			<td colspan="1">PHPOK6.3发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2022年05月</strong></span></td>\r\n			<td colspan="1">PHPOK6.2发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2021年12月</strong></span></td>\r\n			<td colspan="1">PHPOK6.1发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2021年09月</strong></span></td>\r\n			<td colspan="1">OKLite3.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2021年05月</strong></span></td>\r\n			<td colspan="1">PHPOK6.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2021年05月</strong></span></td>\r\n			<td colspan="1">PHPOK5.8发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2021年01月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK5.7发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2020年10月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK5.6发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2020年05月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK5.5发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2019年12月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK5.4发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2019年10月</strong></span></td>\r\n			<td colspan="1" rowspan="1">OKLite2.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2019年08月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK5.3发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2019年03月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK5.2发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2019年01月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK5.1发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style="text-align: right;"><span style="color:#990000;"><strong>2018年11月</strong></span></td>\r\n			<td>PHPOK5.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2018年05月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK4.9发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2018年01月</strong></span></td>\r\n			<td colspan="1" rowspan="1">OKLite1.2发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2017年10月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK4.8发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2017年03月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK4.7发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2016年10月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK4.6发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2016年04月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK4.5发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2016年01月</strong></span></td>\r\n			<td colspan="1" rowspan="1">OKLite1.1发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2015年10月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK4.4发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2015年06月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK4.3发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2015年03月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK手册新鲜出炉</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2014年10月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK4.2发布并成立公司<strong>深圳市锟铻科技有限公司</strong></td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2014年08月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK4.1发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan="1" rowspan="1" style="text-align: right;"><span style="color:#990000;"><strong>2014年01月</strong></span></td>\r\n			<td colspan="1" rowspan="1">PHPOK4.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style="text-align: right;"><span style="color:#990000;"><strong>2011年12月</strong></span></td>\r\n			<td>PHPOK3.4版发布（后台更换为桌面式）</td>\r\n		</tr>\r\n		<tr>\r\n			<td style="text-align: right;"><span style="color:#990000;"><strong>2011年09月</strong></span></td>\r\n			<td>phpok3.3完整版发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style="text-align: right;"><span style="color:#990000;"><strong>2010年08月</strong></span></td>\r\n			<td>PHPOK3.0完整版发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style="text-align: right;"><span style="color:#990000;"><strong>2008年09月</strong></span></td>\r\n			<td>PHPOK3.0精简版发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style="text-align: right;"><span style="color:#990000;"><strong>2008年05月</strong></span></td>\r\n			<td>PHPOK2.2发布（稳定版本）</td>\r\n		</tr>\r\n		<tr>\r\n			<td style="text-align: right;"><span style="color:#990000;"><strong>2008年03月</strong></span></td>\r\n			<td>PHPOK2.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style="text-align: right;"><span style="color:#990000;"><strong>2007年05月</strong></span></td>\r\n			<td>PHPOK1.0发布</td>\r\n		</tr>\r\n	</tbody>\r\n</table>\r\n'),
-(20, 1, 87, 0, '<div class="content">\r\n<p>我们一直在努力提升项目质量及效率，一切的一切都是为客户提供更放心的服务！</p>\r\n\r\n<p><strong>公司</strong>：PHPOK开发工作室</p>\r\n\r\n<p><strong>电话</strong>：0755-12345678</p>\r\n\r\n<p><strong>邮箱</strong>：admin@admin.com</p>\r\n\r\n<p><strong>网址</strong>：<a href="https://www.phpok.com" target="_self">www.phpok.com</a></p>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p><strong>办公地址</strong>：广东深圳龙华新区民治大道325号东边商务大楼13层1309室</p>\r\n\r\n<p><strong><span style="line-height: 24px;">地铁</span></strong><span style="line-height: 24px;">：5号线，民治地铁站D出口</span></p>\r\n\r\n<p><strong>公交车（民治小学站）</strong>：302路&nbsp;302区间线&nbsp;316路&nbsp;324路&nbsp;333路&nbsp;334路&nbsp;334路区间线&nbsp;336路&nbsp;339路&nbsp;352路&nbsp;620路&nbsp;621路&nbsp;76路区间线&nbsp;B657路&nbsp;B690路&nbsp;M213路（原787路）&nbsp;M262路&nbsp;M282路&nbsp;M302路&nbsp;M344路&nbsp;M365路&nbsp;M372路&nbsp;M391路&nbsp;M392路&nbsp;高峰专线13号&nbsp;口岸观光线（观光3线）</p>\r\n</div>\r\n');
+(19, 1, 87, 0, '<table style=\"width: 100%;\">\r\n	<tbody>\r\n		<tr>\r\n			<td colspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2023年03月</strong></span></td>\r\n			<td colspan=\"1\">PHPOK6.4发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2022年11月</strong></span></td>\r\n			<td colspan=\"1\">PHPOK6.3发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2022年05月</strong></span></td>\r\n			<td colspan=\"1\">PHPOK6.2发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2021年12月</strong></span></td>\r\n			<td colspan=\"1\">PHPOK6.1发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2021年09月</strong></span></td>\r\n			<td colspan=\"1\">OKLite3.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2021年05月</strong></span></td>\r\n			<td colspan=\"1\">PHPOK6.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2021年05月</strong></span></td>\r\n			<td colspan=\"1\">PHPOK5.8发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2021年01月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK5.7发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2020年10月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK5.6发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2020年05月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK5.5发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2019年12月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK5.4发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2019年10月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">OKLite2.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2019年08月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK5.3发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2019年03月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK5.2发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2019年01月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK5.1发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2018年11月</strong></span></td>\r\n			<td>PHPOK5.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2018年05月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK4.9发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2018年01月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">OKLite1.2发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2017年10月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK4.8发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2017年03月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK4.7发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2016年10月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK4.6发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2016年04月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK4.5发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2016年01月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">OKLite1.1发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2015年10月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK4.4发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2015年06月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK4.3发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2015年03月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK手册新鲜出炉</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2014年10月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK4.2发布并成立公司<strong>深圳市锟铻科技有限公司</strong></td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2014年08月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK4.1发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"1\" rowspan=\"1\" style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2014年01月</strong></span></td>\r\n			<td colspan=\"1\" rowspan=\"1\">PHPOK4.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2011年12月</strong></span></td>\r\n			<td>PHPOK3.4版发布（后台更换为桌面式）</td>\r\n		</tr>\r\n		<tr>\r\n			<td style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2011年09月</strong></span></td>\r\n			<td>phpok3.3完整版发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2010年08月</strong></span></td>\r\n			<td>PHPOK3.0完整版发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2008年09月</strong></span></td>\r\n			<td>PHPOK3.0精简版发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2008年05月</strong></span></td>\r\n			<td>PHPOK2.2发布（稳定版本）</td>\r\n		</tr>\r\n		<tr>\r\n			<td style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2008年03月</strong></span></td>\r\n			<td>PHPOK2.0发布</td>\r\n		</tr>\r\n		<tr>\r\n			<td style=\"text-align: right;\"><span style=\"color:#990000;\"><strong>2007年05月</strong></span></td>\r\n			<td>PHPOK1.0发布</td>\r\n		</tr>\r\n	</tbody>\r\n</table>\r\n'),
+(20, 1, 87, 0, '<div class=\"content\">\r\n<p>我们一直在努力提升项目质量及效率，一切的一切都是为客户提供更放心的服务！</p>\r\n\r\n<p><strong>公司</strong>：PHPOK开发工作室</p>\r\n\r\n<p><strong>电话</strong>：0755-12345678</p>\r\n\r\n<p><strong>邮箱</strong>：admin@admin.com</p>\r\n\r\n<p><strong>网址</strong>：<a href=\"https://www.phpok.com\" target=\"_self\">www.phpok.com</a></p>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p><strong>办公地址</strong>：广东深圳龙华新区民治大道325号东边商务大楼13层1309室</p>\r\n\r\n<p><strong><span style=\"line-height: 24px;\">地铁</span></strong><span style=\"line-height: 24px;\">：5号线，民治地铁站D出口</span></p>\r\n\r\n<p><strong>公交车（民治小学站）</strong>：302路&nbsp;302区间线&nbsp;316路&nbsp;324路&nbsp;333路&nbsp;334路&nbsp;334路区间线&nbsp;336路&nbsp;339路&nbsp;352路&nbsp;620路&nbsp;621路&nbsp;76路区间线&nbsp;B657路&nbsp;B690路&nbsp;M213路（原787路）&nbsp;M262路&nbsp;M282路&nbsp;M302路&nbsp;M344路&nbsp;M365路&nbsp;M372路&nbsp;M391路&nbsp;M392路&nbsp;高峰专线13号&nbsp;口岸观光线（观光3线）</p>\r\n</div>\r\n');
 
 -- --------------------------------------------------------
 
@@ -2018,11 +2138,11 @@ INSERT INTO `qinggan_list_40` (`id`, `site_id`, `project_id`, `cate_id`, `conten
 -- 表的结构 `qinggan_list_46`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_46` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_46` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `fullname` varchar(255) NOT NULL DEFAULT '' COMMENT '姓名',
   `email` varchar(255) NOT NULL DEFAULT '' COMMENT '邮箱',
   `content` longtext NOT NULL COMMENT '内容',
@@ -2044,11 +2164,11 @@ INSERT INTO `qinggan_list_46` (`id`, `site_id`, `project_id`, `cate_id`, `fullna
 -- 表的结构 `qinggan_list_64`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_64` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_64` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `qtype` varchar(255) NOT NULL DEFAULT 'qq' COMMENT '客服类型',
   `qrcode` varchar(255) NOT NULL DEFAULT '' COMMENT '微信二维码',
   `account` varchar(255) NOT NULL DEFAULT '' COMMENT '客服账号'
@@ -2069,11 +2189,11 @@ INSERT INTO `qinggan_list_64` (`id`, `site_id`, `project_id`, `cate_id`, `qtype`
 -- 表的结构 `qinggan_list_65`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_65` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_65` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `note` longtext NOT NULL COMMENT '摘要',
   `fsize` varchar(255) NOT NULL DEFAULT '' COMMENT '文件大小',
   `content` longtext NOT NULL COMMENT '内容',
@@ -2100,11 +2220,11 @@ INSERT INTO `qinggan_list_65` (`id`, `site_id`, `project_id`, `cate_id`, `note`,
 -- 表的结构 `qinggan_list_66`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_66` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_66` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `content` longtext NOT NULL COMMENT '内容',
   `toplevel` varchar(255) NOT NULL DEFAULT '0' COMMENT '置顶',
   `pictures` varchar(255) NOT NULL DEFAULT '' COMMENT '图片'
@@ -2115,7 +2235,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_66` (
 --
 
 INSERT INTO `qinggan_list_66` (`id`, `site_id`, `project_id`, `cate_id`, `content`, `toplevel`, `pictures`) VALUES
-(2511, 1, 152, 204, '<p>这是测试用的！</p>\r\n', '0', '');
+(2528, 1, 152, 206, '<p>这个也是测试用的这个也是测试用的这个也是测试用的</p>\r\n', '0', '');
 
 -- --------------------------------------------------------
 
@@ -2123,11 +2243,11 @@ INSERT INTO `qinggan_list_66` (`id`, `site_id`, `project_id`, `cate_id`, `conten
 -- 表的结构 `qinggan_list_68`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_68` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_68` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
   `content` longtext NOT NULL COMMENT '内容'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='图集相册';
@@ -2165,24 +2285,24 @@ INSERT INTO `qinggan_list_68` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`
 -- 表的结构 `qinggan_list_110`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_110` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_110` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `banner` varchar(255) NOT NULL DEFAULT '' COMMENT '通栏图片',
   `note` longtext NOT NULL COMMENT '摘要',
   `content` longtext NOT NULL COMMENT '内容'
-) ENGINE=MyISAM AUTO_INCREMENT=44 DEFAULT CHARSET=utf8 COMMENT='独立页';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='独立页';
 
 --
 -- 转存表中的数据 `qinggan_list_110`
 --
 
 INSERT INTO `qinggan_list_110` (`id`, `site_id`, `project_id`, `cate_id`, `banner`, `note`, `content`) VALUES
-(41, 1, 451, 0, '', '为了给您提供更准确、更有个性化的服务，本应用会按照本隐私权政策的规定使用和披露您的个人信息。', '<p>本应用尊重并保护所有使用服务用户的个人隐私权。为了给您提供更准确、更有个性化的服务，本应用会按照本隐私权政策的规定使用和披露您的个人信息。但本应用将以高度的勤勉、审慎义务对待这些信息。除本隐私权政策另有规定外，在未征得您事先许可的情况下，本应用不会将这些信息对外披露或向第三方提供。本应用会不时更新本隐私权政策。 您在同意本应用服务使用协议之时，即视为您已经同意本隐私权政策全部内容。本隐私权政策属于本应用服务使用协议不可分割的一部分。</p>\r\n\r\n<h3>适用范围</h3>\r\n\r\n<ul class="list-paddingleft-2" style="list-style-type: disc;">\r\n	<li>\r\n	<p>在您使用本应用网络服务，或访问本应用平台网页时，本应用自动接收并记录的您的浏览器和计算机上的信息，包括但不限于您的IP地址、浏览器的类型、使用的语言、访问日期和时间、软硬件特征信息及您需求的网页记录等数据；</p>\r\n	</li>\r\n	<li>\r\n	<p>本应用通过合法途径从商业伙伴处取得的用户个人数据。</p>\r\n	</li>\r\n	<li>\r\n	<p>您了解并同意，以下信息不适用本隐私权政策：</p>\r\n\r\n	<ul class="list-paddingleft-2" style="list-style-type: square;">\r\n		<li>\r\n		<p>您在使用本应用平台提供的搜索服务时输入的关键字信息；</p>\r\n		</li>\r\n		<li>\r\n		<p>本应用收集到的您在本应用发布的有关信息数据，包括但不限于参与活动、成交信息及评价详情；</p>\r\n		</li>\r\n		<li>\r\n		<p>违反法律规定或违反本应用规则行为及本应用已对您采取的措施。</p>\r\n		</li>\r\n	</ul>\r\n	</li>\r\n</ul>\r\n\r\n<h3>信息使用</h3>\r\n\r\n<ul class="list-paddingleft-2" style="list-style-type: disc;">\r\n	<li>\r\n	<p>本应用不会向任何无关第三方提供、出售、出租、分享或交易您的个人信息，除非事先得到您的许可，或该第三方和本应用（含本应用关联公司）单独或共同为您提供服务，且在该服务结束后，其将被禁止访问包括其以前能够访问的所有这些资料。</p>\r\n	</li>\r\n	<li>\r\n	<p>本应用亦不允许任何第三方以任何手段收集、编辑、出售或者无偿传播您的个人信息。任何本应用平台用户如从事上述活动，一经发现，本应用有权立即终止与该用户的服务协议。</p>\r\n	</li>\r\n	<li>\r\n	<p>为服务用户的目的，本应用可能通过使用您的个人信息，向您提供您感兴趣的信息，包括但不限于向您发出产品和服务信息，或者与本应用合作伙伴共享信息以便他们向您发送有关其产品和服务的信息（后者需要您的事先同意）。</p>\r\n	</li>\r\n</ul>\r\n\r\n<h3>信息披露</h3>\r\n\r\n<p>在如下情况下，本应用将依据您的个人意愿或法律的规定全部或部分的披露您的个人信息：</p>\r\n\r\n<ul class="list-paddingleft-2" style="list-style-type: disc;">\r\n	<li>\r\n	<p>经您事先同意，向第三方披露；</p>\r\n	</li>\r\n	<li>\r\n	<p>为提供您所要求的产品和服务，而必须和第三方分享您的个人信息；</p>\r\n	</li>\r\n	<li>\r\n	<p>根据法律的有关规定，或者行政或司法机构的要求，向第三方或者行政、司法机构披露；</p>\r\n	</li>\r\n	<li>\r\n	<p>如您出现违反中国有关法律、法规或者本应用服务协议或相关规则的情况，需要向第三方披露；</p>\r\n	</li>\r\n	<li>\r\n	<p>如您是适格的知识产权投诉人并已提起投诉，应被投诉人要求，向被投诉人披露，以便双方处理可能的权利纠纷；</p>\r\n	</li>\r\n	<li>\r\n	<p>在本应用平台上创建的某一交易中，如交易任何一方履行或部分履行了交易义务并提出信息披露请求的，本应用有权决定向该用户提供其交易对方的联络方式等必要信息，以促成交易的完成或纠纷的解决。</p>\r\n	</li>\r\n	<li>\r\n	<p>其它本应用根据法律、法规或者网站政策认为合适的披露。</p>\r\n	</li>\r\n</ul>\r\n\r\n<h3>信息存储和交换</h3>\r\n\r\n<p>本应用收集的有关您的信息和资料将保存在本应用及（或）其关联公司的服务器上，这些信息和资料可能传送至您所在国家、地区或本应用收集信息和资料所在地的境外并在境外被访问、存储和展示。</p>\r\n\r\n<p>信息安全</p>\r\n\r\n<ul class="list-paddingleft-2" style="list-style-type: disc;">\r\n	<li>\r\n	<p>本应用帐号均有安全保护功能，请妥善保管您的用户名及密码信息。本应用将通过对用户密码进行加密等安全措施确保您的信息不丢失，不被滥用和变造。尽管有前述安全措施，但同时也请您注意在信息网络上不存在&ldquo;完善的安全措施&rdquo;。</p>\r\n	</li>\r\n	<li>\r\n	<p>在使用本应用网络服务进行网上交易时，您不可避免的要向交易对方或潜在的交易对方披露自己的个人信息，如联络方式或者邮政地址。请您妥善保护自己的个人信息，仅在必要的情形下向他人提供。如您发现自己的个人信息泄密，尤其是本应用用户名及密码发生泄露，请您立即联络本应用客服，以便本应用采取相应措施。</p>\r\n	</li>\r\n</ul>\r\n'),
-(42, 1, 451, 0, '', '', '<h3>1、协议的主体及范围</h3>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>请确认，在完成注册或以其他本站允许的方式实际登陆网站时，注册人或者登陆人应当是具备完全民事权利能力和完全民事行为能力的自然人、法人或非法人组织（以下统称为&ldquo;用户&rdquo;、&ldquo;您&rdquo;）。若您是未成年人或限制民事行为能力人，则不具备前述主体资格，您及您的监护人应承担因不当注册行为而导致的一切后果，且本站有权注销（永久冻结）您的账户，并向您及您的监护人索偿。</p>\r\n	</li>\r\n	<li>\r\n	<p>本协议是您与本网站之间关于用户使用本站相关服务所订立的协议。</p>\r\n	</li>\r\n	<li>\r\n	<p>本协议项下的服务是指本网站向用户提供的包括但不限于技术支持、信息推广等产品及服务（以下简称&ldquo;本服务&rdquo;）。</p>\r\n	</li>\r\n	<li>\r\n	<p>您在使用本网站某一特定服务时，该服务可能会另有单独的协议、相关业务规则等（以下统称为&ldquo;单独协议&rdquo;）。上述内容一经正式发布，即为本协议不可分割的组成部分，您同样应当遵守。您对前述任何业务规则、单独协议的接受，即视为您对本协议全部的接受</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>2、协议生效条件</h3>\r\n\r\n<p>本网站提供的服务将完全按照其发布的章程、服务条款和操作规则严格执行。用户完全完成注册程序，便成为本网站的注册用户，将得到一个密码和帐号，同时此协议即时生效。用户有义务保证密码和帐号的安全。用户对利用该密码和帐号所进行的一切活动负全部责任；因此所衍生的任何损失或损害，本网站无法也不承担任何责任。</p>\r\n\r\n<h3>3、注册义务</h3>\r\n\r\n<p>本网站运用自己的操作系统通过国际互联网为用户提供网络服务。同时，用户必须：,</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>自行配备上网的所需设备，包括个人电脑、智能手持终端或其他必备上网装置；</p>\r\n	</li>\r\n	<li>\r\n	<p>自行负担个人上网所支付的与此服务有关的电话费用、网络费用。</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>为了能使用本服务，您同意以下事项：</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>依本服务注册表的提示提供真实身份信息，不提供真实身份信息的，本网站拒绝为您提供相关服务；</p>\r\n	</li>\r\n	<li>\r\n	<p>维持更新您个人用户信息，确保其真实、正确、最新及完整。若您提供任何错误、不实、过时或不完整的资料，并为本网站所确知，或者本网站有合理的理由怀疑前述资料为错误、不实、过时或不完整，本网站有权暂停或终止您的帐号，并拒绝您于现在和未来使用本网站全部或部分的服务。但您发现本网站违反法律、行政法规的规定或者双方的约定收集、使用您个人信息的，有权要求本网站删除您个人信息；发现本网站收集、存储的您个人信息有错误的，有权要求本网站予以更正，本网站将采取措施予以删除或者更正。</p>\r\n	</li>\r\n	<li>\r\n	<p>您注册的用户名不能侵犯他人合法权益，不能对他人名誉权造成侵犯。本网站有权收回对本网站或者他人合法权益有侵犯嫌疑的帐号。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>4、隐私制度</h3>\r\n\r\n<p>尊重用户个人隐私、保护个人信息安全是《中华人民共和国网络安全法》的要求，也是本网站的一项基本政策。所以，本网站不会在未经合法用户同意或授权时，公开、编辑或透露其个人信息及保存在本网站中的非公开内容，除非有下列情况：</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>有关法律规定和程序，本网站合法服务程序规定；</p>\r\n	</li>\r\n	<li>\r\n	<p>保持维护本网站的商标所有权和其他合法权益；</p>\r\n	</li>\r\n	<li>\r\n	<p>在紧急情况下竭力维护用户个人和社会大众的隐私安全；</p>\r\n	</li>\r\n	<li>\r\n	<p>与本网站的关联公司和战略合作伙伴分享客户资料，以及其他需要公开、编辑或透露个人信息的情况。</p>\r\n	</li>\r\n	<li>\r\n	<p>对个人信息数据进行脱敏（匿名化）处理后的使用。</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>另外，在以下（包括但不限于）几种情况下，本网站有权使用用户的个人信息：</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>在进行促销、抽奖、捐助等社会或商业活动时，本网站可能会与赞助商共享用户的个人信息，在这些情况下本网站会在发送用户信息之前进行提示，并且用户可以通过不参与来终止传送过程；</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站会通过透露合计用户统计数据，向未来的合作伙伴、广告商及其他第三方以及为了其他合法目的而描述本网站的服务；</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站可以将用户信息与第三方数据匹配；</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站会向用户发送客户订制的信息或者其它本网站认为用户会感兴趣的其他信息。如果用户不希望收到这样的信息，只需在提供个人信息时或其他任何时候告知即可；</p>\r\n	</li>\r\n	<li>\r\n	<p>另外，本网站会采取行业惯用措施保护用户信息的安全，但本网站不能确信或保证任何个人信息的安全性，用户须自己承担风险。比如用户联机公布可被公众访问的个人信息时，用户有可能会收到未经用户同意的信息；本网站的合作伙伴和可通过本网站访问的第三方因特网站点和服务；通过抽奖、促销等活动得知用户个人信息的第三方会进行独立的数据收集工作等活动。本网站对用户及其他任何第三方的上述行为，不承担任何责任。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>5、用户信息的存储与限制</h3>\r\n\r\n<p>本网站不对用户所发布信息的删除或储存失败负责。本网站除按照《中华人民共和国网络安全法》的规定留存相关的网络日志不少于六个月之外，并不承诺对用户的存储信息进行无限期保留。除非按照《中华人民共和国网络安全法》的规定本网站为其服务持续提供安全维护，在规定或者约定的期限内不得终止提供安全维护外，否则本网站不保证服务一定会满足用户的使用要求，也不保证服务不会受中断，对服务的及时性、安全性、准确性也不作担保。本网站有判定用户的行为是否符合本网站服务条款的要求和精神的保留权利，如果用户违背了服务条款的规定，本网站有中断对其提供网络服务的权利。本网站运用自己的操作系统通过国际互联网向用户提供丰富的网上资源，包括各种信息工具、网上论坛、个性化内容等。除非另有明确规定，增强或强化目前服务的任何新功能，包括新产品、栏目，均无条件地适用本服务条款。</p>\r\n\r\n<h3>6、服务条款的修改</h3>\r\n\r\n<p>本网站有权在必要时修改服务条款。本网站服务条款一旦发生变动，将会在重要页面上提示所修改的内容。如果不同意所改动的内容，用户可以主动取消获得的网络服务。如果用户继续享用网络服务，则视为接受服务条款的变动。本网站保留随时修改或中断服务而不需照知用户的权利。本网站行使修改或中断服务的权利，不需对用户或第三方负责。</p>\r\n\r\n<h3>7、拒绝提供担保</h3>\r\n\r\n<p>用户对网络服务的使用承担风险。本网站对此不作任何类型的担保，不论是明确的或隐含的，但是不对商业性的隐含担保、特定目的和不违反规定的适当担保作限制。</p>\r\n\r\n<h3>8、有限责任</h3>\r\n\r\n<p>本网站对任何直接、间接、偶然、特殊及继起的损害不负责任，这些损害可能来自：不正当使用网络服务，在网上购买商品或进行同类型服务，在网上进行交易，非法使用网络服务或用户传送的信息有所变动。</p>\r\n\r\n<h3>9、服务的结束</h3>\r\n\r\n<p>用户或本网站可随时根据实际情况中断一项或多项网络服务。本网站不需对任何个人或第三方负责而随时中断服务。用户对后来的条款修改有异议，或对本网站的服务不满，可以行使如下权利：</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>停止使用本网站的网络服务；</p>\r\n	</li>\r\n	<li>\r\n	<p>通告本网站停止对该用户的服务。结束用户服务后，用户使用网络服务的权利马上中止。从那时起，用户没有权利，本网站也没有义务传送任何未处理的信息或未完成的服务给用户或第三方。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>10、用户管理</h3>\r\n\r\n<p>用户单独承担发布内容的责任。用户对服务的使用是根据所有适用于本网站的国家法律、地方法律和国际法律标准的。</p>\r\n\r\n<p>用户必须遵循：</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>从中国境内向外传输技术性资料时必须符合中国有关法规；</p>\r\n	</li>\r\n	<li>\r\n	<p>使用网络服务不作非法用途；</p>\r\n	</li>\r\n	<li>\r\n	<p>不干扰或混乱网络服务；</p>\r\n	</li>\r\n	<li>\r\n	<p>遵守所有使用网络服务的网络协议、规定、程序和惯例。</p>\r\n	</li>\r\n	<li>\r\n	<p>用户的密码和帐号遭到未授权的使用或发生其他任何安全问题，用户可以立即通知本网站，并且用户在每次连线结束，应结束帐号使用，否则用户可能得不到本网站的安全保护。</p>\r\n	</li>\r\n	<li>\r\n	<p>禁止用户从事以下行为：</p>\r\n\r\n	<ol class="list-paddingleft-2" style="list-style-type: lower-alpha;">\r\n		<li>\r\n		<p>上载、张贴、发送或传送任何非法、反动、淫秽、粗俗、猥亵的，胁迫、骚扰、中伤他人、诽谤、侵害他人隐私或诋毁他人名誉或商誉的，种族歧视、危害未成年人或其他不适当的信息或电子邮件，包括但不限于资讯、资料、文字、软件、音乐、照片、图形、信息或其他资料（以下简称内容）。</p>\r\n		</li>\r\n		<li>\r\n		<p>未经本网站许可的广告行为。</p>\r\n		</li>\r\n		<li>\r\n		<p>冒充任何人或机构，或以虚伪不实的方式谎称或使人误认为与任何人或任何机构有关。</p>\r\n		</li>\r\n		<li>\r\n		<p>伪造标题或以其他方式操控识别资料，使人误认为该内容为本网站所传送。</p>\r\n		</li>\r\n		<li>\r\n		<p>上载、张贴、发送电子邮件或以其它方式传送无权传送的内容（例如内部资料、机密资料）。</p>\r\n		</li>\r\n		<li>\r\n		<p>上载、张贴、发送电子邮件或以其它方式传送侵犯任何人的专利、商标、著作权、商业秘密或其他专属权利之内容。</p>\r\n		</li>\r\n		<li>\r\n		<p>在本网站提供的专供张贴广告的区域之外，上载、张贴、发送电子邮件或以其他方式传送广告函件、促销资料、&ldquo;垃圾邮件&rdquo;等。</p>\r\n		</li>\r\n		<li>\r\n		<p>上载、张贴、发送电子邮件或以其他方式传送有关干扰、破坏或限制任何计算机软件、硬件或通讯设备功能的软件病毒或其他计算机代码、档案和程序之资料。</p>\r\n		</li>\r\n		<li>\r\n		<p>干扰或破坏本服务或与本服务相连的服务器和网络，或不遵守本服务协议之规定。</p>\r\n		</li>\r\n		<li>\r\n		<p>故意或非故意违反任何相关的中国法律、法规、规章、条例等其他具有法律效力的规范。</p>\r\n		</li>\r\n		<li>\r\n		<p>跟踪或以其他方式骚扰他人。</p>\r\n		</li>\r\n		<li>\r\n		<p>其它被本网站视为不适当的行为。</p>\r\n		</li>\r\n		<li>\r\n		<p>《中华人民共和国网络安全法》禁止的下列行为：</p>\r\n\r\n		<ol class="list-paddingleft-2" style="list-style-type: lower-roman;">\r\n			<li>\r\n			<p>不得危害网络安全，不得利用网络从事危害国家安全、荣誉和利益，煽动颠覆国家政权、推翻社会主义制度，煽动分裂国家、破坏国家统一，宣扬恐怖主义、极端主义，宣扬民族仇恨、民族歧视，传播暴力、淫秽色情信息，编造、传播虚假信息扰乱经济秩序和社会秩序，以及侵害他人名誉、隐私、知识产权和其他合法权益等活动。</p>\r\n			</li>\r\n			<li>\r\n			<p>不得从事非法侵入他人网络、干扰他人网络正常功能、窃取网络数据等危害网络安全的活动；不得提供专门用于从事侵入网络、干扰网络正常功能及防护措施、窃取网络数据等危害网络安全活动的程序、工具；明知他人从事危害网络安全的活动的，不得为其提供技术支持、广告推广、支付结算等帮助。</p>\r\n			</li>\r\n			<li>\r\n			<p>不得窃取或者以其他非法方式获取个人信息，不得非法出售或者非法向他人提供个人信息。</p>\r\n			</li>\r\n			<li>\r\n			<p>不得设立用于实施诈骗，传授犯罪方法，制作或者销售违禁物品、管制物品等违法犯罪活动的网站、通讯群组，不得利用网络发布涉及实施诈骗，制作或者销售违禁物品、管制物品以及其他违法犯罪活动的信息。</p>\r\n			</li>\r\n			<li>\r\n			<p>不得设置恶意程序，不得含有法律、行政法规禁止发布或者传输的信息。</p>\r\n			</li>\r\n		</ol>\r\n		</li>\r\n	</ol>\r\n	</li>\r\n</ol>\r\n\r\n<p>另外，用户对经由本服务上载、张贴、发送电子邮件或传送的内容负全部责任；对于经由本服务而传送的内容，本网站不保证前述内容的正确性、完整性或品质。用户在接受本服务时，有可能会接触到令人不快、不适当或令人厌恶的内容。在任何情况下，本网站均不对任何内容负责，包括但不限于任何内容发生任何错误或纰漏以及衍生的任何损失或损害。本网站有权（但无义务）自行拒绝或删除经由本服务提供的任何内容。用户使用上述内容，应自行承担风险。</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<ol class="list-paddingleft-2" style="list-style-type: lower-alpha;">\r\n		<li>\r\n		<ol class="list-paddingleft-2" style="list-style-type: lower-roman;">\r\n			<li>\r\n			<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n			</ol>\r\n			</li>\r\n		</ol>\r\n		</li>\r\n	</ol>\r\n	</li>\r\n</ol>\r\n\r\n<p>本网站有权利在下述情况下，对内容进行保存或披露：</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>法律程序所规定；</p>\r\n	</li>\r\n	<li>\r\n	<p>本服务条款规定；</p>\r\n	</li>\r\n	<li>\r\n	<p>被侵害的第三人提出权利主张；</p>\r\n	</li>\r\n	<li>\r\n	<p>为保护本网站、其使用者及社会公众的权利、财产或人身安全；</p>\r\n	</li>\r\n	<li>\r\n	<p>其他本网站认为有必要的情况。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>11、用户的广告宣传</h3>\r\n\r\n<p>用户在自己发表的信息中加入宣传资料或参与广告策划，在本网站的免费服务上展示他们的产品，任何这类促销方法，包括运输货物、付款、服务、商业条件、担保及与广告有关的描述都只是在相应的用户和广告销售商之间发生。本网站控股不承担任何责任，本网站控股没有义务为这类广告销售负任何一部分的责任。同时，如果该行为未经本网站控股同意或者对本网站控股产生利益侵犯，本网站控股有权利进行删除、屏蔽，以及采取相应的技术、法律手段阻止此类信息的发布。</p>\r\n\r\n<h3>12、关于用户在本网站的公开使用区域的内容</h3>\r\n\r\n<p>&ldquo;公开使用区域&rdquo;包括网上论坛、留言版、评论区和其它一般公众可以使用的网络内容区域；用户一旦在本服务公开使用区域张贴内容，即视为用户授予本网站该内容著作权之免费及非独家许可使用权，本网站有权为展示、传播及推广前述张贴的内容之服务目的，对上述内容进行复制、修改、出版。</p>\r\n\r\n<p>由此展示、传播及推广行为所产生的损失或利润，均由本网站承担或享受。本网站有权自主决定是否给予此类用户鼓励或奖励。</p>\r\n\r\n<p>因用户进行上述张贴，而导致任何第三方提出索赔要求或衍生的任何损害或损失，用户须承担全部责任。</p>\r\n\r\n<p>其他访问者或者企业、单位，未经本网站控股授权，不得对他人张贴在公开使用区域或本服务其他内容进行复制、出售或用作其他商业用途。</p>\r\n\r\n<h3>13、关于手机服务</h3>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>本网站为用户提供本网站手机短信服务。一旦用户在注册本服务的过程输入自己的手机号码和保护码并完成登记注册程序，则表明用户愿意接受本网站发送的短信，此服务为免信息费服务，本网站不向用户收取任何费用，用户主动发送的短信产生的费用，由用户向移动运营商支付，与本网站无关。若用户通过注册并使用了本网站的收费短信服务，则表示用户同意通过运营商支付信息费给本网站，此服务产生的信息费由运营商代为收取。手机短信服务的具体收费说明见具体服务的相应页面。</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站为用户提供手机上网服务。本网站不收取用户任何费用，用户上网产生可能产生的流量费，由用户向运营商支付，与本网站无关。</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站不承担用户由于手机故障、欠费、丢失、借用或盗用后他人利用手机订购本网站短信息服务而遭受的损失或并非由于本网站的原因而导致的任何其它损失。对于用户出国并使用国际漫游服务但未取消已定制的短信息服务，或者在国际漫游状态下继续使用短信息点播服务，用户应当承担相关所有费用，本网站不承担任何责任。</p>\r\n	</li>\r\n	<li>\r\n	<p>用户自己承担系统受损或资料丢失的所有风险和责任。本网站对于删除和存储数据失败并不负有任何责任。</p>\r\n	</li>\r\n	<li>\r\n	<p>如因本网站的过错，导致用户接收到错误的信息并支付了不应支付的信息费，本网站的全部责任仅限于赔偿用户因错误信息而支付的信息费</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>14、关于链接</h3>\r\n\r\n<p>本服务可能会提供与其他国际互联网网站或资源进行链接。对于前述网站或资源是否可以利用，本网站不予担保。因使用或依赖上述网站或资源所产生的损失或损害，本网站也不承担任何责任。</p>\r\n\r\n<h3>15、本网站的知识产权及其他权利</h3>\r\n\r\n<p>本网站对本服务及本服务所使用的软件和受知识产权或其他法律保护的资料享有相应的权利；</p>\r\n\r\n<p>经由本服务传送的资讯及内容，受到著作权法、商标法、专利法或其他法律的保护；未经本网站明示授权许可，用户不得进行修改、出租、散布或衍生其他作品，用户本人创作并在公开使用区域张贴的内容除外。</p>\r\n\r\n<p>用户对本服务所使用的软件有非专属性使用权，但自己不得或许可任何第三方复制、修改、出售或衍生产品。</p>\r\n\r\n<p>本网站、本网站设计图样以及其他本网站图样、产品及服务名称，均为本网站控股所享有的商标，未经本网站控股事先书面授权，任何人不得使用、复制或用作其他用途。</p>\r\n\r\n<h3>16、免责声明</h3>\r\n\r\n<p>本网站对于本服务包含的或用户经由或从任何与本服务有关的途径所获得的任何内容、信息或广告，不声明或保证其正确性或可靠性；并且对于用户经本服务上的广告、展示而购买、取得的任何产品、信息或资料，本网站不负保证责任。用户自行承担担使用本服务的风险。</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>本网站有权但无义务，改善或更正本服务任何部分之任何疏漏、错误。</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站不保证以下事项（包括但不限于）：</p>\r\n\r\n	<ol class="list-paddingleft-2" style="list-style-type: lower-alpha;">\r\n		<li>\r\n		<p>本服务适合用户的使用要求；</p>\r\n		</li>\r\n		<li>\r\n		<p>本服务不受干扰，及时、安全、可靠或不出现错误；</p>\r\n		</li>\r\n		<li>\r\n		<p>用户经由本服务取得的任何产品、服务或其他材料符合用户的期望；</p>\r\n		</li>\r\n		<li>\r\n		<p>用户使用经由本服务下载的或取得的任何资料，其风险自行负担；因该使用而导致用户电脑系统损坏或资料流失，用户应负完全责任；</p>\r\n		</li>\r\n		<li>\r\n		<p>对基于以下原因而造成的利润、商业信誉、资料的损失或其他有形或无形损失，本网站不承担任何直接、间接、附带、衍生或惩罚性的赔偿；</p>\r\n		</li>\r\n		<li>\r\n		<p>服务使用或无法使用；</p>\r\n		</li>\r\n		<li>\r\n		<p>经由本服务购买或取得的任何产品、资料或服务；</p>\r\n		</li>\r\n		<li>\r\n		<p>用户资料遭到未授权的使用或修改；</p>\r\n		</li>\r\n		<li>\r\n		<p>其他与本服务相关的事宜。</p>\r\n		</li>\r\n	</ol>\r\n	</li>\r\n	<li>\r\n	<p>用户在浏览网际网路时自行判断使用本网站的检索目录。该检索目录可能会引导用户进入到被认为具有攻击性或不适当的网站，本网站没有义务查看检索目录所列网站的内容，因此，对其正确性、合法性、正当性不负任何责任。</p>\r\n	</li>\r\n	<li>\r\n	<p>用户同意，对于本网站向用户提供的下列产品或者服务的质量缺陷本身及其引发的任何损失，本网站无需承担任何责任：</p>\r\n\r\n	<ol class="list-paddingleft-2" style="list-style-type: lower-alpha;">\r\n		<li>\r\n		<p>本网站向用户免费提供的各项网络服务；</p>\r\n		</li>\r\n		<li>\r\n		<p>本网站向用户赠送的任何产品或者服务；</p>\r\n		</li>\r\n		<li>\r\n		<p>本网站向收费网络服务用户附赠的各种产品或者服务。</p>\r\n		</li>\r\n	</ol>\r\n	</li>\r\n</ol>\r\n\r\n<h3>17、法律</h3>\r\n\r\n<p>网络服务条款要与中华人民共和国的法律解释相一致，用户和本网站一致同意服从高等法院所管辖。如发生本网站服务条款与中华人民共和国法律相抵触时，则这些条款将完全按法律规定重新解释，而其它条款则依旧保持对用户产生法律效力和影响。</p>\r\n\r\n<p>在任何情况下，本网站用户不得利用本网站进行违反或可能违反国家法律和法规的言论或行为，否则，本网站可在任何时候不经任何事先通知终止向您提供服务。并且用户对自己的言论或行为负责。用户应遵守以下法律及法规：</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>用户同意遵守《中华人民共和国网络安全法》、《中华人民共和国保守国家秘密法》、《中华人民共和国计算机信息系统安全保护条例》、《计算机软件保护条例》、信息产业部2000年10月8日第4次部务会议通过的《互联网电子公告服务管理规定》，以及《互联网新闻信息服务管理规定》等有关计算机及互联网规定的法律和法规、实施办法。在任何情况下，本网站合理地认为用户的行为可能违反上述法律、法规，本网站可以在任何时候，不经事先通知终止向该用户提供服务。</p>\r\n	</li>\r\n	<li>\r\n	<p>用户应了解国际互联网的无国界性，应特别注意遵守当地所有有关的法律和法规。</p>\r\n	</li>\r\n</ol>\r\n'),
-(43, 1, 451, 0, '', '', '<h3>退货政策</h3>\r\n\r\n<p>退换货基本条件（实物）</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>退换货申请应在确认签收商品之日起7天内提出（已物流签收时间为准），或交易完成之日起15天内发现商品存在质量问题提出。</p>\r\n	</li>\r\n	<li>\r\n	<p>退换货商品必须未经使用、未破坏原包装且不影响本站二次销售，存在质量问题的商品除外。</p>\r\n	</li>\r\n	<li>\r\n	<p>定制类商品由您与当地门店签订购买协议并付清全额货款，工厂开始下单生产后不予退换货。</p>\r\n	</li>\r\n	<li>\r\n	<p>未经本站授权的维修、改动、安装造成的商品问题不予退换货。</p>\r\n	</li>\r\n	<li>\r\n	<p>商品退换时，商品的外包装、附件、配件、赠品、说明书不完整，发票缺失或涂改，不予退换货。</p>\r\n	</li>\r\n	<li>\r\n	<p>您需同时将商品、发票、赠品回寄本站指定地址，邮费需由买家自行承担。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>物流配送</h3>\r\n\r\n<p>对于本站出售的定制类商品，由于无法使用快递运输，需通过物流发送到您所在当地店，并由当地门店安排专业安装人员上门安装。市内物流配送安装收费情况市外的其他区域，因距离远近不一样，以店面回复的收费标准为主。</p>\r\n\r\n<h3>收货指南</h3>\r\n\r\n<p>请在配送人员在场的情况下，当面验收您的商品</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>快递员送货上门时，请您务必当面对照发货单核对商品，如果出现商品缺少、配送错误、包装破损问题等，请直接联系客服中心，待客服确认后，可将整单商品由快递公司退回。</p>\r\n	</li>\r\n	<li>\r\n	<p>如您手下货物后，发现质量问题，可以联系本站客服中心为您办理退货业务。</p>\r\n	</li>\r\n	<li>\r\n	<p>确定订单时选择开具发票但签收时发票未随商品一起送到，请与本站客服中心联系为您补开发票。</p>\r\n	</li>\r\n	<li>\r\n	<p>签收后本站会视为您已经认可并接受本公司商品。非订货人本人签收的产品，我们会视您等同于订购人进行验货。一旦您确认签字，我们将无法为您办理退款或补发。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>售后维护</h3>\r\n\r\n<p>为保障消费者利益，凡在本站订购指定套餐产品成功的用户，可以享受以下承诺</p>\r\n\r\n<ol class="list-paddingleft-2" style="list-style-type: decimal;">\r\n	<li>\r\n	<p>自交货之日起6年内，如橱柜、衣柜、书柜、电视柜等柜类产品在正常使用情况下产生质量问题，消费者将享受免费保修6年的服务承诺。</p>\r\n	</li>\r\n	<li>\r\n	<p>消费者将享受终身有偿维护的服务承诺。</p>\r\n	</li>\r\n</ol>\r\n');
+(41, 1, 451, 0, '', '为了给您提供更准确、更有个性化的服务，本应用会按照本隐私权政策的规定使用和披露您的个人信息。', '<p>本应用尊重并保护所有使用服务用户的个人隐私权。为了给您提供更准确、更有个性化的服务，本应用会按照本隐私权政策的规定使用和披露您的个人信息。但本应用将以高度的勤勉、审慎义务对待这些信息。除本隐私权政策另有规定外，在未征得您事先许可的情况下，本应用不会将这些信息对外披露或向第三方提供。本应用会不时更新本隐私权政策。 您在同意本应用服务使用协议之时，即视为您已经同意本隐私权政策全部内容。本隐私权政策属于本应用服务使用协议不可分割的一部分。</p>\r\n\r\n<h3>适用范围</h3>\r\n\r\n<ul class=\"list-paddingleft-2\" style=\"list-style-type: disc;\">\r\n	<li>\r\n	<p>在您使用本应用网络服务，或访问本应用平台网页时，本应用自动接收并记录的您的浏览器和计算机上的信息，包括但不限于您的IP地址、浏览器的类型、使用的语言、访问日期和时间、软硬件特征信息及您需求的网页记录等数据；</p>\r\n	</li>\r\n	<li>\r\n	<p>本应用通过合法途径从商业伙伴处取得的用户个人数据。</p>\r\n	</li>\r\n	<li>\r\n	<p>您了解并同意，以下信息不适用本隐私权政策：</p>\r\n\r\n	<ul class=\"list-paddingleft-2\" style=\"list-style-type: square;\">\r\n		<li>\r\n		<p>您在使用本应用平台提供的搜索服务时输入的关键字信息；</p>\r\n		</li>\r\n		<li>\r\n		<p>本应用收集到的您在本应用发布的有关信息数据，包括但不限于参与活动、成交信息及评价详情；</p>\r\n		</li>\r\n		<li>\r\n		<p>违反法律规定或违反本应用规则行为及本应用已对您采取的措施。</p>\r\n		</li>\r\n	</ul>\r\n	</li>\r\n</ul>\r\n\r\n<h3>信息使用</h3>\r\n\r\n<ul class=\"list-paddingleft-2\" style=\"list-style-type: disc;\">\r\n	<li>\r\n	<p>本应用不会向任何无关第三方提供、出售、出租、分享或交易您的个人信息，除非事先得到您的许可，或该第三方和本应用（含本应用关联公司）单独或共同为您提供服务，且在该服务结束后，其将被禁止访问包括其以前能够访问的所有这些资料。</p>\r\n	</li>\r\n	<li>\r\n	<p>本应用亦不允许任何第三方以任何手段收集、编辑、出售或者无偿传播您的个人信息。任何本应用平台用户如从事上述活动，一经发现，本应用有权立即终止与该用户的服务协议。</p>\r\n	</li>\r\n	<li>\r\n	<p>为服务用户的目的，本应用可能通过使用您的个人信息，向您提供您感兴趣的信息，包括但不限于向您发出产品和服务信息，或者与本应用合作伙伴共享信息以便他们向您发送有关其产品和服务的信息（后者需要您的事先同意）。</p>\r\n	</li>\r\n</ul>\r\n\r\n<h3>信息披露</h3>\r\n\r\n<p>在如下情况下，本应用将依据您的个人意愿或法律的规定全部或部分的披露您的个人信息：</p>\r\n\r\n<ul class=\"list-paddingleft-2\" style=\"list-style-type: disc;\">\r\n	<li>\r\n	<p>经您事先同意，向第三方披露；</p>\r\n	</li>\r\n	<li>\r\n	<p>为提供您所要求的产品和服务，而必须和第三方分享您的个人信息；</p>\r\n	</li>\r\n	<li>\r\n	<p>根据法律的有关规定，或者行政或司法机构的要求，向第三方或者行政、司法机构披露；</p>\r\n	</li>\r\n	<li>\r\n	<p>如您出现违反中国有关法律、法规或者本应用服务协议或相关规则的情况，需要向第三方披露；</p>\r\n	</li>\r\n	<li>\r\n	<p>如您是适格的知识产权投诉人并已提起投诉，应被投诉人要求，向被投诉人披露，以便双方处理可能的权利纠纷；</p>\r\n	</li>\r\n	<li>\r\n	<p>在本应用平台上创建的某一交易中，如交易任何一方履行或部分履行了交易义务并提出信息披露请求的，本应用有权决定向该用户提供其交易对方的联络方式等必要信息，以促成交易的完成或纠纷的解决。</p>\r\n	</li>\r\n	<li>\r\n	<p>其它本应用根据法律、法规或者网站政策认为合适的披露。</p>\r\n	</li>\r\n</ul>\r\n\r\n<h3>信息存储和交换</h3>\r\n\r\n<p>本应用收集的有关您的信息和资料将保存在本应用及（或）其关联公司的服务器上，这些信息和资料可能传送至您所在国家、地区或本应用收集信息和资料所在地的境外并在境外被访问、存储和展示。</p>\r\n\r\n<p>信息安全</p>\r\n\r\n<ul class=\"list-paddingleft-2\" style=\"list-style-type: disc;\">\r\n	<li>\r\n	<p>本应用帐号均有安全保护功能，请妥善保管您的用户名及密码信息。本应用将通过对用户密码进行加密等安全措施确保您的信息不丢失，不被滥用和变造。尽管有前述安全措施，但同时也请您注意在信息网络上不存在&ldquo;完善的安全措施&rdquo;。</p>\r\n	</li>\r\n	<li>\r\n	<p>在使用本应用网络服务进行网上交易时，您不可避免的要向交易对方或潜在的交易对方披露自己的个人信息，如联络方式或者邮政地址。请您妥善保护自己的个人信息，仅在必要的情形下向他人提供。如您发现自己的个人信息泄密，尤其是本应用用户名及密码发生泄露，请您立即联络本应用客服，以便本应用采取相应措施。</p>\r\n	</li>\r\n</ul>\r\n'),
+(42, 1, 451, 0, '', '', '<h3>1、协议的主体及范围</h3>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>请确认，在完成注册或以其他本站允许的方式实际登陆网站时，注册人或者登陆人应当是具备完全民事权利能力和完全民事行为能力的自然人、法人或非法人组织（以下统称为&ldquo;用户&rdquo;、&ldquo;您&rdquo;）。若您是未成年人或限制民事行为能力人，则不具备前述主体资格，您及您的监护人应承担因不当注册行为而导致的一切后果，且本站有权注销（永久冻结）您的账户，并向您及您的监护人索偿。</p>\r\n	</li>\r\n	<li>\r\n	<p>本协议是您与本网站之间关于用户使用本站相关服务所订立的协议。</p>\r\n	</li>\r\n	<li>\r\n	<p>本协议项下的服务是指本网站向用户提供的包括但不限于技术支持、信息推广等产品及服务（以下简称&ldquo;本服务&rdquo;）。</p>\r\n	</li>\r\n	<li>\r\n	<p>您在使用本网站某一特定服务时，该服务可能会另有单独的协议、相关业务规则等（以下统称为&ldquo;单独协议&rdquo;）。上述内容一经正式发布，即为本协议不可分割的组成部分，您同样应当遵守。您对前述任何业务规则、单独协议的接受，即视为您对本协议全部的接受</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>2、协议生效条件</h3>\r\n\r\n<p>本网站提供的服务将完全按照其发布的章程、服务条款和操作规则严格执行。用户完全完成注册程序，便成为本网站的注册用户，将得到一个密码和帐号，同时此协议即时生效。用户有义务保证密码和帐号的安全。用户对利用该密码和帐号所进行的一切活动负全部责任；因此所衍生的任何损失或损害，本网站无法也不承担任何责任。</p>\r\n\r\n<h3>3、注册义务</h3>\r\n\r\n<p>本网站运用自己的操作系统通过国际互联网为用户提供网络服务。同时，用户必须：,</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>自行配备上网的所需设备，包括个人电脑、智能手持终端或其他必备上网装置；</p>\r\n	</li>\r\n	<li>\r\n	<p>自行负担个人上网所支付的与此服务有关的电话费用、网络费用。</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>为了能使用本服务，您同意以下事项：</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>依本服务注册表的提示提供真实身份信息，不提供真实身份信息的，本网站拒绝为您提供相关服务；</p>\r\n	</li>\r\n	<li>\r\n	<p>维持更新您个人用户信息，确保其真实、正确、最新及完整。若您提供任何错误、不实、过时或不完整的资料，并为本网站所确知，或者本网站有合理的理由怀疑前述资料为错误、不实、过时或不完整，本网站有权暂停或终止您的帐号，并拒绝您于现在和未来使用本网站全部或部分的服务。但您发现本网站违反法律、行政法规的规定或者双方的约定收集、使用您个人信息的，有权要求本网站删除您个人信息；发现本网站收集、存储的您个人信息有错误的，有权要求本网站予以更正，本网站将采取措施予以删除或者更正。</p>\r\n	</li>\r\n	<li>\r\n	<p>您注册的用户名不能侵犯他人合法权益，不能对他人名誉权造成侵犯。本网站有权收回对本网站或者他人合法权益有侵犯嫌疑的帐号。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>4、隐私制度</h3>\r\n\r\n<p>尊重用户个人隐私、保护个人信息安全是《中华人民共和国网络安全法》的要求，也是本网站的一项基本政策。所以，本网站不会在未经合法用户同意或授权时，公开、编辑或透露其个人信息及保存在本网站中的非公开内容，除非有下列情况：</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>有关法律规定和程序，本网站合法服务程序规定；</p>\r\n	</li>\r\n	<li>\r\n	<p>保持维护本网站的商标所有权和其他合法权益；</p>\r\n	</li>\r\n	<li>\r\n	<p>在紧急情况下竭力维护用户个人和社会大众的隐私安全；</p>\r\n	</li>\r\n	<li>\r\n	<p>与本网站的关联公司和战略合作伙伴分享客户资料，以及其他需要公开、编辑或透露个人信息的情况。</p>\r\n	</li>\r\n	<li>\r\n	<p>对个人信息数据进行脱敏（匿名化）处理后的使用。</p>\r\n	</li>\r\n</ol>\r\n\r\n<p>另外，在以下（包括但不限于）几种情况下，本网站有权使用用户的个人信息：</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>在进行促销、抽奖、捐助等社会或商业活动时，本网站可能会与赞助商共享用户的个人信息，在这些情况下本网站会在发送用户信息之前进行提示，并且用户可以通过不参与来终止传送过程；</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站会通过透露合计用户统计数据，向未来的合作伙伴、广告商及其他第三方以及为了其他合法目的而描述本网站的服务；</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站可以将用户信息与第三方数据匹配；</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站会向用户发送客户订制的信息或者其它本网站认为用户会感兴趣的其他信息。如果用户不希望收到这样的信息，只需在提供个人信息时或其他任何时候告知即可；</p>\r\n	</li>\r\n	<li>\r\n	<p>另外，本网站会采取行业惯用措施保护用户信息的安全，但本网站不能确信或保证任何个人信息的安全性，用户须自己承担风险。比如用户联机公布可被公众访问的个人信息时，用户有可能会收到未经用户同意的信息；本网站的合作伙伴和可通过本网站访问的第三方因特网站点和服务；通过抽奖、促销等活动得知用户个人信息的第三方会进行独立的数据收集工作等活动。本网站对用户及其他任何第三方的上述行为，不承担任何责任。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>5、用户信息的存储与限制</h3>\r\n\r\n<p>本网站不对用户所发布信息的删除或储存失败负责。本网站除按照《中华人民共和国网络安全法》的规定留存相关的网络日志不少于六个月之外，并不承诺对用户的存储信息进行无限期保留。除非按照《中华人民共和国网络安全法》的规定本网站为其服务持续提供安全维护，在规定或者约定的期限内不得终止提供安全维护外，否则本网站不保证服务一定会满足用户的使用要求，也不保证服务不会受中断，对服务的及时性、安全性、准确性也不作担保。本网站有判定用户的行为是否符合本网站服务条款的要求和精神的保留权利，如果用户违背了服务条款的规定，本网站有中断对其提供网络服务的权利。本网站运用自己的操作系统通过国际互联网向用户提供丰富的网上资源，包括各种信息工具、网上论坛、个性化内容等。除非另有明确规定，增强或强化目前服务的任何新功能，包括新产品、栏目，均无条件地适用本服务条款。</p>\r\n\r\n<h3>6、服务条款的修改</h3>\r\n\r\n<p>本网站有权在必要时修改服务条款。本网站服务条款一旦发生变动，将会在重要页面上提示所修改的内容。如果不同意所改动的内容，用户可以主动取消获得的网络服务。如果用户继续享用网络服务，则视为接受服务条款的变动。本网站保留随时修改或中断服务而不需照知用户的权利。本网站行使修改或中断服务的权利，不需对用户或第三方负责。</p>\r\n\r\n<h3>7、拒绝提供担保</h3>\r\n\r\n<p>用户对网络服务的使用承担风险。本网站对此不作任何类型的担保，不论是明确的或隐含的，但是不对商业性的隐含担保、特定目的和不违反规定的适当担保作限制。</p>\r\n\r\n<h3>8、有限责任</h3>\r\n\r\n<p>本网站对任何直接、间接、偶然、特殊及继起的损害不负责任，这些损害可能来自：不正当使用网络服务，在网上购买商品或进行同类型服务，在网上进行交易，非法使用网络服务或用户传送的信息有所变动。</p>\r\n\r\n<h3>9、服务的结束</h3>\r\n\r\n<p>用户或本网站可随时根据实际情况中断一项或多项网络服务。本网站不需对任何个人或第三方负责而随时中断服务。用户对后来的条款修改有异议，或对本网站的服务不满，可以行使如下权利：</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>停止使用本网站的网络服务；</p>\r\n	</li>\r\n	<li>\r\n	<p>通告本网站停止对该用户的服务。结束用户服务后，用户使用网络服务的权利马上中止。从那时起，用户没有权利，本网站也没有义务传送任何未处理的信息或未完成的服务给用户或第三方。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>10、用户管理</h3>\r\n\r\n<p>用户单独承担发布内容的责任。用户对服务的使用是根据所有适用于本网站的国家法律、地方法律和国际法律标准的。</p>\r\n\r\n<p>用户必须遵循：</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>从中国境内向外传输技术性资料时必须符合中国有关法规；</p>\r\n	</li>\r\n	<li>\r\n	<p>使用网络服务不作非法用途；</p>\r\n	</li>\r\n	<li>\r\n	<p>不干扰或混乱网络服务；</p>\r\n	</li>\r\n	<li>\r\n	<p>遵守所有使用网络服务的网络协议、规定、程序和惯例。</p>\r\n	</li>\r\n	<li>\r\n	<p>用户的密码和帐号遭到未授权的使用或发生其他任何安全问题，用户可以立即通知本网站，并且用户在每次连线结束，应结束帐号使用，否则用户可能得不到本网站的安全保护。</p>\r\n	</li>\r\n	<li>\r\n	<p>禁止用户从事以下行为：</p>\r\n\r\n	<ol class=\"list-paddingleft-2\" style=\"list-style-type: lower-alpha;\">\r\n		<li>\r\n		<p>上载、张贴、发送或传送任何非法、反动、淫秽、粗俗、猥亵的，胁迫、骚扰、中伤他人、诽谤、侵害他人隐私或诋毁他人名誉或商誉的，种族歧视、危害未成年人或其他不适当的信息或电子邮件，包括但不限于资讯、资料、文字、软件、音乐、照片、图形、信息或其他资料（以下简称内容）。</p>\r\n		</li>\r\n		<li>\r\n		<p>未经本网站许可的广告行为。</p>\r\n		</li>\r\n		<li>\r\n		<p>冒充任何人或机构，或以虚伪不实的方式谎称或使人误认为与任何人或任何机构有关。</p>\r\n		</li>\r\n		<li>\r\n		<p>伪造标题或以其他方式操控识别资料，使人误认为该内容为本网站所传送。</p>\r\n		</li>\r\n		<li>\r\n		<p>上载、张贴、发送电子邮件或以其它方式传送无权传送的内容（例如内部资料、机密资料）。</p>\r\n		</li>\r\n		<li>\r\n		<p>上载、张贴、发送电子邮件或以其它方式传送侵犯任何人的专利、商标、著作权、商业秘密或其他专属权利之内容。</p>\r\n		</li>\r\n		<li>\r\n		<p>在本网站提供的专供张贴广告的区域之外，上载、张贴、发送电子邮件或以其他方式传送广告函件、促销资料、&ldquo;垃圾邮件&rdquo;等。</p>\r\n		</li>\r\n		<li>\r\n		<p>上载、张贴、发送电子邮件或以其他方式传送有关干扰、破坏或限制任何计算机软件、硬件或通讯设备功能的软件病毒或其他计算机代码、档案和程序之资料。</p>\r\n		</li>\r\n		<li>\r\n		<p>干扰或破坏本服务或与本服务相连的服务器和网络，或不遵守本服务协议之规定。</p>\r\n		</li>\r\n		<li>\r\n		<p>故意或非故意违反任何相关的中国法律、法规、规章、条例等其他具有法律效力的规范。</p>\r\n		</li>\r\n		<li>\r\n		<p>跟踪或以其他方式骚扰他人。</p>\r\n		</li>\r\n		<li>\r\n		<p>其它被本网站视为不适当的行为。</p>\r\n		</li>\r\n		<li>\r\n		<p>《中华人民共和国网络安全法》禁止的下列行为：</p>\r\n\r\n		<ol class=\"list-paddingleft-2\" style=\"list-style-type: lower-roman;\">\r\n			<li>\r\n			<p>不得危害网络安全，不得利用网络从事危害国家安全、荣誉和利益，煽动颠覆国家政权、推翻社会主义制度，煽动分裂国家、破坏国家统一，宣扬恐怖主义、极端主义，宣扬民族仇恨、民族歧视，传播暴力、淫秽色情信息，编造、传播虚假信息扰乱经济秩序和社会秩序，以及侵害他人名誉、隐私、知识产权和其他合法权益等活动。</p>\r\n			</li>\r\n			<li>\r\n			<p>不得从事非法侵入他人网络、干扰他人网络正常功能、窃取网络数据等危害网络安全的活动；不得提供专门用于从事侵入网络、干扰网络正常功能及防护措施、窃取网络数据等危害网络安全活动的程序、工具；明知他人从事危害网络安全的活动的，不得为其提供技术支持、广告推广、支付结算等帮助。</p>\r\n			</li>\r\n			<li>\r\n			<p>不得窃取或者以其他非法方式获取个人信息，不得非法出售或者非法向他人提供个人信息。</p>\r\n			</li>\r\n			<li>\r\n			<p>不得设立用于实施诈骗，传授犯罪方法，制作或者销售违禁物品、管制物品等违法犯罪活动的网站、通讯群组，不得利用网络发布涉及实施诈骗，制作或者销售违禁物品、管制物品以及其他违法犯罪活动的信息。</p>\r\n			</li>\r\n			<li>\r\n			<p>不得设置恶意程序，不得含有法律、行政法规禁止发布或者传输的信息。</p>\r\n			</li>\r\n		</ol>\r\n		</li>\r\n	</ol>\r\n	</li>\r\n</ol>\r\n\r\n<p>另外，用户对经由本服务上载、张贴、发送电子邮件或传送的内容负全部责任；对于经由本服务而传送的内容，本网站不保证前述内容的正确性、完整性或品质。用户在接受本服务时，有可能会接触到令人不快、不适当或令人厌恶的内容。在任何情况下，本网站均不对任何内容负责，包括但不限于任何内容发生任何错误或纰漏以及衍生的任何损失或损害。本网站有权（但无义务）自行拒绝或删除经由本服务提供的任何内容。用户使用上述内容，应自行承担风险。</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<ol class=\"list-paddingleft-2\" style=\"list-style-type: lower-alpha;\">\r\n		<li>\r\n		<ol class=\"list-paddingleft-2\" style=\"list-style-type: lower-roman;\">\r\n			<li>\r\n			<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n			</ol>\r\n			</li>\r\n		</ol>\r\n		</li>\r\n	</ol>\r\n	</li>\r\n</ol>\r\n\r\n<p>本网站有权利在下述情况下，对内容进行保存或披露：</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>法律程序所规定；</p>\r\n	</li>\r\n	<li>\r\n	<p>本服务条款规定；</p>\r\n	</li>\r\n	<li>\r\n	<p>被侵害的第三人提出权利主张；</p>\r\n	</li>\r\n	<li>\r\n	<p>为保护本网站、其使用者及社会公众的权利、财产或人身安全；</p>\r\n	</li>\r\n	<li>\r\n	<p>其他本网站认为有必要的情况。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>11、用户的广告宣传</h3>\r\n\r\n<p>用户在自己发表的信息中加入宣传资料或参与广告策划，在本网站的免费服务上展示他们的产品，任何这类促销方法，包括运输货物、付款、服务、商业条件、担保及与广告有关的描述都只是在相应的用户和广告销售商之间发生。本网站控股不承担任何责任，本网站控股没有义务为这类广告销售负任何一部分的责任。同时，如果该行为未经本网站控股同意或者对本网站控股产生利益侵犯，本网站控股有权利进行删除、屏蔽，以及采取相应的技术、法律手段阻止此类信息的发布。</p>\r\n\r\n<h3>12、关于用户在本网站的公开使用区域的内容</h3>\r\n\r\n<p>&ldquo;公开使用区域&rdquo;包括网上论坛、留言版、评论区和其它一般公众可以使用的网络内容区域；用户一旦在本服务公开使用区域张贴内容，即视为用户授予本网站该内容著作权之免费及非独家许可使用权，本网站有权为展示、传播及推广前述张贴的内容之服务目的，对上述内容进行复制、修改、出版。</p>\r\n\r\n<p>由此展示、传播及推广行为所产生的损失或利润，均由本网站承担或享受。本网站有权自主决定是否给予此类用户鼓励或奖励。</p>\r\n\r\n<p>因用户进行上述张贴，而导致任何第三方提出索赔要求或衍生的任何损害或损失，用户须承担全部责任。</p>\r\n\r\n<p>其他访问者或者企业、单位，未经本网站控股授权，不得对他人张贴在公开使用区域或本服务其他内容进行复制、出售或用作其他商业用途。</p>\r\n\r\n<h3>13、关于手机服务</h3>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>本网站为用户提供本网站手机短信服务。一旦用户在注册本服务的过程输入自己的手机号码和保护码并完成登记注册程序，则表明用户愿意接受本网站发送的短信，此服务为免信息费服务，本网站不向用户收取任何费用，用户主动发送的短信产生的费用，由用户向移动运营商支付，与本网站无关。若用户通过注册并使用了本网站的收费短信服务，则表示用户同意通过运营商支付信息费给本网站，此服务产生的信息费由运营商代为收取。手机短信服务的具体收费说明见具体服务的相应页面。</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站为用户提供手机上网服务。本网站不收取用户任何费用，用户上网产生可能产生的流量费，由用户向运营商支付，与本网站无关。</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站不承担用户由于手机故障、欠费、丢失、借用或盗用后他人利用手机订购本网站短信息服务而遭受的损失或并非由于本网站的原因而导致的任何其它损失。对于用户出国并使用国际漫游服务但未取消已定制的短信息服务，或者在国际漫游状态下继续使用短信息点播服务，用户应当承担相关所有费用，本网站不承担任何责任。</p>\r\n	</li>\r\n	<li>\r\n	<p>用户自己承担系统受损或资料丢失的所有风险和责任。本网站对于删除和存储数据失败并不负有任何责任。</p>\r\n	</li>\r\n	<li>\r\n	<p>如因本网站的过错，导致用户接收到错误的信息并支付了不应支付的信息费，本网站的全部责任仅限于赔偿用户因错误信息而支付的信息费</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>14、关于链接</h3>\r\n\r\n<p>本服务可能会提供与其他国际互联网网站或资源进行链接。对于前述网站或资源是否可以利用，本网站不予担保。因使用或依赖上述网站或资源所产生的损失或损害，本网站也不承担任何责任。</p>\r\n\r\n<h3>15、本网站的知识产权及其他权利</h3>\r\n\r\n<p>本网站对本服务及本服务所使用的软件和受知识产权或其他法律保护的资料享有相应的权利；</p>\r\n\r\n<p>经由本服务传送的资讯及内容，受到著作权法、商标法、专利法或其他法律的保护；未经本网站明示授权许可，用户不得进行修改、出租、散布或衍生其他作品，用户本人创作并在公开使用区域张贴的内容除外。</p>\r\n\r\n<p>用户对本服务所使用的软件有非专属性使用权，但自己不得或许可任何第三方复制、修改、出售或衍生产品。</p>\r\n\r\n<p>本网站、本网站设计图样以及其他本网站图样、产品及服务名称，均为本网站控股所享有的商标，未经本网站控股事先书面授权，任何人不得使用、复制或用作其他用途。</p>\r\n\r\n<h3>16、免责声明</h3>\r\n\r\n<p>本网站对于本服务包含的或用户经由或从任何与本服务有关的途径所获得的任何内容、信息或广告，不声明或保证其正确性或可靠性；并且对于用户经本服务上的广告、展示而购买、取得的任何产品、信息或资料，本网站不负保证责任。用户自行承担担使用本服务的风险。</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>本网站有权但无义务，改善或更正本服务任何部分之任何疏漏、错误。</p>\r\n	</li>\r\n	<li>\r\n	<p>本网站不保证以下事项（包括但不限于）：</p>\r\n\r\n	<ol class=\"list-paddingleft-2\" style=\"list-style-type: lower-alpha;\">\r\n		<li>\r\n		<p>本服务适合用户的使用要求；</p>\r\n		</li>\r\n		<li>\r\n		<p>本服务不受干扰，及时、安全、可靠或不出现错误；</p>\r\n		</li>\r\n		<li>\r\n		<p>用户经由本服务取得的任何产品、服务或其他材料符合用户的期望；</p>\r\n		</li>\r\n		<li>\r\n		<p>用户使用经由本服务下载的或取得的任何资料，其风险自行负担；因该使用而导致用户电脑系统损坏或资料流失，用户应负完全责任；</p>\r\n		</li>\r\n		<li>\r\n		<p>对基于以下原因而造成的利润、商业信誉、资料的损失或其他有形或无形损失，本网站不承担任何直接、间接、附带、衍生或惩罚性的赔偿；</p>\r\n		</li>\r\n		<li>\r\n		<p>服务使用或无法使用；</p>\r\n		</li>\r\n		<li>\r\n		<p>经由本服务购买或取得的任何产品、资料或服务；</p>\r\n		</li>\r\n		<li>\r\n		<p>用户资料遭到未授权的使用或修改；</p>\r\n		</li>\r\n		<li>\r\n		<p>其他与本服务相关的事宜。</p>\r\n		</li>\r\n	</ol>\r\n	</li>\r\n	<li>\r\n	<p>用户在浏览网际网路时自行判断使用本网站的检索目录。该检索目录可能会引导用户进入到被认为具有攻击性或不适当的网站，本网站没有义务查看检索目录所列网站的内容，因此，对其正确性、合法性、正当性不负任何责任。</p>\r\n	</li>\r\n	<li>\r\n	<p>用户同意，对于本网站向用户提供的下列产品或者服务的质量缺陷本身及其引发的任何损失，本网站无需承担任何责任：</p>\r\n\r\n	<ol class=\"list-paddingleft-2\" style=\"list-style-type: lower-alpha;\">\r\n		<li>\r\n		<p>本网站向用户免费提供的各项网络服务；</p>\r\n		</li>\r\n		<li>\r\n		<p>本网站向用户赠送的任何产品或者服务；</p>\r\n		</li>\r\n		<li>\r\n		<p>本网站向收费网络服务用户附赠的各种产品或者服务。</p>\r\n		</li>\r\n	</ol>\r\n	</li>\r\n</ol>\r\n\r\n<h3>17、法律</h3>\r\n\r\n<p>网络服务条款要与中华人民共和国的法律解释相一致，用户和本网站一致同意服从高等法院所管辖。如发生本网站服务条款与中华人民共和国法律相抵触时，则这些条款将完全按法律规定重新解释，而其它条款则依旧保持对用户产生法律效力和影响。</p>\r\n\r\n<p>在任何情况下，本网站用户不得利用本网站进行违反或可能违反国家法律和法规的言论或行为，否则，本网站可在任何时候不经任何事先通知终止向您提供服务。并且用户对自己的言论或行为负责。用户应遵守以下法律及法规：</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>用户同意遵守《中华人民共和国网络安全法》、《中华人民共和国保守国家秘密法》、《中华人民共和国计算机信息系统安全保护条例》、《计算机软件保护条例》、信息产业部2000年10月8日第4次部务会议通过的《互联网电子公告服务管理规定》，以及《互联网新闻信息服务管理规定》等有关计算机及互联网规定的法律和法规、实施办法。在任何情况下，本网站合理地认为用户的行为可能违反上述法律、法规，本网站可以在任何时候，不经事先通知终止向该用户提供服务。</p>\r\n	</li>\r\n	<li>\r\n	<p>用户应了解国际互联网的无国界性，应特别注意遵守当地所有有关的法律和法规。</p>\r\n	</li>\r\n</ol>\r\n'),
+(43, 1, 451, 0, '', '', '<h3>退货政策</h3>\r\n\r\n<p>退换货基本条件（实物）</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>退换货申请应在确认签收商品之日起7天内提出（已物流签收时间为准），或交易完成之日起15天内发现商品存在质量问题提出。</p>\r\n	</li>\r\n	<li>\r\n	<p>退换货商品必须未经使用、未破坏原包装且不影响本站二次销售，存在质量问题的商品除外。</p>\r\n	</li>\r\n	<li>\r\n	<p>定制类商品由您与当地门店签订购买协议并付清全额货款，工厂开始下单生产后不予退换货。</p>\r\n	</li>\r\n	<li>\r\n	<p>未经本站授权的维修、改动、安装造成的商品问题不予退换货。</p>\r\n	</li>\r\n	<li>\r\n	<p>商品退换时，商品的外包装、附件、配件、赠品、说明书不完整，发票缺失或涂改，不予退换货。</p>\r\n	</li>\r\n	<li>\r\n	<p>您需同时将商品、发票、赠品回寄本站指定地址，邮费需由买家自行承担。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>物流配送</h3>\r\n\r\n<p>对于本站出售的定制类商品，由于无法使用快递运输，需通过物流发送到您所在当地店，并由当地门店安排专业安装人员上门安装。市内物流配送安装收费情况市外的其他区域，因距离远近不一样，以店面回复的收费标准为主。</p>\r\n\r\n<h3>收货指南</h3>\r\n\r\n<p>请在配送人员在场的情况下，当面验收您的商品</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>快递员送货上门时，请您务必当面对照发货单核对商品，如果出现商品缺少、配送错误、包装破损问题等，请直接联系客服中心，待客服确认后，可将整单商品由快递公司退回。</p>\r\n	</li>\r\n	<li>\r\n	<p>如您手下货物后，发现质量问题，可以联系本站客服中心为您办理退货业务。</p>\r\n	</li>\r\n	<li>\r\n	<p>确定订单时选择开具发票但签收时发票未随商品一起送到，请与本站客服中心联系为您补开发票。</p>\r\n	</li>\r\n	<li>\r\n	<p>签收后本站会视为您已经认可并接受本公司商品。非订货人本人签收的产品，我们会视您等同于订购人进行验货。一旦您确认签字，我们将无法为您办理退款或补发。</p>\r\n	</li>\r\n</ol>\r\n\r\n<h3>售后维护</h3>\r\n\r\n<p>为保障消费者利益，凡在本站订购指定套餐产品成功的用户，可以享受以下承诺</p>\r\n\r\n<ol class=\"list-paddingleft-2\" style=\"list-style-type: decimal;\">\r\n	<li>\r\n	<p>自交货之日起6年内，如橱柜、衣柜、书柜、电视柜等柜类产品在正常使用情况下产生质量问题，消费者将享受免费保修6年的服务承诺。</p>\r\n	</li>\r\n	<li>\r\n	<p>消费者将享受终身有偿维护的服务承诺。</p>\r\n	</li>\r\n</ol>\r\n');
 
 -- --------------------------------------------------------
 
@@ -2190,25 +2310,25 @@ INSERT INTO `qinggan_list_110` (`id`, `site_id`, `project_id`, `cate_id`, `banne
 -- 表的结构 `qinggan_list_112`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_112` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_112` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
   `note` longtext NOT NULL COMMENT '摘要',
   `content` longtext NOT NULL COMMENT '内容',
   `banner` varchar(255) NOT NULL DEFAULT '' COMMENT 'PC大图',
   `mbanner` varchar(255) NOT NULL DEFAULT '' COMMENT '手机大图',
   `links` longtext NOT NULL COMMENT '关联主题'
-) ENGINE=MyISAM AUTO_INCREMENT=2288 DEFAULT CHARSET=utf8 COMMENT='专题设计';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='专题设计';
 
 --
 -- 转存表中的数据 `qinggan_list_112`
 --
 
 INSERT INTO `qinggan_list_112` (`id`, `site_id`, `project_id`, `cate_id`, `thumb`, `note`, `content`, `banner`, `mbanner`, `links`) VALUES
-(50, 1, 453, 0, '', '', '<div pre-type="layer" pre-id="aiawmrshjp6dtk5d68ni" pre-name="content" style="display: block; background-position: left top;" pre-width="fixed"><!-- layer aiawmrshjp6dtk5d68ni --><div class="row no-gutters"><div class="col-5" pre-name="content" pre-type="data" pre-id="aiawmrshjp6dtk5d68ni-0" pre-vtype="editor"><div pre-type="content"><hr><p><br></p></div></div><div class="col-2" pre-name="content" pre-type="data" pre-id="aiawmrshjp6dtk5d68ni-1" pre-vtype="editor"><div pre-type="content" data-wow-duration="" data-wow-delay="" data-wow-offset="" data-wow-iteration="" wow-in="bounce" wow-action="true" wow-out="" style="background-position: left top;"><h2 style="text-align: center;">图文新闻</h2></div></div><div class="col-5" pre-name="content" pre-type="data" pre-id="aiawmrshjp6dtk5d68ni-2" pre-vtype="editor"><div pre-type="content"><hr><p><br></p></div></div></div><!-- /layer aiawmrshjp6dtk5d68ni --></div><div pre-type="layer" pre-id="shbtrmdmtszfzajikbe0" pre-name="content" pre-width="fixed" style="background-position: left top; margin: 0px 0px 30px; display: block;"><!-- layer shbtrmdmtszfzajikbe0 --><div class="row no-gutters"><div class="col-12" pre-name="content" pre-type="data" pre-id="shbtrmdmtszfzajikbe0-0" pre-vtype="calldata" pre-code="arclist" pre-param="fields=note,content,thumb" pre-tplfile="_data/design/arclist" data-ext-calldata="news-pictures" pre-replace=""><div pre-type="content" data-wow-duration="2s" data-wow-delay="2s" data-wow-offset="1" data-wow-iteration="" wow-in="" wow-action="true" wow-out="" style="background-position: left top;"><!-- content-shbtrmdmtszfzajikbe0-0 --><div style="background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;"></div><iframe src="api.php?c=call&amp;f=admin_preview&amp;id=shbtrmdmtszfzajikbe0-0&amp;code=arclist&amp;calldata=news-pictures&amp;param=fields%3Dnote%2Ccontent%2Cthumb" style="border: 0px none; margin: 0px; padding: 0px; background-color: transparent; z-index: 1; height: 410px;" id="iframe_shbtrmdmtszfzajikbe0-0" name="iframe_shbtrmdmtszfzajikbe0-0" scrolling="0" allowtransparency="true" marginheight="0" marginwidth="0" width="100%" frameborder="0"></iframe><!-- /content-shbtrmdmtszfzajikbe0-0 --></div></div></div><!-- /layer shbtrmdmtszfzajikbe0 --></div><div pre-type="layer" pre-id="rmxwwdkdkwjaxd0f0eky" pre-name="content" pre-width="auto" style="background-position: left top; background-color: rgb(243, 243, 243);"><!-- layer rmxwwdkdkwjaxd0f0eky --><div class="row no-gutters"><div class="col-12" pre-name="content" pre-type="data" pre-id="rmxwwdkdkwjaxd0f0eky-0" pre-vtype="editor"><div pre-type="content" data-wow-duration="" data-wow-delay="" data-wow-offset="" data-wow-iteration="" wow-in="bounceInLeft" wow-action="true" wow-out="" style="background-position: left top;"><h3 style="text-align: center;"><br></h3><h3 style="text-align: center;">图片效果<br></h3><p><br></p></div></div></div><!-- /layer rmxwwdkdkwjaxd0f0eky --></div><div pre-type="layer" pre-id="azhbjyxyfz67ki85c2z4" pre-name="content" style="display: block;"><!-- layer azhbjyxyfz67ki85c2z4 --><div class="row no-gutters"><div class="col col-sm-12 col-lg-12" pre-name="content" pre-type="data" pre-id="azhbjyxyfz67ki85c2z4-0" pre-vtype="calldata" pre-code="piclist" data-ext-calldata="photo" pre-param="psize=4" pre-replace=""><div pre-type="content" pre-class="" pre-style="" data-wow-duration="" data-wow-delay="" data-wow-offset="" data-wow-iteration="" wow-in="bounce" wow-action="true" wow-out="" style="text-align: left; background-position: left top;"><!-- content-azhbjyxyfz67ki85c2z4-0 --><div style="background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;"></div><iframe src="api.php?c=call&amp;f=admin_preview&amp;id=azhbjyxyfz67ki85c2z4-0&amp;code=piclist&amp;calldata=photo&amp;param=psize%3D4" style="border: 0px none; margin: 0px; padding: 0px; background-color: transparent; z-index: 1; height: 378px;" id="iframe_azhbjyxyfz67ki85c2z4-0" name="iframe_azhbjyxyfz67ki85c2z4-0" scrolling="0" allowtransparency="true" marginheight="0" marginwidth="0" width="100%" frameborder="0"></iframe><!-- /content-azhbjyxyfz67ki85c2z4-0 --></div></div></div><!-- /layer azhbjyxyfz67ki85c2z4 --></div><div pre-type="layer" pre-id="whabpxrntn948tcad8ar" pre-name="content" pre-width="fixed" style="background-position: left top; padding: 50px 0px 30px;"><!-- layer whabpxrntn948tcad8ar --><div class="row no-gutters"><div class="col" pre-type="data" pre-name="content" pre-id="whabpxrntn948tcad8ar-0" pre-vtype="image" pre-gdtype="auto" pre-image="404"><div pre-type="content" data-wow-duration="" data-wow-delay="" data-wow-offset="" data-wow-iteration="" wow-in="fadeInLeft" wow-out="" style="text-align: center; background-position: left top;" wow-action="true"><img src="https://cdn.phpok.com/res/202204/25/5a6b0c96848392b4.jpg" style="border:0;width:400px;" alt="老家"></div></div><div class="col" pre-type="data" pre-name="content" pre-id="whabpxrntn948tcad8ar-1" pre-vtype="calldata" pre-code="aboutus" pre-param="" pre-tplfile="_data/design/aboutus"><div pre-type="content" data-wow-duration="" data-wow-delay="" data-wow-offset="" data-wow-iteration="" wow-in="bounceInDown" wow-action="true" wow-out="" style="background-position: left top;"><!-- content-whabpxrntn948tcad8ar-1 --><div style="background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;"></div><iframe src="api.php?c=call&amp;f=admin_preview&amp;id=whabpxrntn948tcad8ar-1&amp;code=aboutus&amp;tplfile=_data%2Fdesign%2Faboutus" style="border: 0px none; margin: 0px; padding: 0px; background-color: transparent; z-index: 1; height: 241px;" id="iframe_whabpxrntn948tcad8ar-1" name="iframe_whabpxrntn948tcad8ar-1" scrolling="0" allowtransparency="true" marginheight="0" marginwidth="0" width="100%" frameborder="0"></iframe><!-- /content-whabpxrntn948tcad8ar-1 --></div></div></div><!-- /layer whabpxrntn948tcad8ar --></div><div pre-type="layer" pre-id="djzzjtaxzcdj0b2t3333" pre-name="content" pre-width="fixed" style="background-position: left top;"><!-- layer djzzjtaxzcdj0b2t3333 --><div class="row no-gutters"><div class="col-12" pre-name="content" pre-type="data" pre-id="djzzjtaxzcdj0b2t3333-0" pre-vtype="editor"><div pre-type="content"><p><br></p><p><span style="font-size: 24px;"><strong>结束寄语：</strong></span></p><p>感谢您使用PHPOK系统，这是一个强大的可自定义的CMS系统，代码开源，可免费商用，基于 LGPL 协议您甚至可以改造成自己进行二次发布！</p><p>2021年，相信我们还在创造奇迹！</p><p><br></p></div></div></div><!-- /layer djzzjtaxzcdj0b2t3333 --></div><div pre-type="layer" pre-id="cfryrtyckwjzw4txrw42" pre-name="content" pre-width="fixed" pre-style="" style="background-position: left top;"><!-- layer cfryrtyckwjzw4txrw42 --><div class="row no-gutters"><div class="col col-sm-12 col-lg-6" pre-name="content" pre-type="data" pre-id="cfryrtyckwjzw4txrw42-0" pre-vtype="calldata" pre-code="aboutus" data-ext-calldata="aboutus" pre-param="" pre-replace=""><div pre-type="content" pre-class="" pre-style="" data-wow-duration="" data-wow-delay="" data-wow-offset="" data-wow-iteration="" wow-in="fadeInLeft" wow-action="true" wow-out="" style="text-align: left; background-position: left top;" class=""><!-- content-cfryrtyckwjzw4txrw42-0 --><div style="background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;"></div><iframe src="api.php?c=call&amp;f=admin_preview&amp;id=cfryrtyckwjzw4txrw42-0&amp;code=aboutus" style="border: 0px none; margin: 0px; padding: 0px; background-color: transparent; z-index: 1; height: 241px;" id="iframe_cfryrtyckwjzw4txrw42-0" name="iframe_cfryrtyckwjzw4txrw42-0" scrolling="0" allowtransparency="true" marginheight="0" marginwidth="0" width="100%" frameborder="0"></iframe><!-- /content-cfryrtyckwjzw4txrw42-0 --></div></div><div class="col col-sm-12 col-lg-6" pre-name="content" pre-type="data" pre-id="cfryrtyckwjzw4txrw42-1" pre-vtype="image" pre-image="436" pre-gdtype="" pre-alt="测试"><div pre-type="content" pre-class="" pre-style="" data-wow-duration="" data-wow-delay="" data-wow-offset="" data-wow-iteration="" wow-in="fadeInRight" wow-action="true" wow-out="" style="text-align: left; background-position: left top;"><img src="res/202301/10/2b88519f373d32e5.jpg" style="border:0;width:100%;" alt="测试" title="测试"></div></div></div><!-- /layer cfryrtyckwjzw4txrw42 --></div><div pre-type="layer" pre-id="ztxfdrmdmddd8ri8nzpe" pre-name="content" pre-width="fixed" class="mt-5 mb-3" pre-class="mt-5 mb-3" pre-style="" style="background-position: left top;"><!-- layer ztxfdrmdmddd8ri8nzpe --><div class="row no-gutters"><div class="col col-sm-12 col-lg-4" pre-name="content" pre-type="data" pre-id="ztxfdrmdmddd8ri8nzpe-0" pre-vtype="code"><div pre-type="content"><hr></div></div><div class="col col-sm-12 col-lg-4" pre-name="content" pre-type="data" pre-id="ztxfdrmdmddd8ri8nzpe-1" pre-vtype="editor"><div pre-type="content"><h3 style="text-align: center;">产品测试</h3>\r\n</div></div><div class="col col-sm-12 col-lg-4" pre-name="content" pre-type="data" pre-id="ztxfdrmdmddd8ri8nzpe-2" pre-vtype="code"><div pre-type="content"><hr></div></div></div><!-- /layer ztxfdrmdmddd8ri8nzpe --></div><div pre-type="layer" pre-id="fzamcbjmbyrcdk2wx2pk" pre-name="content"><!-- layer fzamcbjmbyrcdk2wx2pk --><div class="row no-gutters"><div class="col col-sm-12 col-lg-12" pre-name="content" pre-type="data" pre-id="fzamcbjmbyrcdk2wx2pk-0" pre-vtype="calldata" pre-code="piclist" data-ext-calldata="new_products" pre-param="" pre-replace=""><div pre-type="content"><!-- content-fzamcbjmbyrcdk2wx2pk-0 --><div style="background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;"></div><iframe src="api.php?c=call&amp;f=admin_preview&amp;id=fzamcbjmbyrcdk2wx2pk-0&amp;code=piclist&amp;calldata=new_products" style="border: 0px none; margin: 0px; padding: 0px; background-color: transparent; z-index: 1; height: 471px;" id="iframe_fzamcbjmbyrcdk2wx2pk-0" name="iframe_fzamcbjmbyrcdk2wx2pk-0" scrolling="0" allowtransparency="true" marginheight="0" marginwidth="0" width="100%" frameborder="0"></iframe><!-- /content-fzamcbjmbyrcdk2wx2pk-0 --></div></div></div><!-- /layer fzamcbjmbyrcdk2wx2pk --></div>', '', '', '');
+(50, 1, 453, 0, '', '', '<div pre-type=\"layer\" pre-id=\"aiawmrshjp6dtk5d68ni\" pre-name=\"content\" style=\"display: block; background-position: left top;\" pre-width=\"fixed\"><!-- layer aiawmrshjp6dtk5d68ni --><div class=\"row no-gutters\"><div class=\"col-5\" pre-name=\"content\" pre-type=\"data\" pre-id=\"aiawmrshjp6dtk5d68ni-0\" pre-vtype=\"editor\"><div pre-type=\"content\"><hr><p><br></p></div></div><div class=\"col-2\" pre-name=\"content\" pre-type=\"data\" pre-id=\"aiawmrshjp6dtk5d68ni-1\" pre-vtype=\"editor\"><div pre-type=\"content\" data-wow-duration=\"\" data-wow-delay=\"\" data-wow-offset=\"\" data-wow-iteration=\"\" wow-in=\"bounce\" wow-action=\"true\" wow-out=\"\" style=\"background-position: left top;\"><h2 style=\"text-align: center;\">图文新闻</h2></div></div><div class=\"col-5\" pre-name=\"content\" pre-type=\"data\" pre-id=\"aiawmrshjp6dtk5d68ni-2\" pre-vtype=\"editor\"><div pre-type=\"content\"><hr><p><br></p></div></div></div><!-- /layer aiawmrshjp6dtk5d68ni --></div><div pre-type=\"layer\" pre-id=\"shbtrmdmtszfzajikbe0\" pre-name=\"content\" pre-width=\"fixed\" style=\"background-position: left top; margin: 0px 0px 30px; display: block;\"><!-- layer shbtrmdmtszfzajikbe0 --><div class=\"row no-gutters\"><div class=\"col-12\" pre-name=\"content\" pre-type=\"data\" pre-id=\"shbtrmdmtszfzajikbe0-0\" pre-vtype=\"calldata\" pre-code=\"arclist\" pre-param=\"fields=note,content,thumb\" pre-tplfile=\"_data/design/arclist\" data-ext-calldata=\"news-pictures\" pre-replace=\"\"><div pre-type=\"content\" data-wow-duration=\"2s\" data-wow-delay=\"2s\" data-wow-offset=\"1\" data-wow-iteration=\"\" wow-in=\"\" wow-action=\"true\" wow-out=\"\" style=\"background-position: left top;\"><!-- content-shbtrmdmtszfzajikbe0-0 --><div style=\"background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;\"></div><iframe src=\"api.php?c=call&amp;f=admin_preview&amp;id=shbtrmdmtszfzajikbe0-0&amp;code=arclist&amp;calldata=news-pictures&amp;param=fields%3Dnote%2Ccontent%2Cthumb\" style=\"border: 0px none; margin: 0px; padding: 0px; background-color: transparent; z-index: 1; height: 410px;\" id=\"iframe_shbtrmdmtszfzajikbe0-0\" name=\"iframe_shbtrmdmtszfzajikbe0-0\" scrolling=\"0\" allowtransparency=\"true\" marginheight=\"0\" marginwidth=\"0\" width=\"100%\" frameborder=\"0\"></iframe><!-- /content-shbtrmdmtszfzajikbe0-0 --></div></div></div><!-- /layer shbtrmdmtszfzajikbe0 --></div><div pre-type=\"layer\" pre-id=\"rmxwwdkdkwjaxd0f0eky\" pre-name=\"content\" pre-width=\"auto\" style=\"background-position: left top; background-color: rgb(243, 243, 243);\"><!-- layer rmxwwdkdkwjaxd0f0eky --><div class=\"row no-gutters\"><div class=\"col-12\" pre-name=\"content\" pre-type=\"data\" pre-id=\"rmxwwdkdkwjaxd0f0eky-0\" pre-vtype=\"editor\"><div pre-type=\"content\" data-wow-duration=\"\" data-wow-delay=\"\" data-wow-offset=\"\" data-wow-iteration=\"\" wow-in=\"bounceInLeft\" wow-action=\"true\" wow-out=\"\" style=\"background-position: left top;\"><h3 style=\"text-align: center;\"><br></h3><h3 style=\"text-align: center;\">图片效果<br></h3><p><br></p></div></div></div><!-- /layer rmxwwdkdkwjaxd0f0eky --></div><div pre-type=\"layer\" pre-id=\"azhbjyxyfz67ki85c2z4\" pre-name=\"content\" style=\"display: block;\"><!-- layer azhbjyxyfz67ki85c2z4 --><div class=\"row no-gutters\"><div class=\"col col-sm-12 col-lg-12\" pre-name=\"content\" pre-type=\"data\" pre-id=\"azhbjyxyfz67ki85c2z4-0\" pre-vtype=\"calldata\" pre-code=\"piclist\" data-ext-calldata=\"photo\" pre-param=\"psize=4\" pre-replace=\"\"><div pre-type=\"content\" pre-class=\"\" pre-style=\"\" data-wow-duration=\"\" data-wow-delay=\"\" data-wow-offset=\"\" data-wow-iteration=\"\" wow-in=\"bounce\" wow-action=\"true\" wow-out=\"\" style=\"text-align: left; background-position: left top;\"><!-- content-azhbjyxyfz67ki85c2z4-0 --><div style=\"background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;\"></div><iframe src=\"api.php?c=call&amp;f=admin_preview&amp;id=azhbjyxyfz67ki85c2z4-0&amp;code=piclist&amp;calldata=photo&amp;param=psize%3D4\" style=\"border: 0px none; margin: 0px; padding: 0px; background-color: transparent; z-index: 1; height: 378px;\" id=\"iframe_azhbjyxyfz67ki85c2z4-0\" name=\"iframe_azhbjyxyfz67ki85c2z4-0\" scrolling=\"0\" allowtransparency=\"true\" marginheight=\"0\" marginwidth=\"0\" width=\"100%\" frameborder=\"0\"></iframe><!-- /content-azhbjyxyfz67ki85c2z4-0 --></div></div></div><!-- /layer azhbjyxyfz67ki85c2z4 --></div><div pre-type=\"layer\" pre-id=\"whabpxrntn948tcad8ar\" pre-name=\"content\" pre-width=\"fixed\" style=\"background-position: left top; padding: 50px 0px 30px;\"><!-- layer whabpxrntn948tcad8ar --><div class=\"row no-gutters\"><div class=\"col\" pre-type=\"data\" pre-name=\"content\" pre-id=\"whabpxrntn948tcad8ar-0\" pre-vtype=\"image\" pre-gdtype=\"auto\" pre-image=\"404\"><div pre-type=\"content\" data-wow-duration=\"\" data-wow-delay=\"\" data-wow-offset=\"\" data-wow-iteration=\"\" wow-in=\"fadeInLeft\" wow-out=\"\" style=\"text-align: center; background-position: left top;\" wow-action=\"true\"><img src=\"https://cdn.phpok.com/res/202204/25/5a6b0c96848392b4.jpg\" style=\"border:0;width:400px;\" alt=\"老家\"></div></div><div class=\"col\" pre-type=\"data\" pre-name=\"content\" pre-id=\"whabpxrntn948tcad8ar-1\" pre-vtype=\"calldata\" pre-code=\"aboutus\" pre-param=\"\" pre-tplfile=\"_data/design/aboutus\"><div pre-type=\"content\" data-wow-duration=\"\" data-wow-delay=\"\" data-wow-offset=\"\" data-wow-iteration=\"\" wow-in=\"bounceInDown\" wow-action=\"true\" wow-out=\"\" style=\"background-position: left top;\"><!-- content-whabpxrntn948tcad8ar-1 --><div style=\"background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;\"></div><iframe src=\"api.php?c=call&amp;f=admin_preview&amp;id=whabpxrntn948tcad8ar-1&amp;code=aboutus&amp;tplfile=_data%2Fdesign%2Faboutus\" style=\"border: 0px none; margin: 0px; padding: 0px; background-color: transparent; z-index: 1; height: 241px;\" id=\"iframe_whabpxrntn948tcad8ar-1\" name=\"iframe_whabpxrntn948tcad8ar-1\" scrolling=\"0\" allowtransparency=\"true\" marginheight=\"0\" marginwidth=\"0\" width=\"100%\" frameborder=\"0\"></iframe><!-- /content-whabpxrntn948tcad8ar-1 --></div></div></div><!-- /layer whabpxrntn948tcad8ar --></div><div pre-type=\"layer\" pre-id=\"djzzjtaxzcdj0b2t3333\" pre-name=\"content\" pre-width=\"fixed\" style=\"background-position: left top;\"><!-- layer djzzjtaxzcdj0b2t3333 --><div class=\"row no-gutters\"><div class=\"col-12\" pre-name=\"content\" pre-type=\"data\" pre-id=\"djzzjtaxzcdj0b2t3333-0\" pre-vtype=\"editor\"><div pre-type=\"content\"><p><br></p><p><span style=\"font-size: 24px;\"><strong>结束寄语：</strong></span></p><p>感谢您使用PHPOK系统，这是一个强大的可自定义的CMS系统，代码开源，可免费商用，基于 LGPL 协议您甚至可以改造成自己进行二次发布！</p><p>2021年，相信我们还在创造奇迹！</p><p><br></p></div></div></div><!-- /layer djzzjtaxzcdj0b2t3333 --></div><div pre-type=\"layer\" pre-id=\"cfryrtyckwjzw4txrw42\" pre-name=\"content\" pre-width=\"fixed\" pre-style=\"\" style=\"background-position: left top;\"><!-- layer cfryrtyckwjzw4txrw42 --><div class=\"row no-gutters\"><div class=\"col col-sm-12 col-lg-6\" pre-name=\"content\" pre-type=\"data\" pre-id=\"cfryrtyckwjzw4txrw42-0\" pre-vtype=\"calldata\" pre-code=\"aboutus\" data-ext-calldata=\"aboutus\" pre-param=\"\" pre-replace=\"\"><div pre-type=\"content\" pre-class=\"\" pre-style=\"\" data-wow-duration=\"\" data-wow-delay=\"\" data-wow-offset=\"\" data-wow-iteration=\"\" wow-in=\"fadeInLeft\" wow-action=\"true\" wow-out=\"\" style=\"text-align: left; background-position: left top;\" class=\"\"><!-- content-cfryrtyckwjzw4txrw42-0 --><div style=\"background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;\"></div><iframe src=\"api.php?c=call&amp;f=admin_preview&amp;id=cfryrtyckwjzw4txrw42-0&amp;code=aboutus\" style=\"border: 0px none; margin: 0px; padding: 0px; background-color: transparent; z-index: 1; height: 241px;\" id=\"iframe_cfryrtyckwjzw4txrw42-0\" name=\"iframe_cfryrtyckwjzw4txrw42-0\" scrolling=\"0\" allowtransparency=\"true\" marginheight=\"0\" marginwidth=\"0\" width=\"100%\" frameborder=\"0\"></iframe><!-- /content-cfryrtyckwjzw4txrw42-0 --></div></div><div class=\"col col-sm-12 col-lg-6\" pre-name=\"content\" pre-type=\"data\" pre-id=\"cfryrtyckwjzw4txrw42-1\" pre-vtype=\"image\" pre-image=\"436\" pre-gdtype=\"\" pre-alt=\"测试\"><div pre-type=\"content\" pre-class=\"\" pre-style=\"\" data-wow-duration=\"\" data-wow-delay=\"\" data-wow-offset=\"\" data-wow-iteration=\"\" wow-in=\"fadeInRight\" wow-action=\"true\" wow-out=\"\" style=\"text-align: left; background-position: left top;\"><img src=\"res/202301/10/2b88519f373d32e5.jpg\" style=\"border:0;width:100%;\" alt=\"测试\" title=\"测试\"></div></div></div><!-- /layer cfryrtyckwjzw4txrw42 --></div><div pre-type=\"layer\" pre-id=\"ztxfdrmdmddd8ri8nzpe\" pre-name=\"content\" pre-width=\"fixed\" class=\"mt-5 mb-3\" pre-class=\"mt-5 mb-3\" pre-style=\"\" style=\"background-position: left top;\"><!-- layer ztxfdrmdmddd8ri8nzpe --><div class=\"row no-gutters\"><div class=\"col col-sm-12 col-lg-4\" pre-name=\"content\" pre-type=\"data\" pre-id=\"ztxfdrmdmddd8ri8nzpe-0\" pre-vtype=\"code\"><div pre-type=\"content\"><hr></div></div><div class=\"col col-sm-12 col-lg-4\" pre-name=\"content\" pre-type=\"data\" pre-id=\"ztxfdrmdmddd8ri8nzpe-1\" pre-vtype=\"editor\"><div pre-type=\"content\"><h3 style=\"text-align: center;\">产品测试</h3>\r\n</div></div><div class=\"col col-sm-12 col-lg-4\" pre-name=\"content\" pre-type=\"data\" pre-id=\"ztxfdrmdmddd8ri8nzpe-2\" pre-vtype=\"code\"><div pre-type=\"content\"><hr></div></div></div><!-- /layer ztxfdrmdmddd8ri8nzpe --></div><div pre-type=\"layer\" pre-id=\"fzamcbjmbyrcdk2wx2pk\" pre-name=\"content\"><!-- layer fzamcbjmbyrcdk2wx2pk --><div class=\"row no-gutters\"><div class=\"col col-sm-12 col-lg-12\" pre-name=\"content\" pre-type=\"data\" pre-id=\"fzamcbjmbyrcdk2wx2pk-0\" pre-vtype=\"calldata\" pre-code=\"piclist\" data-ext-calldata=\"new_products\" pre-param=\"\" pre-replace=\"\"><div pre-type=\"content\"><!-- content-fzamcbjmbyrcdk2wx2pk-0 --><div style=\"background:none;z-index:2;position:absolute;left:0;top:0;width:100%;height:100%;\"></div><iframe src=\"api.php?c=call&amp;f=admin_preview&amp;id=fzamcbjmbyrcdk2wx2pk-0&amp;code=piclist&amp;calldata=new_products\" style=\"border: 0px none; margin: 0px; padding: 0px; background-color: transparent; z-index: 1; height: 471px;\" id=\"iframe_fzamcbjmbyrcdk2wx2pk-0\" name=\"iframe_fzamcbjmbyrcdk2wx2pk-0\" scrolling=\"0\" allowtransparency=\"true\" marginheight=\"0\" marginwidth=\"0\" width=\"100%\" frameborder=\"0\"></iframe><!-- /content-fzamcbjmbyrcdk2wx2pk-0 --></div></div></div><!-- /layer fzamcbjmbyrcdk2wx2pk --></div>', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -2216,15 +2336,15 @@ INSERT INTO `qinggan_list_112` (`id`, `site_id`, `project_id`, `cate_id`, `thumb
 -- 表的结构 `qinggan_list_115`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_115` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_115` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `banner` varchar(255) NOT NULL DEFAULT '' COMMENT '通栏图片',
   `link` varchar(255) NOT NULL DEFAULT '' COMMENT '链接',
   `target` varchar(255) NOT NULL DEFAULT 'navigate' COMMENT '打开方式'
-) ENGINE=MyISAM AUTO_INCREMENT=2271 DEFAULT CHARSET=utf8 COMMENT='图片轮播（小程序）';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='图片轮播（小程序）';
 
 --
 -- 转存表中的数据 `qinggan_list_115`
@@ -2240,15 +2360,15 @@ INSERT INTO `qinggan_list_115` (`id`, `site_id`, `project_id`, `cate_id`, `banne
 -- 表的结构 `qinggan_list_116`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_116` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_116` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
   `link` varchar(255) NOT NULL DEFAULT '' COMMENT '链接',
   `target` varchar(255) NOT NULL DEFAULT 'navigate' COMMENT '链接方式'
-) ENGINE=MyISAM AUTO_INCREMENT=2277 DEFAULT CHARSET=utf8 COMMENT='图链（小程序）';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='图链（小程序）';
 
 --
 -- 转存表中的数据 `qinggan_list_116`
@@ -2268,15 +2388,15 @@ INSERT INTO `qinggan_list_116` (`id`, `site_id`, `project_id`, `cate_id`, `thumb
 -- 表的结构 `qinggan_list_117`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_117` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '网站ID',
-  `project_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主分类ID',
+CREATE TABLE `qinggan_list_117` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
   `thumb` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图',
   `vtype` varchar(255) NOT NULL DEFAULT 'article' COMMENT '模式',
   `code` varchar(255) NOT NULL DEFAULT '' COMMENT '标识'
-) ENGINE=MyISAM AUTO_INCREMENT=2286 DEFAULT CHARSET=utf8 COMMENT='自定义发现页';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='自定义发现页';
 
 --
 -- 转存表中的数据 `qinggan_list_117`
@@ -2290,19 +2410,48 @@ INSERT INTO `qinggan_list_117` (`id`, `site_id`, `project_id`, `cate_id`, `thumb
 -- --------------------------------------------------------
 
 --
+-- 表的结构 `qinggan_list_120`
+--
+
+CREATE TABLE `qinggan_list_120` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '网站ID',
+  `project_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主分类ID',
+  `content` longtext NOT NULL COMMENT '内容'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='对话内容';
+
+--
+-- 转存表中的数据 `qinggan_list_120`
+--
+
+INSERT INTO `qinggan_list_120` (`id`, `site_id`, `project_id`, `cate_id`, `content`) VALUES
+(2519, 1, 463, 0, '根据最新的数据，截至2021年6月，WordPress的市场占有率约为40%，是全球最受欢迎的内容管理系统之一。WordPress的市场占有率一直在稳步增长，这得益于其易用性、灵活性和强大的社区支持。许多企业、个人和组织都选择使用WordPress来构建自己的网站、博客和电子商务平台。'),
+(2518, 1, 463, 0, 'PHPOK是一款基于PHP语言开发的开源框架，它是一种轻量级的MVC框架，可以帮助开发者快速构建Web应用程序。PHPOK框架具有高效、灵活、易用等特点，可以帮助开发者快速搭建Web应用程序，提高开发效率。\n\nPHPOK框架采用了MVC架构模式，将应用程序分为模型、视图和控制器三个部分，使得应用程序的开发和维护更加清晰和易于管理。同时，PHPOK框架还提供了丰富的功能模块和插件，可以满足不同应用程序的需求。\n\nPHPOK框架还具有良好的扩展性和可定制性，开发者可以根据自己的需求进行二次开发和定制，以满足不同应用程序的需求。同时，PHPOK框架还提供了完善的文档和社区支持，可以帮助开发者更好地使用和维护框架。'),
+(2520, 1, 463, 0, '常见的CMS包括：\n\n1. WordPress：最流行的开源CMS，用于创建博客和网站。\n\n2. Joomla：功能强大的开源CMS，用于创建各种类型的网站，包括企业网站、社交网络和电子商务网站。\n\n3. Drupal：功能强大的开源CMS，用于创建各种类型的网站，包括企业网站、社交网络和电子商务网站。\n\n4. Magento：专门用于创建电子商务网站的开源CMS，提供了丰富的电子商务功能和工具。\n\n5. PrestaShop：另一个专门用于创建电子商务网站的开源CMS，提供了丰富的电子商务功能和工具。\n\n6. OpenCart：另一个专门用于创建电子商务网站的开源CMS，提供了丰富的电子商务功能和工具。\n\n7. TYPO3：功能强大的开源CMS，用于创建各种类型的网站，包括企业网站、社交网络和电子商务网站。\n\n8. Umbraco：基于ASP.NET的开源CMS，用于创建各种类型的网站，包括企业网站、社交网络和电子商务网站。\n\n9. Ghost：专门用于创建博客的开源CMS，提供了简单、干净的博客写作和发布工具。\n\n10. Squarespace：基于云的CMS，提供了易于使用的网站构建工具和模板，适用于个人和小型企业。'),
+(2521, 1, 463, 0, '电子商务CMS是指专门用于电子商务网站开发的内容管理系统，常见的电子商务CMS包括：\n\n1. Magento：Magento是一款功能强大的开源电子商务CMS，具有丰富的功能和灵活的扩展性，适用于中大型电商网站。\n\n2. WooCommerce：WooCommerce是一款基于WordPress的电子商务插件，可以将WordPress网站转化为电商网站，适用于小型电商网站。\n\n3. Shopify：Shopify是一款云端电商平台，提供了完整的电商解决方案，包括网站建设、支付、物流等，适用于小型电商网站。\n\n4. PrestaShop：PrestaShop是一款开源的电子商务CMS，具有丰富的功能和灵活的扩展性，适用于中小型电商网站。\n\n5. OpenCart：OpenCart是一款开源的电子商务CMS，具有简单易用的界面和丰富的功能，适用于小型电商网站。\n\n6. Zen Cart：Zen Cart是一款开源的电子商务CMS，具有丰富的功能和灵活的扩展性，适用于中小型电商网站。\n\n7. osCommerce：osCommerce是一款开源的电子商务CMS，具有简单易用的界面和丰富的功能，适用于小型电商网站。\n\n以上是常见的电子商务CMS，每款CMS都有其特点和适用范围，开发者可以根据自己的需求选择合适的CMS。'),
+(2522, 1, 463, 0, '根据最新的数据，截至2021年6月，Drupal的市场占有率约为2.3%，是全球最受欢迎的内容管理系统之一。虽然Drupal的市场份额相对较小，但它在企业级网站和应用程序开发方面具有很高的声誉和广泛的应用。Drupal的优点包括灵活性、可扩展性、安全性和可定制性，这些特点使得Drupal成为许多企业和组织的首选CMS。同时，Drupal还拥有庞大的社区支持和丰富的模块和插件，可以满足不同应用程序的需求。'),
+(2523, 1, 463, 0, 'Zen Cart是一款免费的开源电子商务CMS，它基于PHP和MySQL开发，提供了丰富的电子商务功能和工具，包括产品目录、购物车、订单管理、支付和物流等。Zen Cart的特点包括：\n\n1. 灵活的模板系统：Zen Cart提供了多种模板和主题，可以轻松地自定义网站的外观和布局。\n\n2. 多语言和多货币支持：Zen Cart支持多种语言和货币，可以满足不同国家和地区的需求。\n\n3. 丰富的插件和模块：Zen Cart拥有庞大的社区支持和丰富的插件和模块，可以满足不同应用程序的需求。\n\n4. 安全性和可靠性：Zen Cart采用了多种安全措施，包括SSL加密、防火墙和反欺诈措施，保证了网站的安全性和可靠性。\n\n5. 易用性和可定制性：Zen Cart具有简单易用的界面和丰富的功能，同时也具有灵活的扩展性和可定制性，可以满足不同用户的需求。\n\n总之，Zen Cart是一款功能强大、易用性高、安全可靠的电子商务CMS，适用于中小型电商网站。'),
+(2524, 1, 463, 0, '根据最新的数据，截至2021年6月，osCommerce的市场占有率约为0.1%，是全球最受欢迎的电子商务CMS之一。虽然osCommerce的市场份额相对较小，但它在小型电商网站开发方面具有很高的声誉和广泛的应用。osCommerce的优点包括简单易用的界面、丰富的功能和灵活的扩展性，这些特点使得osCommerce成为许多小型电商网站的首选CMS。同时，osCommerce还拥有庞大的社区支持和丰富的模块和插件，可以满足不同应用程序的需求。'),
+(2525, 1, 463, 0, '根据最新的数据，截至2021年6月，Magento的市场占有率约为1.2%，是全球最受欢迎的电子商务CMS之一。虽然Magento的市场份额相对较小，但它在中大型电商网站开发方面具有很高的声誉和广泛的应用。Magento的优点包括丰富的功能、灵活的扩展性和可定制性，这些特点使得Magento成为许多中大型电商网站的首选CMS。同时，Magento还拥有庞大的社区支持和丰富的模块和插件，可以满足不同应用程序的需求。'),
+(2527, 1, 463, 0, 'PrestaShop是一款免费的开源电子商务CMS，它基于PHP和MySQL开发，提供了丰富的电子商务功能和工具，包括产品目录、购物车、订单管理、支付和物流等。PrestaShop的特点包括：\n\n1. 简单易用的界面：PrestaShop提供了直观的管理界面，使得用户可以轻松地管理和维护网站。\n\n2. 丰富的功能和模块：PrestaShop提供了多种功能和模块，包括多语言和多货币支持、产品管理、订单管理、支付和物流等，可以满足不同用户的需求。\n\n3. 灵活的模板系统：PrestaShop提供了多种模板和主题，可以轻松地自定义网站的外观和布局。\n\n4. 安全性和可靠性：PrestaShop采用了多种安全措施，包括SSL加密、防火墙和反欺诈措施，保证了网站的安全性和可靠性。\n\n5. 庞大的社区支持：PrestaShop拥有庞大的社区支持和丰富的插件和模块，可以满足不同应用程序的需求。\n\n总之，PrestaShop是一款功能强大、易用性高、安全可靠的电子商务CMS，适用于中小型电商网站。');
+
+-- --------------------------------------------------------
+
+--
 -- 表的结构 `qinggan_list_attr`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_attr` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `aid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '属性组ID',
-  `vid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '参数ID',
+CREATE TABLE `qinggan_list_attr` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `aid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '属性组ID',
+  `vid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '参数ID',
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '增减价格值',
   `weight` float NOT NULL DEFAULT '0' COMMENT '重量增减',
   `volume` float NOT NULL DEFAULT '0' COMMENT '体积增减值，带-号为减值',
-  `taxis` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序'
-) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COMMENT='主题属性';
+  `taxis` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '排序'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='主题属性';
 
 --
 -- 转存表中的数据 `qinggan_list_attr`
@@ -2340,16 +2489,16 @@ INSERT INTO `qinggan_list_attr` (`id`, `tid`, `aid`, `vid`, `price`, `weight`, `
 -- 表的结构 `qinggan_list_biz`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_biz` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '产品ID',
+CREATE TABLE `qinggan_list_biz` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '产品ID',
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '价格',
-  `currency_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '货币ID',
-  `weight` float unsigned NOT NULL DEFAULT '0' COMMENT '重量，单位是Kg',
-  `volume` float unsigned NOT NULL DEFAULT '0' COMMENT '体积，单位立方米',
+  `currency_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '货币ID',
+  `weight` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '重量，单位是Kg',
+  `volume` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '体积，单位立方米',
   `unit` varchar(50) NOT NULL COMMENT '单位',
   `is_virtual` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0实物1虚拟产品',
-  `qty` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '数量',
-  `min_qty` int(10) unsigned NOT NULL DEFAULT '1' COMMENT '最小购买数量'
+  `qty` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '数量',
+  `min_qty` int(10) UNSIGNED NOT NULL DEFAULT '1' COMMENT '最小购买数量'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='电子商务';
 
 --
@@ -2384,9 +2533,9 @@ INSERT INTO `qinggan_list_biz` (`id`, `price`, `currency_id`, `weight`, `volume`
 -- 表的结构 `qinggan_list_cate`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_list_cate` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `cate_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID'
+CREATE TABLE `qinggan_list_cate` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `cate_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='主题绑定的分类';
 
 --
@@ -2429,7 +2578,7 @@ INSERT INTO `qinggan_list_cate` (`id`, `cate_id`) VALUES
 (2508, 211),
 (2509, 211),
 (2510, 211),
-(2511, 204);
+(2528, 206);
 
 -- --------------------------------------------------------
 
@@ -2437,16 +2586,16 @@ INSERT INTO `qinggan_list_cate` (`id`, `cate_id`) VALUES
 -- 表的结构 `qinggan_log_content`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_log_content` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
+CREATE TABLE `qinggan_log_content` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
   `tbl` varchar(255) NOT NULL COMMENT '表名（不含前缀）',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发布时间',
-  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '发布时间',
+  `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `vtype` varchar(255) NOT NULL DEFAULT '' COMMENT '类型',
   `code` varchar(255) NOT NULL DEFAULT '' COMMENT '类型标识',
   `content1` text NOT NULL COMMENT '变更前的数据',
   `content2` text NOT NULL COMMENT '变更后的数据'
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='内容变更记录';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='内容变更记录';
 
 --
 -- 转存表中的数据 `qinggan_log_content`
@@ -2475,25 +2624,25 @@ INSERT INTO `qinggan_log_content` (`id`, `tbl`, `dateline`, `tid`, `vtype`, `cod
 -- 表的结构 `qinggan_menu`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_menu` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID，主键',
-  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '站点ID',
+CREATE TABLE `qinggan_menu` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID，主键',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
   `group_id` varchar(255) NOT NULL COMMENT '菜单组ID',
-  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID，支持无限级菜单',
+  `parent_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID，支持无限级菜单',
   `title` varchar(255) NOT NULL COMMENT '菜单名称',
   `type` varchar(255) NOT NULL COMMENT '类型，project指项目，cate指分类，content指内容，link自定义',
-  `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cate_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
-  `list_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `project_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cate_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `list_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `thumb` varchar(255) NOT NULL COMMENT '图片图标',
   `iconfont` varchar(255) NOT NULL COMMENT '字体图标',
   `link` varchar(255) NOT NULL COMMENT '自定义链接，最长不能超过255',
   `target` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0当前页，1新窗口',
   `is_userid` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0游客，1仅限会员',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序，最大255，值越小越往前靠',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0未审，1正常',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，最大255，值越小越往前靠',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未审，1正常',
   `submenu` varchar(255) NOT NULL COMMENT '二级菜单类型'
-) ENGINE=MyISAM AUTO_INCREMENT=34 DEFAULT CHARSET=utf8 COMMENT='菜单管理';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='菜单管理';
 
 --
 -- 转存表中的数据 `qinggan_menu`
@@ -2526,16 +2675,16 @@ INSERT INTO `qinggan_menu` (`id`, `site_id`, `group_id`, `parent_id`, `title`, `
 -- 表的结构 `qinggan_module`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_module` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID号',
+CREATE TABLE `qinggan_module` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID号',
   `title` varchar(255) NOT NULL COMMENT '模块名称',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0不使用1使用',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '模块排序',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不使用1使用',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '模块排序',
   `note` varchar(255) NOT NULL COMMENT '模块说明',
   `layout` text NOT NULL COMMENT '布局',
-  `mtype` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0联合模块，1独立模块',
+  `mtype` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0联合模块，1独立模块',
   `tbl` varchar(255) NOT NULL DEFAULT 'list' COMMENT '关联主表'
-) ENGINE=MyISAM AUTO_INCREMENT=119 DEFAULT CHARSET=utf8 COMMENT='模块管理，每创建一个模块自动创建一个表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='模块管理，每创建一个模块自动创建一个表';
 
 --
 -- 转存表中的数据 `qinggan_module`
@@ -2557,7 +2706,9 @@ INSERT INTO `qinggan_module` (`id`, `title`, `status`, `taxis`, `note`, `layout`
 (114, '规格参数', 1, 170, '', 'hits,dateline,sort', 1, 'list'),
 (115, '图片轮播（小程序）', 1, 30, '适用于图片播放器，图片友情链接', 'sort,banner,link,target', 0, 'list'),
 (116, '图链（小程序）', 1, 175, '主要用于自定义小程序上', 'sort,thumb,link,target', 0, 'list'),
-(117, '发现页', 1, 180, '主要用于手机版，APP等', 'hits,dateline,sort', 0, 'list');
+(117, '发现页', 1, 180, '主要用于手机版，APP等', 'hits,dateline,sort', 0, 'list'),
+(119, 'OpenAI密钥库', 1, 185, '', 'hits,dateline,sort', 1, 'list'),
+(120, '对话内容', 1, 190, '', 'hits,dateline,sort', 0, 'list');
 
 -- --------------------------------------------------------
 
@@ -2565,14 +2716,14 @@ INSERT INTO `qinggan_module` (`id`, `title`, `status`, `taxis`, `note`, `layout`
 -- 表的结构 `qinggan_opt`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_opt` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID号',
-  `group_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '组ID',
-  `parent_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID',
+CREATE TABLE `qinggan_opt` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+  `group_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '组ID',
+  `parent_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID',
   `title` varchar(255) NOT NULL COMMENT '名称',
   `val` varchar(255) NOT NULL COMMENT '值',
-  `taxis` int(10) unsigned NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠'
-) ENGINE=MyISAM AUTO_INCREMENT=25943 DEFAULT CHARSET=utf8 COMMENT='表单列表选项';
+  `taxis` int(10) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='表单列表选项';
 
 --
 -- 转存表中的数据 `qinggan_opt`
@@ -17595,11 +17746,11 @@ INSERT INTO `qinggan_opt` (`id`, `group_id`, `parent_id`, `title`, `val`, `taxis
 -- 表的结构 `qinggan_opt_group`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_opt_group` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID ',
+CREATE TABLE `qinggan_opt_group` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID ',
   `title` varchar(100) NOT NULL COMMENT '名称，用于后台管理',
   `link_symbol` varchar(10) NOT NULL COMMENT '连接字符，未设置使用英文竖线'
-) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COMMENT='可选菜单管理器';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='可选菜单管理器';
 
 --
 -- 转存表中的数据 `qinggan_opt_group`
@@ -17627,32 +17778,32 @@ INSERT INTO `qinggan_opt_group` (`id`, `title`, `link_symbol`) VALUES
 -- 表的结构 `qinggan_order`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_order` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID号',
+CREATE TABLE `qinggan_order` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
   `sn` varchar(255) NOT NULL COMMENT '订单编号，唯一值',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示游客',
-  `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示游客',
+  `addtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '添加时间',
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '金额',
-  `currency_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '货币类型',
-  `currency_rate` decimal(13,8) unsigned NOT NULL DEFAULT '1.00000000' COMMENT '货币汇率',
+  `currency_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '货币类型',
+  `currency_rate` decimal(13,8) UNSIGNED NOT NULL DEFAULT '1.00000000' COMMENT '货币汇率',
   `status` varchar(255) NOT NULL COMMENT '订单的最后状态',
   `status_title` varchar(255) NOT NULL COMMENT '订单状态说明',
-  `endtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '结束时间',
+  `endtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '结束时间',
   `passwd` varchar(255) NOT NULL COMMENT '密码串',
   `ext` text NOT NULL COMMENT '扩展内容信息，可用于存储一些扩展信息',
   `note` text NOT NULL COMMENT '摘要',
   `email` varchar(255) NOT NULL COMMENT '邮箱，用于接收通知',
   `mobile` varchar(50) NOT NULL COMMENT '手机号，用于短信发送',
   `fullname` varchar(255) NOT NULL COMMENT '联系人'
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='订单中心';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单中心';
 
 --
 -- 转存表中的数据 `qinggan_order`
 --
 
 INSERT INTO `qinggan_order` (`id`, `sn`, `user_id`, `addtime`, `price`, `currency_id`, `currency_rate`, `status`, `status_title`, `endtime`, `passwd`, `ext`, `note`, `email`, `mobile`, `fullname`) VALUES
-(1, 'P2023030753U00023001', 23, 1678178980, '2275.0000', 1, '6.16989994', 'unpaid', '等待付款', 0, 'a6395e9cccd224628c0c3ece3e8742b8', '', '', 'admin@phpok.com', '15812345678', '苏工'),
-(2, 'P2023050918U00023001', 23, 1683599511, '4105.0000', 1, '6.16989994', 'create', '创建订单', 0, '49f0710f1756f40ff9ca71f63c2ca32b', '', '', 'admin@phpok.com', '15812345678', '苏工'),
+(1, 'P2023030753U00023001', 23, 1678178980, '2275.0000', 1, '6.16989994', 'shipping', '', 1685165677, 'a6395e9cccd224628c0c3ece3e8742b8', '', '', 'admin@phpok.com', '15812345678', '苏工'),
+(2, 'P2023050918U00023001', 23, 1683599511, '4105.0000', 1, '6.16989994', 'unpaid', '等待付款', 0, '49f0710f1756f40ff9ca71f63c2ca32b', '', '', 'admin@phpok.com', '15812345678', '苏工'),
 (3, 'P2023051123U00023001', 23, 1683766479, '100.0000', 1, '6.16989994', 'create', '创建订单', 0, 'd0aa29a810ee2a143d717b96be7da9f8', '', '测试用的\n联系人：苏相锟', '40782502@qq.com', '15818533971', '苏相锟'),
 (4, 'P2023051173U00023002', 23, 1683766781, '10.0000', 1, '6.16989994', 'create', '创建订单', 0, 'db26308fa61d24fea9ad4be6096d62b3', '', '测试专用', '40782502@qq.com', '15818533971', '苏相锟'),
 (5, 'P2023051180U00023003', 23, 1683766829, '10.0000', 1, '6.16989994', 'create', '创建订单', 0, 'f68311989c7d7665878128a1983ecc21', '', '测试', '40782502@qq.com', '15818533971', '苏相锟');
@@ -17663,9 +17814,9 @@ INSERT INTO `qinggan_order` (`id`, `sn`, `user_id`, `addtime`, `price`, `currenc
 -- 表的结构 `qinggan_order_address`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_order_address` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '订单ID',
+CREATE TABLE `qinggan_order_address` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID',
   `country` varchar(255) NOT NULL DEFAULT '中国' COMMENT '国家',
   `country_code` varchar(255) NOT NULL COMMENT '国家代码',
   `province` varchar(255) NOT NULL COMMENT '省信息',
@@ -17681,7 +17832,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_address` (
   `lastname` varchar(255) NOT NULL COMMENT '姓氏',
   `zipcode` varchar(50) NOT NULL COMMENT '邮编',
   `type` varchar(255) NOT NULL DEFAULT 'shipping' COMMENT '地址类型，shipping表示收货地址，billing表示账单地址'
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='订单地址库';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单地址库';
 
 --
 -- 转存表中的数据 `qinggan_order_address`
@@ -17697,12 +17848,12 @@ INSERT INTO `qinggan_order_address` (`id`, `order_id`, `country`, `country_code`
 -- 表的结构 `qinggan_order_express`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_order_express` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '订单ID号',
+CREATE TABLE `qinggan_order_express` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID号',
   `express_id` int(11) NOT NULL DEFAULT '0' COMMENT '物流ID号',
   `code` varchar(255) NOT NULL COMMENT '物流查询编码，可用于查询快递进度',
-  `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '登记时间',
+  `addtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '登记时间',
   `last_query_time` int(11) NOT NULL DEFAULT '0' COMMENT '最后一次检索时间',
   `title` varchar(255) NOT NULL COMMENT '快递名称',
   `homepage` varchar(255) NOT NULL COMMENT '快递官网',
@@ -17710,14 +17861,21 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_express` (
   `is_end` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未结束1已结束'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单中涉及到的物流分配';
 
+--
+-- 转存表中的数据 `qinggan_order_express`
+--
+
+INSERT INTO `qinggan_order_express` (`id`, `order_id`, `express_id`, `code`, `addtime`, `last_query_time`, `title`, `homepage`, `company`, `is_end`) VALUES
+(3, 1, 5, '73501408322736', 1685172858, 1685172862, '中通快递', '', '', 1);
+
 -- --------------------------------------------------------
 
 --
 -- 表的结构 `qinggan_order_invoice`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_order_invoice` (
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '订单ID号',
+CREATE TABLE `qinggan_order_invoice` (
+  `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID号',
   `type` varchar(100) NOT NULL COMMENT '发票类型',
   `title` varchar(255) NOT NULL COMMENT '发票抬头',
   `content` text NOT NULL COMMENT '发票内容',
@@ -17730,16 +17888,16 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_invoice` (
 -- 表的结构 `qinggan_order_log`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_order_log` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '订单ID',
-  `order_express_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '定单中的物流ID',
-  `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '操作时间',
+CREATE TABLE `qinggan_order_log` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID',
+  `order_express_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '定单中的物流ID',
+  `addtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '操作时间',
   `who` varchar(255) NOT NULL COMMENT '操作人名称（可以是公司名称，也可以是用户名，可以是物流等）',
   `note` text NOT NULL COMMENT '操作内容',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID',
-  `admin_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '管理员ID'
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='订单日志，用于了解当前的订单处理进度';
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID',
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '管理员ID'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单日志，用于了解当前的订单处理进度';
 
 --
 -- 转存表中的数据 `qinggan_order_log`
@@ -17751,7 +17909,22 @@ INSERT INTO `qinggan_order_log` (`id`, `order_id`, `order_express_id`, `addtime`
 (3, 2, 0, 1683599511, 'admin', '订单创建成功，订单编号：P2023050918U00023001', 23, 0),
 (4, 3, 0, 1683766479, 'admin', '订单创建成功，订单编号：P2023051123U00023001', 23, 0),
 (5, 4, 0, 1683766781, 'admin', '订单创建成功，订单编号：P2023051173U00023002', 23, 0),
-(6, 5, 0, 1683766829, 'admin', '订单创建成功，订单编号：P2023051180U00023003', 23, 0);
+(6, 5, 0, 1683766829, 'admin', '订单创建成功，订单编号：P2023051180U00023003', 23, 0),
+(7, 1, 0, 1685165677, '管理员：admin', '订单（P2023030753U00023001）状态变更为：订单完成', 0, 1),
+(10, 1, 3, 1683716837, '中通快递', '【盐城市】 快件已由 【已妥投】 签收, 签收网点: 【盐城五十五部】, 如有疑问请电联:（13912505481）, 投诉电话:（0515-66873019）, 您的快递已经妥投。风里来雨里去, 只为客官您满意。上有老下有小, 赏个好评好不好？【请在评价快递员处帮忙点亮五颗星星哦~】', 23, 0),
+(9, 1, 0, 1685166958, '管理员：admin', '订单（P2023030753U00023001）状态变更为：正在发货', 0, 1),
+(11, 1, 3, 1683697118, '中通快递', '【盐城市】 快件已到达 【盐城五十五部】（18962008656）,业务员 聂康康（13912505481） 正在第1次派件, 请保持电话畅通,并耐心等待（95720为中通快递员外呼专属号码，请放心接听）', 23, 0),
+(12, 1, 3, 1683693550, '中通快递', '【盐城市】 快件已经到达 【盐城】', 23, 0),
+(13, 1, 3, 1683676730, '中通快递', '【淮安市】 快件离开 【淮安中转】 已发往 【盐城】', 23, 0),
+(14, 1, 3, 1683666613, '中通快递', '【淮安市】 快件已经到达 【淮安中转】', 23, 0),
+(15, 1, 3, 1683574701, '中通快递', '【东莞市】 快件离开 【虎门中心】 已发往 【淮安中转】', 23, 0),
+(16, 1, 3, 1683574521, '中通快递', '【东莞市】 快件已经到达 【虎门中心】', 23, 0),
+(17, 1, 3, 1683563003, '中通快递', '【深圳市】 快件离开 【深圳沙井】 已发往 【盐城】', 23, 0),
+(18, 1, 3, 1683550322, '中通快递', '【深圳市】 【深圳沙井】（0755-27035278） 的 廖昭（18826509263） 已揽收', 23, 0),
+(19, 2, 0, 1685173796, 'admin', '订单等待支付', 23, 0),
+(20, 2, 0, 1685173809, 'admin', '订单等待支付', 23, 0),
+(21, 2, 0, 1685173818, 'admin', '订单等待支付', 23, 0),
+(22, 2, 0, 1685175277, 'admin', '订单等待支付', 23, 0);
 
 -- --------------------------------------------------------
 
@@ -17759,15 +17932,15 @@ INSERT INTO `qinggan_order_log` (`id`, `order_id`, `order_express_id`, `addtime`
 -- 表的结构 `qinggan_order_payment`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_order_payment` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '订单ID',
+CREATE TABLE `qinggan_order_payment` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID',
   `payment_id` varchar(255) NOT NULL DEFAULT '0' COMMENT '支付方式ID，数字表示网上业务支付，字母为财富支付',
   `title` varchar(255) NOT NULL COMMENT '支付方式名称',
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '支付金额',
-  `currency_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '货币ID，为0使用订单默认货币',
-  `currency_rate` decimal(13,8) unsigned NOT NULL DEFAULT '0.00000000' COMMENT '货币汇率',
-  `startdate` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '开始支付操作',
+  `currency_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '货币ID，为0使用订单默认货币',
+  `currency_rate` decimal(13,8) UNSIGNED NOT NULL DEFAULT '0.00000000' COMMENT '货币汇率',
+  `startdate` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '开始支付操作',
   `dateline` int(11) NOT NULL DEFAULT '0' COMMENT '支付时间',
   `ext` text NOT NULL COMMENT '其他常用扩展信息'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单支付';
@@ -17778,12 +17951,12 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_payment` (
 -- 表的结构 `qinggan_order_price`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_order_price` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID号',
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '订单ID号',
+CREATE TABLE `qinggan_order_price` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+  `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID号',
   `code` varchar(255) NOT NULL COMMENT '编码',
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '金额，-号表示优惠'
-) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='订单金额明细清单';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单金额明细清单';
 
 --
 -- 转存表中的数据 `qinggan_order_price`
@@ -17809,10 +17982,10 @@ INSERT INTO `qinggan_order_price` (`id`, `order_id`, `code`, `price`) VALUES
 -- 表的结构 `qinggan_order_product`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_order_product` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID号',
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '订单ID号',
-  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+CREATE TABLE `qinggan_order_product` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID号',
+  `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID号',
+  `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `parent_tid` int(11) NOT NULL DEFAULT '0' COMMENT '父级产品ID，用于区分购买的产品是主产品ID还是配件产品，捆绑销售用于区分是从哪个主产品进入的',
   `title` varchar(255) NOT NULL COMMENT '产品名称',
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '产品单价',
@@ -17823,19 +17996,19 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_product` (
   `volume` varchar(50) NOT NULL COMMENT '体积',
   `unit` varchar(50) NOT NULL COMMENT '单位',
   `note` varchar(255) NOT NULL COMMENT '备注',
-  `is_virtual` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0实物1虚拟或服务',
-  `price_total` decimal(10,4) unsigned NOT NULL DEFAULT '0.0000' COMMENT '总价格',
-  `discount` decimal(10,4) unsigned NOT NULL DEFAULT '0.0000' COMMENT '优惠价',
+  `is_virtual` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0实物1虚拟或服务',
+  `price_total` decimal(10,4) UNSIGNED NOT NULL DEFAULT '0.0000' COMMENT '总价格',
+  `discount` decimal(10,4) UNSIGNED NOT NULL DEFAULT '0.0000' COMMENT '优惠价',
   `discount_note` varchar(255) NOT NULL COMMENT '优惠说明'
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='订单的产品信息';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单的产品信息';
 
 --
 -- 转存表中的数据 `qinggan_order_product`
 --
 
 INSERT INTO `qinggan_order_product` (`id`, `order_id`, `tid`, `parent_tid`, `title`, `price`, `qty`, `thumb`, `ext`, `weight`, `volume`, `unit`, `note`, `is_virtual`, `price_total`, `discount`, `discount_note`) VALUES
-(1, 1, 2453, 0, '荣耀X40 GT 8GB+256GB 竞速黑 双卡 全网通版 骁龙888 144Hz高刷电竞屏 66W超级快充 满帧战神', '2269.0000', 1, 'res/202303/06/d5650c44585c8fe1.png', 'a:2:{i:0;a:3:{s:5:"title";s:6:"型号";s:7:"content";s:8:"12G+256G";s:3:"val";s:0:"";}i:1;a:3:{s:5:"title";s:6:"颜色";s:7:"content";s:9:"竞速黑";s:3:"val";s:0:"";}}', '0.1995', '0', '部', '', 0, '2269.0000', '0.0000', ''),
-(2, 2, 2455, 0, 'iQOO 11 12GB+256GB 传奇版', '4099.0000', 1, 'res/202303/07/993dd997bed2a7ce.png', 'a:2:{i:0;a:3:{s:5:"title";s:6:"型号";s:7:"content";s:7:"8G+256G";s:3:"val";s:0:"";}i:1;a:3:{s:5:"title";s:6:"颜色";s:7:"content";s:9:"赛道版";s:3:"val";s:0:"";}}', '0', '0', '部', '', 0, '4099.0000', '0.0000', ''),
+(1, 1, 2453, 0, '荣耀X40 GT 8GB+256GB 竞速黑 双卡 全网通版 骁龙888 144Hz高刷电竞屏 66W超级快充 满帧战神', '2269.0000', 1, 'res/202303/06/d5650c44585c8fe1.png', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"型号\";s:7:\"content\";s:8:\"12G+256G\";s:3:\"val\";s:0:\"\";}i:1;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:9:\"竞速黑\";s:3:\"val\";s:0:\"\";}}', '0.1995', '0', '部', '', 0, '2269.0000', '0.0000', ''),
+(2, 2, 2455, 0, 'iQOO 11 12GB+256GB 传奇版', '4099.0000', 1, 'res/202303/07/993dd997bed2a7ce.png', 'a:2:{i:0;a:3:{s:5:\"title\";s:6:\"型号\";s:7:\"content\";s:7:\"8G+256G\";s:3:\"val\";s:0:\"\";}i:1;a:3:{s:5:\"title\";s:6:\"颜色\";s:7:\"content\";s:9:\"赛道版\";s:3:\"val\";s:0:\"\";}}', '0', '0', '部', '', 0, '4099.0000', '0.0000', ''),
 (3, 3, 0, 0, '测试', '100.0000', 1, '', '', '0', '0', '', '', 1, '100.0000', '0.0000', ''),
 (4, 4, 0, 0, '测试', '10.0000', 1, '', '', '0', '0', '', '', 1, '10.0000', '0.0000', ''),
 (5, 5, 0, 0, '测试', '10.0000', 1, '', '', '0', '0', '', '', 1, '10.0000', '0.0000', '');
@@ -17846,19 +18019,19 @@ INSERT INTO `qinggan_order_product` (`id`, `order_id`, `tid`, `parent_tid`, `tit
 -- 表的结构 `qinggan_order_refund`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_order_refund` (
+CREATE TABLE `qinggan_order_refund` (
   `id` int(11) NOT NULL COMMENT '自增ID',
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '订单ID',
-  `order_payment_id` int(10) unsigned NOT NULL COMMENT 'order_payment 里的主键ID',
+  `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID',
+  `order_payment_id` int(10) UNSIGNED NOT NULL COMMENT 'order_payment 里的主键ID',
   `backtype` varchar(50) NOT NULL DEFAULT '_default' COMMENT '退回方式，使用_default表示原路退回',
   `sn` varchar(255) NOT NULL COMMENT '退款编号，系统生成必须是唯一的',
-  `price` decimal(15,4) unsigned NOT NULL COMMENT '退款金额',
-  `currency_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '货币ID',
-  `currency_rate` decimal(13,8) unsigned NOT NULL DEFAULT '0.00000000' COMMENT '汇率',
+  `price` decimal(15,4) UNSIGNED NOT NULL COMMENT '退款金额',
+  `currency_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '货币ID',
+  `currency_rate` decimal(13,8) UNSIGNED NOT NULL DEFAULT '0.00000000' COMMENT '汇率',
   `note` varchar(255) NOT NULL COMMENT '退款理由',
-  `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0未完成，1已完成',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '操作时间',
-  `admin_id` int(10) unsigned NOT NULL COMMENT '管理员操作ID',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未完成，1已完成',
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '操作时间',
+  `admin_id` int(10) UNSIGNED NOT NULL COMMENT '管理员操作ID',
   `ext` text NOT NULL COMMENT '扩展异步通知信息'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='退款记录';
 
@@ -17868,34 +18041,24 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_refund` (
 -- 表的结构 `qinggan_payment`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_payment` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID号',
-  `gid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '付款组',
+CREATE TABLE `qinggan_payment` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID号',
+  `gid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '付款组',
   `code` varchar(100) NOT NULL COMMENT '标识ID',
   `title` varchar(255) NOT NULL COMMENT '主题',
   `currency` varchar(30) NOT NULL COMMENT '可使用的货币ID',
   `logo1` varchar(255) NOT NULL COMMENT 'LOGO小图',
   `logo2` varchar(255) NOT NULL COMMENT 'LOGO中图',
   `logo3` varchar(255) NOT NULL COMMENT 'LOGO大图',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '状态0未使用1正在使用中',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态0未使用1正在使用中',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
   `note` text NOT NULL COMMENT '付款注意事项说明',
   `param` text NOT NULL COMMENT '参数',
   `wap` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0PC端1手机端',
-  `iframe` tinyint(1) unsigned NOT NULL COMMENT '0表示跳转支付1表示嵌入支付',
+  `iframe` tinyint(1) UNSIGNED NOT NULL COMMENT '0表示跳转支付1表示嵌入支付',
   `admin_note` varchar(255) NOT NULL COMMENT '管理员备注'
-) ENGINE=MyISAM AUTO_INCREMENT=46 DEFAULT CHARSET=utf8 COMMENT='支付方案';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='支付方案';
 
---
--- 转存表中的数据 `qinggan_payment`
---
-
-INSERT INTO `qinggan_payment` (`id`, `gid`, `code`, `title`, `currency`, `logo1`, `logo2`, `logo3`, `status`, `taxis`, `note`, `param`, `wap`, `iframe`, `admin_note`) VALUES
-(15, 1, 'alipay', '支付宝', 'CNY', '', '', '', 1, 10, '', 'a:6:{s:3:"pid";s:16:"2017122001016897";s:6:"pubkey";s:392:"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqnkpeLRPSw5v5cswQR5wWfxxfYnHFKs8LVXVw1GJHsEdCOihx7h4+tMz/p/oHhdYzHbtdCTaUd9YUrEa7EUbKWSCauO9aMrFglqYAs+JM7BcdDjQYZD17w5I0OdaCfJ0HsHqpkHPPiucyoFQNgJAx+2nchPNHlWB23Sw7PDIG2X3j9Hk2dm8JeoC5gDJAMiC0o5O2W8wlSNbpYEoS4uKTGL24E9QozRg+hYMYjCJF1cJUW+G76KkH47sajy1Fn4nSFIVjHqgaAG1aXDjIBo22QcEIQby8FUxQPNhIDmykr5MwKPHABVfyMO5LzafgTp2VZIIrzPBYq7qCBpRCskfvQIDAQAB";s:6:"prikey";s:1624:"MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCGH0TcEI83xvkKurV6f4l4KqrqUfzyPo4X1UDhlvt5QKAlY9o3ieocnnBy7LKKOCfJL7CyCbzi30MOt/UN+macoz6IMl6sm9II0tRu+/u5e3BQYjOBgv6+LAXMs+K37u2flBduT5HXUE5Bx+kHcv8P0hO4xskb+WVVgahCi20LtC+q6KZ+7ZFNvrAvx5LU1zlCtMrmLe2uQX6kYtBkNBUV6h6Xk8JrOMvHR0WAnZgAXKelHA89PlwvFlLwb57YLD4r6ttyuGMZdaeI7ryFeC4/NL9w1lo6Fi2SOmWsKDOf0r1YwAmBivWrmnp5Ap604YIepyGi16oqvJgcLbG/oAYZAgMBAAECggEAM776rUECUI3G5fnVLLbqDd/AY3lQcxHpdo6DYsYCrexeHS7iMU1XcsU6M0zZMXSq/PcWYApbwthKofIdbNAwKLze0mNEnancpiTZaxxzKUPTuF+66Xvl1u9bKXg5v6dCLLBRPfEbHoxQNRbw9DvM5oixrTecvdtB2nSUu1/ZqYrDYEb4FF9D/L0FLgVWRJQVwdvAzuB1LYM5fduk8UMvOeDnWwq+GN8I2GljFndeGY6BWYRneYdlBsPIlIDJKACdF0jwjCZH6WGoFAjt4dC3bUV2yEQOCb0f64M9aQXTrSZJOFrHrJus0kZXfmBgQPkLO6GgRqHYKu4URv38YxzAUQKBgQC6/geM03hDQYcDHO68mAQk9uHquVjXT2lCbp/xOTvYhjPYe+5ikeSg1RVFaRjTlvTkikSz4qIV/NeFmcP1xfwsmrnX9SR8IfkHeIqqobzY5JhzVDzNnhj5YXdip5WOUP3eT+M12LhY801va2hG6dn7sMfO/gEweUcKSsCvLqK+5QKBgQC3nl4GGwmoHa6rzCl/GKAmNQcz8IR+w+yldETc/fRambGLFlmPZdtLE7SP15Zg1lb0zmIF7vzL2/72kB0cG9GOAmd5tt/dxuxvu38IUHa04SWlldp5oLnJqc9DaFPyf3sDB/i9bpzqzRr1j77dtRYfZ53mE05NQjpiQutxIsrDJQKBgC/U4yGGxnCNxndpYzgiuoyqCkf8eVk6Gva/TXJq7YAJdCGgMe5M22q4luRWad9V8faz17cb9dIiBw9JsfKgXk0alwdC0b5fAlCC6RWUobXpY4W8uoDuO/0ujVdS/tKUrRu826Xedelq8xfZJadeEkBri/DK0IsRurZLQNaO21pxAoGAaXaytnsNHtx9mPtY0kFIqulGS9TXpR/PanDPpMbQdMFWMncR1cVBIWweB4hiPRifNVjdAF92H3kqhl/b+GsZ/6Dt4gDhsDYzUzG0Ewh0RgwTXXom1Dk2vNelzie8H8qM0v7fJZ7EzjAkTerUS+9Y14ziKmXoUYO6mPmq1X6QS2kCgYEAnyGa5/MEcl2PxW+Sra2v77LK7lX6XeWzsflIo4V+R6WGj1ADVM9c99bbal0eg/PeKzC0Utomnn03wWepFNGtDblp6Gb5OERDWx+8u38LUz4drto5i58t/YlesNOIZwj5vHd8MEO6ffR0Rw30RYMinntMBG9iR8+l0xYoOdo+x88=";s:5:"email";s:15:"admin@phpok.com";s:7:"envtype";s:7:"product";s:5:"ptype";s:12:"pagepay_link";}', 0, 0, ''),
-(19, 1, 'wxpay', '微信支付', 'CNY', '', '', '', 1, 20, '', 'a:11:{s:6:"mch_id";s:10:"1283067101";s:7:"app_key";s:6:"******";s:5:"appid";s:18:"wxd61676fe9d7468ed";s:10:"app_secret";s:32:"5239321d1305a4786f23cd106f5ab479";s:11:"device_info";s:3:"WEB";s:10:"trade_type";s:6:"native";s:8:"pem_cert";s:0:"";s:7:"pem_key";s:0:"";s:6:"pem_ca";s:0:"";s:10:"proxy_host";s:7:"0.0.0.0";s:10:"proxy_port";s:0:"";}', 0, 0, ''),
-(40, 10, 'alipay', '支付宝', 'CNY', '', '', '', 1, 10, '', 'a:5:{s:3:"pid";s:16:"2088802450390810";s:3:"key";s:5:"*****";s:5:"email";s:15:"admin@phpok.com";s:7:"envtype";s:7:"product";s:5:"ptype";s:25:"create_direct_pay_by_user";}', 1, 0, ''),
-(42, 10, 'wxpay', '微信支付', 'CNY', '', '', '', 1, 20, '', 'a:11:{s:6:"mch_id";s:10:"1283067101";s:7:"app_key";s:32:"a6d5b10386897dab7f605228a1d04c43";s:5:"appid";s:18:"wxcc4d79b75843fe21";s:10:"app_secret";s:32:"262daad5891008396fd0896d759839d9";s:11:"device_info";s:3:"web";s:10:"trade_type";s:11:"miniprogram";s:8:"pem_cert";s:0:"";s:7:"pem_key";s:0:"";s:6:"pem_ca";s:0:"";s:10:"proxy_host";s:7:"0.0.0.0";s:10:"proxy_port";s:0:"";}', 1, 0, '小程序端'),
-(45, 1, 'paypal', 'Paypal', 'USD', '', '', '', 1, 255, '', 'a:3:{s:2:"at";s:59:"t3ZtVLsHFKvtyCvU1B27X6gcVhxqM68Yr7b2Ub9gSgi8zxfIqlSQLs7fxf0";s:5:"payid";s:24:"suxiangkun-biz@gmail.com";s:6:"action";s:45:"https://www.sandbox.paypal.com/cgi-bin/webscr";}', 0, 0, '');
 
 -- --------------------------------------------------------
 
@@ -17903,15 +18066,15 @@ INSERT INTO `qinggan_payment` (`id`, `gid`, `code`, `title`, `currency`, `logo1`
 -- 表的结构 `qinggan_payment_group`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_payment_group` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID',
+CREATE TABLE `qinggan_payment_group` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
   `site_id` int(11) NOT NULL DEFAULT '0' COMMENT '站点ID，为0表示全部',
   `title` varchar(255) NOT NULL COMMENT '付款组名称',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0不启用1启用',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
-  `is_default` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '1默认组0普通组',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不启用1启用',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
+  `is_default` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1默认组0普通组',
   `is_wap` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0是PC端，1是手机端'
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='付款组管理';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='付款组管理';
 
 --
 -- 转存表中的数据 `qinggan_payment_group`
@@ -17927,28 +18090,36 @@ INSERT INTO `qinggan_payment_group` (`id`, `site_id`, `title`, `status`, `taxis`
 -- 表的结构 `qinggan_payment_log`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_payment_log` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
+CREATE TABLE `qinggan_payment_log` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
   `sn` varchar(255) NOT NULL COMMENT '支付编号',
   `type` varchar(100) NOT NULL COMMENT 'order订单,recharge充值other其他',
   `payment_id` varchar(255) NOT NULL DEFAULT '0' COMMENT '支付方式，为数字时表示payment表中的主要支付方式，为字母数字混合表示财富付款',
   `title` varchar(255) NOT NULL COMMENT '主题',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '记录时间',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID',
-  `price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '价格',
-  `currency_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '货币ID',
-  `currency_rate` decimal(13,8) unsigned NOT NULL DEFAULT '0.00000000' COMMENT '货币汇率',
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '记录时间',
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID',
+  `price` decimal(10,2) UNSIGNED NOT NULL DEFAULT '0.00' COMMENT '价格',
+  `currency_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '货币ID',
+  `currency_rate` decimal(13,8) UNSIGNED NOT NULL DEFAULT '0.00000000' COMMENT '货币汇率',
   `content` varchar(255) NOT NULL COMMENT '内容',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未支付成功1已支付成功',
   `ext` text NOT NULL COMMENT '扩展'
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='支付日志';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='支付日志';
 
 --
 -- 转存表中的数据 `qinggan_payment_log`
 --
 
 INSERT INTO `qinggan_payment_log` (`id`, `sn`, `type`, `payment_id`, `title`, `dateline`, `user_id`, `price`, `currency_id`, `currency_rate`, `content`, `status`, `ext`) VALUES
-(1, 'P2023030753U00023001', 'order', '15', '订单：P2023030753U00023001', 1678179408, 23, '2275.00', 1, '6.16989994', '订单：P2023030753U00023001', 0, '');
+(1, 'P2023030753U00023001', 'order', '15', '订单：P2023030753U00023001', 1678179408, 23, '2275.00', 1, '6.16989994', '订单：P2023030753U00023001', 0, ''),
+(2, 'P2023050918U00023001', 'order', '15', '订单：P2023050918U00023001', 1685173796, 23, '4105.00', 1, '6.16989994', '订单：P2023050918U00023001', 0, ''),
+(3, 'P2023050918U00023001', 'order', '19', '订单：P2023050918U00023001', 1685173809, 23, '4105.00', 1, '6.16989994', '订单：P2023050918U00023001', 0, ''),
+(4, 'P2023050918U00023001', 'order', '45', '订单：P2023050918U00023001', 1685173818, 23, '4105.00', 1, '6.16989994', '订单：P2023050918U00023001', 0, ''),
+(5, 'CZ6471b880c1a1b', 'recharge', '15', '在线充值', 1685174400, 23, '1.00', 1, '6.16989994', '充值编号：CZ6471b880c1a1b', 0, 'a:1:{s:4:\"goal\";s:1:\"6\";}'),
+(6, 'CZ6471b8878fa72', 'recharge', '19', '在线充值', 1685174407, 23, '1.00', 1, '6.16989994', '充值编号：CZ6471b8878fa72', 0, 'a:1:{s:4:\"goal\";s:1:\"6\";}'),
+(7, 'CZ6471b9050b55a', 'recharge', '19', '在线充值', 1685174532, 23, '1.00', 1, '6.16989994', '充值编号：CZ6471b9050b55a', 1, 'a:11:{s:4:\"goal\";s:1:\"6\";s:6:\"openid\";s:28:\"oNcNd5hQykFMQTfZdcFvM-VxAdME\";s:10:\"trade_type\";s:6:\"NATIVE\";s:9:\"bank_type\";s:6:\"OTHERS\";s:9:\"total_fee\";s:3:\"100\";s:8:\"fee_type\";s:3:\"CNY\";s:8:\"cash_fee\";s:3:\"100\";s:13:\"cash_fee_type\";s:3:\"CNY\";s:14:\"transaction_id\";s:28:\"4200001807202305278546079151\";s:8:\"time_end\";s:14:\"20230527160315\";s:12:\"phpok_status\";b:1;}'),
+(8, 'CZ6471bb40698ba', 'recharge', '19', '在线充值', 1685175104, 23, '0.30', 1, '6.16989994', '充值编号：CZ6471bb40698ba', 1, 'a:11:{s:4:\"goal\";s:1:\"6\";s:6:\"openid\";s:28:\"oNcNd5hQykFMQTfZdcFvM-VxAdME\";s:10:\"trade_type\";s:6:\"NATIVE\";s:9:\"bank_type\";s:6:\"OTHERS\";s:9:\"total_fee\";s:2:\"30\";s:8:\"fee_type\";s:3:\"CNY\";s:8:\"cash_fee\";s:2:\"30\";s:13:\"cash_fee_type\";s:3:\"CNY\";s:14:\"transaction_id\";s:28:\"4200001836202305277512978460\";s:8:\"time_end\";s:14:\"20230527161241\";s:12:\"phpok_status\";b:1;}'),
+(9, 'P2023050918U00023001', 'order', '19', '订单：P2023050918U00023001', 1685175277, 23, '4105.00', 1, '6.16989994', '订单：P2023050918U00023001', 0, '');
 
 -- --------------------------------------------------------
 
@@ -17956,47 +18127,47 @@ INSERT INTO `qinggan_payment_log` (`id`, `sn`, `type`, `payment_id`, `title`, `d
 -- 表的结构 `qinggan_phpok`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_phpok` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID号',
+CREATE TABLE `qinggan_phpok` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID号',
   `title` varchar(255) NOT NULL COMMENT '标题',
-  `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `pid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
   `type_id` varchar(255) NOT NULL COMMENT '调用类型',
   `identifier` varchar(100) NOT NULL COMMENT '标识串，同一个站点中只能唯一',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '站点ID',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '状态',
-  `cateid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态',
+  `cateid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
   `ext` text NOT NULL COMMENT '扩展属性',
-  `is_api` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0不支持API调用，1支持',
+  `is_api` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不支持API调用，1支持',
   `sqlinfo` text NOT NULL COMMENT 'SQL语句'
-) ENGINE=MyISAM AUTO_INCREMENT=355 DEFAULT CHARSET=utf8 COMMENT='数据调用中心';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='数据调用中心';
 
 --
 -- 转存表中的数据 `qinggan_phpok`
 --
 
 INSERT INTO `qinggan_phpok` (`id`, `title`, `pid`, `type_id`, `identifier`, `site_id`, `status`, `cateid`, `ext`, `is_api`, `sqlinfo`) VALUES
-(18, '网站首页图片播放', 41, 'arclist', 'picplayer', 1, 1, 0, 'a:15:{s:5:"psize";s:1:"5";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:1:"*";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 0, ''),
-(19, '手机版图片导图', 41, 'arclist', 'mobile-picplayer', 1, 1, 0, 'a:15:{s:5:"psize";s:2:"80";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:11:"ext.mbanner";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:0:"";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";s:1:"1";s:8:"title_id";s:0:"";}', 0, ''),
-(20, '公司简介', 87, 'arc', 'aboutus', 1, 1, 0, 'a:15:{s:5:"psize";i:0;s:6:"offset";i:0;s:7:"is_list";i:0;s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:1:"*";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:7:"aboutus";}', 1, ''),
-(21, '产品分类', 45, 'catelist', 'products_cate', 1, 1, 70, 'a:20:{s:5:"psize";b:0;s:6:"offset";b:0;s:7:"is_list";b:0;s:7:"in_text";b:0;s:4:"attr";b:0;s:11:"fields_need";b:0;s:3:"tag";b:0;s:8:"keywords";b:0;s:7:"orderby";b:0;s:4:"cate";b:0;s:8:"cate_ext";b:0;s:12:"catelist_ext";b:0;s:11:"project_ext";b:0;s:11:"sublist_ext";b:0;s:10:"parent_ext";b:0;s:13:"fields_format";b:0;s:8:"user_ext";b:0;s:4:"user";b:0;s:12:"userlist_ext";b:0;s:6:"in_sub";b:0;}', 0, ''),
-(22, '最新产品', 45, 'arclist', 'new_products', 1, 1, 70, 'a:15:{s:5:"psize";s:1:"8";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:9:"ext.thumb";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:5:"thumb";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 1, ''),
-(55, '友情链接', 389, 'arclist', 'link', 1, 1, 0, 'a:15:{s:5:"psize";s:2:"30";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:7:"linkurl";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:1:"*";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 0, ''),
-(91, '新闻中心', 43, 'arclist', 'news', 1, 1, 7, 'a:15:{s:5:"psize";s:1:"5";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:10:"note,thumb";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 0, ''),
-(92, '图集相册', 144, 'arclist', 'photo', 1, 1, 0, 'a:23:{s:5:"psize";s:2:"10";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:7:"in_text";i:0;s:4:"attr";b:0;s:11:"fields_need";s:9:"ext.thumb";s:3:"tag";b:0;s:8:"keywords";b:0;s:7:"orderby";b:0;s:4:"cate";b:0;s:8:"cate_ext";i:0;s:12:"catelist_ext";i:0;s:11:"project_ext";i:0;s:11:"sublist_ext";i:0;s:10:"parent_ext";i:0;s:13:"fields_format";i:0;s:8:"user_ext";i:0;s:4:"user";b:0;s:12:"userlist_ext";i:0;s:6:"in_sub";i:0;s:10:"in_project";s:1:"1";s:7:"in_cate";i:0;s:8:"title_id";b:0;}', 0, ''),
-(93, '图片滚动新闻', 43, 'arclist', 'picnews', 1, 1, 7, 'a:23:{s:5:"psize";s:2:"10";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:7:"in_text";i:0;s:4:"attr";b:0;s:11:"fields_need";s:9:"ext.thumb";s:3:"tag";b:0;s:8:"keywords";b:0;s:7:"orderby";b:0;s:4:"cate";b:0;s:8:"cate_ext";i:0;s:12:"catelist_ext";i:0;s:11:"project_ext";i:0;s:11:"sublist_ext";i:0;s:10:"parent_ext";i:0;s:13:"fields_format";i:0;s:8:"user_ext";i:0;s:4:"user";b:0;s:12:"userlist_ext";i:0;s:6:"in_sub";i:0;s:10:"in_project";i:0;s:7:"in_cate";i:0;s:8:"title_id";b:0;}', 0, ''),
-(96, '在线客服', 148, 'arclist', 'kfonline', 1, 1, 0, 'a:15:{s:5:"psize";i:0;s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:1:"*";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:21:"after-sale-protection";}', 0, ''),
-(97, '图集相册', 144, 'arclist', 'tujixiangce', 1, 1, 154, 'a:13:{s:5:"psize";s:1:"6";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:9:"ext.thumb";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:4:"cate";s:0:"";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 0, ''),
-(98, '产品展示', 45, 'catelist', 'catelist', 1, 1, 70, 'a:15:{s:5:"psize";i:0;s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:1:"*";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 1, ''),
-(99, '下载中心', 151, 'arclist', 'xiazaizhongxin', 1, 1, 197, 'a:13:{s:5:"psize";s:2:"10";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:9:"ext.dfile";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:4:"cate";s:0:"";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 0, ''),
-(104, '资讯中心', 43, 'arclist', 'titlelist', 1, 1, 7, 'a:15:{s:5:"psize";s:2:"10";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:10:"thumb,note";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 1, ''),
-(105, '资讯中心', 43, 'catelist', 'news_catelist', 1, 1, 7, 'a:13:{s:5:"psize";i:0;s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:4:"cate";s:0:"";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 0, ''),
-(280, '联系我们', 87, 'arc', 'contactus', 1, 1, 0, 'a:13:{s:5:"psize";i:0;s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:4:"cate";s:0:"";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:6:"in_sub";i:0;s:8:"title_id";s:9:"contactus";}', 0, ''),
-(282, '热门产品', 45, 'arclist', 'hot_products', 1, 1, 70, 'a:15:{s:5:"psize";s:1:"5";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:9:"ext.thumb";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:11:"l.hits DESC";s:6:"fields";s:5:"thumb";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 0, ''),
-(290, '图片轮播【小程序】', 457, 'arclist', 'm_picplayer', 1, 1, 0, 'a:15:{s:5:"psize";s:1:"5";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:10:"ext.banner";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:0:"";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 1, ''),
-(351, '新闻+图片', 43, 'arclist', 'news-pictures', 1, 1, 7, 'a:15:{s:5:"psize";s:1:"4";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:9:"ext.thumb";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:5:"thumb";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 0, ''),
-(352, '图片链（小程序）', 458, 'arclist', 'picture-link-miniprogram', 1, 1, 0, 'a:15:{s:5:"psize";s:1:"8";s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:9:"ext.thumb";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:1:"*";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 1, ''),
-(353, '滚动公告（小程序）', 459, 'project', 'm-notice', 1, 1, 0, 'a:15:{s:5:"psize";i:0;s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:1:"*";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:0:"";}', 1, ''),
-(354, '售后服务', 0, 'arc', 'after-sale-protection', 1, 1, 0, 'a:19:{s:5:"psize";i:0;s:6:"offset";i:0;s:7:"is_list";s:1:"1";s:4:"attr";s:0:"";s:11:"fields_need";s:0:"";s:3:"tag";s:0:"";s:8:"keywords";s:0:"";s:7:"orderby";s:0:"";s:6:"fields";s:1:"*";s:13:"fields_format";i:0;s:4:"user";s:0:"";s:8:"user_ext";i:0;s:9:"usergroup";i:0;s:6:"in_sub";i:0;s:8:"title_id";s:21:"after-sale-protection";s:4:"menu";s:0:"";s:9:"option_id";i:0;s:13:"keywords_sign";i:0;s:13:"keywords_type";s:3:"hot";}', 0, '');
+(18, '网站首页图片播放', 41, 'arclist', 'picplayer', 1, 1, 0, 'a:15:{s:5:\"psize\";s:1:\"5\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:1:\"*\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
+(19, '手机版图片导图', 41, 'arclist', 'mobile-picplayer', 1, 1, 0, 'a:15:{s:5:\"psize\";s:2:\"80\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:11:\"ext.mbanner\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:0:\"\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";s:1:\"1\";s:8:\"title_id\";s:0:\"\";}', 0, ''),
+(20, '公司简介', 87, 'arc', 'aboutus', 1, 1, 0, 'a:15:{s:5:\"psize\";i:0;s:6:\"offset\";i:0;s:7:\"is_list\";i:0;s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:1:\"*\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:7:\"aboutus\";}', 1, ''),
+(21, '产品分类', 45, 'catelist', 'products_cate', 1, 1, 70, 'a:20:{s:5:\"psize\";b:0;s:6:\"offset\";b:0;s:7:\"is_list\";b:0;s:7:\"in_text\";b:0;s:4:\"attr\";b:0;s:11:\"fields_need\";b:0;s:3:\"tag\";b:0;s:8:\"keywords\";b:0;s:7:\"orderby\";b:0;s:4:\"cate\";b:0;s:8:\"cate_ext\";b:0;s:12:\"catelist_ext\";b:0;s:11:\"project_ext\";b:0;s:11:\"sublist_ext\";b:0;s:10:\"parent_ext\";b:0;s:13:\"fields_format\";b:0;s:8:\"user_ext\";b:0;s:4:\"user\";b:0;s:12:\"userlist_ext\";b:0;s:6:\"in_sub\";b:0;}', 0, ''),
+(22, '最新产品', 45, 'arclist', 'new_products', 1, 1, 70, 'a:15:{s:5:\"psize\";s:1:\"8\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:9:\"ext.thumb\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:5:\"thumb\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 1, ''),
+(55, '友情链接', 389, 'arclist', 'link', 1, 1, 0, 'a:15:{s:5:\"psize\";s:2:\"30\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:7:\"linkurl\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:1:\"*\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
+(91, '新闻中心', 43, 'arclist', 'news', 1, 1, 7, 'a:15:{s:5:\"psize\";s:1:\"5\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:10:\"note,thumb\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
+(92, '图集相册', 144, 'arclist', 'photo', 1, 1, 0, 'a:23:{s:5:\"psize\";s:2:\"10\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:7:\"in_text\";i:0;s:4:\"attr\";b:0;s:11:\"fields_need\";s:9:\"ext.thumb\";s:3:\"tag\";b:0;s:8:\"keywords\";b:0;s:7:\"orderby\";b:0;s:4:\"cate\";b:0;s:8:\"cate_ext\";i:0;s:12:\"catelist_ext\";i:0;s:11:\"project_ext\";i:0;s:11:\"sublist_ext\";i:0;s:10:\"parent_ext\";i:0;s:13:\"fields_format\";i:0;s:8:\"user_ext\";i:0;s:4:\"user\";b:0;s:12:\"userlist_ext\";i:0;s:6:\"in_sub\";i:0;s:10:\"in_project\";s:1:\"1\";s:7:\"in_cate\";i:0;s:8:\"title_id\";b:0;}', 0, ''),
+(93, '图片滚动新闻', 43, 'arclist', 'picnews', 1, 1, 7, 'a:23:{s:5:\"psize\";s:2:\"10\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:7:\"in_text\";i:0;s:4:\"attr\";b:0;s:11:\"fields_need\";s:9:\"ext.thumb\";s:3:\"tag\";b:0;s:8:\"keywords\";b:0;s:7:\"orderby\";b:0;s:4:\"cate\";b:0;s:8:\"cate_ext\";i:0;s:12:\"catelist_ext\";i:0;s:11:\"project_ext\";i:0;s:11:\"sublist_ext\";i:0;s:10:\"parent_ext\";i:0;s:13:\"fields_format\";i:0;s:8:\"user_ext\";i:0;s:4:\"user\";b:0;s:12:\"userlist_ext\";i:0;s:6:\"in_sub\";i:0;s:10:\"in_project\";i:0;s:7:\"in_cate\";i:0;s:8:\"title_id\";b:0;}', 0, ''),
+(96, '在线客服', 148, 'arclist', 'kfonline', 1, 1, 0, 'a:15:{s:5:\"psize\";i:0;s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:1:\"*\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:21:\"after-sale-protection\";}', 0, ''),
+(97, '图集相册', 144, 'arclist', 'tujixiangce', 1, 1, 154, 'a:13:{s:5:\"psize\";s:1:\"6\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:9:\"ext.thumb\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:4:\"cate\";s:0:\"\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
+(98, '产品展示', 45, 'catelist', 'catelist', 1, 1, 70, 'a:15:{s:5:\"psize\";i:0;s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:1:\"*\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 1, ''),
+(99, '下载中心', 151, 'arclist', 'xiazaizhongxin', 1, 1, 197, 'a:13:{s:5:\"psize\";s:2:\"10\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:9:\"ext.dfile\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:4:\"cate\";s:0:\"\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
+(104, '资讯中心', 43, 'arclist', 'titlelist', 1, 1, 7, 'a:15:{s:5:\"psize\";s:2:\"10\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:10:\"thumb,note\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 1, ''),
+(105, '资讯中心', 43, 'catelist', 'news_catelist', 1, 1, 7, 'a:13:{s:5:\"psize\";i:0;s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:4:\"cate\";s:0:\"\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
+(280, '联系我们', 87, 'arc', 'contactus', 1, 1, 0, 'a:13:{s:5:\"psize\";i:0;s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:4:\"cate\";s:0:\"\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:6:\"in_sub\";i:0;s:8:\"title_id\";s:9:\"contactus\";}', 0, ''),
+(282, '热门产品', 45, 'arclist', 'hot_products', 1, 1, 70, 'a:15:{s:5:\"psize\";s:1:\"5\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:9:\"ext.thumb\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:11:\"l.hits DESC\";s:6:\"fields\";s:5:\"thumb\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
+(290, '图片轮播【小程序】', 457, 'arclist', 'm_picplayer', 1, 1, 0, 'a:15:{s:5:\"psize\";s:1:\"5\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:10:\"ext.banner\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:0:\"\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 1, ''),
+(351, '新闻+图片', 43, 'arclist', 'news-pictures', 1, 1, 7, 'a:15:{s:5:\"psize\";s:1:\"4\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:9:\"ext.thumb\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:5:\"thumb\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 0, ''),
+(352, '图片链（小程序）', 458, 'arclist', 'picture-link-miniprogram', 1, 1, 0, 'a:15:{s:5:\"psize\";s:1:\"8\";s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:9:\"ext.thumb\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:1:\"*\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 1, ''),
+(353, '滚动公告（小程序）', 459, 'project', 'm-notice', 1, 1, 0, 'a:15:{s:5:\"psize\";i:0;s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:1:\"*\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:0:\"\";}', 1, ''),
+(354, '售后服务', 0, 'arc', 'after-sale-protection', 1, 1, 0, 'a:19:{s:5:\"psize\";i:0;s:6:\"offset\";i:0;s:7:\"is_list\";s:1:\"1\";s:4:\"attr\";s:0:\"\";s:11:\"fields_need\";s:0:\"\";s:3:\"tag\";s:0:\"\";s:8:\"keywords\";s:0:\"\";s:7:\"orderby\";s:0:\"\";s:6:\"fields\";s:1:\"*\";s:13:\"fields_format\";i:0;s:4:\"user\";s:0:\"\";s:8:\"user_ext\";i:0;s:9:\"usergroup\";i:0;s:6:\"in_sub\";i:0;s:8:\"title_id\";s:21:\"after-sale-protection\";s:4:\"menu\";s:0:\"\";s:9:\"option_id\";i:0;s:13:\"keywords_sign\";i:0;s:13:\"keywords_type\";s:3:\"hot\";}', 0, '');
 
 -- --------------------------------------------------------
 
@@ -18004,18 +18175,25 @@ INSERT INTO `qinggan_phpok` (`id`, `title`, `pid`, `type_id`, `identifier`, `sit
 -- 表的结构 `qinggan_plugins`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_plugins` (
+CREATE TABLE `qinggan_plugins` (
   `id` varchar(100) NOT NULL COMMENT '插件ID，仅限字母，数字及下划线',
-  `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `pid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
   `pids` varchar(255) NOT NULL COMMENT '关联多个项目，用英文逗号隔开',
   `title` varchar(255) NOT NULL COMMENT '插件名称',
   `author` varchar(255) NOT NULL COMMENT '开发者',
   `version` varchar(50) NOT NULL COMMENT '插件版本号',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0禁用1使用',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '值越小越往前靠',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0禁用1使用',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '值越小越往前靠',
   `note` varchar(255) NOT NULL COMMENT '摘要说明',
   `param` text NOT NULL COMMENT '参数'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='插件管理器';
+
+--
+-- 转存表中的数据 `qinggan_plugins`
+--
+
+INSERT INTO `qinggan_plugins` (`id`, `pid`, `pids`, `title`, `author`, `version`, `status`, `taxis`, `note`, `param`) VALUES
+('chatgpt', 463, '0', 'ChatGPT', 'phpok.com', '1.0', 1, 10, '基于OpenAI接口实现ChatGPT互动', 'a:2:{s:6:\"server\";s:15:\"openai.keyi.org\";s:2:\"sk\";s:51:\"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\";}');
 
 -- --------------------------------------------------------
 
@@ -18023,14 +18201,14 @@ CREATE TABLE IF NOT EXISTS `qinggan_plugins` (
 -- 表的结构 `qinggan_popedom`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_popedom` (
-  `id` int(10) unsigned NOT NULL COMMENT '权限ID，即自增ID',
-  `gid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '所属组ID，对应sysmenu表中的ID',
-  `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID，仅在list中有效',
+CREATE TABLE `qinggan_popedom` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '权限ID，即自增ID',
+  `gid` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属组ID，对应sysmenu表中的ID',
+  `pid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID，仅在list中有效',
   `title` varchar(255) NOT NULL COMMENT '名称，如：添加，修改等',
   `identifier` varchar(255) NOT NULL COMMENT '字符串，如add，modify等',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序'
-) ENGINE=MyISAM AUTO_INCREMENT=2052 DEFAULT CHARSET=utf8 COMMENT='权限明细';
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='权限明细';
 
 --
 -- 转存表中的数据 `qinggan_popedom`
@@ -18787,73 +18965,73 @@ INSERT INTO `qinggan_popedom` (`id`, `gid`, `pid`, `title`, `identifier`, `taxis
 -- 表的结构 `qinggan_project`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_project` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID，也是应用ID',
-  `parent_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '上一级ID',
-  `site_id` mediumint(8) unsigned NOT NULL COMMENT '网站ID',
-  `module` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '指定模型ID，为0表页面空白',
-  `cate` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '绑定根分类ID',
+CREATE TABLE `qinggan_project` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID，也是应用ID',
+  `parent_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '上一级ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL COMMENT '网站ID',
+  `module` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '指定模型ID，为0表页面空白',
+  `cate` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '绑定根分类ID',
   `title` varchar(255) NOT NULL COMMENT '名称',
   `nick_title` varchar(255) NOT NULL COMMENT '后台别称',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0不使用1使用',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不使用1使用',
   `tpl_index` varchar(255) NOT NULL COMMENT '封面页',
   `tpl_list` varchar(255) NOT NULL COMMENT '列表页',
   `tpl_content` varchar(255) NOT NULL COMMENT '详细页',
-  `is_identifier` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否自定义标识',
+  `is_identifier` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否自定义标识',
   `ico` varchar(255) NOT NULL COMMENT '图标',
   `orderby` text NOT NULL COMMENT '排序',
   `alias_title` varchar(255) NOT NULL COMMENT '主题别名',
   `alias_note` varchar(255) NOT NULL COMMENT '主题备注',
-  `psize` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '0表示不限制，每页显示数量',
-  `uid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示管理员维护',
+  `psize` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0表示不限制，每页显示数量',
+  `uid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID号，为0表示管理员维护',
   `identifier` varchar(255) NOT NULL COMMENT '标识',
   `seo_title` varchar(255) NOT NULL COMMENT 'SEO标题',
   `seo_keywords` varchar(255) NOT NULL COMMENT 'SEO关键字',
   `seo_desc` varchar(255) NOT NULL COMMENT 'SEO描述',
-  `subtopics` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否启用子主题功能',
-  `is_search` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否支持搜索',
-  `is_tag` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '必填Tag',
-  `is_biz` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0不启用电商，1启用电商',
-  `is_userid` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否绑定会员',
-  `is_tpl_content` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否自定义内容模板',
-  `is_seo` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否默认使用seo',
-  `currency_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '默认货币ID',
+  `subtopics` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否启用子主题功能',
+  `is_search` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否支持搜索',
+  `is_tag` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '必填Tag',
+  `is_biz` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不启用电商，1启用电商',
+  `is_userid` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否绑定会员',
+  `is_tpl_content` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否自定义内容模板',
+  `is_seo` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否默认使用seo',
+  `currency_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '默认货币ID',
   `admin_note` text NOT NULL COMMENT '管理员备注，给编辑人员使用的',
-  `hidden` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0显示1隐藏',
-  `post_status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '发布模式，0不启用1启用',
-  `comment_status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '启用评论功能',
+  `hidden` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0显示1隐藏',
+  `post_status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '发布模式，0不启用1启用',
+  `comment_status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '启用评论功能',
   `post_tpl` varchar(255) NOT NULL COMMENT '发布页模板',
   `etpl_admin` varchar(255) NOT NULL COMMENT '通知管理员邮件模板',
   `etpl_user` varchar(255) NOT NULL COMMENT '发布邮件通知会员模板',
   `etpl_comment_admin` varchar(255) NOT NULL COMMENT '评论邮件通知管理员模板',
   `etpl_comment_user` varchar(255) NOT NULL COMMENT '评论邮件通知会员',
-  `is_attr` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '1启用主题属性0不启用',
+  `is_attr` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1启用主题属性0不启用',
   `tag` varchar(255) NOT NULL COMMENT '自身Tag设置',
-  `cate_multiple` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0分类单选1分类支持多选',
-  `biz_attr` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '产品属性，0不使用1使用',
-  `freight` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '运费模板ID',
+  `cate_multiple` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0分类单选1分类支持多选',
+  `biz_attr` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '产品属性，0不使用1使用',
+  `freight` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '运费模板ID',
   `list_fields` varchar(255) NOT NULL COMMENT '列表读取长度，如为空读全部',
   `style` varchar(255) NOT NULL COMMENT 'CSS样式',
   `is_front` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否直接访问前台',
-  `is_api` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '0接口不可访问，1可访问',
-  `psize_api` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'API接口读取的数量',
-  `limit_times` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发布时间间隔限制，0表示不限制',
-  `limit_similar` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '相似度值限制，0表示不限制',
-  `is_stock` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1启用库存，0禁用库存',
-  `world_location` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '产品全球价格设置',
-  `biz_service` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1服务0实物',
+  `is_api` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0接口不可访问，1可访问',
+  `psize_api` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'API接口读取的数量',
+  `limit_times` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '发布时间间隔限制，0表示不限制',
+  `limit_similar` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '相似度值限制，0表示不限制',
+  `is_stock` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1启用库存，0禁用库存',
+  `world_location` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '产品全球价格设置',
+  `biz_service` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1服务0实物',
   `group_id` varchar(255) NOT NULL COMMENT '项目在前台显示的组标识',
-  `filter_status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0不使用筛选1使用',
+  `filter_status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不使用筛选1使用',
   `filter_cate` varchar(255) NOT NULL COMMENT '筛选分类名称，留空不使用',
-  `filter_price` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0不使用，1使用',
+  `filter_price` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不使用，1使用',
   `filter_price_info` text NOT NULL COMMENT '筛选价格内容设定',
-  `filter_cate_status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0不启用筛选分类，1启用',
+  `filter_cate_status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不启用筛选分类，1启用',
   `filter_price_title` varchar(255) NOT NULL COMMENT '价格标题，留空使用价格',
   `user_alias` varchar(100) NOT NULL COMMENT '用户别名',
   `user_note` varchar(255) NOT NULL COMMENT '用户备注',
   `admin_group` varchar(255) NOT NULL COMMENT '后台分组'
-) ENGINE=MyISAM AUTO_INCREMENT=462 DEFAULT CHARSET=utf8 COMMENT='项目管理器';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='项目管理器';
 
 --
 -- 转存表中的数据 `qinggan_project`
@@ -18877,7 +19055,8 @@ INSERT INTO `qinggan_project` (`id`, `parent_id`, `site_id`, `module`, `cate`, `
 (458, 0, 1, 116, 0, '图片链接', '', 185, 1, '', '', '', 0, 'images/ico/link.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '名称', '', 30, 0, 'image-links-index', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0, 10, 0, 0, 0, 0, 0, '', 0, '', 0, '', 0, '', '', '', 'miniprogram'),
 (459, 0, 1, 0, 0, '滚动公告', '', 190, 1, '', '', '', 0, 'images/ico/notice.png', '', '', '', 0, 0, 'mini-notice', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, '', 0, '', 0, '', '', '', 'miniprogram'),
 (460, 0, 1, 117, 0, '发现', '', 195, 1, '', '', '', 0, 'images/ico/default.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '', '', 30, 0, 'found-app', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 1, 10, 0, 0, 0, 0, 0, '', 0, '', 0, '', 0, '', '', '', 'miniprogram'),
-(461, 0, 1, 0, 0, '首页', '', 1, 1, '', '', '', 0, 'images/ico/home.png', '', '', '', 0, 0, 'index', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, '', 0, '', 0, '', '', '', '');
+(461, 0, 1, 0, 0, '首页', '', 1, 1, '', '', '', 0, 'images/ico/home.png', '', '', '', 0, 0, 'index', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, '', 0, '', 0, '', '', '', ''),
+(463, 0, 1, 120, 0, '聊天内容', '', 205, 1, '', '', '', 0, 'images/ico/default.png', 'l.sort ASC,l.dateline DESC,l.id DESC', '问题', '', 30, 0, 'chat-info', '', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 1, 0, '', '', '', '', '', 0, '', 0, 0, 0, '', '', 1, 1, 10, 0, 0, 0, 0, 0, '', 0, '', 0, '', 0, '', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -18885,26 +19064,38 @@ INSERT INTO `qinggan_project` (`id`, `parent_id`, `site_id`, `module`, `cate`, `
 -- 表的结构 `qinggan_reply`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_reply` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
-  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父回复ID',
-  `vouch` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '推荐评论',
+CREATE TABLE `qinggan_reply` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
+  `parent_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父回复ID',
+  `vouch` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '推荐评论',
   `star` tinyint(1) NOT NULL DEFAULT '3' COMMENT '星级',
-  `uid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID',
+  `uid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID',
   `ip` varchar(255) NOT NULL COMMENT '回复人IP',
-  `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0未审核1审核',
+  `addtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未审核1审核',
   `session_id` varchar(255) NOT NULL COMMENT '游客标识',
   `content` text NOT NULL COMMENT '评论内容',
-  `admin_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '管理员ID',
+  `admin_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '管理员ID',
   `adm_content` longtext NOT NULL COMMENT '管理员回复内容',
-  `adm_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '回复时间',
-  `order_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '0为评论，非零绑定订单ID',
+  `adm_time` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '回复时间',
+  `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0为评论，非零绑定订单ID',
   `res` varchar(255) NOT NULL COMMENT '附件ID，多个附件用英文逗号隔开',
   `vtype` varchar(255) NOT NULL DEFAULT 'title' COMMENT '主题类型，titlte表示列表中的主题，project表示项目，cate表示分类',
   `title` varchar(255) NOT NULL COMMENT '评论标题，留空从主题中读取'
-) ENGINE=MyISAM AUTO_INCREMENT=44 DEFAULT CHARSET=utf8 COMMENT='主题评论表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='主题评论表';
+
+--
+-- 转存表中的数据 `qinggan_reply`
+--
+
+INSERT INTO `qinggan_reply` (`id`, `tid`, `parent_id`, `vouch`, `star`, `uid`, `ip`, `addtime`, `status`, `session_id`, `content`, `admin_id`, `adm_content`, `adm_time`, `order_id`, `res`, `vtype`, `title`) VALUES
+(44, 2455, 0, 0, 3, 23, '127.0.0.1', 1685109420, 1, 'sjo767dsh4dge20ors1td5vjt4', '<p>测试下评论~</p>\r\n', 0, '', 0, 0, '', 'title', 'iQOO 11 12GB+256GB 传奇版'),
+(47, 2528, 0, 0, 3, 23, '127.0.0.1', 1685155256, 1, 'aot0silg3ffqabjd9amdnistg3', '<p>测试回复用的！</p>\r\n', 0, '', 0, 0, '', 'title', '这个也是测试用的'),
+(46, 0, 44, 0, 3, 0, '', 1685109531, 1, '', '<p>测试下回复！</p>\r\n', 1, '', 0, 0, '', 'title', ''),
+(48, 2453, 0, 0, 3, 23, '127.0.0.1', 1685166054, 0, 'aot0silg3ffqabjd9amdnistg3', '测试下订单评论', 0, '', 0, 1, '825', 'order', '#P2023030753U00023001_荣耀X40 GT 8GB+256GB 竞速黑 双卡 全网通版 骁龙888 144Hz高刷电竞屏 66W超级快充 满帧战神'),
+(49, 2453, 0, 0, 3, 23, '127.0.0.1', 1685166067, 0, 'aot0silg3ffqabjd9amdnistg3', '再来评一次！', 0, '', 0, 1, '', 'order', '#P2023030753U00023001_荣耀X40 GT 8GB+256GB 竞速黑 双卡 全网通版 骁龙888 144Hz高刷电竞屏 66W超级快充 满帧战神'),
+(50, 2453, 0, 0, 3, 23, '127.0.0.1', 1685166491, 0, 'aot0silg3ffqabjd9amdnistg3', '第三次评论！', 0, '', 0, 1, '', 'order', '#P2023030753U00023001_荣耀X40 GT 8GB+256GB 竞速黑 双卡 全网通版 骁龙888 144Hz高刷电竞屏 66W超级快充 满帧战神');
 
 -- --------------------------------------------------------
 
@@ -18912,64 +19103,68 @@ CREATE TABLE IF NOT EXISTS `qinggan_reply` (
 -- 表的结构 `qinggan_res`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_res` (
-  `id` int(10) unsigned NOT NULL COMMENT '资源ID',
-  `cate_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
+CREATE TABLE `qinggan_res` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '资源ID',
+  `cate_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
   `folder` varchar(255) NOT NULL COMMENT '存储目录',
   `name` varchar(255) NOT NULL COMMENT '资源文件名',
   `ext` varchar(30) NOT NULL COMMENT '资源后缀，如jpg等',
   `filename` varchar(255) NOT NULL COMMENT '文件名带路径',
   `ico` text NOT NULL COMMENT 'ICO图标文件',
-  `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `addtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '添加时间',
   `title` varchar(255) NOT NULL COMMENT '内容',
   `attr` text NOT NULL COMMENT '附件属性',
   `note` text NOT NULL COMMENT '备注',
   `session_id` varchar(100) NOT NULL COMMENT '操作者 ID，即会员ID用于检测是否有权限删除 ',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID，当该ID为时检则sesson_id，如不相同则不能删除 ',
-  `download` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '下载次数',
-  `admin_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '管理员ID',
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID，当该ID为时检则sesson_id，如不相同则不能删除 ',
+  `download` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '下载次数',
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '管理员ID',
   `mime_type` varchar(255) NOT NULL COMMENT '附件类型'
-) ENGINE=MyISAM AUTO_INCREMENT=816 DEFAULT CHARSET=utf8 COMMENT='资源ID';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='资源ID';
 
 --
 -- 转存表中的数据 `qinggan_res`
 --
 
 INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`, `ico`, `addtime`, `title`, `attr`, `note`, `session_id`, `user_id`, `download`, `admin_id`, `mime_type`) VALUES
-(434, 1, 'res/202301/10/', '99944c863ae488ed.jpg', 'jpg', 'res/202301/10/99944c863ae488ed.jpg', 'res/_cache/_ico/43/434.jpg', 1673321868, '750x440-3', 'a:2:{s:5:"width";i:750;s:6:"height";i:440;}', '', '', 0, 0, 1, 'image/jpeg'),
-(435, 1, 'res/202301/10/', '894116c27e4ac05f.jpg', 'jpg', 'res/202301/10/894116c27e4ac05f.jpg', 'res/_cache/_ico/43/435.jpg', 1673321886, '1920x700-2', 'a:2:{s:5:"width";i:1920;s:6:"height";i:700;}', '', '', 0, 0, 1, 'image/jpeg'),
-(432, 1, 'res/202301/10/', '2b93c183b7070366.jpg', 'jpg', 'res/202301/10/2b93c183b7070366.jpg', 'res/_cache/_ico/43/432.jpg', 1673321842, '750x440-1', 'a:2:{s:5:"width";i:750;s:6:"height";i:440;}', '', '', 0, 0, 1, 'image/jpeg'),
-(433, 1, 'res/202301/10/', 'bca82384fc644330.jpg', 'jpg', 'res/202301/10/bca82384fc644330.jpg', 'res/_cache/_ico/43/433.jpg', 1673321865, '1920x700-3', 'a:2:{s:5:"width";i:1920;s:6:"height";i:700;}', '', '', 0, 0, 1, 'image/jpeg'),
-(431, 1, 'res/202301/10/', '2cfc2a0281435c9b.jpg', 'jpg', 'res/202301/10/2cfc2a0281435c9b.jpg', 'res/_cache/_ico/43/431.jpg', 1673321839, '1920x700-1', 'a:2:{s:5:"width";i:1920;s:6:"height";i:700;}', '', '', 0, 0, 1, 'image/jpeg'),
-(436, 1, 'res/202301/10/', '2b88519f373d32e5.jpg', 'jpg', 'res/202301/10/2b88519f373d32e5.jpg', 'res/_cache/_ico/43/436.jpg', 1673321890, '750x440-2', 'a:2:{s:5:"width";i:750;s:6:"height";i:440;}', '', '', 0, 0, 1, 'image/jpeg'),
-(438, 1, 'res/202303/03/', '1677842256-aaDym6nPJr.jpg', 'jpg', 'res/202303/03/1677842256-aaDym6nPJr.jpg', 'res/_cache/_ico/43/438.jpg', 1677842256, '1677842256-aaDym6nPJr.jpg', 'a:2:{s:5:"width";i:1080;s:6:"height";i:578;}', '', '', 0, 0, 0, 'image/jpg'),
-(439, 1, 'res/202303/03/', '1677842256-j6nUR8YOTf.jpg', 'jpg', 'res/202303/03/1677842256-j6nUR8YOTf.jpg', 'res/_cache/_ico/43/439.jpg', 1677842256, '1677842256-j6nUR8YOTf.jpg', 'a:2:{s:5:"width";i:614;s:6:"height";i:860;}', '', '', 0, 0, 0, 'image/jpg'),
-(440, 1, 'res/202303/03/', '1677842257-6TZQJIBx4j.jpg', 'jpg', 'res/202303/03/1677842257-6TZQJIBx4j.jpg', 'res/_cache/_ico/44/440.jpg', 1677842257, '1677842257-6TZQJIBx4j.jpg', 'a:2:{s:5:"width";i:1080;s:6:"height";i:578;}', '', '', 0, 0, 0, 'image/jpg'),
-(598, 1, 'res/202303/06/', '59a610ca90263cb8.jpg', 'jpg', 'res/202303/06/59a610ca90263cb8.jpg', 'res/_cache/_ico/59/598.jpg', 1678086052, '微信图片_2023030610375825', 'a:2:{s:5:"width";i:1280;s:6:"height";i:1706;}', '', '', 0, 0, 1, 'image/jpeg'),
-(599, 1, 'res/202303/06/', '0f18fc37749b6b12.jpg', 'jpg', 'res/202303/06/0f18fc37749b6b12.jpg', 'res/_cache/_ico/59/599.jpg', 1678086053, '微信图片_2023030610375826', 'a:2:{s:5:"width";i:1280;s:6:"height";i:853;}', '', '', 0, 0, 1, 'image/jpeg'),
-(607, 1, 'res/202303/06/', '72446e8626a1cb9a.jpg', 'jpg', 'res/202303/06/72446e8626a1cb9a.jpg', 'res/_cache/_ico/60/607.jpg', 1678086061, '微信图片_2023030610375834', 'a:2:{s:5:"width";i:1706;s:6:"height";i:1136;}', '', '', 0, 0, 1, 'image/jpeg'),
-(618, 1, 'res/202303/06/', '987e5089e8bded1a.jpg', 'jpg', 'res/202303/06/987e5089e8bded1a.jpg', 'res/_cache/_ico/61/618.jpg', 1678086074, '微信图片_2023030610375914', 'a:2:{s:5:"width";i:1280;s:6:"height";i:1706;}', '', '', 0, 0, 1, 'image/jpeg'),
-(619, 1, 'res/202303/06/', 'efd47b87cd64793c.jpg', 'jpg', 'res/202303/06/efd47b87cd64793c.jpg', 'res/_cache/_ico/61/619.jpg', 1678086075, '微信图片_2023030610375915', 'a:2:{s:5:"width";i:1280;s:6:"height";i:1707;}', '', '', 0, 0, 1, 'image/jpeg'),
-(620, 1, 'res/202303/06/', '1678092684-y982RINuzc.png', 'png', 'res/202303/06/1678092684-y982RINuzc.png', 'res/_cache/_ico/62/620.png', 1678092684, '1678092684-y982RINuzc.png', 'a:2:{s:5:"width";i:776;s:6:"height";i:497;}', '', '', 0, 0, 0, 'data:image/png'),
-(621, 1, 'res/202303/06/', 'fafd898ff68e9fd6.jpg', 'jpg', 'res/202303/06/fafd898ff68e9fd6.jpg', 'res/_cache/_ico/62/621.jpg', 1678093427, '办公环境', 'a:2:{s:5:"width";i:750;s:6:"height";i:500;}', '', '', 0, 0, 1, 'image/jpeg'),
-(635, 1, 'res/202303/06/', '613100fe760bef14.png', 'png', 'res/202303/06/613100fe760bef14.png', 'res/_cache/_ico/63/635.png', 1678108370, '10001', 'a:2:{s:5:"width";i:800;s:6:"height";i:800;}', '', '', 0, 0, 1, 'image/png'),
-(636, 1, 'res/202303/06/', 'd5650c44585c8fe1.png', 'png', 'res/202303/06/d5650c44585c8fe1.png', 'res/_cache/_ico/63/636.png', 1678108372, '10002', 'a:2:{s:5:"width";i:800;s:6:"height";i:800;}', '', '', 0, 0, 1, 'image/png'),
-(637, 1, 'res/202303/06/', 'ab02c8059c03ded2.png', 'png', 'res/202303/06/ab02c8059c03ded2.png', 'res/_cache/_ico/63/637.png', 1678108374, '10003', 'a:2:{s:5:"width";i:800;s:6:"height";i:800;}', '', '', 0, 0, 1, 'image/png'),
-(731, 1, 'res/202303/07/', '2a4b707f41d61659.png', 'png', 'res/202303/07/2a4b707f41d61659.png', 'res/_cache/_ico/73/731.png', 1678160867, '10001', 'a:2:{s:5:"width";i:800;s:6:"height";i:800;}', '', '', 0, 0, 1, 'image/png'),
-(732, 1, 'res/202303/07/', 'f16c06511d875b71.png', 'png', 'res/202303/07/f16c06511d875b71.png', 'res/_cache/_ico/73/732.png', 1678160869, '10002', 'a:2:{s:5:"width";i:800;s:6:"height";i:800;}', '', '', 0, 0, 1, 'image/png'),
-(733, 1, 'res/202303/07/', '6af99770ad882dae.png', 'png', 'res/202303/07/6af99770ad882dae.png', 'res/_cache/_ico/73/733.png', 1678160871, '10003', 'a:2:{s:5:"width";i:800;s:6:"height";i:800;}', '', '', 0, 0, 1, 'image/png'),
-(812, 1, 'res/202305/02/', '1683012028-2aMHRRfHyO.png', 'png', 'res/202305/02/1683012028-2aMHRRfHyO.png', 'res/_cache/_ico/81/812.png', 1683012028, '1683012028-2aMHRRfHyO.png', 'a:2:{s:5:"width";i:716;s:6:"height";i:412;}', '', '', 0, 0, 0, 'data:image/png'),
-(768, 1, 'res/202303/07/', '993dd997bed2a7ce.png', 'png', 'res/202303/07/993dd997bed2a7ce.png', 'res/_cache/_ico/76/768.png', 1678176742, '10001', 'a:2:{s:5:"width";i:750;s:6:"height";i:750;}', '', '', 0, 0, 1, 'image/png'),
-(769, 1, 'res/202303/07/', 'ff7f67133f0f41be.png', 'png', 'res/202303/07/ff7f67133f0f41be.png', 'res/_cache/_ico/76/769.png', 1678176744, '10002', 'a:2:{s:5:"width";i:750;s:6:"height";i:750;}', '', '', 0, 0, 1, 'image/png'),
-(770, 1, 'res/202303/07/', '164f8d2d379a13d9.png', 'png', 'res/202303/07/164f8d2d379a13d9.png', 'res/_cache/_ico/77/770.png', 1678176746, '10003', 'a:2:{s:5:"width";i:750;s:6:"height";i:750;}', '', '', 0, 0, 1, 'image/png'),
-(784, 1, 'res/202303/07/', '3ce85fdb78bb3fc9.png', 'png', 'res/202303/07/3ce85fdb78bb3fc9.png', 'res/_cache/_ico/78/784.png', 1678181097, '10001', 'a:2:{s:5:"width";i:1080;s:6:"height";i:1080;}', '', '', 0, 0, 1, 'image/png'),
-(785, 1, 'res/202303/07/', 'bc618396aea79fd3.png', 'png', 'res/202303/07/bc618396aea79fd3.png', 'res/_cache/_ico/78/785.png', 1678181099, '10002', 'a:2:{s:5:"width";i:1080;s:6:"height";i:1080;}', '', '', 0, 0, 1, 'image/png'),
-(786, 1, 'res/202303/07/', 'c180708e108ece20.png', 'png', 'res/202303/07/c180708e108ece20.png', 'res/_cache/_ico/78/786.png', 1678181101, '10003', 'a:2:{s:5:"width";i:1080;s:6:"height";i:1080;}', '', '', 0, 0, 1, 'image/png'),
-(791, 1, 'res/202303/07/', 'f7a94732464f712a.png', 'png', 'res/202303/07/f7a94732464f712a.png', 'res/_cache/_ico/79/791.png', 1678181112, '10008', 'a:2:{s:5:"width";i:1080;s:6:"height";i:1080;}', '', '', 0, 0, 1, 'image/png'),
-(794, 1, 'res/202303/07/', '1d0fbb280838028e.png', 'png', 'res/202303/07/1d0fbb280838028e.png', 'res/_cache/_ico/79/794.png', 1678181117, '10011', 'a:2:{s:5:"width";i:1080;s:6:"height";i:1080;}', '', '', 0, 0, 1, 'image/png'),
-(813, 1, 'res/202305/05/', '880ebba845767062.png', 'png', 'res/202305/05/880ebba845767062.png', 'res/_cache/_ico/81/813.png', 1683262996, '200', 'a:2:{s:5:"width";i:200;s:6:"height";i:200;}', '', '', 0, 0, 1, 'image/png'),
-(814, 1, 'res/202305/05/', '8b19d50c8a285ad1.png', 'png', 'res/202305/05/8b19d50c8a285ad1.png', 'res/_cache/_ico/81/814.png', 1683263009, '80', 'a:2:{s:5:"width";i:80;s:6:"height";i:80;}', '', '', 0, 0, 1, 'image/png'),
-(815, 1, 'res/202305/11/', '95ff7c95d5acf81c.png', 'png', 'res/202305/11/95ff7c95d5acf81c.png', 'res/_cache/_ico/81/815.png', 1683772913, 'Tab2QR-1683772901272', 'a:2:{s:5:"width";i:512;s:6:"height";i:512;}', '', '', 0, 0, 1, 'image/png');
+(434, 1, 'res/202301/10/', '99944c863ae488ed.jpg', 'jpg', 'res/202301/10/99944c863ae488ed.jpg', 'res/_cache/_ico/43/434.jpg', 1673321868, '750x440-3', 'a:2:{s:5:\"width\";i:750;s:6:\"height\";i:440;}', '', '', 0, 0, 1, 'image/jpeg'),
+(435, 1, 'res/202301/10/', '894116c27e4ac05f.jpg', 'jpg', 'res/202301/10/894116c27e4ac05f.jpg', 'res/_cache/_ico/43/435.jpg', 1673321886, '1920x700-2', 'a:2:{s:5:\"width\";i:1920;s:6:\"height\";i:700;}', '', '', 0, 0, 1, 'image/jpeg'),
+(432, 1, 'res/202301/10/', '2b93c183b7070366.jpg', 'jpg', 'res/202301/10/2b93c183b7070366.jpg', 'res/_cache/_ico/43/432.jpg', 1673321842, '750x440-1', 'a:2:{s:5:\"width\";i:750;s:6:\"height\";i:440;}', '', '', 0, 0, 1, 'image/jpeg'),
+(433, 1, 'res/202301/10/', 'bca82384fc644330.jpg', 'jpg', 'res/202301/10/bca82384fc644330.jpg', 'res/_cache/_ico/43/433.jpg', 1673321865, '1920x700-3', 'a:2:{s:5:\"width\";i:1920;s:6:\"height\";i:700;}', '', '', 0, 0, 1, 'image/jpeg'),
+(431, 1, 'res/202301/10/', '2cfc2a0281435c9b.jpg', 'jpg', 'res/202301/10/2cfc2a0281435c9b.jpg', 'res/_cache/_ico/43/431.jpg', 1673321839, '1920x700-1', 'a:2:{s:5:\"width\";i:1920;s:6:\"height\";i:700;}', '', '', 0, 0, 1, 'image/jpeg'),
+(436, 1, 'res/202301/10/', '2b88519f373d32e5.jpg', 'jpg', 'res/202301/10/2b88519f373d32e5.jpg', 'res/_cache/_ico/43/436.jpg', 1673321890, '750x440-2', 'a:2:{s:5:\"width\";i:750;s:6:\"height\";i:440;}', '', '', 0, 0, 1, 'image/jpeg'),
+(438, 1, 'res/202303/03/', '1677842256-aaDym6nPJr.jpg', 'jpg', 'res/202303/03/1677842256-aaDym6nPJr.jpg', 'res/_cache/_ico/43/438.jpg', 1677842256, '1677842256-aaDym6nPJr.jpg', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:578;}', '', '', 0, 0, 0, 'image/jpg'),
+(439, 1, 'res/202303/03/', '1677842256-j6nUR8YOTf.jpg', 'jpg', 'res/202303/03/1677842256-j6nUR8YOTf.jpg', 'res/_cache/_ico/43/439.jpg', 1677842256, '1677842256-j6nUR8YOTf.jpg', 'a:2:{s:5:\"width\";i:614;s:6:\"height\";i:860;}', '', '', 0, 0, 0, 'image/jpg'),
+(440, 1, 'res/202303/03/', '1677842257-6TZQJIBx4j.jpg', 'jpg', 'res/202303/03/1677842257-6TZQJIBx4j.jpg', 'res/_cache/_ico/44/440.jpg', 1677842257, '1677842257-6TZQJIBx4j.jpg', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:578;}', '', '', 0, 0, 0, 'image/jpg'),
+(598, 1, 'res/202303/06/', '59a610ca90263cb8.jpg', 'jpg', 'res/202303/06/59a610ca90263cb8.jpg', 'res/_cache/_ico/59/598.jpg', 1678086052, '微信图片_2023030610375825', 'a:2:{s:5:\"width\";i:1280;s:6:\"height\";i:1706;}', '', '', 0, 0, 1, 'image/jpeg'),
+(599, 1, 'res/202303/06/', '0f18fc37749b6b12.jpg', 'jpg', 'res/202303/06/0f18fc37749b6b12.jpg', 'res/_cache/_ico/59/599.jpg', 1678086053, '微信图片_2023030610375826', 'a:2:{s:5:\"width\";i:1280;s:6:\"height\";i:853;}', '', '', 0, 0, 1, 'image/jpeg'),
+(607, 1, 'res/202303/06/', '72446e8626a1cb9a.jpg', 'jpg', 'res/202303/06/72446e8626a1cb9a.jpg', 'res/_cache/_ico/60/607.jpg', 1678086061, '微信图片_2023030610375834', 'a:2:{s:5:\"width\";i:1706;s:6:\"height\";i:1136;}', '', '', 0, 0, 1, 'image/jpeg'),
+(618, 1, 'res/202303/06/', '987e5089e8bded1a.jpg', 'jpg', 'res/202303/06/987e5089e8bded1a.jpg', 'res/_cache/_ico/61/618.jpg', 1678086074, '微信图片_2023030610375914', 'a:2:{s:5:\"width\";i:1280;s:6:\"height\";i:1706;}', '', '', 0, 0, 1, 'image/jpeg'),
+(619, 1, 'res/202303/06/', 'efd47b87cd64793c.jpg', 'jpg', 'res/202303/06/efd47b87cd64793c.jpg', 'res/_cache/_ico/61/619.jpg', 1678086075, '微信图片_2023030610375915', 'a:2:{s:5:\"width\";i:1280;s:6:\"height\";i:1707;}', '', '', 0, 0, 1, 'image/jpeg'),
+(620, 1, 'res/202303/06/', '1678092684-y982RINuzc.png', 'png', 'res/202303/06/1678092684-y982RINuzc.png', 'res/_cache/_ico/62/620.png', 1678092684, '1678092684-y982RINuzc.png', 'a:2:{s:5:\"width\";i:776;s:6:\"height\";i:497;}', '', '', 0, 0, 0, 'data:image/png'),
+(621, 1, 'res/202303/06/', 'fafd898ff68e9fd6.jpg', 'jpg', 'res/202303/06/fafd898ff68e9fd6.jpg', 'res/_cache/_ico/62/621.jpg', 1678093427, '办公环境', 'a:2:{s:5:\"width\";i:750;s:6:\"height\";i:500;}', '', '', 0, 0, 1, 'image/jpeg'),
+(635, 1, 'res/202303/06/', '613100fe760bef14.png', 'png', 'res/202303/06/613100fe760bef14.png', 'res/_cache/_ico/63/635.png', 1678108370, '10001', 'a:2:{s:5:\"width\";i:800;s:6:\"height\";i:800;}', '', '', 0, 0, 1, 'image/png'),
+(636, 1, 'res/202303/06/', 'd5650c44585c8fe1.png', 'png', 'res/202303/06/d5650c44585c8fe1.png', 'res/_cache/_ico/63/636.png', 1678108372, '10002', 'a:2:{s:5:\"width\";i:800;s:6:\"height\";i:800;}', '', '', 0, 0, 1, 'image/png'),
+(637, 1, 'res/202303/06/', 'ab02c8059c03ded2.png', 'png', 'res/202303/06/ab02c8059c03ded2.png', 'res/_cache/_ico/63/637.png', 1678108374, '10003', 'a:2:{s:5:\"width\";i:800;s:6:\"height\";i:800;}', '', '', 0, 0, 1, 'image/png'),
+(731, 1, 'res/202303/07/', '2a4b707f41d61659.png', 'png', 'res/202303/07/2a4b707f41d61659.png', 'res/_cache/_ico/73/731.png', 1678160867, '10001', 'a:2:{s:5:\"width\";i:800;s:6:\"height\";i:800;}', '', '', 0, 0, 1, 'image/png'),
+(732, 1, 'res/202303/07/', 'f16c06511d875b71.png', 'png', 'res/202303/07/f16c06511d875b71.png', 'res/_cache/_ico/73/732.png', 1678160869, '10002', 'a:2:{s:5:\"width\";i:800;s:6:\"height\";i:800;}', '', '', 0, 0, 1, 'image/png'),
+(733, 1, 'res/202303/07/', '6af99770ad882dae.png', 'png', 'res/202303/07/6af99770ad882dae.png', 'res/_cache/_ico/73/733.png', 1678160871, '10003', 'a:2:{s:5:\"width\";i:800;s:6:\"height\";i:800;}', '', '', 0, 0, 1, 'image/png'),
+(812, 1, 'res/202305/02/', '1683012028-2aMHRRfHyO.png', 'png', 'res/202305/02/1683012028-2aMHRRfHyO.png', 'res/_cache/_ico/81/812.png', 1683012028, '1683012028-2aMHRRfHyO.png', 'a:2:{s:5:\"width\";i:716;s:6:\"height\";i:412;}', '', '', 0, 0, 0, 'data:image/png'),
+(768, 1, 'res/202303/07/', '993dd997bed2a7ce.png', 'png', 'res/202303/07/993dd997bed2a7ce.png', 'res/_cache/_ico/76/768.png', 1678176742, '10001', 'a:2:{s:5:\"width\";i:750;s:6:\"height\";i:750;}', '', '', 0, 0, 1, 'image/png'),
+(769, 1, 'res/202303/07/', 'ff7f67133f0f41be.png', 'png', 'res/202303/07/ff7f67133f0f41be.png', 'res/_cache/_ico/76/769.png', 1678176744, '10002', 'a:2:{s:5:\"width\";i:750;s:6:\"height\";i:750;}', '', '', 0, 0, 1, 'image/png'),
+(770, 1, 'res/202303/07/', '164f8d2d379a13d9.png', 'png', 'res/202303/07/164f8d2d379a13d9.png', 'res/_cache/_ico/77/770.png', 1678176746, '10003', 'a:2:{s:5:\"width\";i:750;s:6:\"height\";i:750;}', '', '', 0, 0, 1, 'image/png'),
+(784, 1, 'res/202303/07/', '3ce85fdb78bb3fc9.png', 'png', 'res/202303/07/3ce85fdb78bb3fc9.png', 'res/_cache/_ico/78/784.png', 1678181097, '10001', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:1080;}', '', '', 0, 0, 1, 'image/png'),
+(785, 1, 'res/202303/07/', 'bc618396aea79fd3.png', 'png', 'res/202303/07/bc618396aea79fd3.png', 'res/_cache/_ico/78/785.png', 1678181099, '10002', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:1080;}', '', '', 0, 0, 1, 'image/png'),
+(786, 1, 'res/202303/07/', 'c180708e108ece20.png', 'png', 'res/202303/07/c180708e108ece20.png', 'res/_cache/_ico/78/786.png', 1678181101, '10003', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:1080;}', '', '', 0, 0, 1, 'image/png'),
+(791, 1, 'res/202303/07/', 'f7a94732464f712a.png', 'png', 'res/202303/07/f7a94732464f712a.png', 'res/_cache/_ico/79/791.png', 1678181112, '10008', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:1080;}', '', '', 0, 0, 1, 'image/png'),
+(794, 1, 'res/202303/07/', '1d0fbb280838028e.png', 'png', 'res/202303/07/1d0fbb280838028e.png', 'res/_cache/_ico/79/794.png', 1678181117, '10011', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:1080;}', '', '', 0, 0, 1, 'image/png'),
+(813, 1, 'res/202305/05/', '880ebba845767062.png', 'png', 'res/202305/05/880ebba845767062.png', 'res/_cache/_ico/81/813.png', 1683262996, '200', 'a:2:{s:5:\"width\";i:200;s:6:\"height\";i:200;}', '', '', 0, 0, 1, 'image/png'),
+(814, 1, 'res/202305/05/', '8b19d50c8a285ad1.png', 'png', 'res/202305/05/8b19d50c8a285ad1.png', 'res/_cache/_ico/81/814.png', 1683263009, '80', 'a:2:{s:5:\"width\";i:80;s:6:\"height\";i:80;}', '', '', 0, 0, 1, 'image/png'),
+(815, 1, 'res/202305/11/', '95ff7c95d5acf81c.png', 'png', 'res/202305/11/95ff7c95d5acf81c.png', 'res/_cache/_ico/81/815.png', 1683772913, 'Tab2QR-1683772901272', 'a:2:{s:5:\"width\";i:512;s:6:\"height\";i:512;}', '', '', 0, 0, 1, 'image/png'),
+(816, 1, 'res/202305/26/', 'c19a08db149fc142.jpg', 'jpg', 'res/202305/26/c19a08db149fc142.jpg', 'res/_cache/_ico/81/816.jpg', 1685103703, '7年前的照片', 'a:2:{s:5:\"width\";i:957;s:6:\"height\";i:957;}', '', 'sjo767dsh4dge20ors1td5vjt4', 23, 0, 0, 'image/jpeg'),
+(817, 1, 'res/202305/26/', 'b5387e37fb65d9ea.jpg', 'jpg', 'res/202305/26/b5387e37fb65d9ea.jpg', 'res/_cache/_ico/81/817.jpg', 1685104392, '个人自拍照', 'a:2:{s:5:\"width\";i:960;s:6:\"height\";i:960;}', '', 'sjo767dsh4dge20ors1td5vjt4', 23, 0, 0, 'image/jpeg'),
+(825, 1, 'res/202305/27/', '126549167770e972.jpg', 'jpg', 'res/202305/27/126549167770e972.jpg', 'res/_cache/_ico/82/825.jpg', 1685166050, 'a9wmt-7ujgr', 'a:2:{s:5:\"width\";i:2000;s:6:\"height\";i:500;}', '', 'aot0silg3ffqabjd9amdnistg3', 23, 0, 0, 'image/jpeg'),
+(824, 1, '', '', 'jpg', 'res/202305/26/b37f317bc9172327.jpg', 'res/_cache/_ico/82/824.jpg', 1685107638, '我的头像', 'a:2:{s:5:\"width\";i:960;s:6:\"height\";i:960;}', '', 'sjo767dsh4dge20ors1td5vjt4', 23, 0, 0, 'image/jpeg');
 
 -- --------------------------------------------------------
 
@@ -18977,23 +19172,23 @@ INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`,
 -- 表的结构 `qinggan_res_cate`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_res_cate` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '资源分类ID',
+CREATE TABLE `qinggan_res_cate` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '资源分类ID',
   `title` varchar(255) NOT NULL COMMENT '分类名称',
   `root` varchar(255) NOT NULL DEFAULT '/' COMMENT '存储目录',
   `folder` varchar(255) NOT NULL DEFAULT 'Ym/d/' COMMENT '存储目录格式',
-  `is_default` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '1默认0非默认',
+  `is_default` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1默认0非默认',
   `filetypes` varchar(255) NOT NULL COMMENT '附件类型',
   `typeinfo` varchar(200) NOT NULL COMMENT '类型说明',
   `gdtypes` varchar(255) NOT NULL COMMENT '支持的GD方案，多个GD方案用英文ID分开',
   `gdall` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1支持全部GD方案0仅支持指定的GD方案',
   `ico` tinyint(1) NOT NULL DEFAULT '0' COMMENT '后台缩略图',
-  `filemax` int(10) unsigned NOT NULL DEFAULT '2' COMMENT '上传文件大小限制',
-  `etype` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '0本地存储，其他数据则调用不同的网关存储',
+  `filemax` int(10) UNSIGNED NOT NULL DEFAULT '2' COMMENT '上传文件大小限制',
+  `etype` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0本地存储，其他数据则调用不同的网关存储',
   `upload_binary` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0传统上传，1二进制上传',
   `compress` int(11) NOT NULL DEFAULT '0' COMMENT '0不压缩，大于0的数值表示宽高超过时就压缩到这个值内',
-  `is_front` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0前台不可用，1前台可用'
-) ENGINE=MyISAM AUTO_INCREMENT=41 DEFAULT CHARSET=utf8 COMMENT='资源分类存储';
+  `is_front` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0前台不可用，1前台可用'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='资源分类存储';
 
 --
 -- 转存表中的数据 `qinggan_res_cate`
@@ -19013,14 +19208,14 @@ INSERT INTO `qinggan_res_cate` (`id`, `title`, `root`, `folder`, `is_default`, `
 -- 表的结构 `qinggan_search`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_search` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '站点ID',
+CREATE TABLE `qinggan_search` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
   `title` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT '关键字',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '最后一次执行时间',
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后一次执行时间',
   `hits` int(11) NOT NULL DEFAULT '0' COMMENT '搜索次数',
-  `sign` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0未标记，1已标记'
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=gbk COMMENT='搜索数据统计';
+  `sign` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未标记，1已标记'
+) ENGINE=MyISAM DEFAULT CHARSET=gbk COMMENT='搜索数据统计';
 
 --
 -- 转存表中的数据 `qinggan_search`
@@ -19039,44 +19234,44 @@ INSERT INTO `qinggan_search` (`id`, `site_id`, `title`, `dateline`, `hits`, `sig
 -- 表的结构 `qinggan_server`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_server` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID',
+CREATE TABLE `qinggan_server` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
   `title` varchar(200) NOT NULL COMMENT '服务器名称',
   `domain` varchar(255) NOT NULL COMMENT '域名',
-  `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0不使用1正常使用',
+  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不使用1正常使用',
   `ip` varchar(200) NOT NULL COMMENT '服务器IP',
   `ssh_port` varchar(10) NOT NULL DEFAULT '22' COMMENT '服务器SSH端口',
   `ssh_user` varchar(100) NOT NULL COMMENT '服务器SSH账号',
   `ssh_pass` varchar(100) NOT NULL COMMENT '服务器SSH密码',
-  `ssh_timeout` tinyint(3) unsigned NOT NULL DEFAULT '20' COMMENT 'SSH连接超时限制',
+  `ssh_timeout` tinyint(3) UNSIGNED NOT NULL DEFAULT '20' COMMENT 'SSH连接超时限制',
   `mysql_data` varchar(255) NOT NULL DEFAULT '/qghost/database/' COMMENT 'MySQL数据库目录',
   `mysql_pass` varchar(30) NOT NULL COMMENT '自定义Mysql的超管密码',
   `httpd_www` varchar(255) NOT NULL DEFAULT '/qghost/www/' COMMENT '网站根目录',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
-  `is_server` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0客户端1服务端',
-  `is_del` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0表示正常使用1表示列入删除标记，将不使用',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
+  `is_server` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0客户端1服务端',
+  `is_del` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0表示正常使用1表示列入删除标记，将不使用',
   `phpmyadmin` varchar(255) NOT NULL COMMENT '设置PHPMYADMIN管理地址',
   `phpmyadmin_remote` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1远程IP访问，0本地网络访问',
-  `maxsize` int(10) unsigned NOT NULL DEFAULT '100',
-  `back_to_server` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '备份迁移到服务端',
+  `maxsize` int(10) UNSIGNED NOT NULL DEFAULT '100',
+  `back_to_server` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '备份迁移到服务端',
   `ftp_server` varchar(255) NOT NULL COMMENT 'FTP域名',
   `sshtype` enum('pass','cert') NOT NULL DEFAULT 'pass' COMMENT '登录方式，pass密码登录，cert证书登录',
   `cert_pub_file` varchar(255) NOT NULL COMMENT '证书公钥地址',
   `cert_file` varchar(255) NOT NULL COMMENT '证书密钥地址',
   `cert_pass` varchar(255) NOT NULL COMMENT '证书密码',
-  `is_win` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0表示Linux主机，1表示Window主机',
-  `is_front` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0前台不使用，1前台使用',
+  `is_win` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0表示Linux主机，1表示Window主机',
+  `is_front` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0前台不使用，1前台使用',
   `subdomain` varchar(255) NOT NULL COMMENT '开放域名',
-  `server_type` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0表示自建，1表示宝塔',
+  `server_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0表示自建，1表示宝塔',
   `bt_server` varchar(255) NOT NULL COMMENT '宝塔API地址',
   `bt_apikey` varchar(255) NOT NULL COMMENT '宝塔API密钥',
   `bt_link` varchar(255) NOT NULL COMMENT '宝塔访问地址',
   `bt_user` varchar(255) NOT NULL COMMENT '宝塔账号',
   `bt_pass` varchar(255) NOT NULL COMMENT '宝塔密码',
-  `bt_isapi` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0不支持接口管理网站，1支持',
+  `bt_isapi` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不支持接口管理网站，1支持',
   `bt_php` varchar(100) NOT NULL COMMENT 'PHP版本，留空使用56',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID，仅限第三方用户接入'
-) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='服务器管理';
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '用户ID，仅限第三方用户接入'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='服务器管理';
 
 --
 -- 转存表中的数据 `qinggan_server`
@@ -19102,11 +19297,11 @@ INSERT INTO `qinggan_server` (`id`, `title`, `domain`, `status`, `ip`, `ssh_port
 -- 表的结构 `qinggan_server_ip`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_server_ip` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID',
-  `server_id` mediumint(8) unsigned NOT NULL COMMENT '服务器ID',
+CREATE TABLE `qinggan_server_ip` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
+  `server_id` mediumint(8) UNSIGNED NOT NULL COMMENT '服务器ID',
   `ip` varchar(200) NOT NULL COMMENT 'IP地址'
-) ENGINE=MyISAM AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COMMENT='服务器IP地址池';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='服务器IP地址池';
 
 --
 -- 转存表中的数据 `qinggan_server_ip`
@@ -19124,35 +19319,35 @@ INSERT INTO `qinggan_server_ip` (`id`, `server_id`, `ip`) VALUES
 -- 表的结构 `qinggan_site`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_site` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '应用ID',
-  `domain_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '默认域名ID',
+CREATE TABLE `qinggan_site` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '应用ID',
+  `domain_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '默认域名ID',
   `title` varchar(255) NOT NULL COMMENT '网站名称',
   `dir` varchar(255) NOT NULL DEFAULT '/' COMMENT '安装目录，以/结尾',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '状态',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态',
   `content` text NOT NULL COMMENT '网站关闭原因',
-  `is_default` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '1默认站点',
-  `tpl_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '模板ID',
+  `is_default` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1默认站点',
+  `tpl_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '模板ID',
   `url_type` enum('default','rewrite','html') NOT NULL DEFAULT 'default' COMMENT '默认，即带?等能数，rewrite是伪静态页，html为生成的静态页',
   `logo` varchar(255) NOT NULL COMMENT '网站 LOGO ',
   `meta` text NOT NULL COMMENT '扩展配置',
-  `currency_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '默认货币ID',
-  `register_status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0关闭注册1开启注册',
+  `currency_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '默认货币ID',
+  `register_status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0关闭注册1开启注册',
   `register_close` varchar(255) NOT NULL COMMENT '关闭注册说明',
-  `login_status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0关闭登录1开启',
+  `login_status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0关闭登录1开启',
   `login_close` varchar(255) NOT NULL COMMENT '关闭登录说明',
   `adm_logo29` varchar(255) NOT NULL COMMENT '在后台左侧LOGO地址',
   `adm_logo180` varchar(255) NOT NULL COMMENT '登录LOGO地址',
   `lang` varchar(255) NOT NULL COMMENT '语言包',
-  `api` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '0不走接口',
+  `api` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不走接口',
   `seo_title` varchar(255) NOT NULL COMMENT 'SEO主题',
   `seo_keywords` varchar(255) NOT NULL COMMENT 'SEO关键字',
   `seo_desc` text NOT NULL COMMENT 'SEO摘要',
   `biz_sn` varchar(255) NOT NULL COMMENT '订单号生成规则',
-  `biz_payment` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '默认支付方式',
-  `upload_guest` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '游客上传权限',
-  `upload_user` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '会员上传权限'
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='网站管理';
+  `biz_payment` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '默认支付方式',
+  `upload_guest` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '游客上传权限',
+  `upload_user` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员上传权限'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='网站管理';
 
 --
 -- 转存表中的数据 `qinggan_site`
@@ -19167,12 +19362,12 @@ INSERT INTO `qinggan_site` (`id`, `domain_id`, `title`, `dir`, `status`, `conten
 -- 表的结构 `qinggan_site_domain`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_site_domain` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID',
-  `site_id` mediumint(8) unsigned NOT NULL COMMENT '网站ID',
+CREATE TABLE `qinggan_site_domain` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
+  `site_id` mediumint(8) UNSIGNED NOT NULL COMMENT '网站ID',
   `domain` varchar(255) NOT NULL COMMENT '域名信息',
-  `is_mobile` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '1此域名强制为手机版'
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='网站指定的域名';
+  `is_mobile` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1此域名强制为手机版'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='网站指定的域名';
 
 --
 -- 转存表中的数据 `qinggan_site_domain`
@@ -19187,15 +19382,15 @@ INSERT INTO `qinggan_site_domain` (`id`, `site_id`, `domain`, `is_mobile`) VALUE
 -- 表的结构 `qinggan_stock`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_stock` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID',
+CREATE TABLE `qinggan_stock` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID',
   `attr` varchar(255) NOT NULL COMMENT '属性值，多个属性值用英文逗号隔开',
   `qty` int(10) NOT NULL DEFAULT '0' COMMENT '库存数量，仅支持整数',
   `cost` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '进货价',
   `market` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '市场价',
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '销售价'
-) ENGINE=MyISAM AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 COMMENT='库存表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='库存表';
 
 --
 -- 转存表中的数据 `qinggan_stock`
@@ -19248,20 +19443,20 @@ INSERT INTO `qinggan_stock` (`id`, `tid`, `attr`, `qty`, `cost`, `market`, `pric
 -- 表的结构 `qinggan_sysmenu`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_sysmenu` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID号',
-  `parent_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '父级ID，0为根菜单',
+CREATE TABLE `qinggan_sysmenu` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID号',
+  `parent_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父级ID，0为根菜单',
   `title` varchar(100) NOT NULL COMMENT '分类名称',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '状态0禁用1正常',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态0禁用1正常',
   `appfile` varchar(100) NOT NULL COMMENT '应用文件名，放在phpok/admin/目录下，记录不带.php',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠，可选0-255',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠，可选0-255',
   `func` varchar(100) NOT NULL COMMENT '应用函数，为空使用index',
   `identifier` varchar(100) NOT NULL COMMENT '标识串，用于区分同一应用文件的不同内容',
   `ext` varchar(255) NOT NULL COMMENT '表单扩展',
-  `if_system` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0常规项目，1系统项目',
-  `site_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '0表示全局网站',
+  `if_system` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0常规项目，1系统项目',
+  `site_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0表示全局网站',
   `icon` varchar(255) NOT NULL COMMENT '图标路径'
-) ENGINE=MyISAM AUTO_INCREMENT=149 DEFAULT CHARSET=utf8 COMMENT='PHPOK后台系统菜单';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='PHPOK后台系统菜单';
 
 --
 -- 转存表中的数据 `qinggan_sysmenu`
@@ -19323,22 +19518,22 @@ INSERT INTO `qinggan_sysmenu` (`id`, `parent_id`, `title`, `status`, `appfile`, 
 -- 表的结构 `qinggan_tag`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_tag` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT 'id',
-  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '站点ID',
+CREATE TABLE `qinggan_tag` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT 'id',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
   `identifier` varchar(255) NOT NULL COMMENT '标识',
   `title` varchar(255) NOT NULL COMMENT '名称',
   `url` varchar(255) NOT NULL COMMENT '关键字网址',
   `target` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0原窗口打开，1新窗口打开',
-  `hits` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '点击次数',
+  `hits` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '点击次数',
   `alt` varchar(255) NOT NULL COMMENT '链接里的提示',
   `is_global` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否全局状态1是0否',
-  `replace_count` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '替换次数',
+  `replace_count` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '替换次数',
   `seo_title` varchar(255) NOT NULL COMMENT 'SEO标题',
   `seo_keywords` varchar(255) NOT NULL COMMENT 'SEO关键字',
   `seo_desc` varchar(255) NOT NULL COMMENT 'SEO描述',
   `tpl` varchar(255) NOT NULL COMMENT '模板名称'
-) ENGINE=MyISAM AUTO_INCREMENT=44 DEFAULT CHARSET=utf8 COMMENT='关键字管理器';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关键字管理器';
 
 --
 -- 转存表中的数据 `qinggan_tag`
@@ -19375,19 +19570,19 @@ INSERT INTO `qinggan_tag` (`id`, `site_id`, `identifier`, `title`, `url`, `targe
 -- 表的结构 `qinggan_tag_node`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_tag_node` (
-  `id` int(10) unsigned NOT NULL COMMENT '主键ID',
-  `tag_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '关联的TagID',
+CREATE TABLE `qinggan_tag_node` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '主键ID',
+  `tag_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '关联的TagID',
   `identifier` varchar(255) NOT NULL COMMENT '标识变量名，在同一个标签里不能重复',
   `title` varchar(255) NOT NULL COMMENT '节点名称',
   `psize` int(11) NOT NULL DEFAULT '0' COMMENT '默认文章数，用于未指定时自动读取的数量',
   `ids` text NOT NULL COMMENT '文章ID，多个ID用英文逗号隔开',
   `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '为1表示读列表，为0表示随机从ids里选择一篇读取（如果有多个）',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0未启用，1启用',
-  `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '项目ID',
-  `cid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '值越小越往前排，最大不超过255'
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='标签节点管理器';
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未启用，1启用',
+  `pid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '项目ID',
+  `cid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '值越小越往前排，最大不超过255'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='标签节点管理器';
 
 --
 -- 转存表中的数据 `qinggan_tag_node`
@@ -19403,9 +19598,9 @@ INSERT INTO `qinggan_tag_node` (`id`, `tag_id`, `identifier`, `title`, `psize`, 
 -- 表的结构 `qinggan_tag_stat`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_tag_stat` (
+CREATE TABLE `qinggan_tag_stat` (
   `title_id` varchar(200) NOT NULL COMMENT '主题ID，以p开头的表示项目ID，以c开头的表示分类ID',
-  `tag_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'TAG标签ID'
+  `tag_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'TAG标签ID'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Tag主题统计';
 
 --
@@ -19444,21 +19639,21 @@ INSERT INTO `qinggan_tag_stat` (`title_id`, `tag_id`) VALUES
 -- 表的结构 `qinggan_task`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_task` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
+CREATE TABLE `qinggan_task` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
   `year` varchar(9) NOT NULL COMMENT '年份',
   `month` varchar(5) NOT NULL COMMENT '月',
   `day` varchar(5) NOT NULL COMMENT '日',
   `hour` varchar(5) NOT NULL COMMENT '时',
   `minute` varchar(5) NOT NULL COMMENT '分',
   `second` varchar(5) NOT NULL COMMENT '秒',
-  `exec_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '开始执行时间',
-  `stop_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '结束时间',
+  `exec_time` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '开始执行时间',
+  `stop_time` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '结束时间',
   `action` varchar(100) NOT NULL COMMENT '执行动作脚本',
   `param` varchar(255) NOT NULL COMMENT '参数',
   `only_once` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1表示仅执行一次',
   `is_lock` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未锁定1已锁定'
-) ENGINE=MyISAM AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COMMENT='计划任务';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='计划任务';
 
 --
 -- 转存表中的数据 `qinggan_task`
@@ -19468,7 +19663,13 @@ INSERT INTO `qinggan_task` (`id`, `year`, `month`, `day`, `hour`, `minute`, `sec
 (28, '2023', '05', '09', '10', '31', '56', 0, 0, 'order', 'id=2&status=create', 1, 0),
 (29, '2023', '05', '11', '08', '54', '44', 0, 0, 'order', 'id=3&status=create', 1, 0),
 (30, '2023', '05', '11', '08', '59', '46', 0, 0, 'order', 'id=4&status=create', 1, 0),
-(31, '2023', '05', '11', '09', '00', '34', 0, 0, 'order', 'id=5&status=create', 1, 0);
+(31, '2023', '05', '11', '09', '00', '34', 0, 0, 'order', 'id=5&status=create', 1, 0),
+(32, '2023', '05', '27', '13', '34', '42', 0, 0, 'order', 'id=1&status=end', 1, 0),
+(33, '2023', '05', '27', '13', '56', '03', 0, 0, 'order', 'id=1&status=shipping', 1, 0),
+(34, '2023', '05', '27', '15', '50', '01', 0, 0, 'order', 'id=2&status=unpaid', 1, 0),
+(35, '2023', '05', '27', '15', '50', '14', 0, 0, 'order', 'id=2&status=unpaid', 1, 0),
+(36, '2023', '05', '27', '15', '50', '23', 0, 0, 'order', 'id=2&status=unpaid', 1, 0),
+(37, '2023', '05', '27', '16', '14', '42', 0, 0, 'order', 'id=2&status=unpaid', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -19476,15 +19677,15 @@ INSERT INTO `qinggan_task` (`id`, `year`, `month`, `day`, `hour`, `minute`, `sec
 -- 表的结构 `qinggan_token`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_token` (
+CREATE TABLE `qinggan_token` (
   `id` int(10) NOT NULL COMMENT '自增ID',
   `key_id` varchar(255) DEFAULT NULL COMMENT '客户端生成API-KEY',
   `sign_code` varchar(255) NOT NULL COMMENT '系统生成的验证密钥',
   `api_code` varchar(255) NOT NULL COMMENT '系统生成的临时密钥',
   `public_key` text COMMENT '系统生成的公钥',
   `private_key` text COMMENT '系统生成的密钥',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `expire_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '失效时间'
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `expire_time` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '失效时间'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -19493,8 +19694,8 @@ CREATE TABLE IF NOT EXISTS `qinggan_token` (
 -- 表的结构 `qinggan_tpl`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_tpl` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID',
+CREATE TABLE `qinggan_tpl` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID',
   `title` varchar(100) NOT NULL COMMENT '模板名称',
   `author` varchar(100) NOT NULL COMMENT '开发者名称',
   `folder` varchar(100) NOT NULL DEFAULT 'www' COMMENT '模板目录',
@@ -19503,7 +19704,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_tpl` (
   `ext` varchar(20) NOT NULL DEFAULT 'html' COMMENT '后缀',
   `folder_change` varchar(255) NOT NULL COMMENT '更改目录',
   `phpfolder` varchar(200) NOT NULL COMMENT 'PHP执行文件目录'
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='模板管理';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='模板管理';
 
 --
 -- 转存表中的数据 `qinggan_tpl`
@@ -19518,25 +19719,25 @@ INSERT INTO `qinggan_tpl` (`id`, `title`, `author`, `folder`, `refresh_auto`, `r
 -- 表的结构 `qinggan_user`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_user` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '自增ID，即会员ID',
-  `group_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '主要会员组',
+CREATE TABLE `qinggan_user` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT '自增ID，即会员ID',
+  `group_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主要会员组',
   `user` varchar(100) NOT NULL COMMENT '会员账号',
   `pass` varchar(100) NOT NULL COMMENT '会员密码',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '状态ID，0未审核1正常2锁定',
-  `regtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '注册时间',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态ID，0未审核1正常2锁定',
+  `regtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '注册时间',
   `email` varchar(200) NOT NULL COMMENT '邮箱，可用于取回密码',
   `mobile` varchar(50) NOT NULL COMMENT '手机或电话',
   `code` varchar(255) NOT NULL COMMENT '验证串，可用于取回密码',
   `avatar` varchar(255) NOT NULL COMMENT '会员头像'
-) ENGINE=MyISAM AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 COMMENT='会员管理';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员管理';
 
 --
 -- 转存表中的数据 `qinggan_user`
 --
 
 INSERT INTO `qinggan_user` (`id`, `group_id`, `user`, `pass`, `status`, `regtime`, `email`, `mobile`, `code`, `avatar`) VALUES
-(23, 7, 'admin', 'ce05be417280893e054859a841bfb424:0e', 1, 1438668082, '40782502@qq.com', '15818533971', 'U2343303', 'https://cdn.phpok.com/res/202208/26/232f3e4d0a58b9da.jpg');
+(23, 7, 'admin', 'ea387b61b453f84e148742bd52a7af6d:80', 1, 1438668082, 'admin@phpok.com', '13166331069', 'U2343303', 'res/202305/26/b37f317bc9172327.jpg');
 
 -- --------------------------------------------------------
 
@@ -19544,9 +19745,9 @@ INSERT INTO `qinggan_user` (`id`, `group_id`, `user`, `pass`, `status`, `regtime
 -- 表的结构 `qinggan_user_address`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_user_address` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID',
+CREATE TABLE `qinggan_user_address` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID',
   `country` varchar(255) NOT NULL DEFAULT '中国' COMMENT '国家',
   `province` varchar(255) NOT NULL COMMENT '省信息',
   `city` varchar(255) NOT NULL COMMENT '市',
@@ -19561,14 +19762,15 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_address` (
   `is_default` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1表示默认地址，0为常规',
   `firstname` varchar(255) NOT NULL COMMENT '名字',
   `lastname` varchar(255) NOT NULL COMMENT '姓氏'
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='会员地址库';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员地址库';
 
 --
 -- 转存表中的数据 `qinggan_user_address`
 --
 
 INSERT INTO `qinggan_user_address` (`id`, `user_id`, `country`, `province`, `city`, `county`, `address`, `address2`, `mobile`, `tel`, `email`, `fullname`, `zipcode`, `is_default`, `firstname`, `lastname`) VALUES
-(1, 23, '中国', '广东', '深圳', '', '测试地址01室', '', '15812345678', '0755-12345678', 'admin@phpok.com', '苏工', '', 0, '', '');
+(1, 23, '中国', '广东', '深圳', '', '测试地址01室', '', '15812345678', '0755-12345678', 'admin@phpok.com', '苏工', '', 1, '', ''),
+(2, 23, '中国', '福建', '泉州', '', '测试地址', '', '15818533971', '', 'admin@phpok.com', '苏工', '', 0, '', '');
 
 -- --------------------------------------------------------
 
@@ -19576,8 +19778,8 @@ INSERT INTO `qinggan_user_address` (`id`, `user_id`, `country`, `province`, `cit
 -- 表的结构 `qinggan_user_ext`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_user_ext` (
-  `id` int(10) unsigned NOT NULL COMMENT '会员ID',
+CREATE TABLE `qinggan_user_ext` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '会员ID',
   `fullname` varchar(255) NOT NULL DEFAULT '' COMMENT '姓名',
   `bgcolor` varchar(255) NOT NULL DEFAULT '' COMMENT '背景色',
   `bgimg` varchar(255) NOT NULL DEFAULT '' COMMENT '背景图片',
@@ -19589,7 +19791,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_ext` (
 --
 
 INSERT INTO `qinggan_user_ext` (`id`, `fullname`, `bgcolor`, `bgimg`, `gender`) VALUES
-(23, '苏相锟', '', '', '男');
+(23, '苏生', '', '', '男');
 
 -- --------------------------------------------------------
 
@@ -19597,29 +19799,29 @@ INSERT INTO `qinggan_user_ext` (`id`, `fullname`, `bgcolor`, `bgimg`, `gender`) 
 -- 表的结构 `qinggan_user_group`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_user_group` (
-  `id` int(10) unsigned NOT NULL COMMENT '会员组ID',
+CREATE TABLE `qinggan_user_group` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '会员组ID',
   `title` varchar(255) NOT NULL COMMENT '会员组名称',
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '0不使用1使用',
-  `is_default` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '1为会员注册默认组',
+  `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '1' COMMENT '0不使用1使用',
+  `is_default` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1为会员注册默认组',
   `is_guest` tinyint(1) NOT NULL DEFAULT '0' COMMENT '游客组',
-  `is_open` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '1开放供用户选择，0不开放',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序',
+  `is_open` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '1开放供用户选择，0不开放',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序',
   `register_status` varchar(100) NOT NULL COMMENT '1通过0审核email邮件code邀请码mobile手机',
-  `tbl_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '关联验证串项目',
-  `tpl_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '通知模板ID',
+  `tbl_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '关联验证串项目',
+  `tpl_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '通知模板ID',
   `fields` text NOT NULL COMMENT '会员字段，多个字段用英文逗号隔开',
   `popedom` longtext NOT NULL COMMENT '权限，包括读写及评论审核'
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='会员组信息管理';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员组信息管理';
 
 --
 -- 转存表中的数据 `qinggan_user_group`
 --
 
 INSERT INTO `qinggan_user_group` (`id`, `title`, `status`, `is_default`, `is_guest`, `is_open`, `taxis`, `register_status`, `tbl_id`, `tpl_id`, `fields`, `popedom`) VALUES
-(2, '普通会员', 1, 1, 0, 1, 10, 'code', 0, 17, 'fullname,gender', 'a:1:{i:1;s:272:"read:43,read:87,read:41,read:45,read:96,post:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:148,read:389,read:451,read:452,read:453,read:456,read:457,read:458,read:459,usercp:96,usercp:152,read:460,reply:43,usercp:43,read:461,reply:151,reply:45";}'),
-(3, '游客组', 1, 0, 1, 0, 200, '', 0, 0, '', 'a:1:{i:1;s:406:"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,read:148,read:386,post:386,read:389,read:390,read:439,read:440,read:443,read:444,read:445,read:448,read:450,post:450,reply:450,post1:450,reply1:450,read:449,post:449,reply:449,post1:449,reply1:449,read:451,read:452,read:453,read:454,read:456,read:457,read:458,read:459,read:460,read:461,reply:151,reply:45";}'),
-(7, 'VIP会员', 1, 0, 0, 0, 255, '0', 0, 37, 'fullname,gender', 'a:1:{i:1;s:309:"read:43,read:87,read:41,read:45,read:96,post:96,post1:96,reply:96,reply1:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:148,read:389,read:451,read:452,read:453,read:454,read:456,read:457,read:458,read:459,usercp:96,usercp:152,read:460,reply:43,usercp:43,read:461,reply:151,reply:45";}');
+(2, '普通会员', 1, 1, 0, 1, 10, 'code', 0, 17, 'fullname,gender', 'a:1:{i:1;s:290:\"read:43,read:87,read:41,read:45,read:96,post:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:148,read:389,read:451,read:452,read:453,read:456,read:457,read:458,read:459,usercp:96,usercp:152,read:460,reply:43,usercp:43,read:461,reply:151,reply:45,read:462,read:463\";}'),
+(3, '游客组', 1, 0, 1, 0, 200, '', 0, 0, '', 'a:1:{i:1;s:424:\"read:43,read:87,read:41,read:42,read:147,read:45,read:150,read:96,post:96,read:144,read:151,read:152,read:148,read:386,post:386,read:389,read:390,read:439,read:440,read:443,read:444,read:445,read:448,read:450,post:450,reply:450,post1:450,reply1:450,read:449,post:449,reply:449,post1:449,reply1:449,read:451,read:452,read:453,read:454,read:456,read:457,read:458,read:459,read:460,read:461,reply:151,reply:45,read:462,read:463\";}'),
+(7, 'VIP会员', 1, 0, 0, 0, 255, '0', 0, 37, 'fullname,gender', 'a:1:{i:1;s:327:\"read:43,read:87,read:41,read:45,read:96,post:96,post1:96,reply:96,reply1:96,read:144,read:151,read:152,post:152,post1:152,reply:152,reply1:152,read:148,read:389,read:451,read:452,read:453,read:454,read:456,read:457,read:458,read:459,usercp:96,usercp:152,read:460,reply:43,usercp:43,read:461,reply:151,reply:45,read:462,read:463\";}');
 
 -- --------------------------------------------------------
 
@@ -19627,14 +19829,14 @@ INSERT INTO `qinggan_user_group` (`id`, `title`, `status`, `is_default`, `is_gue
 -- 表的结构 `qinggan_user_links`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_user_links` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID，主键ID',
-  `user_id` int(10) unsigned NOT NULL COMMENT '会员ID',
-  `who_id` int(10) unsigned NOT NULL COMMENT '关注或黑名单的会员ID',
-  `addtime` int(10) unsigned NOT NULL COMMENT '关注时间',
+CREATE TABLE `qinggan_user_links` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID，主键ID',
+  `user_id` int(10) UNSIGNED NOT NULL COMMENT '会员ID',
+  `who_id` int(10) UNSIGNED NOT NULL COMMENT '关注或黑名单的会员ID',
+  `addtime` int(10) UNSIGNED NOT NULL COMMENT '关注时间',
   `is_black` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0普通模式，1黑名单模式',
   `is_idol` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0普通模式，1爱豆模式'
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='会员互关表，包括黑名单模式';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员互关表，包括黑名单模式';
 
 --
 -- 转存表中的数据 `qinggan_user_links`
@@ -19650,10 +19852,10 @@ INSERT INTO `qinggan_user_links` (`id`, `user_id`, `who_id`, `addtime`, `is_blac
 -- 表的结构 `qinggan_user_relation`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_user_relation` (
-  `uid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
-  `introducer` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '介绍人ID',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '介绍时间'
+CREATE TABLE `qinggan_user_relation` (
+  `uid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `introducer` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '介绍人ID',
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '介绍时间'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员介绍关系图';
 
 -- --------------------------------------------------------
@@ -19662,25 +19864,25 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_relation` (
 -- 表的结构 `qinggan_wealth`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_wealth` (
-  `id` int(10) unsigned NOT NULL COMMENT '财富ID',
-  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '站点ID',
+CREATE TABLE `qinggan_wealth` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '财富ID',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
   `title` varchar(100) NOT NULL COMMENT '财产名称',
   `identifier` varchar(100) NOT NULL COMMENT '标识，仅限英文字符',
   `unit` varchar(100) NOT NULL COMMENT '单位名称',
   `dnum` tinyint(1) NOT NULL DEFAULT '0' COMMENT '保留几位小数，为0表示只取整数',
   `ifpay` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否支持充值',
-  `pay_ratio` float unsigned NOT NULL DEFAULT '0' COMMENT '兑换比例，即1元可以兑换多少，为0不支持充值，为1表示1：1，不支持小数',
+  `pay_ratio` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '兑换比例，即1元可以兑换多少，为0不支持充值，为1表示1：1，不支持小数',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0不使用1使用',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序，0-255，越小越往前靠',
-  `ifcash` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否抵现，即允许财富当现金使用',
-  `cash_ratio` float unsigned NOT NULL DEFAULT '0' COMMENT '抵现比例，即100财富值可抵用多少元',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，0-255，越小越往前靠',
+  `ifcash` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '是否抵现，即允许财富当现金使用',
+  `cash_ratio` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '抵现比例，即100财富值可抵用多少元',
   `ifcheck` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否审核，为1时表示获取到的财富需要管理员审核后才行',
-  `min_val` float unsigned NOT NULL DEFAULT '0' COMMENT '最低使用值',
+  `min_val` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '最低使用值',
   `banner` varchar(255) NOT NULL COMMENT '大图',
   `thumb` varchar(255) NOT NULL COMMENT '小图',
   `iconfont` varchar(255) NOT NULL COMMENT '字体图标'
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='财富类型';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='财富类型';
 
 --
 -- 转存表中的数据 `qinggan_wealth`
@@ -19696,11 +19898,11 @@ INSERT INTO `qinggan_wealth` (`id`, `site_id`, `title`, `identifier`, `unit`, `d
 -- 表的结构 `qinggan_wealth_info`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_wealth_info` (
-  `wid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '方案ID',
-  `uid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题ID或会员ID或分类ID或项目ID',
+CREATE TABLE `qinggan_wealth_info` (
+  `wid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '方案ID',
+  `uid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题ID或会员ID或分类ID或项目ID',
   `lasttime` int(11) NOT NULL DEFAULT '0' COMMENT '最后一次更新时间',
-  `val` float unsigned NOT NULL DEFAULT '0' COMMENT '最小财富为0，不考虑负数情况'
+  `val` float UNSIGNED NOT NULL DEFAULT '0' COMMENT '最小财富为0，不考虑负数情况'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='财富内容';
 
 --
@@ -19708,8 +19910,8 @@ CREATE TABLE IF NOT EXISTS `qinggan_wealth_info` (
 --
 
 INSERT INTO `qinggan_wealth_info` (`wid`, `uid`, `lasttime`, `val`) VALUES
-(1, 23, 1683766131, 657.1),
-(6, 23, 1647522841, 9.9);
+(1, 23, 1685165677, 2978.1),
+(6, 23, 1685175163, 11.2);
 
 -- --------------------------------------------------------
 
@@ -19717,23 +19919,23 @@ INSERT INTO `qinggan_wealth_info` (`wid`, `uid`, `lasttime`, `val`) VALUES
 -- 表的结构 `qinggan_wealth_log`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_wealth_log` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `wid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '财富ID',
-  `rule_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '规则ID',
-  `goal_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '目标会员ID',
+CREATE TABLE `qinggan_wealth_log` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `wid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '财富ID',
+  `rule_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '规则ID',
+  `goal_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '目标会员ID',
   `mid` varchar(100) NOT NULL COMMENT '主键ID关联',
   `val` float NOT NULL DEFAULT '0' COMMENT '不带负号表示增加，带负号表示减去',
   `note` varchar(255) NOT NULL COMMENT '操作摘要',
   `appid` enum('admin','www','api') NOT NULL DEFAULT 'www' COMMENT '来自哪个接口',
   `dateline` int(11) NOT NULL DEFAULT '0' COMMENT '写入时间',
-  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '会员ID，为0非会员',
-  `admin_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '管理员ID，为0非管理员',
+  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '会员ID，为0非会员',
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '管理员ID，为0非管理员',
   `ctrlid` varchar(100) NOT NULL COMMENT '控制器ID',
   `funcid` varchar(100) NOT NULL COMMENT '方法ID',
   `url` varchar(255) NOT NULL COMMENT '执行的URL',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未审核1已审核'
-) ENGINE=MyISAM AUTO_INCREMENT=131 DEFAULT CHARSET=utf8 COMMENT='财富获取或消耗日志';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='财富获取或消耗日志';
 
 --
 -- 转存表中的数据 `qinggan_wealth_log`
@@ -19861,7 +20063,16 @@ INSERT INTO `qinggan_wealth_log` (`id`, `wid`, `rule_id`, `goal_id`, `mid`, `val
 (127, 1, 12, 23, '2511', 1, '阅读#2511', 'www', 1683519501, 23, 0, 'content', 'index', '', 1),
 (128, 1, 5, 23, '', 10, '用户登录', 'api', 1683599174, 0, 0, 'login', 'index', '', 1),
 (129, 1, 13, 23, '2455', 5, '管理员审核评论#43', 'admin', 1683600238, 0, 1, 'reply', 'status', '', 1),
-(130, 1, 5, 23, '', 10, '用户登录', 'api', 1683766131, 0, 0, 'login', 'index', '', 1);
+(130, 1, 5, 23, '', 10, '用户登录', 'api', 1683766131, 0, 0, 'login', 'index', '', 1),
+(131, 1, 5, 23, '', 10, '用户登录', 'api', 1683969716, 0, 0, 'login', 'index', '', 1),
+(132, 1, 5, 23, '', 10, '用户登录', 'api', 1685072903, 0, 0, 'login', 'index', '', 1),
+(133, 1, 5, 23, '', 10, '用户登录', 'api', 1685150372, 0, 0, 'login', 'index', '', 1),
+(134, 1, 15, 23, '2528', 10, '发布：这个也是测试用的', 'api', 1685155182, 23, 0, 'post', 'ok', '', 1),
+(135, 1, 12, 23, '2528', 1, '阅读#2528', 'www', 1685155193, 23, 0, 'content', 'index', '', 1),
+(136, 1, 13, 23, '2528', 5, '评论：这个也是测试用的', 'api', 1685155256, 23, 0, 'comment', 'save', '', 1),
+(137, 1, 14, 23, '1', 2275, '订单完成结算', 'admin', 1685165677, 23, 1, 'order', 'status', '', 1),
+(138, 6, 0, 23, '0', 1, '在线充值', 'api', 1685174596, 23, 0, 'payment', 'query', '', 1),
+(139, 6, 0, 23, '0', 0.3, '在线充值', 'api', 1685175163, 23, 0, 'payment', 'query', '', 1);
 
 -- --------------------------------------------------------
 
@@ -19869,25 +20080,25 @@ INSERT INTO `qinggan_wealth_log` (`id`, `wid`, `rule_id`, `goal_id`, `mid`, `val
 -- 表的结构 `qinggan_wealth_rule`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_wealth_rule` (
-  `id` int(10) unsigned NOT NULL COMMENT '规则ID',
-  `wid` int(10) unsigned NOT NULL COMMENT '财产ID',
+CREATE TABLE `qinggan_wealth_rule` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '规则ID',
+  `wid` int(10) UNSIGNED NOT NULL COMMENT '财产ID',
   `action` varchar(255) NOT NULL COMMENT '触发动作',
   `val` varchar(255) NOT NULL DEFAULT '0' COMMENT '值，负值表示减，大于0表示加，支持计算如price*2',
   `goal` varchar(255) NOT NULL DEFAULT 'user' COMMENT '目标类型user用户，agent1一级代理',
-  `taxis` tinyint(3) unsigned NOT NULL DEFAULT '255' COMMENT '排序',
-  `group_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '0不限制，其他限制这条规则仅在此会员组下的会员有效',
+  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序',
+  `group_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限制，其他限制这条规则仅在此会员组下的会员有效',
   `uids` varchar(255) NOT NULL COMMENT '多个会员ID用英文逗号隔开',
   `qty_type` varchar(255) NOT NULL DEFAULT 'order' COMMENT 'order指订单数，product指产品数',
-  `qty` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '0不限，其他值是在订单数量或产品数量值',
+  `qty` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限，其他值是在订单数量或产品数量值',
   `price_type` varchar(255) NOT NULL DEFAULT 'order' COMMENT 'order指订单价格，product指产品价格',
-  `price` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '0不限，其他值指订单或产品价格时有效',
-  `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '0不限制，其他值限制项目',
+  `price` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限，其他值指订单或产品价格时有效',
+  `project_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限制，其他值限制项目',
   `title_id` varchar(255) NOT NULL COMMENT '主题限制，多个主题用英文逗号隔开，建议不超过30个主题',
-  `goal_group_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '0不限，其他限制目标会员组ID',
+  `goal_group_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不限，其他限制目标会员组ID',
   `goal_uids` varchar(255) NOT NULL COMMENT '目标会员ID，多个会员ID用英文逗号隔开',
-  `if_stop` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0不中止，1中止'
-) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COMMENT='财富生成规则';
+  `if_stop` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不中止，1中止'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='财富生成规则';
 
 --
 -- 转存表中的数据 `qinggan_wealth_rule`
@@ -19916,12 +20127,12 @@ INSERT INTO `qinggan_wealth_rule` (`id`, `wid`, `action`, `val`, `goal`, `taxis`
 -- 表的结构 `qinggan_wholesale`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_wholesale` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '主题',
-  `qty` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '数量',
-  `price` decimal(10,4) unsigned NOT NULL DEFAULT '0.0000' COMMENT '价格'
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='批发价格管理';
+CREATE TABLE `qinggan_wholesale` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '主题',
+  `qty` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '数量',
+  `price` decimal(10,4) UNSIGNED NOT NULL DEFAULT '0.0000' COMMENT '价格'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='批发价格管理';
 
 --
 -- 转存表中的数据 `qinggan_wholesale`
@@ -19930,7 +20141,8 @@ CREATE TABLE IF NOT EXISTS `qinggan_wholesale` (
 INSERT INTO `qinggan_wholesale` (`id`, `tid`, `qty`, `price`) VALUES
 (2, 2282, 100, '3588.0000'),
 (6, 2282, 20, '3988.0000'),
-(7, 2282, 40, '3888.0000');
+(7, 2282, 40, '3888.0000'),
+(9, 2456, 5, '2399.0000');
 
 -- --------------------------------------------------------
 
@@ -19938,24 +20150,24 @@ INSERT INTO `qinggan_wholesale` (`id`, `tid`, `qty`, `price`) VALUES
 -- 表的结构 `qinggan_world_location`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_world_location` (
-  `id` int(11) unsigned NOT NULL COMMENT '主键',
-  `pid` int(11) unsigned DEFAULT '0' COMMENT '父ID',
+CREATE TABLE `qinggan_world_location` (
+  `id` int(11) UNSIGNED NOT NULL COMMENT '主键',
+  `pid` int(11) UNSIGNED DEFAULT '0' COMMENT '父ID',
   `name` varchar(255) DEFAULT NULL COMMENT '中文名称',
   `name_en` varchar(255) DEFAULT NULL COMMENT '英文名称',
   `code` varchar(50) DEFAULT NULL COMMENT '代码',
   `code2` varchar(10) NOT NULL COMMENT '2位国际编码',
-  `status` tinyint(1) unsigned DEFAULT '0' COMMENT '默认是否显示1，隐藏0',
+  `status` tinyint(1) UNSIGNED DEFAULT '0' COMMENT '默认是否显示1，隐藏0',
   `excise_rate` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '消费税税率，值都是小于1的',
-  `tariff_rate` decimal(10,4) unsigned NOT NULL DEFAULT '0.0000' COMMENT '关税税率，无关税请留0值',
+  `tariff_rate` decimal(10,4) UNSIGNED NOT NULL DEFAULT '0.0000' COMMENT '关税税率，无关税请留0值',
   `lang_code` varchar(10) NOT NULL COMMENT '执行的语言包',
-  `site_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '锁定站点ID，为0表示默认',
-  `tpl_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '模板风格文件，为0读取默认板风格',
-  `taxis` int(10) unsigned NOT NULL DEFAULT '255' COMMENT '值越小越往前排',
-  `currency_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '货币ID，为0使用站点默认',
-  `freight_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '运费计算方式',
+  `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '锁定站点ID，为0表示默认',
+  `tpl_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '模板风格文件，为0读取默认板风格',
+  `taxis` int(10) UNSIGNED NOT NULL DEFAULT '255' COMMENT '值越小越往前排',
+  `currency_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '货币ID，为0使用站点默认',
+  `freight_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '运费计算方式',
   `note` varchar(255) NOT NULL COMMENT '备注'
-) ENGINE=MyISAM AUTO_INCREMENT=4173 DEFAULT CHARSET=utf8 COMMENT='全球地区库';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='全球地区库';
 
 --
 -- 转存表中的数据 `qinggan_world_location`
@@ -20070,7 +20282,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (107, 4, '开曼群岛', 'Cayman Islands', 'CYM', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (108, 6, '科科斯群岛', 'Cocos(Keeling)Islands', 'CCK', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (109, 3, '科摩罗', 'Comoros', 'COM', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(110, 3, '科特迪瓦', 'Cote d''Ivoire', 'CIV', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(110, 3, '科特迪瓦', 'Cote d\'Ivoire', 'CIV', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (111, 1, '科威特', 'Kuwait', 'KWT', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (112, 2, '克罗地亚', 'Croatia', 'HRV', '', 1, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (113, 3, '肯尼亚', 'Kenya', 'KEN', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -20432,7 +20644,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (471, 11, '特雷利乌', 'Trelew', 'REL', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (472, 11, '乌斯怀亚', 'Ushuaia', 'USH', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (473, 12, '阿布扎比', 'Abu Dhabi', 'AZ', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(474, 12, '艾因', 'Al l''Ayn', 'AL', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(474, 12, '艾因', 'Al l\'Ayn', 'AL', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (475, 12, '迪拜', 'Dubai', 'DU', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (476, 12, '沙迦', 'Ash Shariqah', 'SH', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (477, 14, '巴提奈地区', 'Al-Batinah', 'BA', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -20831,9 +21043,9 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (869, 54, '江界', 'Kanggye', 'KAN', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (870, 54, '开城', 'Kaesong', 'KSN', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (871, 54, '罗先', 'Naseon', 'NAS', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(872, 54, '南浦', 'Namp''o', 'NAM', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(872, 54, '南浦', 'Namp\'o', 'NAM', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (873, 54, '平壤', 'Pyongyang', 'FNJ', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(874, 54, '清津', 'Ch''ongjin', 'CHO', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(874, 54, '清津', 'Ch\'ongjin', 'CHO', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (875, 54, '沙里院', 'Sariwon', 'SAR', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (876, 54, '咸兴', 'Hamhung', 'HAM', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (877, 54, '新义州', 'Sinuiju', 'SII', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -21220,7 +21432,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (1257, 90, '马斯特里赫特', 'Maastricht', 'MST', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (1258, 90, '米德尔堡', 'Middelburg', 'MDL', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (1259, 90, '奈梅亨', 'Nijmegen', 'NIJ', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(1260, 90, '斯海尔托亨博思', '''s-Hertogenbosch', 'HTB', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(1260, 90, '斯海尔托亨博思', '\'s-Hertogenbosch', 'HTB', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (1261, 90, '乌得勒支', 'Utrecht', 'UTC', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (1262, 90, '兹沃勒', 'Zwolle', 'ZWO', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (1263, 90, '佐特尔梅', 'Zoetermeer', 'ZTM', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -21299,7 +21511,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (1336, 99, '桑德贝', 'Thunder Bay', 'THU', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (1337, 99, '舍布鲁克', 'Sherbrooke', 'SBE', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (1338, 99, '圣卡塔琳娜', 'St. Catharines', 'SCA', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(1339, 99, '圣约翰斯', 'Saint-John''s', 'SJB', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(1339, 99, '圣约翰斯', 'Saint-John\'s', 'SJB', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (1340, 99, '维多利亚', 'Victoria', 'VIC', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (1341, 99, '温哥华', 'Vancouver', 'VAN', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (1342, 99, '温尼伯', 'Winnipeg', 'WNP', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -22835,7 +23047,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (2869, 234, '科森扎', 'Cosenza', 'QCS', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (2870, 234, '克罗托内', 'Crotone', 'CRV', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (2871, 234, '库内奥', 'Cuneo', 'CUN', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(2872, 234, '拉奎拉', 'L''Aquila', 'LAQ', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(2872, 234, '拉奎拉', 'L\'Aquila', 'LAQ', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (2873, 234, '拉斯佩齐亚', 'La Spezia', 'SPE', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (2874, 234, '莱科', 'Lecco', 'LCO', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (2875, 234, '莱切', 'Lecce', 'LCC', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23047,7 +23259,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3081, 251, '呼伦贝尔', 'Hulun Buir', '7', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3082, 251, '巴彦淖尔', 'Bayannur', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3083, 251, '乌兰察布', 'Ulan Qab', '9', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3084, 251, '兴安', 'Xing''an', '22', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3084, 251, '兴安', 'Xing\'an', '22', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3085, 251, '锡林郭勒', 'Xilin Gol', '25', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3086, 251, '阿拉善', 'Alxa', '29', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3087, 252, '沈阳', 'Shenyang', '1', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23090,7 +23302,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3124, 255, '卢湾', 'Luwan', '3', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3125, 255, '徐汇', 'Xuhui', '4', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3126, 255, '长宁', 'Changning', '5', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3127, 255, '静安', 'Jing''an', '6', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3127, 255, '静安', 'Jing\'an', '6', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3128, 255, '普陀', 'Putuo', '7', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3129, 255, '闸北', 'Zhabei', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3130, 255, '虹口', 'Hongkou', '9', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23111,7 +23323,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3145, 256, '苏州', 'Suzhou', '5', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3146, 256, '南通', 'Nantong', '6', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3147, 256, '连云港', 'Lianyungang', '7', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3148, 256, '淮安', 'Huai''an', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3148, 256, '淮安', 'Huai\'an', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3149, 256, '盐城', 'Yancheng', '9', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3150, 256, '扬州', 'Yangzhou', '10', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3151, 256, '镇江', 'Zhenjiang', '11', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23132,7 +23344,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3166, 258, '芜湖', 'Wuhu', '2', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3167, 258, '蚌埠', 'Bengbu', '3', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3168, 258, '淮南', 'Huainan', '4', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3169, 258, '马鞍山', 'Ma''anshan', '5', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3169, 258, '马鞍山', 'Ma\'anshan', '5', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3170, 258, '淮北', 'Huaibei', '6', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3171, 258, '铜陵', 'Tongling', '7', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3172, 258, '安庆', 'Anqing', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23140,7 +23352,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3174, 258, '滁州', 'Chuzhou', '11', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3175, 258, '阜阳', 'Fuyang', '12', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3176, 258, '宿州', 'Suzhou', '13', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3177, 258, '六安', 'Lu''an', '15', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3177, 258, '六安', 'Lu\'an', '15', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3178, 258, '亳州', 'Bozhou', '16', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3179, 258, '池州', 'Chizhou', '17', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3180, 258, '宣城', 'Xuancheng', '18', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23160,7 +23372,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3194, 260, '新余', 'Xinyu', '5', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3195, 260, '鹰潭', 'Yingtan', '6', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3196, 260, '赣州', 'Ganzhou', '7', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3197, 260, '吉安', 'Ji''an', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3197, 260, '吉安', 'Ji\'an', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3198, 260, '宜春', 'Yichun', '9', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3199, 260, '抚州', 'Fuzhou', '10', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3200, 260, '上饶', 'Shangrao', '11', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23172,7 +23384,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3206, 261, '烟台', 'Yantai', '6', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3207, 261, '潍坊', 'Weifang', '7', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3208, 261, '济宁', 'Jining', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3209, 261, '泰安', 'Tai''an', '9', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3209, 261, '泰安', 'Tai\'an', '9', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3210, 261, '威海', 'Weihai', '10', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3211, 261, '日照', 'Rizhao', '11', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3212, 261, '莱芜', 'Laiwu', '12', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23274,7 +23486,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3308, 267, '文昌', 'Wenchang', '95', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3309, 267, '万宁', 'Wanning', '96', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3310, 267, '东方', 'Dongfang', '97', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3311, 267, '定安', 'Ding''an', 'A25', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3311, 267, '定安', 'Ding\'an', 'A25', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3312, 267, '屯昌', 'Tunchang', 'A26', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3313, 267, '澄迈', 'Cengmai', 'A27', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3314, 267, '临高', 'Lingao', 'A28', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23291,13 +23503,13 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3325, 268, '江北', 'Jiangbei', '5', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3326, 268, '沙坪坝', 'Shapingba', '6', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3327, 268, '九龙坡', 'Jiulongpo', '7', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3328, 268, '南岸', 'Nan''an', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3328, 268, '南岸', 'Nan\'an', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3329, 268, '北碚', 'Beibei', '9', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3330, 268, '两江新区', 'Kaixian', '85', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3331, 268, '万盛', 'Wansheng', '10', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3332, 268, '双桥', 'Shuangqiao', '11', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3333, 268, '渝北', 'Yubei', '12', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3334, 268, '巴南', 'Ba''nan', '13', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3334, 268, '巴南', 'Ba\'nan', '13', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3335, 268, '长寿', 'Changshou', '21', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3336, 268, '綦江', 'Qijiang', '22', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3337, 268, '潼南', 'Tongnan', '23', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23339,9 +23551,9 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3372, 269, '南充', 'Nanchong', '13', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3373, 269, '眉山', 'Meishan', '14', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3374, 269, '宜宾', 'Yibin', '15', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3375, 269, '广安', 'Guang''an', '16', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3375, 269, '广安', 'Guang\'an', '16', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3376, 269, '达州', 'Dazhou', '17', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3377, 269, '雅安', 'Ya''an', '18', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3377, 269, '雅安', 'Ya\'an', '18', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3378, 269, '巴中', 'Bazhong', '19', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3379, 269, '资阳', 'Ziyang', '20', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3380, 269, '阿坝', 'Aba Tibetan-Qiang Autonomous Prefecture', '32', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23362,7 +23574,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3395, 271, '保山', 'Baoshan', '5', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3396, 271, '昭通', 'Zhaotong', '6', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3397, 271, '丽江', 'Lijiang', '7', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3398, 271, '普洱', 'Pu''er', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3398, 271, '普洱', 'Pu\'er', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3399, 271, '临沧', 'Lincang', '9', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3400, 271, '楚雄', 'Chuxiong Yi Autonomous Prefecture', '23', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3401, 271, '红河', 'Honghe Hani-Yi Autonomous Prefecture', '25', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23379,12 +23591,12 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3412, 272, '那曲', 'Nagqu', '24', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3413, 272, '阿里', 'Ngari', '25', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3414, 272, '林芝', 'Nyingchi', '26', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3415, 273, '西安', 'Xi''an', '1', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3415, 273, '西安', 'Xi\'an', '1', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3416, 273, '铜川', 'Tongchuan', '2', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3417, 273, '宝鸡', 'Baoji', '3', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3418, 273, '咸阳', 'Xianyang', '4', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3419, 273, '渭南', 'Weinan', '5', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3420, 273, '延安', 'Yan''an', '6', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3420, 273, '延安', 'Yan\'an', '6', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3421, 273, '汉中', 'Hanzhong', '7', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3422, 273, '榆林', 'Yulin', '8', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3423, 273, '安康', 'Ankang', '9', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23801,7 +24013,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3834, 323, '波卡特洛', 'Pocatello', 'PIH', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3835, 323, '博伊西', 'Boise', 'BOI', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3836, 323, '布莱克富特', 'Blackfoot', 'BLK', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3837, 323, '科达伦', 'Coeur d''Alene', 'COE', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3837, 323, '科达伦', 'Coeur d\'Alene', 'COE', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3838, 323, '刘易斯顿', 'Lewiston', 'LWS', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3839, 323, '莫斯科', 'Moscow', 'MJL', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3840, 323, '墨菲', 'Murphy', 'ZMU', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -23848,7 +24060,7 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 (3881, 331, '达尔斯', 'The Dalles', 'DLS', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3882, 331, '达拉斯', 'Dallas', 'DAC', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3883, 331, '蒂拉穆克', 'Tillamook', 'TLM', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
-(3884, 331, '格兰茨帕斯', 'Grant''s Pass', 'XFX', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
+(3884, 331, '格兰茨帕斯', 'Grant\'s Pass', 'XFX', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3885, 331, '胡德里弗', 'Hood River', 'HDX', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3886, 331, '火山口湖', 'Crater Lake', 'CTR', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
 (3887, 331, '科瓦利斯', 'Corvallis', 'YCV', '', 0, '0.0000', '0.0000', '', 0, 0, 255, 0, 0, ''),
@@ -24144,10 +24356,10 @@ INSERT INTO `qinggan_world_location` (`id`, `pid`, `name`, `name_en`, `code`, `c
 -- 表的结构 `qinggan_world_price`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_world_price` (
-  `id` int(10) unsigned NOT NULL COMMENT '自增ID',
-  `region_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '国家ID（地区ID）',
-  `tid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '产品ID',
+CREATE TABLE `qinggan_world_price` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '自增ID',
+  `region_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '国家ID（地区ID）',
+  `tid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '产品ID',
   `price` decimal(15,4) NOT NULL DEFAULT '0.0000' COMMENT '价格',
   `vtype` varchar(10) NOT NULL COMMENT '类型，price价格，freight运费，excise消费税，tariff关税'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='针对不同国家实现不同的价格';
@@ -24158,13 +24370,13 @@ CREATE TABLE IF NOT EXISTS `qinggan_world_price` (
 -- 表的结构 `qinggan_yunmarket_client`
 --
 
-CREATE TABLE IF NOT EXISTS `qinggan_yunmarket_client` (
-  `id` int(10) unsigned NOT NULL COMMENT '主键ID',
+CREATE TABLE `qinggan_yunmarket_client` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT '主键ID',
   `md5` varchar(255) NOT NULL COMMENT 'MD5码',
   `version` varchar(50) NOT NULL COMMENT '版本号',
   `version_update` varchar(50) NOT NULL COMMENT '内部版本号',
   `folder` varchar(50) NOT NULL COMMENT '安装目录，用于删操作',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '安装时间'
+  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '安装时间'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='验证是否已安装';
 
 --
@@ -24175,11 +24387,11 @@ INSERT INTO `qinggan_yunmarket_client` (`id`, `md5`, `version`, `version_update`
 (32504, 'hf61jbm4ckijdfiak8kxtryyzymfy6ad', '1.0.0', '10000', 'extension/demo', 1683195547);
 
 --
--- Indexes for dumped tables
+-- 转储表的索引
 --
 
 --
--- Indexes for table `qinggan_77`
+-- 表的索引 `qinggan_77`
 --
 ALTER TABLE `qinggan_77`
   ADD PRIMARY KEY (`id`),
@@ -24190,7 +24402,7 @@ ALTER TABLE `qinggan_77`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_114`
+-- 表的索引 `qinggan_114`
 --
 ALTER TABLE `qinggan_114`
   ADD PRIMARY KEY (`id`),
@@ -24200,56 +24412,66 @@ ALTER TABLE `qinggan_114`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_adm`
+-- 表的索引 `qinggan_119`
+--
+ALTER TABLE `qinggan_119`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `site_id` (`site_id`),
+  ADD KEY `site_project` (`site_id`,`project_id`),
+  ADD KEY `site_cate` (`site_id`,`cate_id`),
+  ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
+
+--
+-- 表的索引 `qinggan_adm`
 --
 ALTER TABLE `qinggan_adm`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_adm_popedom`
+-- 表的索引 `qinggan_adm_popedom`
 --
 ALTER TABLE `qinggan_adm_popedom`
   ADD PRIMARY KEY (`id`,`pid`);
 
 --
--- Indexes for table `qinggan_all`
+-- 表的索引 `qinggan_all`
 --
 ALTER TABLE `qinggan_all`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_apps`
+-- 表的索引 `qinggan_apps`
 --
 ALTER TABLE `qinggan_apps`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_attr`
+-- 表的索引 `qinggan_attr`
 --
 ALTER TABLE `qinggan_attr`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_attr_values`
+-- 表的索引 `qinggan_attr_values`
 --
 ALTER TABLE `qinggan_attr_values`
   ADD PRIMARY KEY (`id`),
   ADD KEY `aid` (`aid`);
 
 --
--- Indexes for table `qinggan_cart`
+-- 表的索引 `qinggan_cart`
 --
 ALTER TABLE `qinggan_cart`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_cart_product`
+-- 表的索引 `qinggan_cart_product`
 --
 ALTER TABLE `qinggan_cart_product`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_cate`
+-- 表的索引 `qinggan_cate`
 --
 ALTER TABLE `qinggan_cate`
   ADD PRIMARY KEY (`id`),
@@ -24257,7 +24479,7 @@ ALTER TABLE `qinggan_cate`
   ADD KEY `site_id` (`site_id`,`status`);
 
 --
--- Indexes for table `qinggan_click`
+-- 表的索引 `qinggan_click`
 --
 ALTER TABLE `qinggan_click`
   ADD PRIMARY KEY (`id`),
@@ -24265,89 +24487,89 @@ ALTER TABLE `qinggan_click`
   ADD KEY `guest` (`tid`,`session_id`,`code`,`ip`,`tbl`);
 
 --
--- Indexes for table `qinggan_config`
+-- 表的索引 `qinggan_config`
 --
 ALTER TABLE `qinggan_config`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `identifier` (`identifier`,`langid`) USING BTREE;
 
 --
--- Indexes for table `qinggan_currency`
+-- 表的索引 `qinggan_currency`
 --
 ALTER TABLE `qinggan_currency`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_design`
+-- 表的索引 `qinggan_design`
 --
 ALTER TABLE `qinggan_design`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_email`
+-- 表的索引 `qinggan_email`
 --
 ALTER TABLE `qinggan_email`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_express`
+-- 表的索引 `qinggan_express`
 --
 ALTER TABLE `qinggan_express`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_extc`
+-- 表的索引 `qinggan_extc`
 --
 ALTER TABLE `qinggan_extc`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_fields`
+-- 表的索引 `qinggan_fields`
 --
 ALTER TABLE `qinggan_fields`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_fields_ext`
+-- 表的索引 `qinggan_fields_ext`
 --
 ALTER TABLE `qinggan_fields_ext`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fields_id` (`fields_id`);
 
 --
--- Indexes for table `qinggan_freight`
+-- 表的索引 `qinggan_freight`
 --
 ALTER TABLE `qinggan_freight`
   ADD PRIMARY KEY (`id`),
   ADD KEY `country_id` (`country_id`);
 
 --
--- Indexes for table `qinggan_freight_price`
+-- 表的索引 `qinggan_freight_price`
 --
 ALTER TABLE `qinggan_freight_price`
   ADD PRIMARY KEY (`zid`,`unit_val`);
 
 --
--- Indexes for table `qinggan_freight_zone`
+-- 表的索引 `qinggan_freight_zone`
 --
 ALTER TABLE `qinggan_freight_zone`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fid` (`fid`);
 
 --
--- Indexes for table `qinggan_gateway`
+-- 表的索引 `qinggan_gateway`
 --
 ALTER TABLE `qinggan_gateway`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_gd`
+-- 表的索引 `qinggan_gd`
 --
 ALTER TABLE `qinggan_gd`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_list`
+-- 表的索引 `qinggan_list`
 --
 ALTER TABLE `qinggan_list`
   ADD PRIMARY KEY (`id`),
@@ -24355,7 +24577,7 @@ ALTER TABLE `qinggan_list`
   ADD KEY `site_id` (`site_id`,`identifier`,`status`);
 
 --
--- Indexes for table `qinggan_list_21`
+-- 表的索引 `qinggan_list_21`
 --
 ALTER TABLE `qinggan_list_21`
   ADD PRIMARY KEY (`id`),
@@ -24365,7 +24587,7 @@ ALTER TABLE `qinggan_list_21`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_22`
+-- 表的索引 `qinggan_list_22`
 --
 ALTER TABLE `qinggan_list_22`
   ADD PRIMARY KEY (`id`),
@@ -24375,7 +24597,7 @@ ALTER TABLE `qinggan_list_22`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_24`
+-- 表的索引 `qinggan_list_24`
 --
 ALTER TABLE `qinggan_list_24`
   ADD PRIMARY KEY (`id`),
@@ -24385,28 +24607,28 @@ ALTER TABLE `qinggan_list_24`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_40`
+-- 表的索引 `qinggan_list_40`
 --
 ALTER TABLE `qinggan_list_40`
   ADD PRIMARY KEY (`id`),
   ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_46`
+-- 表的索引 `qinggan_list_46`
 --
 ALTER TABLE `qinggan_list_46`
   ADD PRIMARY KEY (`id`),
   ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_64`
+-- 表的索引 `qinggan_list_64`
 --
 ALTER TABLE `qinggan_list_64`
   ADD PRIMARY KEY (`id`),
   ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_65`
+-- 表的索引 `qinggan_list_65`
 --
 ALTER TABLE `qinggan_list_65`
   ADD PRIMARY KEY (`id`),
@@ -24416,7 +24638,7 @@ ALTER TABLE `qinggan_list_65`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_66`
+-- 表的索引 `qinggan_list_66`
 --
 ALTER TABLE `qinggan_list_66`
   ADD PRIMARY KEY (`id`),
@@ -24426,14 +24648,14 @@ ALTER TABLE `qinggan_list_66`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_68`
+-- 表的索引 `qinggan_list_68`
 --
 ALTER TABLE `qinggan_list_68`
   ADD PRIMARY KEY (`id`),
   ADD KEY `site_id` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_110`
+-- 表的索引 `qinggan_list_110`
 --
 ALTER TABLE `qinggan_list_110`
   ADD PRIMARY KEY (`id`),
@@ -24443,7 +24665,7 @@ ALTER TABLE `qinggan_list_110`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_112`
+-- 表的索引 `qinggan_list_112`
 --
 ALTER TABLE `qinggan_list_112`
   ADD PRIMARY KEY (`id`),
@@ -24453,7 +24675,7 @@ ALTER TABLE `qinggan_list_112`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_115`
+-- 表的索引 `qinggan_list_115`
 --
 ALTER TABLE `qinggan_list_115`
   ADD PRIMARY KEY (`id`),
@@ -24463,7 +24685,7 @@ ALTER TABLE `qinggan_list_115`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_116`
+-- 表的索引 `qinggan_list_116`
 --
 ALTER TABLE `qinggan_list_116`
   ADD PRIMARY KEY (`id`),
@@ -24473,7 +24695,7 @@ ALTER TABLE `qinggan_list_116`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_117`
+-- 表的索引 `qinggan_list_117`
 --
 ALTER TABLE `qinggan_list_117`
   ADD PRIMARY KEY (`id`),
@@ -24483,20 +24705,30 @@ ALTER TABLE `qinggan_list_117`
   ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
 
 --
--- Indexes for table `qinggan_list_attr`
+-- 表的索引 `qinggan_list_120`
+--
+ALTER TABLE `qinggan_list_120`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `site_id` (`site_id`),
+  ADD KEY `site_project` (`site_id`,`project_id`),
+  ADD KEY `site_cate` (`site_id`,`cate_id`),
+  ADD KEY `project_cate` (`site_id`,`project_id`,`cate_id`);
+
+--
+-- 表的索引 `qinggan_list_attr`
 --
 ALTER TABLE `qinggan_list_attr`
   ADD PRIMARY KEY (`id`),
   ADD KEY `tid` (`tid`);
 
 --
--- Indexes for table `qinggan_list_biz`
+-- 表的索引 `qinggan_list_biz`
 --
 ALTER TABLE `qinggan_list_biz`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_list_cate`
+-- 表的索引 `qinggan_list_cate`
 --
 ALTER TABLE `qinggan_list_cate`
   ADD PRIMARY KEY (`id`,`cate_id`),
@@ -24504,137 +24736,137 @@ ALTER TABLE `qinggan_list_cate`
   ADD KEY `cate_id` (`cate_id`);
 
 --
--- Indexes for table `qinggan_log_content`
+-- 表的索引 `qinggan_log_content`
 --
 ALTER TABLE `qinggan_log_content`
   ADD PRIMARY KEY (`id`),
   ADD KEY `tbl_tid` (`tbl`,`tid`);
 
 --
--- Indexes for table `qinggan_menu`
+-- 表的索引 `qinggan_menu`
 --
 ALTER TABLE `qinggan_menu`
   ADD PRIMARY KEY (`id`),
   ADD KEY `site_id` (`site_id`,`group_id`) USING BTREE;
 
 --
--- Indexes for table `qinggan_module`
+-- 表的索引 `qinggan_module`
 --
 ALTER TABLE `qinggan_module`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_opt`
+-- 表的索引 `qinggan_opt`
 --
 ALTER TABLE `qinggan_opt`
   ADD PRIMARY KEY (`id`),
   ADD KEY `group_id` (`group_id`);
 
 --
--- Indexes for table `qinggan_opt_group`
+-- 表的索引 `qinggan_opt_group`
 --
 ALTER TABLE `qinggan_opt_group`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_order`
+-- 表的索引 `qinggan_order`
 --
 ALTER TABLE `qinggan_order`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `ordersn` (`sn`);
 
 --
--- Indexes for table `qinggan_order_address`
+-- 表的索引 `qinggan_order_address`
 --
 ALTER TABLE `qinggan_order_address`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_order_express`
+-- 表的索引 `qinggan_order_express`
 --
 ALTER TABLE `qinggan_order_express`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_order_invoice`
+-- 表的索引 `qinggan_order_invoice`
 --
 ALTER TABLE `qinggan_order_invoice`
   ADD PRIMARY KEY (`order_id`);
 
 --
--- Indexes for table `qinggan_order_log`
+-- 表的索引 `qinggan_order_log`
 --
 ALTER TABLE `qinggan_order_log`
   ADD PRIMARY KEY (`id`),
   ADD KEY `order_id` (`order_id`);
 
 --
--- Indexes for table `qinggan_order_payment`
+-- 表的索引 `qinggan_order_payment`
 --
 ALTER TABLE `qinggan_order_payment`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_order_price`
+-- 表的索引 `qinggan_order_price`
 --
 ALTER TABLE `qinggan_order_price`
   ADD PRIMARY KEY (`id`),
   ADD KEY `order_id` (`order_id`);
 
 --
--- Indexes for table `qinggan_order_product`
+-- 表的索引 `qinggan_order_product`
 --
 ALTER TABLE `qinggan_order_product`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_order_refund`
+-- 表的索引 `qinggan_order_refund`
 --
 ALTER TABLE `qinggan_order_refund`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_payment`
+-- 表的索引 `qinggan_payment`
 --
 ALTER TABLE `qinggan_payment`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_payment_group`
+-- 表的索引 `qinggan_payment_group`
 --
 ALTER TABLE `qinggan_payment_group`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_payment_log`
+-- 表的索引 `qinggan_payment_log`
 --
 ALTER TABLE `qinggan_payment_log`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `qinggan_phpok`
+-- 表的索引 `qinggan_phpok`
 --
 ALTER TABLE `qinggan_phpok`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `identifier` (`identifier`,`site_id`);
 
 --
--- Indexes for table `qinggan_plugins`
+-- 表的索引 `qinggan_plugins`
 --
 ALTER TABLE `qinggan_plugins`
   ADD PRIMARY KEY (`id`),
   ADD KEY `pid` (`pid`);
 
 --
--- Indexes for table `qinggan_popedom`
+-- 表的索引 `qinggan_popedom`
 --
 ALTER TABLE `qinggan_popedom`
   ADD PRIMARY KEY (`id`),
   ADD KEY `gid` (`gid`);
 
 --
--- Indexes for table `qinggan_project`
+-- 表的索引 `qinggan_project`
 --
 ALTER TABLE `qinggan_project`
   ADD PRIMARY KEY (`id`),
@@ -24642,85 +24874,85 @@ ALTER TABLE `qinggan_project`
   ADD KEY `site_id` (`site_id`,`status`);
 
 --
--- Indexes for table `qinggan_reply`
+-- 表的索引 `qinggan_reply`
 --
 ALTER TABLE `qinggan_reply`
   ADD PRIMARY KEY (`id`),
   ADD KEY `tid` (`tid`);
 
 --
--- Indexes for table `qinggan_res`
+-- 表的索引 `qinggan_res`
 --
 ALTER TABLE `qinggan_res`
   ADD PRIMARY KEY (`id`),
   ADD KEY `ext` (`ext`);
 
 --
--- Indexes for table `qinggan_res_cate`
+-- 表的索引 `qinggan_res_cate`
 --
 ALTER TABLE `qinggan_res_cate`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_search`
+-- 表的索引 `qinggan_search`
 --
 ALTER TABLE `qinggan_search`
   ADD PRIMARY KEY (`id`),
   ADD KEY `site_id` (`site_id`,`title`);
 
 --
--- Indexes for table `qinggan_server`
+-- 表的索引 `qinggan_server`
 --
 ALTER TABLE `qinggan_server`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_server_ip`
+-- 表的索引 `qinggan_server_ip`
 --
 ALTER TABLE `qinggan_server_ip`
   ADD PRIMARY KEY (`id`),
   ADD KEY `server_id` (`server_id`);
 
 --
--- Indexes for table `qinggan_site`
+-- 表的索引 `qinggan_site`
 --
 ALTER TABLE `qinggan_site`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_site_domain`
+-- 表的索引 `qinggan_site_domain`
 --
 ALTER TABLE `qinggan_site_domain`
   ADD PRIMARY KEY (`id`),
   ADD KEY `site_id` (`site_id`);
 
 --
--- Indexes for table `qinggan_stock`
+-- 表的索引 `qinggan_stock`
 --
 ALTER TABLE `qinggan_stock`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `sku_id` (`tid`,`attr`);
 
 --
--- Indexes for table `qinggan_sysmenu`
+-- 表的索引 `qinggan_sysmenu`
 --
 ALTER TABLE `qinggan_sysmenu`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_tag`
+-- 表的索引 `qinggan_tag`
 --
 ALTER TABLE `qinggan_tag`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_tag_node`
+-- 表的索引 `qinggan_tag_node`
 --
 ALTER TABLE `qinggan_tag_node`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_tag_stat`
+-- 表的索引 `qinggan_tag_stat`
 --
 ALTER TABLE `qinggan_tag_stat`
   ADD PRIMARY KEY (`title_id`,`tag_id`),
@@ -24728,49 +24960,49 @@ ALTER TABLE `qinggan_tag_stat`
   ADD KEY `tag_id` (`tag_id`);
 
 --
--- Indexes for table `qinggan_task`
+-- 表的索引 `qinggan_task`
 --
 ALTER TABLE `qinggan_task`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_token`
+-- 表的索引 `qinggan_token`
 --
 ALTER TABLE `qinggan_token`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_tpl`
+-- 表的索引 `qinggan_tpl`
 --
 ALTER TABLE `qinggan_tpl`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_user`
+-- 表的索引 `qinggan_user`
 --
 ALTER TABLE `qinggan_user`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_user_address`
+-- 表的索引 `qinggan_user_address`
 --
 ALTER TABLE `qinggan_user_address`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_user_ext`
+-- 表的索引 `qinggan_user_ext`
 --
 ALTER TABLE `qinggan_user_ext`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_user_group`
+-- 表的索引 `qinggan_user_group`
 --
 ALTER TABLE `qinggan_user_group`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_user_links`
+-- 表的索引 `qinggan_user_links`
 --
 ALTER TABLE `qinggan_user_links`
   ADD PRIMARY KEY (`id`),
@@ -24778,425 +25010,511 @@ ALTER TABLE `qinggan_user_links`
   ADD KEY `user_id` (`user_id`,`is_idol`,`is_black`) USING BTREE;
 
 --
--- Indexes for table `qinggan_wealth`
+-- 表的索引 `qinggan_wealth`
 --
 ALTER TABLE `qinggan_wealth`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_wealth_info`
+-- 表的索引 `qinggan_wealth_info`
 --
 ALTER TABLE `qinggan_wealth_info`
   ADD PRIMARY KEY (`wid`,`uid`);
 
 --
--- Indexes for table `qinggan_wealth_log`
+-- 表的索引 `qinggan_wealth_log`
 --
 ALTER TABLE `qinggan_wealth_log`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_wealth_rule`
+-- 表的索引 `qinggan_wealth_rule`
 --
 ALTER TABLE `qinggan_wealth_rule`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `qinggan_wholesale`
+-- 表的索引 `qinggan_wholesale`
 --
 ALTER TABLE `qinggan_wholesale`
   ADD PRIMARY KEY (`id`),
   ADD KEY `tid` (`tid`);
 
 --
--- Indexes for table `qinggan_world_location`
+-- 表的索引 `qinggan_world_location`
 --
 ALTER TABLE `qinggan_world_location`
   ADD PRIMARY KEY (`id`),
   ADD KEY `pid` (`pid`);
 
 --
--- Indexes for table `qinggan_world_price`
+-- 表的索引 `qinggan_world_price`
 --
 ALTER TABLE `qinggan_world_price`
   ADD PRIMARY KEY (`id`),
   ADD KEY `region_id` (`region_id`,`tid`,`vtype`) USING BTREE;
 
 --
--- Indexes for table `qinggan_yunmarket_client`
+-- 表的索引 `qinggan_yunmarket_client`
 --
 ALTER TABLE `qinggan_yunmarket_client`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- 在导出的表使用AUTO_INCREMENT
 --
 
 --
--- AUTO_INCREMENT for table `qinggan_77`
+-- 使用表AUTO_INCREMENT `qinggan_77`
 --
 ALTER TABLE `qinggan_77`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=4;
+
 --
--- AUTO_INCREMENT for table `qinggan_114`
+-- 使用表AUTO_INCREMENT `qinggan_114`
 --
 ALTER TABLE `qinggan_114`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=13;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=13;
+
 --
--- AUTO_INCREMENT for table `qinggan_adm`
+-- 使用表AUTO_INCREMENT `qinggan_119`
+--
+ALTER TABLE `qinggan_119`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=22;
+
+--
+-- 使用表AUTO_INCREMENT `qinggan_adm`
 --
 ALTER TABLE `qinggan_adm`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '管理员ID，系统自增',AUTO_INCREMENT=2;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '管理员ID，系统自增', AUTO_INCREMENT=2;
+
 --
--- AUTO_INCREMENT for table `qinggan_all`
+-- 使用表AUTO_INCREMENT `qinggan_all`
 --
 ALTER TABLE `qinggan_all`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=5;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=5;
+
 --
--- AUTO_INCREMENT for table `qinggan_apps`
+-- 使用表AUTO_INCREMENT `qinggan_apps`
 --
 ALTER TABLE `qinggan_apps`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID';
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID';
+
 --
--- AUTO_INCREMENT for table `qinggan_attr`
+-- 使用表AUTO_INCREMENT `qinggan_attr`
 --
 ALTER TABLE `qinggan_attr`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=4;
+
 --
--- AUTO_INCREMENT for table `qinggan_attr_values`
+-- 使用表AUTO_INCREMENT `qinggan_attr_values`
 --
 ALTER TABLE `qinggan_attr_values`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=31;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=31;
+
 --
--- AUTO_INCREMENT for table `qinggan_cart`
+-- 使用表AUTO_INCREMENT `qinggan_cart`
 --
 ALTER TABLE `qinggan_cart`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=76;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=77;
+
 --
--- AUTO_INCREMENT for table `qinggan_cart_product`
+-- 使用表AUTO_INCREMENT `qinggan_cart_product`
 --
 ALTER TABLE `qinggan_cart_product`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=5;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=2;
+
 --
--- AUTO_INCREMENT for table `qinggan_cate`
+-- 使用表AUTO_INCREMENT `qinggan_cate`
 --
 ALTER TABLE `qinggan_cate`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=704;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=704;
+
 --
--- AUTO_INCREMENT for table `qinggan_click`
+-- 使用表AUTO_INCREMENT `qinggan_click`
 --
 ALTER TABLE `qinggan_click`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=31;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=32;
+
 --
--- AUTO_INCREMENT for table `qinggan_config`
+-- 使用表AUTO_INCREMENT `qinggan_config`
 --
 ALTER TABLE `qinggan_config`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=18;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=18;
+
 --
--- AUTO_INCREMENT for table `qinggan_currency`
+-- 使用表AUTO_INCREMENT `qinggan_currency`
 --
 ALTER TABLE `qinggan_currency`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '货币ID',AUTO_INCREMENT=8;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '货币ID', AUTO_INCREMENT=8;
+
 --
--- AUTO_INCREMENT for table `qinggan_design`
+-- 使用表AUTO_INCREMENT `qinggan_design`
 --
 ALTER TABLE `qinggan_design`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=11;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=11;
+
 --
--- AUTO_INCREMENT for table `qinggan_email`
+-- 使用表AUTO_INCREMENT `qinggan_email`
 --
 ALTER TABLE `qinggan_email`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=39;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=39;
+
 --
--- AUTO_INCREMENT for table `qinggan_express`
+-- 使用表AUTO_INCREMENT `qinggan_express`
 --
 ALTER TABLE `qinggan_express`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=5;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=6;
+
 --
--- AUTO_INCREMENT for table `qinggan_fields`
+-- 使用表AUTO_INCREMENT `qinggan_fields`
 --
 ALTER TABLE `qinggan_fields`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '字段ID，自增',AUTO_INCREMENT=1400;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '字段ID，自增', AUTO_INCREMENT=1406;
+
 --
--- AUTO_INCREMENT for table `qinggan_fields_ext`
+-- 使用表AUTO_INCREMENT `qinggan_fields_ext`
 --
 ALTER TABLE `qinggan_fields_ext`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=1104;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=1252;
+
 --
--- AUTO_INCREMENT for table `qinggan_freight`
+-- 使用表AUTO_INCREMENT `qinggan_freight`
 --
 ALTER TABLE `qinggan_freight`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '运费模板ID，自增ID',AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '运费模板ID，自增ID', AUTO_INCREMENT=2;
+
 --
--- AUTO_INCREMENT for table `qinggan_freight_zone`
+-- 使用表AUTO_INCREMENT `qinggan_freight_zone`
 --
 ALTER TABLE `qinggan_freight_zone`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=8;
+
 --
--- AUTO_INCREMENT for table `qinggan_gateway`
+-- 使用表AUTO_INCREMENT `qinggan_gateway`
 --
 ALTER TABLE `qinggan_gateway`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=27;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=27;
+
 --
--- AUTO_INCREMENT for table `qinggan_gd`
+-- 使用表AUTO_INCREMENT `qinggan_gd`
 --
 ALTER TABLE `qinggan_gd`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=17;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=17;
+
 --
--- AUTO_INCREMENT for table `qinggan_list`
+-- 使用表AUTO_INCREMENT `qinggan_list`
 --
 ALTER TABLE `qinggan_list`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=2513;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=2529;
+
 --
--- AUTO_INCREMENT for table `qinggan_list_110`
+-- 使用表AUTO_INCREMENT `qinggan_list_110`
 --
 ALTER TABLE `qinggan_list_110`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=44;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=44;
+
 --
--- AUTO_INCREMENT for table `qinggan_list_112`
+-- 使用表AUTO_INCREMENT `qinggan_list_112`
 --
 ALTER TABLE `qinggan_list_112`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=2288;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=2288;
+
 --
--- AUTO_INCREMENT for table `qinggan_list_115`
+-- 使用表AUTO_INCREMENT `qinggan_list_115`
 --
 ALTER TABLE `qinggan_list_115`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=2271;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=2271;
+
 --
--- AUTO_INCREMENT for table `qinggan_list_116`
+-- 使用表AUTO_INCREMENT `qinggan_list_116`
 --
 ALTER TABLE `qinggan_list_116`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=2277;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=2277;
+
 --
--- AUTO_INCREMENT for table `qinggan_list_117`
+-- 使用表AUTO_INCREMENT `qinggan_list_117`
 --
 ALTER TABLE `qinggan_list_117`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=2286;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=2286;
+
 --
--- AUTO_INCREMENT for table `qinggan_list_attr`
+-- 使用表AUTO_INCREMENT `qinggan_list_120`
+--
+ALTER TABLE `qinggan_list_120`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=2528;
+
+--
+-- 使用表AUTO_INCREMENT `qinggan_list_attr`
 --
 ALTER TABLE `qinggan_list_attr`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=30;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=30;
+
 --
--- AUTO_INCREMENT for table `qinggan_log_content`
+-- 使用表AUTO_INCREMENT `qinggan_log_content`
 --
 ALTER TABLE `qinggan_log_content`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=16;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=16;
+
 --
--- AUTO_INCREMENT for table `qinggan_menu`
+-- 使用表AUTO_INCREMENT `qinggan_menu`
 --
 ALTER TABLE `qinggan_menu`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID，主键',AUTO_INCREMENT=34;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID，主键', AUTO_INCREMENT=34;
+
 --
--- AUTO_INCREMENT for table `qinggan_module`
+-- 使用表AUTO_INCREMENT `qinggan_module`
 --
 ALTER TABLE `qinggan_module`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=119;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=121;
+
 --
--- AUTO_INCREMENT for table `qinggan_opt`
+-- 使用表AUTO_INCREMENT `qinggan_opt`
 --
 ALTER TABLE `qinggan_opt`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=25943;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=25943;
+
 --
--- AUTO_INCREMENT for table `qinggan_opt_group`
+-- 使用表AUTO_INCREMENT `qinggan_opt_group`
 --
 ALTER TABLE `qinggan_opt_group`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID ',AUTO_INCREMENT=26;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID ', AUTO_INCREMENT=26;
+
 --
--- AUTO_INCREMENT for table `qinggan_order`
+-- 使用表AUTO_INCREMENT `qinggan_order`
 --
 ALTER TABLE `qinggan_order`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=6;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=6;
+
 --
--- AUTO_INCREMENT for table `qinggan_order_address`
+-- 使用表AUTO_INCREMENT `qinggan_order_address`
 --
 ALTER TABLE `qinggan_order_address`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=3;
+
 --
--- AUTO_INCREMENT for table `qinggan_order_express`
+-- 使用表AUTO_INCREMENT `qinggan_order_express`
 --
 ALTER TABLE `qinggan_order_express`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID';
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=4;
+
 --
--- AUTO_INCREMENT for table `qinggan_order_log`
+-- 使用表AUTO_INCREMENT `qinggan_order_log`
 --
 ALTER TABLE `qinggan_order_log`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=7;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=23;
+
 --
--- AUTO_INCREMENT for table `qinggan_order_payment`
+-- 使用表AUTO_INCREMENT `qinggan_order_payment`
 --
 ALTER TABLE `qinggan_order_payment`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID';
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID';
+
 --
--- AUTO_INCREMENT for table `qinggan_order_price`
+-- 使用表AUTO_INCREMENT `qinggan_order_price`
 --
 ALTER TABLE `qinggan_order_price`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=13;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=13;
+
 --
--- AUTO_INCREMENT for table `qinggan_order_product`
+-- 使用表AUTO_INCREMENT `qinggan_order_product`
 --
 ALTER TABLE `qinggan_order_product`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=6;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=6;
+
 --
--- AUTO_INCREMENT for table `qinggan_order_refund`
+-- 使用表AUTO_INCREMENT `qinggan_order_refund`
 --
 ALTER TABLE `qinggan_order_refund`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID';
+
 --
--- AUTO_INCREMENT for table `qinggan_payment`
+-- 使用表AUTO_INCREMENT `qinggan_payment`
 --
 ALTER TABLE `qinggan_payment`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=46;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=46;
+
 --
--- AUTO_INCREMENT for table `qinggan_payment_group`
+-- 使用表AUTO_INCREMENT `qinggan_payment_group`
 --
 ALTER TABLE `qinggan_payment_group`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=11;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=11;
+
 --
--- AUTO_INCREMENT for table `qinggan_payment_log`
+-- 使用表AUTO_INCREMENT `qinggan_payment_log`
 --
 ALTER TABLE `qinggan_payment_log`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=10;
+
 --
--- AUTO_INCREMENT for table `qinggan_phpok`
+-- 使用表AUTO_INCREMENT `qinggan_phpok`
 --
 ALTER TABLE `qinggan_phpok`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=355;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=355;
+
 --
--- AUTO_INCREMENT for table `qinggan_popedom`
+-- 使用表AUTO_INCREMENT `qinggan_popedom`
 --
 ALTER TABLE `qinggan_popedom`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '权限ID，即自增ID',AUTO_INCREMENT=2052;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '权限ID，即自增ID', AUTO_INCREMENT=2052;
+
 --
--- AUTO_INCREMENT for table `qinggan_project`
+-- 使用表AUTO_INCREMENT `qinggan_project`
 --
 ALTER TABLE `qinggan_project`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID，也是应用ID',AUTO_INCREMENT=462;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID，也是应用ID', AUTO_INCREMENT=464;
+
 --
--- AUTO_INCREMENT for table `qinggan_reply`
+-- 使用表AUTO_INCREMENT `qinggan_reply`
 --
 ALTER TABLE `qinggan_reply`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=44;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=51;
+
 --
--- AUTO_INCREMENT for table `qinggan_res`
+-- 使用表AUTO_INCREMENT `qinggan_res`
 --
 ALTER TABLE `qinggan_res`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '资源ID',AUTO_INCREMENT=816;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '资源ID', AUTO_INCREMENT=826;
+
 --
--- AUTO_INCREMENT for table `qinggan_res_cate`
+-- 使用表AUTO_INCREMENT `qinggan_res_cate`
 --
 ALTER TABLE `qinggan_res_cate`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '资源分类ID',AUTO_INCREMENT=41;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '资源分类ID', AUTO_INCREMENT=41;
+
 --
--- AUTO_INCREMENT for table `qinggan_search`
+-- 使用表AUTO_INCREMENT `qinggan_search`
 --
 ALTER TABLE `qinggan_search`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=9;
+
 --
--- AUTO_INCREMENT for table `qinggan_server`
+-- 使用表AUTO_INCREMENT `qinggan_server`
 --
 ALTER TABLE `qinggan_server`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=37;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=37;
+
 --
--- AUTO_INCREMENT for table `qinggan_server_ip`
+-- 使用表AUTO_INCREMENT `qinggan_server_ip`
 --
 ALTER TABLE `qinggan_server_ip`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=35;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=35;
+
 --
--- AUTO_INCREMENT for table `qinggan_site`
+-- 使用表AUTO_INCREMENT `qinggan_site`
 --
 ALTER TABLE `qinggan_site`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '应用ID',AUTO_INCREMENT=2;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '应用ID', AUTO_INCREMENT=2;
+
 --
--- AUTO_INCREMENT for table `qinggan_site_domain`
+-- 使用表AUTO_INCREMENT `qinggan_site_domain`
 --
 ALTER TABLE `qinggan_site_domain`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=2;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=2;
+
 --
--- AUTO_INCREMENT for table `qinggan_stock`
+-- 使用表AUTO_INCREMENT `qinggan_stock`
 --
 ALTER TABLE `qinggan_stock`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=100;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=100;
+
 --
--- AUTO_INCREMENT for table `qinggan_sysmenu`
+-- 使用表AUTO_INCREMENT `qinggan_sysmenu`
 --
 ALTER TABLE `qinggan_sysmenu`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID号',AUTO_INCREMENT=149;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号', AUTO_INCREMENT=149;
+
 --
--- AUTO_INCREMENT for table `qinggan_tag`
+-- 使用表AUTO_INCREMENT `qinggan_tag`
 --
 ALTER TABLE `qinggan_tag`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',AUTO_INCREMENT=44;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id', AUTO_INCREMENT=44;
+
 --
--- AUTO_INCREMENT for table `qinggan_tag_node`
+-- 使用表AUTO_INCREMENT `qinggan_tag_node`
 --
 ALTER TABLE `qinggan_tag_node`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID', AUTO_INCREMENT=3;
+
 --
--- AUTO_INCREMENT for table `qinggan_task`
+-- 使用表AUTO_INCREMENT `qinggan_task`
 --
 ALTER TABLE `qinggan_task`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=32;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=38;
+
 --
--- AUTO_INCREMENT for table `qinggan_token`
+-- 使用表AUTO_INCREMENT `qinggan_token`
 --
 ALTER TABLE `qinggan_token`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '自增ID';
+
 --
--- AUTO_INCREMENT for table `qinggan_tpl`
+-- 使用表AUTO_INCREMENT `qinggan_tpl`
 --
 ALTER TABLE `qinggan_tpl`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=4;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=4;
+
 --
--- AUTO_INCREMENT for table `qinggan_user`
+-- 使用表AUTO_INCREMENT `qinggan_user`
 --
 ALTER TABLE `qinggan_user`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID，即会员ID',AUTO_INCREMENT=59;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID，即会员ID', AUTO_INCREMENT=59;
+
 --
--- AUTO_INCREMENT for table `qinggan_user_address`
+-- 使用表AUTO_INCREMENT `qinggan_user_address`
 --
 ALTER TABLE `qinggan_user_address`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=3;
+
 --
--- AUTO_INCREMENT for table `qinggan_user_group`
+-- 使用表AUTO_INCREMENT `qinggan_user_group`
 --
 ALTER TABLE `qinggan_user_group`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '会员组ID',AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '会员组ID', AUTO_INCREMENT=8;
+
 --
--- AUTO_INCREMENT for table `qinggan_user_links`
+-- 使用表AUTO_INCREMENT `qinggan_user_links`
 --
 ALTER TABLE `qinggan_user_links`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID，主键ID',AUTO_INCREMENT=11;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID，主键ID', AUTO_INCREMENT=11;
+
 --
--- AUTO_INCREMENT for table `qinggan_wealth`
+-- 使用表AUTO_INCREMENT `qinggan_wealth`
 --
 ALTER TABLE `qinggan_wealth`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '财富ID',AUTO_INCREMENT=7;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '财富ID', AUTO_INCREMENT=7;
+
 --
--- AUTO_INCREMENT for table `qinggan_wealth_log`
+-- 使用表AUTO_INCREMENT `qinggan_wealth_log`
 --
 ALTER TABLE `qinggan_wealth_log`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=131;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=140;
+
 --
--- AUTO_INCREMENT for table `qinggan_wealth_rule`
+-- 使用表AUTO_INCREMENT `qinggan_wealth_rule`
 --
 ALTER TABLE `qinggan_wealth_rule`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '规则ID',AUTO_INCREMENT=24;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '规则ID', AUTO_INCREMENT=24;
+
 --
--- AUTO_INCREMENT for table `qinggan_wholesale`
+-- 使用表AUTO_INCREMENT `qinggan_wholesale`
 --
 ALTER TABLE `qinggan_wholesale`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID', AUTO_INCREMENT=10;
+
 --
--- AUTO_INCREMENT for table `qinggan_world_location`
+-- 使用表AUTO_INCREMENT `qinggan_world_location`
 --
 ALTER TABLE `qinggan_world_location`
-  MODIFY `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',AUTO_INCREMENT=4173;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键', AUTO_INCREMENT=4173;
+
 --
--- AUTO_INCREMENT for table `qinggan_world_price`
+-- 使用表AUTO_INCREMENT `qinggan_world_price`
 --
 ALTER TABLE `qinggan_world_price`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID';
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID';
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
