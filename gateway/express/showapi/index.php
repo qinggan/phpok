@@ -86,6 +86,10 @@ if($tmplist['showapi_res_body'] && $tmplist['showapi_res_body']['data']){
 		$tmp = array('time'=>$value['time'],'content'=>$value['context']);
 		$array['content'][] = $tmp;
 	}
+	$array['status'] = true;
+}else{
+	$array['status'] = false;
+	$array['content'] = $tmplist['showapi_res_body']['msg'];
 }
-$array['status'] = true;
+
 return $array;
