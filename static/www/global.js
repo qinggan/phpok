@@ -224,9 +224,6 @@
 	/**
 	 * 用户相关操作
 	**/
-	/**
-	 * 用户相关操作
-	**/
 	$.user = {
 		/**
 		 * 用户退出操作
@@ -255,7 +252,7 @@
 		{
 			$.phpok.submit(obj,api_url('usercp','info'),function(rs){
 				if(!rs.status){
-					$.dialog.tips(rs.info);
+					$.dialog.tips(rs.info).lock();
 					return false;
 				}
 				$.dialog.tips(p_lang('您的信息更新成功'));
@@ -267,7 +264,7 @@
 		{
 			$.phpok.submit(obj,api_url('usercp','email'),function(rs){
 				if(!rs.status){
-					$.dialog.alert(rs.info);
+					$.dialog.tips(rs.info).lock();
 					return false;
 				}
 				$.dialog.tips(p_lang('您的邮箱更新成功'),function(){
@@ -281,7 +278,7 @@
 		{
 			$.phpok.submit(obj,api_url('usercp','mobile'),function(rs){
 				if(!rs.status){
-					$.dialog.tips(rs.info);
+					$.dialog.tips(rs.info).lock();
 					return false;
 				}
 				$.dialog.tips(p_lang('您的手机号更新成功'),function(){
@@ -295,7 +292,7 @@
 		{
 			$.phpok.submit(obj,api_url('usercp','passwd'),function(rs){
 				if(!rs.status){
-					$.dialog.tips(rs.info);
+					$.dialog.tips(rs.info).lock();
 					return false;
 				}
 				$.dialog.tips(p_lang('您的密码更新成功'),function(){
@@ -780,7 +777,12 @@
 						$.admin.close(reUrl);
 						return false;
 					}
-					$.phpok.go($("input[name=_back]").val());
+					var backurl = $("input[name=_back]").val();
+					if(backurl){
+						$.phpok.go();
+					}else{
+						window.close();
+					}
 				}, 1200);
 				return false;
 			});

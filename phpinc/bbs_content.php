@@ -16,18 +16,3 @@ if(!$pageid){
 	$pageid = 1;
 }
 $comment = phpok('_comment','tid='.$rs['id'].'&pageid='.$pageid.'&psize=10');
-if($comment['rslist']){
-	foreach($comment['rslist'] as $key=>$value){
-		$layer = ($key+1) * $pageid;
-		if($layer == 1){
-			$layer ='沙发';
-		}elseif($layer == 2){
-			$layer = '板凳';
-		}else{
-			$layer .= '楼';
-		}
-		$value['_layer'] = $layer;
-		$comment['rslist'][$key] = $value;
-		unset($layer);
-	}
-}
