@@ -1,0 +1,97 @@
+<!-- php:$title = '添加_'.$page_rs.title -->
+<!-- include tpl=usercp/head title=$title -->
+<script type="text/javascript">
+function post_save(obj)
+{
+	var lock = $.dialog.tips('正在保存中，请稍候…',100).lock();
+	$.phpok.submit(obj,api_url('post','ok'),function(rs){
+		if(!rs.status){
+			lock.content(rs.info).time(2);
+			return false;
+		}
+		lock.setting("close",function(){
+			window.opener.location.reload();
+			window.close();
+		});
+		lock.content('添加成功').time(2);
+		return false;
+	});
+	return false;
+}
+</script>
+<form method="post" id="post_submit" onsubmit="return post_save(this)">
+<input type="hidden" name="_back" id="_back" value="{$_back}" />
+<input type="hidden" name="id" id="id" value="{$page_rs.identifier}" />
+<section class="container">
+	<div class="m-3">
+		<h3 class="text-center p-4"> 添加{$page_rs.alias_title ? $page_rs.alias_title : '主题'}</h3>
+		<div class="card mb-2">
+			<div class="card-header">
+				<!-- if $catelist -->分类 / <!-- /if -->
+				{$page_rs.alias_title ? $page_rs.alias_title : '主题'}
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<!-- if $catelist -->
+					<div class="col col-sm-3">
+						<select class="form-select" name="cate_id" id="cate_id">
+							<option value="">请选择分类……</option>
+							<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+							<option value="{$value.id}"{if $cate_rs.id == $value.id} selected{/if}>{$value._space}{$value.title}</option>
+							<!-- /loop -->
+						</select>
+					</div>
+					<!-- /if -->
+					<div class="col">
+						<input type="text" placeholder="{$page_rs.alias_title ? $page_rs.alias_title : '主题'}{if $page_rs.alias_note}，{$page_rs.alias_note}{/if}" class="form-control" value="{$rs.title}" name="title" id="title" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- loop from=$extlist key=$key value=$value -->
+		<!-- if $value.form_type == 'editor' -->
+		<div class="mb-2">{$value.html}</div>
+		<!-- else -->
+		<div class="card mb-2">
+			<div class="card-header">
+				{$value.title}
+				<!-- if $value.note --><div class="float-end text-secondary">{$value.note}</div><!-- /if -->
+			</div>
+			<div class="card-body">
+				{$value.html}
+			</div>
+		</div>
+		<!-- /if -->
+		<!-- /loop -->
+		<!-- if $is_vcode -->
+		<div class="card mb-2">
+			<div class="card-header">
+				验证码
+			</div>
+			<div class="card-body">
+				<div class="form-group d-flex justify-content-start">
+					<div class="me-2">
+						<input type="text" name="_chkcode" id="_chkcode" class="form-control vcode" />
+					</div>
+					<div class="me-2">
+						<img src="" border="0" align="absmiddle" id="update_vcode" class="hand">
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#update_vcode").phpok_vcode();
+			$("#update_vcode").click(function(){
+				$(this).phpok_vcode();
+			});
+		});
+		</script>
+		<!-- /if -->
+		<div class="m-4 text-center">
+			<input type="submit" value="{lang提交保存}" class="btn btn-lg btn-primary" id="save_button" />
+		</div>
+	</div>
+</section>
+</form>
+<!-- include tpl=usercp/foot -->

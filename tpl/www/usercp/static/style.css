@@ -110,9 +110,6 @@ a{
 	text-decoration:none;
 }
 
-input{
-	outline:none;
-}
 
 header .logo{
 	width:60px;
@@ -144,19 +141,6 @@ header .nav a.nav-link{
 	background-size:cover;
 	background-repeat:no-repeat;
 	background-position: center center;
-}
-
-.float-left{
-	float:left;
-}
-
-.float-right{
-	float:right;
-}
-
-.form-control:focus{
-	box-shadow:none;
-	border-color:inherit;
 }
 
 .form-group{

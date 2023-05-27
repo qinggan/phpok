@@ -1,0 +1,125 @@
+<!-- include tpl=usercp/header title=$page_rs.title -->
+<script type="text/javascript">
+function post_del(id)
+{
+	$.dialog.confirm('确定要删除 #'+id+' 的{$page_rs.alias_title ? $page_rs.alias_title : "主题"}吗？删除后是不能恢复的！',function(){
+		var url = api_url('post','del','id='+id);
+		$.phpok.json(url,function(rs){
+			if(!rs.status){
+				$.dialog.alert(rs.info);
+				return false;
+			}
+			$.dialog.tips('删除成功');
+			$("#list_"+id).remove();
+			return false;
+		});
+	});
+}
+</script>
+<section class="container">
+	<div class="row m-3">
+		<div class="col-2">
+			<!-- include tpl=usercp/left -->
+		</div>
+		<div class="col-10">
+			<div class="card">
+				<div class="card-header">
+					{$page_rs.title}
+					<!-- if $page_rs.post_status && $popedom.add -->
+					<div class="float-end">
+						<input type="button" value="添加" onclick="$.phpok.open('{url ctrl=post id=$page_rs.identifier/}')" class="btn btn-sm btn-primary" />
+					</div>
+					<!-- /if -->
+				</div>
+				<table class="table mb-0">
+				<thead>
+				<tr>
+					<th colspan="2">ID</th>
+					<th>{$page_rs.alias_title ? $page_rs.alias_title : P_Lang('主题')}</th>
+					<!-- if $page_rs.is_biz -->
+					<th>{lang价格}</th>
+					<!-- /if -->
+					<!-- if $page_rs.cate -->
+					<th>{lang分类}</th>
+					<!-- /if -->
+					<!-- loop from=$layout key=$key value=$value -->
+					<th>{$value.title}</th>
+					<!-- /loop -->
+					<!-- if $page_rs.is_front || $popedom.edit || $popedom.delete -->
+					<th>{lang操作}</th>
+					<!-- /if -->
+				</tr>
+				</thead>
+				<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+				<tr id="list_{$value.id}">
+					<td>{$value.id}</td>
+					<td>
+						<!-- if $value.status -->
+						<span><img src="{$tpl.dir}usercp/static/status1.png" /></span>
+						<!-- else -->
+						<span><img src="{$tpl.dir}usercp/static/status0.png" /></span>
+						<!-- /if -->
+					</td>
+					<td>{$value.title}</td>
+					<!-- if $page_rs.is_biz -->
+					<td><!-- if $value.price -->{func price_format $value.price $value.currency_id}<!-- /if --></td>
+					<!-- /if -->
+					<!-- if $page_rs.cate -->
+					<td>{$value.cate.title}</td>
+					<!-- /if -->
+					<!-- loop from=$layout key=$k value=$v id=$idx -->
+						<!-- if $k == "dateline" -->
+						<td class="center">{func date "Y-m-d H:i" $value.dateline}</td>
+						<!-- elseif $k == "hits" -->
+						<td class="center">{$value.hits}</td>
+						<!-- elseif $k == 'sort' -->
+						<td class="center">{$value.sort}</td>
+						<!-- elseif $k == "user_id" -->
+						<td>{$value._user ? $value._user : '-'}</td>
+						<!-- else -->
+						<td>
+							<!-- if is_array($value[$k]) && $value[$k]['type'] -->
+								<!-- if $value[$k]['title'] && is_array($value[$k]['title']) -->
+								{echo implode(' / ',$value[$k]['title'])}			
+								<!-- else -->
+								{$value[$k]['title']}
+								<!-- /if -->
+							<!-- else -->
+								<!-- if is_array($value[$k]) && $value[$k][0] -->
+								<!-- loop from=$value[$k] key=$kk value=$vv id=$idxx -->
+								{$vv._show}
+								<!-- /loop -->
+								<!-- elseif is_array($value[$k]) && $value[$k]['_show'] -->
+								{$value[$k]['_show']}
+								<!-- else -->
+								{$value[$k] ? $value[$k] : '-'}
+								<!-- /if -->
+							<!-- /if -->
+						</td>			
+						<!-- /if -->
+					<!-- /loop -->
+					<!-- if $page_rs.is_front || $popedom.edit || $popedom.delete -->
+					<td>
+						<div class="btn-group" name="list-content-btns" id="btn_{$value.id}" data-id="{$value.id}">
+							<!-- if $page_rs.is_front -->
+							<input type="button" value="{lang查看}" onclick="$.phpok.open('{url id=$value.id/}')" class="btn btn-sm btn-primary" />
+							<!-- /if -->
+							<!-- if $popedom.edit -->
+							<input type="button" value="{lang编辑}" onclick="$.phpok.open('{url ctrl=post func=edit id=$value.id/}')" class="btn btn-sm btn-primary" />
+							<!-- /if -->
+							<!-- if $popedom.delete -->
+							<input type="button" value="{lang删除}" onclick="post_del('{$value.id}')" class="btn btn-sm btn-danger" />
+							<!-- /if -->
+						</div>
+					</td>
+					<!-- /if -->
+				</tr>
+				<!-- /loop -->
+				</table>
+			</div>
+			<div class="m-2"><!-- include tpl=usercp/pagelist --></div>
+		</div>
+	</div>
+</section>
+
+<!-- include tpl=usercp/footer -->

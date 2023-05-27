@@ -1,0 +1,107 @@
+<!-- php:$tip_title = $id ? '修改地址' : '添加地址' -->
+<!-- include tpl=usercp/head title=$tip_title -->
+<script type="text/javascript">
+function save(obj)
+{
+	var id = $("#id").val();
+	var lock = $.dialog.tips('正在提交中，请稍候…',100).lock();
+	$.phpok.submit($(obj)[0],api_url('address','save'),function(rs){
+		if(!rs.status){
+			lock.content(rs.info).time(2);
+			return false;
+		}
+		lock.setting('close',function(){
+			window.opener.location.reload();
+			window.close();
+		});
+		lock.content('操作成功').time(2);
+		return true;
+	});
+	return false;
+}
+</script>
+
+<form method="post" class="form" id="setsubmit" onsubmit="return save(this)">
+<!-- if $id --><input type="hidden" name="id" id="id" value="{$id}" /><!-- /if -->
+<h3 class="text-center p-4">{$id ? '修改地址 _#'.$id : '添加地址'}</h3>
+<div class="container">
+	<div class="card mb-2">
+		<div class="card-header">
+			姓名 / 手机号 / 电话 / 邮箱
+		</div>
+		<div class="card-body">
+			<div class="row">
+				<div class="col">
+					<input type="text" class="form-control" id="fullname" name="fullname" value="{$rs.fullname}" placeholder="填写收件人姓名" />
+				</div>
+				<div class="col">
+					<input type="tel" class="form-control" id="mobile" name="mobile" value="{$rs.mobile}" placeholder="填写有效的手机号码"/>
+				</div>
+				<div class="col">
+					<input type="tel" class="form-control" id="tel" name="tel" value="{$rs.tel}" placeholder="填写有效的固定电话"/>
+				</div>
+				<div class="col">
+					<input type="email" class="form-control" id="email" name="email" value="{$rs.email}" placeholder="用来接收订单提醒邮件，便于您及时了解订单状态"/>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="card mb-2">
+		<div class="card-header">
+			地址
+		</div>
+		<div class="card-body">
+			<div class="row">
+				<div class="col col-sm-2">
+					<select class="form-select" name="country" id="country" onchange="$.address.glist()">
+						<!-- if $rs.country -->
+						<option value="{$rs.country}">{$rs.country}</option>
+						<!-- else -->
+						<option value="中国">中国</option>
+						<!-- /if -->
+					</select>
+				</div>
+				<div class="col col-sm-2">
+					<select class="form-select" name="province" id="province" lay-ignore onchange="$.address.glist()">
+						<!-- if $rs.province -->
+						<option value="{$rs.province}">{$rs.province}</option>
+						<!-- else -->
+						<option value="">请选择省份信息…</option>
+						<!-- /if -->
+					</select>
+				</div>
+				<div class="col col-sm-2">
+					<select class="form-select" name="city" id="city" onchange="$.address.glist()">
+						<!-- if $rs.city -->
+						<option value="{$rs.city}">{$rs.city}</option>
+						<!-- else -->
+						<option value="">请选择市县信息…</option>
+						<!-- /if -->
+					</select>
+				</div>
+				<div class="col col-sm-2">
+					<select class="form-select" name="county" id="county">
+						<!-- if $rs.county -->
+						<option value="{$rs.county}">{$rs.county}</option>
+						<!-- else -->
+						<option value="">请选择…</option>
+						<!-- /if -->
+					</select>
+				</div>
+				<div class="col">
+					<input type="text" name="address" id="address" value="{$rs.address}" class="form-control" />
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="text-center m-4"><input type="submit" value="{lang保存数据}" class="btn btn-danger" id="save_button" /></div>
+</div>
+</form>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	//异步加载国家，省，市，县信息
+	$.address.glist();
+});
+</script>
+<!-- include tpl=usercp/foot -->
