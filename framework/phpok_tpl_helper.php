@@ -2,11 +2,10 @@
 /**
  * 在PHPOK模板中常用的函数，此函数在action前才加载
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
  * @版本 4.x
  * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
- * @时间 2018年01月15日
+ * @时间 2023年5月30日
 **/
 
 /**
@@ -435,7 +434,7 @@ if(!function_exists('admin_plugin_url')){
 
 function project_groups()
 {
-	global $app;
+	$app = $GLOBALS['app'];
 	$uid = $app->session()->val('user_id');
 	if(!$uid){
 		return false;
@@ -447,6 +446,7 @@ function project_groups()
 	$grouplist = $app->model('project')->group();
 	$list = $app->model('project')->group_projects();
 	if(!$list){
+		echo "<pre>".print_r(3,true)."</pre>";
 		return false;
 	}
 	foreach($list as $key=>$value){

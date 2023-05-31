@@ -533,6 +533,16 @@ class list_control extends phpok_control
 			$condition .= " AND (".implode(" OR ",$tmp_condition).") ";
 			$pageurl .= "&keywords[title]=".rawurlencode($keywords['title']);
 		}
+		if($keywords && $keywords['identifier'] && $project_rs['is_identifier']){
+			$keywords['identifier'] = str_replace("，",",",$keywords['identifier']);
+			$tmplist = explode(",",$keywords['identifier']);
+			$tmp_condition = array();
+			foreach($tmplist as $key=>$value){
+				$tmp_condition[] = "l.identifier LIKE '%".$value."%'";
+			}
+			$condition .= " AND (".implode(" OR ",$tmp_condition).") ";
+			$pageurl .= "&keywords[identifier]=".rawurlencode($keywords['identifier']);
+		}
 		if($keywords && $keywords['tag'] && $project_rs['is_tag']){
 			$keywords['tag'] = str_replace("，",",",$keywords['tag']);
 			$tmplist = explode(",",$keywords['tag']);

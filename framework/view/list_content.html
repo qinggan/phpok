@@ -116,6 +116,9 @@ function list_content_search(obj)
 					<!-- if $rs.is_userid -->
 					<option value="user"{if $key_type == 'user'} selected{/if}>{lang用户}</option>
 					<!-- /if -->
+					<!-- if $rs.is_identifier -->
+					<option value="identifier"{if $key_type == 'identifier'} selected{/if}>{lang标识}</option>
+					<!-- /if -->
 				</select>
 			</div>
 			

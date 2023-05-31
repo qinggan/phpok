@@ -1,29 +1,29 @@
 <!-- include tpl=head_lay -->
-
+<style type="text/css">
+ul.layout li{
+	line-height:36px;
+}
+</style>
 <div class="layui-card">
 	<div class="layui-card-header layuiadmin-card-header-auto">
 		<div class="layui-row">
 			<div class="layui-col-md9">
-		    	<form method="post" action="{url ctrl=yunmarket/}" class="layui-form">
-				<div class="layui-row layui-col-space5">
-					<div class="layui-col-xs12 layui-col-sm4 layui-col-md2">
-						<select name="cateid">
-							<option value="">{lang全部分类}</option>
-							<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
-							<option value="{$value.id}"{if $cateid == $value.id} selected{/if}>{$value.title}</option>
-							<!-- /loop -->
-						</select>
-					</div>
-					<div class="layui-col-xs12 layui-col-sm4 layui-col-md2">
-						<input type="text" id="keywords" name="keywords" class="layui-input" value="{$keywords}" />
-					</div>
-					<div class="layui-col-xs12 layui-col-sm4 layui-col-md2">
-						<div class="layui-btn-group">
+		    	<form method="post" action="{url ctrl=yunmarket cateid=$cateid/}" class="layui-form">
+			    <ul class="layout">
+			    	<li><a href="{url ctrl=yunmarket/}"{if !$cateid} class="red b"{/if}>所有</a></li>
+			    	<!-- loop from=$catelist key=$key value=$value id=$tmpid -->
+					<li><a href="{url ctrl=yunmarket cateid=$value.id/}"{if $cateid == $value.id} class="red b"{/if}>{$value.title}</a></li>
+					<!-- /loop -->
+			    	<li>
+				    	<input type="text" id="keywords" name="keywords" class="layui-input" placeholder="填写要搜索的关键字" value="{$keywords}" />
+			    	</li>
+			    	<li>
+				    	<div class="layui-btn-group">
 							<input type="submit" value="{lang搜索}" class="layui-btn layui-btn-sm" />
 							<a href="{url ctrl=yunmarket/}" class="layui-btn layui-btn-warm layui-btn-sm">{lang取消搜索}</a>
 						</div>
-					</div>
-				</div>
+			    	</li>
+			    </ul>
 				</form>
 			</div>
 			<div class="layui-col-md3">
@@ -50,6 +50,8 @@
 		<thead>
 		<tr>
 			<th colspan="2">软件名称</th>
+			<th>分类</th>
+			<th>目录</th>
 			<th>说明</th>
 			<th>价格</th>
 			<th>操作</th>
@@ -59,6 +61,8 @@
 		<tr>
 			<td width="24"><a href="javascript:$.admin_yunmarket.info('{$value.id}','{$value.title}');void(0)"><img src="{$value.thumb ? $value.thumb : 'images/ext.png'}" width="24" /></a></td>
 			<td><a href="javascript:$.admin_yunmarket.info('{$value.id}','{$value.title}');void(0)">{$value.title}</a></td>
+			<td>{$value.cate_title}</td>
+			<td>{$value.folder}</td>
 			<td class="gray">
 				{$value.note}
 				<!-- if $value.extlist -->
