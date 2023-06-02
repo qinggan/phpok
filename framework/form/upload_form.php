@@ -202,10 +202,14 @@ class upload_form extends _init_auto
 		$rs['folder'] = $folder;
 		unset($tmp);
 		//二进制上传设置
-		$rs['upload_binary'] = $rs['upload_binary'] && $rs['upload_binary'] != 'false' ? 'true' : 'false';
-		if($rs['upload_binary'] == 'false' && !ini_get('upload_tmp_dir')){
-			$rs['upload_binary'] = 'true';
+		$upload_binary = $upload_type['upload_binary'];
+		if(isset($rs['upload_binary']) && $rs['upload_binary'] != 'false'){
+			$upload_binary = true;
 		}
+		if(!$upload_binary && !ini_get('upload_tmp_dir')){
+			$upload_binary = true;
+		}
+		$rs['upload_binary'] = $upload_binary;
 		//上传压缩属性
 		$compress = 'false';
 		if($upload_type['compress']){

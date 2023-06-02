@@ -310,17 +310,23 @@ class login_control extends phpok_control
 
 	/**
 	 * 用户自动登录，主要是通过验签码，实现单点登录
-	 * @参数 user 用户账号
-	 * @参数 id 用户ID号，账号或ID号必须有一个值不能为空
-	 * @参数 code 验签码，当验签码不一致时，该账号该用户自动退出
+	 * @参数 token 单点登录参数，一般用于放在cookie里
 	**/
 	public function auto_f()
 	{
-		if(!$this->session->val('user_id')){
-			$this->error(P_Lang('非会员不能执行'));
+		$token = $this->get('token','html');
+		if(!$token){
+			$this->error(P_Lang('未指定参数'));
 		}
-		$data = $this->model('user')->login($this->session->val('user_id'),true);
-		$data['token'] = $this->control('token','api')->user_token($this->session->val('user_id'));
+		$user = $this->control('token','api')->token2user($token);
+		if(!$user){
+			$this->error('自动登录失败');
+		}
+		$data = $this->model('user')->login($user,true);
+		$token = $this->control('token','api')->user_token($user['id']);
+		if($token){
+			$data['token'] = $token;
+		}
 		$this->success($data);
 	}
 }

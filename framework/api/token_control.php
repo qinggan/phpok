@@ -94,6 +94,8 @@ class token_control extends phpok_control
 		$data = array("auth_time"=>($this->time + 7200),"auth_token"=>$auth_token);
 		$data['refresh_token'] = $this->refresh_token($config,$keyid,$user['id']);
 		$data['refresh_time'] = $expiry;
+		$data['session_name'] = $this->session()->sid();
+		$data['session_val'] = $this->session()->sessid();
 		if($user_token){
 			$data['user_token'] = $user_token;
 		}
@@ -248,6 +250,7 @@ class token_control extends phpok_control
 		$data = array();
 		$decode_data = is_string($decode) ? $this->lib('json')->decode($decode) : $decode;
 		$user_token = '';
+		$user_id = 0;
 		if($decode_data['user_id']){
 			$sign = md5($config['api_code'].'-'.$decode_data['time'].'-'.$decode_data['user_id']);
 			if($sign != $decode_data['sign']){
@@ -258,15 +261,26 @@ class token_control extends phpok_control
 				$this->model('user')->login($user);
 				$user_token = $this->user_token($decode_data['user_id'],$config);
 			}
+			$user_id = $user['id'];
 		}else{
 			$sign = md5($config['api_code'].'-'.$decode_data['time'].'-'.$decode_data['keyid']);
 			if($sign != $decode_data['sign']){
 				$this->error('签名不正确，验证不通过');
 			}
+			//防止 refreshToken 滞后，单独传 userToken 用于确保登录成功
+			$userToken = $this->get('userToken','html');
+			if($userToken){
+				$user = $this->token2user($userToken,$config);
+				if($user){
+					$this->model('user')->login($user);
+					$user_token = $this->user_token($user['id'],$config);
+					$user_id = $user['id'];
+				}
+			}
 		}
 		$data['auth_token'] = $this->auth_token($config,$user['id']);
 		$data['auth_time'] = $this->time + 7200;
-		$data['refresh_token'] = $this->refresh_token($config,$decode_data['keyid'],$decode_data['user_id']);
+		$data['refresh_token'] = $this->refresh_token($config,$decode_data['keyid'],$user_id);
 		$data['refresh_time'] = $this->time + 365*24*60*60;
 		if($user_token){
 			$data['user_token'] = $user_token;

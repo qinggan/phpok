@@ -806,9 +806,10 @@ class user_model_base extends phpok_model
 		$this->session->assign('user_gid',$user['group_id']);
 		$this->session->assign('user_name',$user['user']);
 		$data = array();
-		$data['user_id'] = $user['id'];
-		$data['user_gid'] = $user['group_id'];
-		$data['user_name'] = $user['user'];
+		$data['id'] = $user['id'];
+		$data['sign'] = md5($user['id'].$user['pass']);
+		$data['session_name'] = $this->session()->sid();
+		$data['session_val'] = $this->session()->sessid();
 		return $data;
 	}
 
