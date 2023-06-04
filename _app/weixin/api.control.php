@@ -103,7 +103,11 @@ class api_control extends \phpok_control
 		}
 		$this->model('weixin')->user_save($data);
 		$data = $this->model('user')->login($user_id,true);
-		$this->success();
+		$token = $this->control('token','api')->user_token($user_id);
+		if($token){
+			$data['token'] = $token;
+		}
+		$this->success($data);
 	}
 
 	public function index_f()
