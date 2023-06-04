@@ -13,48 +13,35 @@
 			<type>text</type>
 		</app_key>
 		<appid>
-			<title>AppID</title>
-			<note>微信分配的公众号ID或小程序ID（企业号corpid即为此appId）</note>
+			<title>公众号AppID</title>
+			<note>微信公众号ID，示例值：wxd678efh567hg6787，用于公众号支付，H5支付</note>
 			<type>text</type>
 		</appid>
-		<app_secret>
-			<title>AppSecert</title>
-			<note>仅使用公众号或小程序通迅密钥</note>
+		<open_appid>
+			<title>开放平台AppID</title>
+			<note><![CDATA[<a href="//open.weixin.qq.com/" target="_blank" class="red">腾迅开放平台</a>申请到的AppID，用于APP支付和扫码支付]]></note>
 			<type>text</type>
-		</app_secret>
-		<device_info>
-			<title>设备号</title>
-			<note>终端设备号(门店号或收银设备ID)，注意：PC网页，公众号及小程序支付请传“WEB”</note>
+		</open_appid>
+		<mini_appid>
+			<title>小程序AppID</title>
+			<note>微信小程序申请到的AppID，适用于小程序支付</note>
 			<type>text</type>
-		</device_info>
-		<trade_type>
-			<title>交易类型</title>
-			<note>请选择该交易支持的类型</note>
-			<type>radio</type>
-			<option>
-				<native>原生扫码支付</native>
-				<jsapi>公众号支付</jsapi>
-				<mweb>H5支付</mweb>
-				<miniprogram>小程序支付</miniprogram>
-				<app>APP支付</app>
-			</option>
-			<default>native</default>
-		</trade_type>
+		</mini_appid>
 		<pem_cert>
-			<title>证书pem格式</title>
-			<note>接口中强制要求时需携带的证书文件</note>
+			<title>证书文件</title>
+			<note>PEM格式，部分接口中强制要求时需携带的证书文件</note>
 			<type>text</type>
 			<typebtn>file</typebtn>
 		</pem_cert>
 		<pem_key>
-			<title>证书密钥pem格式</title>
-			<note>同上</note>
+			<title>证书密钥</title>
+			<note>PEM格式，部分接口中强制要求时需携带的密钥文件</note>
 			<type>text</type>
 			<typebtn>file</typebtn>
 		</pem_key>
 		<pem_ca>
-			<title>CA证书</title>
-			<note>同上</note>
+			<title>中间证书</title>
+			<note>也是指CA证书，严格审核需要</note>
 			<type>text</type>
 			<typebtn>file</typebtn>
 		</pem_ca>
@@ -65,8 +52,8 @@
 			<default>0.0.0.0</default>
 		</proxy_host>
 		<proxy_port>
-			<title>代码端口号</title>
-			<note>同上，不需要代码请留空或设为0</note>
+			<title>代理端口号</title>
+			<note>同上，不需要代理请留空或设为0</note>
 			<type>text</type>
 		</proxy_port>
 	</code>

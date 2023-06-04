@@ -5,7 +5,7 @@
 		<list>
 			<login>
 				<title><![CDATA[登录]]></title>
-				<status><![CDATA[]]></status>
+				<status><![CDATA[1]]></status>
 			</login>
 			<register>
 				<title><![CDATA[注册]]></title>
@@ -56,19 +56,6 @@
 			</comment>
 		</list>
 	</p-96>
-	<p-144>
-		<list>
-			<add>
-				<status><![CDATA[1]]></status>
-			</add>
-			<edit>
-				<status><![CDATA[1]]></status>
-			</edit>
-			<comment>
-				<status><![CDATA[1]]></status>
-			</comment>
-		</list>
-	</p-144>
 	<p-151>
 		<list>
 			<add>
@@ -95,4 +82,17 @@
 			</comment>
 		</list>
 	</p-152>
+	<p-463>
+		<list>
+			<add>
+				<status><![CDATA[1]]></status>
+			</add>
+			<edit>
+				<status><![CDATA[1]]></status>
+			</edit>
+			<comment>
+				<status><![CDATA[1]]></status>
+			</comment>
+		</list>
+	</p-463>
 </root>

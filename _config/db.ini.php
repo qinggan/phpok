@@ -35,7 +35,7 @@ socket = ""
 charset = "utf8"
 
 ; 是否调试，配合系统的debug为true时，会打印出整个页面执行的SQL语句
-debug = false
+debug = true
 
 ; 即时缓存，适应用大量的小查询（重复查询，一般不用开启）
 ; 注意，此项仅在使用了 memcache 或 redis 缓存时才有效，如果使用文件缓存，速度反而会下降

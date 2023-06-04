@@ -108,14 +108,14 @@ class yunmarket_control extends phpok_control
 		}
 		$psize = $this->config['psize'];
 		if(!$psize){
-			$psize = 30;
+			$psize = 20;
 		}
 		$pageid = $this->get($this->config['pageid'],'int');
 		if(!$pageid){
 			$pageid = 1;
 		}
 		$offset = ($pageid-1) * $psize;
-		$pageurl = $this->get('yunmarket');
+		$pageurl = $this->url('yunmarket');
 		$keywords = $this->get('keywords');
 		if($keywords){
 			$this->assign('keywords',$keywords);

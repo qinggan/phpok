@@ -26,91 +26,238 @@ class wxpay_submit
 
 	public function submit($json=false)
 	{
+		$trade_type = $this->trade_type();
+		if($trade_type == 'app'){
+			return $this->submit_app();
+		}
+		if($trade_type == 'mweb'){
+			return $this->submit_h5();
+		}
+		if($trade_type == 'native'){
+			return $this->submit_native();
+		}
+		if($trade_type == 'jsapi'){
+			return $this->submit_mp();
+		}
+		if($trade_type == 'miniprogram'){
+			return $this->submit_miniprogram();
+		}
+		if($trade_type == 'h5_miniprogram'){
+			return $this->submit_h5_miniprogram();
+		}
+	}
+
+	/**
+	 * APP支付
+	**/
+	public function submit_app()
+	{
 		global $app;
 		$wxpay = new wxpay_lib();
-		$wxpay->config($this->param['param']);
+		$param = $this->param['param'];
+		$param['appid'] = $param['open_appid'];
+		$param['trade_type'] = 'app';
+		unset($param['open_appid'],$param['mini_appid']);
+		$wxpay->config($param);
+		$wxpay->trade_type('app');
 		$data = array();
-		if($wxpay->trade_type() == 'jsapi' || $wxpay->trade_type() == 'miniprogram'){
-			if($wxpay->trade_type() == 'miniprogram'){
-				$openid = $app->session->val('wx_openid');
-				if(!$openid){
-					$openid = $app->get('openid');
-				}
-			}else{
-				$openid = $wxpay->get_openid();
-			}
-			if(!$openid){
-				$app->error('获取OpenId失败，请检查 '.$wxpay->errmsg());
-			}
-			$data['openid'] = $openid;
-		}else{
-			$data['product_id'] = $this->order['sn'];
-		}
+		$data['product_id'] = $this->order['sn'];
 		if($this->order['type'] == 'order'){
 			$order = $app->model('order')->get_one($this->order['sn'],'sn');
 			$data['attach'] = $order['passwd'];
 		}
-		$rs = $app->model('order')->get_one($this->order['sn'],'sn');
-		$app->assign('rs',$rs);
 		$price = price_format_val($this->order['price'],$this->order['currency_id'],$this->param['currency']['id']);
-		$data['body'] = $app->site['title'].' - 订单：'.$this->order['sn'].'-'.$this->order['id'];
+		$data['body'] = $this->order['sn'].'-'.$this->order['id'];
 		$data['out_trade_no'] = $this->order['sn'].'-'.$this->order['id'];
 		$data['total_fee'] = intval($price*100);
 		$data['notify_url'] = $this->baseurl."gateway/payment/wxpay/notify_url.php";
-		//针对APP支付
-		if($this->param['param']['trade_type'] == 'app'){
-			$wxpay->trade_type('app');
-			$info = $wxpay->create($data);
-			if(!$info){
-				$error = $wxpay->errmsg();
-				if(!$error){
-					$error = '支付出错，请联系管理员';
-				}
-				$app->error($error);
+		$info = $wxpay->create($data);
+		if(!$info){
+			$error = $wxpay->errmsg();
+			if(!$error){
+				$error = '支付出错，请联系管理员';
 			}
-			$data = array();
-			$data['appid'] = $info['appid'];
-			$data['partnerid'] = $info['mch_id'];
-			$data['prepayid'] = $info['prepay_id'];
-			$data['package'] = 'Sign=WXPay';
-			$data['noncestr'] = $info['nonce_str'];
-			$data['timestamp'] = $app->time;
-			$data['sign'] = $wxpay->create_sign($data);
-			$app->success(array('orderInfo'=>$data,'provider'=>'wxpay'));
+			$app->error($error);
 		}
-		//针对小程序的操作
-		if($wxpay->trade_type() == 'miniprogram'){
-			$wxpay->trade_type('jsapi');
-			$info = $wxpay->create($data);
-			if(!$info){
-				$error = $wxpay->errmsg();
-				if(!$error){
-					$error = '支付出错，请联系管理员';
-				}
-				$app->error($error);
-			}
-			$app->assign('info',$info);
-			$app->assign('data',$data);
-			$app->assign('order',$this->order);
-			$app->assign('price_rmb',$price);
-			$config = $wxpay->get_jsapi_param($info);
-			$app->assign('wxconfig',$config);
-			$ajaxurl = $app->url('payment','query','sn='.$this->order['sn'].'-'.$this->order['id'],'api');
-			$app->assign('ajaxurl',$ajaxurl);
-			if($json){
-				$array = array('appId'=>$config['appId']);
-				$array['timeStamp'] = $config['timeStamp'];
-				$array['nonceStr'] = $config['nonceStr'];
-				$array['paySign'] = $config['paySign'];
-				$array['logId'] = $order['id'];
-				$array['order_id'] = $rs['id'];
-				$array['snId'] = $this->order['sn'].'-'.$this->order['id'];
-				$array['prepay_id'] = $info['prepay_id'];
-				$app->success($array);
-			}
-			$app->tpl->display("payment/wxpay/submit_miniprogram");
-			exit;
+		$data = array();
+		$data['appid'] = $param['appid'];
+		$data['partnerid'] = $info['mch_id'];
+		$data['prepayid'] = $info['prepay_id'];
+		$data['package'] = 'Sign=WXPay';
+		$data['noncestr'] = $info['nonce_str'];
+		$data['timestamp'] = $app->time;
+		$data['sign'] = $wxpay->create_sign($data);
+		$app->success(array('orderInfo'=>$data,'provider'=>'wxpay'));
+	}
+
+	/**
+	 * H5支付
+	**/
+	public function submit_h5()
+	{
+		global $app;
+		$wxpay = new wxpay_lib();
+		$param = $this->param['param'];
+		$param['trade_type'] = 'mweb';
+		unset($param['open_appid'],$param['mini_appid']);
+		$wxpay->config($param);
+		$wxpay->trade_type('mweb');
+		$data = array();
+		$data['product_id'] = $this->order['sn'];
+		if($this->order['type'] == 'order'){
+			$order = $app->model('order')->get_one($this->order['sn'],'sn');
+			$data['attach'] = $order['passwd'];
+			$app->assign('rs',$order);
 		}
+		$price = price_format_val($this->order['price'],$this->order['currency_id'],$this->param['currency']['id']);
+		$price = price_format_val($this->order['price'],$this->order['currency_id'],$this->param['currency']['id']);
+		$data['body'] = $this->order['sn'].'-'.$this->order['id'];
+		$data['out_trade_no'] = $this->order['sn'].'-'.$this->order['id'];
+		$data['total_fee'] = intval($price*100);
+		$data['notify_url'] = $this->baseurl."gateway/payment/wxpay/notify_url.php";
+		$info = $wxpay->create($data);
+		if(!$info){
+			$error = $wxpay->errmsg();
+			if(!$error){
+				$error = '支付出错，请联系管理员';
+			}
+			$app->error($error);
+		}
+		if(strtolower($info['result_code']) == 'fail'){
+			$app->error($info['err_code'].'：'.$info['err_code_des']);
+		}
+		$notice_url = $app->url('payment','notice','id='.$this->order['id'],'www',true);
+		$url = $info['mweb_url']."&redirect_url=".rawurlencode($notice_url);
+		$app->_location($url);
+		exit;
+	}
+
+	public function submit_miniprogram()
+	{
+		global $app;
+		$wxpay = new wxpay_lib();
+		$param = $this->param['param'];
+		$param['appid'] = $param['mini_appid'];
+		$param['trade_type'] = 'miniprogram';
+		unset($param['open_appid'],$param['mini_appid']);
+		$wxpay->config($param);
+		$wxpay->trade_type('jsapi');
+		$data = array();
+		$openid = $app->session()->val('wx_openid');
+		if(!$openid){
+			$openid = $app->get('openid');
+			if(!$openid){
+				$app->error('获取OpenId失败，请检查 '.$wxpay->errmsg());
+			}
+		}
+		$data['openid'] = $openid;
+		if($this->order['type'] == 'order'){
+			$order = $app->model('order')->get_one($this->order['sn'],'sn');
+			$data['attach'] = $order['passwd'];
+		}		
+		$price = price_format_val($this->order['price'],$this->order['currency_id'],$this->param['currency']['id']);
+		$data['body'] = $this->order['sn'].'-'.$this->order['id'];
+		$data['out_trade_no'] = $this->order['sn'].'-'.$this->order['id'];
+		$data['total_fee'] = intval($price*100);
+		$data['notify_url'] = $this->baseurl."gateway/payment/wxpay/notify_url.php";
+		$info = $wxpay->create($data);
+		if(!$info){
+			$error = $wxpay->errmsg();
+			if(!$error){
+				$error = '支付出错，请联系管理员';
+			}
+			$app->error($error);
+		}
+		$config = $wxpay->get_jsapi_param($info);
+		$array = array('appId'=>$config['appId']);
+		$array['timeStamp'] = $config['timeStamp'];
+		$array['nonceStr'] = $config['nonceStr'];
+		$array['paySign'] = $config['paySign'];
+		$array['logId'] = $order['id'];
+		$array['order_id'] = $rs['id'];
+		$array['snId'] = $this->order['sn'].'-'.$this->order['id'];
+		$array['prepay_id'] = $info['prepay_id'];
+		$app->success($array);
+	}
+
+	public function submit_h5_miniprogram()
+	{
+		global $app;
+		$wxpay = new wxpay_lib();
+		$param = $this->param['param'];
+		$param['appid'] = $param['mini_appid'];
+		$param['trade_type'] = 'miniprogram';
+		unset($param['open_appid'],$param['mini_appid']);
+		$wxpay->config($param);
+		$wxpay->trade_type('jsapi');
+		$data = array();
+		$openid = $app->session()->val('wx_openid');
+		if(!$openid){
+			$openid = $app->get('openid');
+			if(!$openid){
+				$app->error('获取OpenId失败，请检查 '.$wxpay->errmsg());
+			}
+		}
+		$data['openid'] = $openid;
+		if($this->order['type'] == 'order'){
+			$order = $app->model('order')->get_one($this->order['sn'],'sn');
+			$data['attach'] = $order['passwd'];
+			$app->assign('rs',$order);
+		}		
+		$price = price_format_val($this->order['price'],$this->order['currency_id'],$this->param['currency']['id']);
+		$data['body'] = $this->order['sn'].'-'.$this->order['id'];
+		$data['out_trade_no'] = $this->order['sn'].'-'.$this->order['id'];
+		$data['total_fee'] = intval($price*100);
+		$data['notify_url'] = $this->baseurl."gateway/payment/wxpay/notify_url.php";
+		$info = $wxpay->create($data);
+		if(!$info){
+			$error = $wxpay->errmsg();
+			if(!$error){
+				$error = '支付出错，请联系管理员';
+			}
+			$app->error($error);
+		}
+		$app->assign('info',$info);
+		$app->assign('data',$data);
+		$app->assign('order',$this->order);
+		$app->assign('price_rmb',$price);
+		$config = $wxpay->get_jsapi_param($info);
+		$app->assign('wxconfig',$config);
+		$ajaxurl = $app->url('payment','query','sn='.$this->order['sn'].'-'.$this->order['id'],'api');
+		$app->assign('ajaxurl',$ajaxurl);
+		$app->tpl->display("payment/wxpay/submit_miniprogram");
+	}
+
+	/**
+	 * 公众号支付
+	**/
+	public function submit_mp()
+	{
+		global $app;
+		$wxpay = new wxpay_lib();
+		$param = $this->param['param'];
+		$param['trade_type'] = 'jsapi';
+		unset($param['open_appid'],$param['mini_appid']);
+		$wxpay->config($param);
+		$wxpay->trade_type('jsapi');
+		$data = array();
+		$openid = $wxpay->get_openid();
+		if(!$openid){
+			$app->error('获取OpenId失败，请检查 '.$wxpay->errmsg());
+		}
+		$data['openid'] = $openid;
+		if($this->order['type'] == 'order'){
+			$order = $app->model('order')->get_one($this->order['sn'],'sn');
+			$data['attach'] = $order['passwd'];
+			$app->assign('rs',$order);
+		}
+		
+		$price = price_format_val($this->order['price'],$this->order['currency_id'],$this->param['currency']['id']);
+		$data['body'] = $this->order['sn'].'-'.$this->order['id'];
+		$data['out_trade_no'] = $this->order['sn'].'-'.$this->order['id'];
+		$data['total_fee'] = intval($price*100);
+		$data['notify_url'] = $this->baseurl."gateway/payment/wxpay/notify_url.php";
+
 		$info = $wxpay->create($data);
 		if(!$info){
 			$error = $wxpay->errmsg();
@@ -128,17 +275,12 @@ class wxpay_submit
 		$app->assign('price_rmb',$price);
 		$ajaxurl = $app->url('payment','query','sn='.$this->order['sn'].'-'.$this->order['id'],'api');
 		$app->assign('ajaxurl',$ajaxurl);
-		//H5支付
-		if($wxpay->trade_type() == 'mweb'){
-			$notice_url = $app->url('payment','notice','id='.$this->order['id'],'www',true);
-			$url = $info['mweb_url']."&redirect_url=".rawurlencode($notice_url);
-			$app->_location($url);
-			exit;
-		}
+		$config = $wxpay->get_jsapi_param($info);
+		$app->assign('wxconfig',$config);
+		$app->tpl->display("payment/wxpay/submit_jsapi");
+
 		if($wxpay->trade_type() == 'jsapi'){
-			$config = $wxpay->get_jsapi_param($info);
-			$app->assign('wxconfig',$config);
-			$app->tpl->display("payment/wxpay/submit_jsapi");
+			
 		}elseif($wxpay->trade_type() == 'native'){
 			$app->tpl->display('payment/wxpay/submit_qrcode');
 		}elseif($wxpay->trade_type() == 'miniprogram'){
@@ -146,6 +288,52 @@ class wxpay_submit
 			$app->assign('wxconfig',$config);
 			$app->tpl->display($app->tpl->dir_tplroot."payment/wxpay/submit_miniprogram.html",'abs-file');
 		}
+	}
+
+	/**
+	 * 扫码支付
+	**/
+	public function submit_native()
+	{
+		global $app;
+		$wxpay = new wxpay_lib();
+		$param = $this->param['param'];
+		$param['trade_type'] = 'native';
+		$param['appid'] = $param['open_appid'];
+		unset($param['open_appid'],$param['mini_appid']);
+		$wxpay->config($param);
+		$wxpay->trade_type('native');
+		$data = array();
+		$data['product_id'] = $this->order['sn'];
+
+		if($this->order['type'] == 'order'){
+			$order = $app->model('order')->get_one($this->order['sn'],'sn');
+			$data['attach'] = $order['passwd'];
+			$app->assign('rs',$order);
+		}
+		$price = price_format_val($this->order['price'],$this->order['currency_id'],$this->param['currency']['id']);
+		$data['body'] = $this->order['sn'].'-'.$this->order['id'];
+		$data['out_trade_no'] = $this->order['sn'].'-'.$this->order['id'];
+		$data['total_fee'] = intval($price*100);
+		$data['notify_url'] = $this->baseurl."gateway/payment/wxpay/notify_url.php";
+		$info = $wxpay->create($data);
+		if(!$info){
+			$error = $wxpay->errmsg();
+			if(!$error){
+				$error = '支付出错，请联系管理员';
+			}
+			$app->error($error);
+		}
+		if(strtolower($info['result_code']) == 'fail'){
+			$app->error($info['err_code'].'：'.$info['err_code_des']);
+		}
+		$app->assign('info',$info);
+		$app->assign('data',$data);
+		$app->assign('order',$this->order);
+		$app->assign('price_rmb',$price);
+		$ajaxurl = $app->url('payment','query','sn='.$this->order['sn'].'-'.$this->order['id'],'api');
+		$app->assign('ajaxurl',$ajaxurl);
+		$app->tpl->display('payment/wxpay/submit_qrcode');
 	}
 
 	private function head($title='')
@@ -203,5 +391,27 @@ EOT;
 		echo '</body>'."\n";
 		echo '</html>';
 	}
+
+	private function trade_type()
+	{
+		global $app;
+		$type = $app->is_mobile() ? 'mweb' : 'native';
+		$a_strtolower = strtolower($_SERVER['HTTP_USER_AGENT']);
+		if(strpos($a_strtolower, "micromessenger")){
+			$type = strpos($a_strtolower, "miniprogram") ? 'miniprogram' : 'jsapi';
+		}elseif(strpos($a_strtolower, "uni-app") || strpos($a_strtolower, "html5plus")){
+			$type = 'app';
+		}else{
+			$isapp = $app->get('isapp','int');
+			if($isapp){
+				$type = 'app';
+			}else{
+				$ismweb = $app->get('h5_miniprogram','int');
+				if($ismweb){
+					$type = 'h5_miniprogram';
+				}
+			}
+		}
+		return $type;
+	}
 }
-?>
