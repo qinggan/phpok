@@ -167,7 +167,7 @@ class fields_model_base extends phpok_model
 			if(strpos($tmp,'{') !== false && strpos($tmp,':') !== false && substr($tmp,-1) == '}'){
 				$tmp = unserialize($tmp);
 			}
-			if(isset($datalist[$value['fields_id']])){
+			if(!isset($datalist[$value['fields_id']])){
 				$datalist[$value['fields_id']] = array();
 			}
 			$datalist[$value['fields_id']][$value['keyname']] = $tmp;

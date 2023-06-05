@@ -160,7 +160,8 @@ class yunmarket_control extends phpok_control
 			}
 		}
 		if($t && !$t['status']){
-			$this->assign('errinfo',$t['info']);
+			$tip = $t['error'] ? $t['error'] : $t['info'];
+			$this->error($tip);
 		}
 		$this->view('yunmarket_index');
 	}

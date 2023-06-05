@@ -126,7 +126,7 @@ class yunmarket_control extends phpok_control
 					$tmp['md5'] = $value['md5'];
 					$tmp['folder'] = $value['folder'];
 					$tmp['price'] = price_format_val($value['price']);
-					if($value['extlib']){
+					if($value['extlib'] && is_array($value['extlib'])){
 						$extlist = array();
 						foreach($value['extlib'] as $k=>$v){
 							$extlist[] = array('id'=>$v['id'],'title'=>$v['title']);
