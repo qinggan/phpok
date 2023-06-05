@@ -4,7 +4,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 
 
 CREATE TABLE IF NOT EXISTS `qinggan_77` (
@@ -132,20 +132,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_all` (
 INSERT INTO `qinggan_all` (`id`, `site_id`, `identifier`, `title`, `ico`, `is_system`, `status`, `is_api`) VALUES
 (4, 1, 'foot', '页脚信息', 'images/ico/copyright.png', 0, 1, 0);
 
-CREATE TABLE IF NOT EXISTS `qinggan_apps` (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `folder` varchar(60) NOT NULL COMMENT '应用文件夹',
-  `identifier` varchar(60) NOT NULL COMMENT '应用标识，用于映射',
-  `title` varchar(255) NOT NULL COMMENT '应用名称',
-  `note` varchar(255) NOT NULL COMMENT '摘要',
-  `thumb` varchar(255) NOT NULL COMMENT '图片地址，一般放在 res/apps/ 下',
-  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0不启用，1启用中',
-  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '安装时间',
-  `lastdate` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后更新时间',
-  `version` varchar(30) NOT NULL COMMENT '更新版本，如3.1.2',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='已安装的应用';
-
 CREATE TABLE IF NOT EXISTS `qinggan_attr` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `site_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '站点ID',
@@ -209,10 +195,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_cart` (
   `addtime` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '添加时间',
   `coupon_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '优惠码ID（仅当优惠码有效时体现）',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=81 DEFAULT CHARSET=utf8 COMMENT='购物车';
-
-INSERT INTO `qinggan_cart` (`id`, `session_id`, `user_id`, `addtime`, `coupon_id`) VALUES
-(80, 'rraro40m1gns99l1aa2h3pnpn3', 0, 1685846987, 0);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='购物车';
 
 CREATE TABLE IF NOT EXISTS `qinggan_cart_product` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
@@ -2204,45 +2187,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_list_cate` (
   KEY `cate_id` (`cate_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='主题绑定的分类';
 
-INSERT INTO `qinggan_list_cate` (`id`, `cate_id`) VALUES
-(12, 8),
-(13, 68),
-(14, 68),
-(15, 68),
-(16, 68),
-(17, 68),
-(45, 198),
-(46, 199),
-(2290, 68),
-(2292, 68),
-(2453, 168),
-(2454, 168),
-(2455, 168),
-(2456, 168),
-(2490, 211),
-(2491, 211),
-(2492, 211),
-(2493, 211),
-(2494, 211),
-(2495, 211),
-(2496, 211),
-(2497, 211),
-(2498, 211),
-(2499, 211),
-(2500, 211),
-(2501, 211),
-(2502, 211),
-(2503, 211),
-(2504, 211),
-(2505, 211),
-(2506, 211),
-(2507, 211),
-(2508, 211),
-(2509, 211),
-(2510, 211),
-(2528, 206),
-(2529, 68);
-
 CREATE TABLE IF NOT EXISTS `qinggan_log_content` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `tbl` varchar(255) NOT NULL COMMENT '表名（不含前缀）',
@@ -2254,24 +2198,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_log_content` (
   `content2` text NOT NULL COMMENT '变更后的数据',
   PRIMARY KEY (`id`),
   KEY `tbl_tid` (`tbl`,`tid`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='内容变更记录';
-
-INSERT INTO `qinggan_log_content` (`id`, `tbl`, `dateline`, `tid`, `vtype`, `code`, `content1`, `content2`) VALUES
-(1, 'list', 1673321847, 2, '主题', 'title', '10年产品发展，稳定，健全的企业服务系统', '15年产品发展，稳定，健全的企业服务系统'),
-(2, 'list', 1673321908, 3, '主题', 'title', '支持心中那一份支持', '便捷操作，易二次开发'),
-(3, 'list', 1677899870, 2290, '主题', 'title', '《2022年补天漏洞响应平台年度分析报告》正式发布', '《2022年补天漏洞响应平台年度分析报告》正式发布2'),
-(4, 'list', 1677900758, 2290, '主题', 'title', '《2022年补天漏洞响应平台年度分析报告》正式发布2', '《2022年补天漏洞响应平台年度分析报告》正式发布9999'),
-(5, 'list', 1677900782, 2290, '主题', 'title', '《2022年补天漏洞响应平台年度分析报告》正式发布9999', '《2022年补天漏洞响应平台年度分析报告》正式发布9'),
-(6, 'list', 1677900819, 2290, '主题', 'title', '《2022年补天漏洞响应平台年度分析报告》正式发布9', '《2022年补天漏洞响应平台年度分析报告》正式发布978676'),
-(7, 'list', 1677900975, 2290, '主题', 'title', '《2022年补天漏洞响应平台年度分析报告》正式发布978676', '《2022年补天漏洞响应平台年度分析报告》正式发布'),
-(8, 'list_biz', 1678108778, 2453, '价格', 'price', '0.0000', '1969'),
-(9, 'list_biz', 1678109278, 2453, '价格', 'price', '0.0000', '1969'),
-(10, 'list_biz', 1678161512, 2454, '价格', 'price', '0.0000', '2499'),
-(11, 'list_biz', 1678177870, 2455, '价格', 'price', '0.0000', '3799'),
-(12, 'list_biz', 1678330509, 2464, '价格', 'price', '0.0000', '0.8'),
-(13, 'list', 1682922813, 2292, '主题', 'title', 'Bootstrap 4 和 Bootstrap 5 框架的区别', 'Bootstrap 4 和 Bootstrap 5 框架的区别2'),
-(14, 'list', 1682922823, 2292, '主题', 'title', 'Bootstrap 4 和 Bootstrap 5 框架的区别2', 'Bootstrap 4 和 Bootstrap 5 框架的区别3'),
-(15, 'list', 1683772984, 2512, '主题', 'title', '电话客服', '售前咨询');
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='内容变更记录';
 
 CREATE TABLE IF NOT EXISTS `qinggan_menu` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID，主键',
@@ -17412,8 +17339,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order` (
   `fullname` varchar(255) NOT NULL COMMENT '联系人',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ordersn` (`sn`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='订单中心';
-
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单中心';
 
 CREATE TABLE IF NOT EXISTS `qinggan_order_address` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
@@ -17434,8 +17360,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_address` (
   `zipcode` varchar(50) NOT NULL COMMENT '邮编',
   `type` varchar(255) NOT NULL DEFAULT 'shipping' COMMENT '地址类型，shipping表示收货地址，billing表示账单地址',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='订单地址库';
-
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单地址库';
 
 CREATE TABLE IF NOT EXISTS `qinggan_order_express` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
@@ -17449,8 +17374,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_express` (
   `company` varchar(255) NOT NULL COMMENT '快递的公司全称',
   `is_end` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未结束1已结束',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='订单中涉及到的物流分配';
-
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单中涉及到的物流分配';
 
 CREATE TABLE IF NOT EXISTS `qinggan_order_invoice` (
   `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '订单ID号',
@@ -17472,7 +17396,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_log` (
   `admin_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '管理员ID',
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='订单日志，用于了解当前的订单处理进度';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单日志，用于了解当前的订单处理进度';
 
 CREATE TABLE IF NOT EXISTS `qinggan_order_payment` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
@@ -17495,8 +17419,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_price` (
   `price` decimal(10,4) NOT NULL DEFAULT '0.0000' COMMENT '金额，-号表示优惠',
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='订单金额明细清单';
-
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单金额明细清单';
 
 CREATE TABLE IF NOT EXISTS `qinggan_order_product` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
@@ -17517,8 +17440,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_order_product` (
   `discount` decimal(10,4) UNSIGNED NOT NULL DEFAULT '0.0000' COMMENT '优惠价',
   `discount_note` varchar(255) NOT NULL COMMENT '优惠说明',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='订单的产品信息';
-
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='订单的产品信息';
 
 CREATE TABLE IF NOT EXISTS `qinggan_order_refund` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
@@ -17554,7 +17476,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_payment` (
   `iframe` tinyint(1) UNSIGNED NOT NULL COMMENT '0表示跳转支付1表示嵌入支付',
   `admin_note` varchar(255) NOT NULL COMMENT '管理员备注',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='支付方案';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='支付方案';
 
 CREATE TABLE IF NOT EXISTS `qinggan_payment_group` (
   `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
@@ -17587,7 +17509,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_payment_log` (
   `ext` text NOT NULL COMMENT '扩展',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='支付日志';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='支付日志';
 
 CREATE TABLE IF NOT EXISTS `qinggan_phpok` (
   `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID号',
@@ -18513,15 +18435,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_reply` (
   `title` varchar(255) NOT NULL COMMENT '评论标题，留空从主题中读取',
   PRIMARY KEY (`id`),
   KEY `tid` (`tid`)
-) ENGINE=MyISAM AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COMMENT='主题评论表';
-
-INSERT INTO `qinggan_reply` (`id`, `tid`, `parent_id`, `vouch`, `star`, `uid`, `ip`, `addtime`, `status`, `session_id`, `content`, `admin_id`, `adm_content`, `adm_time`, `order_id`, `res`, `vtype`, `title`) VALUES
-(44, 2455, 0, 0, 3, 23, '127.0.0.1', 1685109420, 1, 'sjo767dsh4dge20ors1td5vjt4', '<p>测试下评论~</p>\r\n', 0, '', 0, 0, '', 'title', 'iQOO 11 12GB+256GB 传奇版'),
-(47, 2528, 0, 0, 3, 23, '127.0.0.1', 1685155256, 1, 'aot0silg3ffqabjd9amdnistg3', '<p>测试回复用的！</p>\r\n', 0, '', 0, 0, '', 'title', '这个也是测试用的'),
-(46, 0, 44, 0, 3, 0, '', 1685109531, 1, '', '<p>测试下回复！</p>\r\n', 1, '', 0, 0, '', 'title', ''),
-(48, 2453, 0, 0, 3, 23, '127.0.0.1', 1685166054, 0, 'aot0silg3ffqabjd9amdnistg3', '测试下订单评论', 0, '', 0, 1, '825', 'order', '#P2023030753U00023001_荣耀X40 GT 8GB+256GB 竞速黑 双卡 全网通版 骁龙888 144Hz高刷电竞屏 66W超级快充 满帧战神'),
-(49, 2453, 0, 0, 3, 23, '127.0.0.1', 1685166067, 0, 'aot0silg3ffqabjd9amdnistg3', '再来评一次！', 0, '', 0, 1, '', 'order', '#P2023030753U00023001_荣耀X40 GT 8GB+256GB 竞速黑 双卡 全网通版 骁龙888 144Hz高刷电竞屏 66W超级快充 满帧战神'),
-(50, 2453, 0, 0, 3, 23, '127.0.0.1', 1685166491, 0, 'aot0silg3ffqabjd9amdnistg3', '第三次评论！', 0, '', 0, 1, '', 'order', '#P2023030753U00023001_荣耀X40 GT 8GB+256GB 竞速黑 双卡 全网通版 骁龙888 144Hz高刷电竞屏 66W超级快充 满帧战神');
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='主题评论表';
 
 CREATE TABLE IF NOT EXISTS `qinggan_res` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '资源ID',
@@ -18575,14 +18489,7 @@ INSERT INTO `qinggan_res` (`id`, `cate_id`, `folder`, `name`, `ext`, `filename`,
 (785, 1, 'res/202303/07/', 'bc618396aea79fd3.png', 'png', 'res/202303/07/bc618396aea79fd3.png', 'res/_cache/_ico/78/785.png', 1678181099, '10002', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:1080;}', '', '', 0, 0, 1, 'image/png'),
 (786, 1, 'res/202303/07/', 'c180708e108ece20.png', 'png', 'res/202303/07/c180708e108ece20.png', 'res/_cache/_ico/78/786.png', 1678181101, '10003', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:1080;}', '', '', 0, 0, 1, 'image/png'),
 (791, 1, 'res/202303/07/', 'f7a94732464f712a.png', 'png', 'res/202303/07/f7a94732464f712a.png', 'res/_cache/_ico/79/791.png', 1678181112, '10008', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:1080;}', '', '', 0, 0, 1, 'image/png'),
-(794, 1, 'res/202303/07/', '1d0fbb280838028e.png', 'png', 'res/202303/07/1d0fbb280838028e.png', 'res/_cache/_ico/79/794.png', 1678181117, '10011', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:1080;}', '', '', 0, 0, 1, 'image/png'),
-(813, 1, 'res/202305/05/', '880ebba845767062.png', 'png', 'res/202305/05/880ebba845767062.png', 'res/_cache/_ico/81/813.png', 1683262996, '200', 'a:2:{s:5:\"width\";i:200;s:6:\"height\";i:200;}', '', '', 0, 0, 1, 'image/png'),
-(814, 1, 'res/202305/05/', '8b19d50c8a285ad1.png', 'png', 'res/202305/05/8b19d50c8a285ad1.png', 'res/_cache/_ico/81/814.png', 1683263009, '80', 'a:2:{s:5:\"width\";i:80;s:6:\"height\";i:80;}', '', '', 0, 0, 1, 'image/png'),
-(815, 1, 'res/202305/11/', '95ff7c95d5acf81c.png', 'png', 'res/202305/11/95ff7c95d5acf81c.png', 'res/_cache/_ico/81/815.png', 1683772913, 'Tab2QR-1683772901272', 'a:2:{s:5:\"width\";i:512;s:6:\"height\";i:512;}', '', '', 0, 0, 1, 'image/png'),
-(816, 1, 'res/202305/26/', 'c19a08db149fc142.jpg', 'jpg', 'res/202305/26/c19a08db149fc142.jpg', 'res/_cache/_ico/81/816.jpg', 1685103703, '7年前的照片', 'a:2:{s:5:\"width\";i:957;s:6:\"height\";i:957;}', '', 'sjo767dsh4dge20ors1td5vjt4', 23, 0, 0, 'image/jpeg'),
-(817, 1, 'res/202305/26/', 'b5387e37fb65d9ea.jpg', 'jpg', 'res/202305/26/b5387e37fb65d9ea.jpg', 'res/_cache/_ico/81/817.jpg', 1685104392, '个人自拍照', 'a:2:{s:5:\"width\";i:960;s:6:\"height\";i:960;}', '', 'sjo767dsh4dge20ors1td5vjt4', 23, 0, 0, 'image/jpeg'),
-(825, 1, 'res/202305/27/', '126549167770e972.jpg', 'jpg', 'res/202305/27/126549167770e972.jpg', 'res/_cache/_ico/82/825.jpg', 1685166050, 'a9wmt-7ujgr', 'a:2:{s:5:\"width\";i:2000;s:6:\"height\";i:500;}', '', 'aot0silg3ffqabjd9amdnistg3', 23, 0, 0, 'image/jpeg'),
-(824, 1, '', '', 'jpg', 'res/202305/26/b37f317bc9172327.jpg', 'res/_cache/_ico/82/824.jpg', 1685107638, '我的头像', 'a:2:{s:5:\"width\";i:960;s:6:\"height\";i:960;}', '', 'sjo767dsh4dge20ors1td5vjt4', 23, 0, 0, 'image/jpeg');
+(794, 1, 'res/202303/07/', '1d0fbb280838028e.png', 'png', 'res/202303/07/1d0fbb280838028e.png', 'res/_cache/_ico/79/794.png', 1678181117, '10011', 'a:2:{s:5:\"width\";i:1080;s:6:\"height\";i:1080;}', '', '', 0, 0, 1, 'image/png');
 
 CREATE TABLE IF NOT EXISTS `qinggan_res_cate` (
   `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '资源分类ID',
@@ -18620,82 +18527,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_search` (
   `sign` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未标记，1已标记',
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`,`title`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=gbk COMMENT='搜索数据统计';
-
-INSERT INTO `qinggan_search` (`id`, `site_id`, `title`, `dateline`, `hits`, `sign`) VALUES
-(3, 1, 'phpok', 1638195223, 2, 1),
-(4, 1, '浏览器', 1644704177, 4, 1),
-(6, 1, '操作系统', 1638195219, 2, 1),
-(7, 1, 'Windows', 1683525531, 7, 1),
-(8, 1, '00后', 1683525646, 4, 0);
-
-CREATE TABLE IF NOT EXISTS `qinggan_server` (
-  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `title` varchar(200) NOT NULL COMMENT '服务器名称',
-  `domain` varchar(255) NOT NULL COMMENT '域名',
-  `status` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不使用1正常使用',
-  `ip` varchar(200) NOT NULL COMMENT '服务器IP',
-  `ssh_port` varchar(10) NOT NULL DEFAULT '22' COMMENT '服务器SSH端口',
-  `ssh_user` varchar(100) NOT NULL COMMENT '服务器SSH账号',
-  `ssh_pass` varchar(100) NOT NULL COMMENT '服务器SSH密码',
-  `ssh_timeout` tinyint(3) UNSIGNED NOT NULL DEFAULT '20' COMMENT 'SSH连接超时限制',
-  `mysql_data` varchar(255) NOT NULL DEFAULT '/qghost/database/' COMMENT 'MySQL数据库目录',
-  `mysql_pass` varchar(30) NOT NULL COMMENT '自定义Mysql的超管密码',
-  `httpd_www` varchar(255) NOT NULL DEFAULT '/qghost/www/' COMMENT '网站根目录',
-  `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '排序，值越小越往前靠',
-  `is_server` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0客户端1服务端',
-  `is_del` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0表示正常使用1表示列入删除标记，将不使用',
-  `phpmyadmin` varchar(255) NOT NULL COMMENT '设置PHPMYADMIN管理地址',
-  `phpmyadmin_remote` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1远程IP访问，0本地网络访问',
-  `maxsize` int(10) UNSIGNED NOT NULL DEFAULT '100',
-  `back_to_server` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '备份迁移到服务端',
-  `ftp_server` varchar(255) NOT NULL COMMENT 'FTP域名',
-  `sshtype` enum('pass','cert') NOT NULL DEFAULT 'pass' COMMENT '登录方式，pass密码登录，cert证书登录',
-  `cert_pub_file` varchar(255) NOT NULL COMMENT '证书公钥地址',
-  `cert_file` varchar(255) NOT NULL COMMENT '证书密钥地址',
-  `cert_pass` varchar(255) NOT NULL COMMENT '证书密码',
-  `is_win` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0表示Linux主机，1表示Window主机',
-  `is_front` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0前台不使用，1前台使用',
-  `subdomain` varchar(255) NOT NULL COMMENT '开放域名',
-  `server_type` tinyint(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0表示自建，1表示宝塔',
-  `bt_server` varchar(255) NOT NULL COMMENT '宝塔API地址',
-  `bt_apikey` varchar(255) NOT NULL COMMENT '宝塔API密钥',
-  `bt_link` varchar(255) NOT NULL COMMENT '宝塔访问地址',
-  `bt_user` varchar(255) NOT NULL COMMENT '宝塔账号',
-  `bt_pass` varchar(255) NOT NULL COMMENT '宝塔密码',
-  `bt_isapi` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0不支持接口管理网站，1支持',
-  `bt_php` varchar(100) NOT NULL COMMENT 'PHP版本，留空使用56',
-  `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '用户ID，仅限第三方用户接入',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='服务器管理';
-
-INSERT INTO `qinggan_server` (`id`, `title`, `domain`, `status`, `ip`, `ssh_port`, `ssh_user`, `ssh_pass`, `ssh_timeout`, `mysql_data`, `mysql_pass`, `httpd_www`, `taxis`, `is_server`, `is_del`, `phpmyadmin`, `phpmyadmin_remote`, `maxsize`, `back_to_server`, `ftp_server`, `sshtype`, `cert_pub_file`, `cert_file`, `cert_pass`, `is_win`, `is_front`, `subdomain`, `server_type`, `bt_server`, `bt_apikey`, `bt_link`, `bt_user`, `bt_pass`, `bt_isapi`, `bt_php`, `user_id`) VALUES
-(11, '河南-紫田-电信-镇江', '', 1, '222.186.180.156', '22', 'root', 'asddf159++', 10, '/qghost/database/', 'JMqcYjqSczhF', '/qghost/www/', 90, 0, 0, 'http://dxphpmyadmin.zt02.19blog.cn/', 0, 0, 0, 'ftp.zt02.19blog.cn', 'pass', '', '', '', 0, 0, 'zt02.19blog.cn', 0, '', '', '', '', '', 0, '', 0),
-(4, '海外服务器', '', 1, '174.139.160.87', '22', 'root', 'rF&xPDr&+B', 10, '/qghost/database/', 'a64!da#44a', '/qghost/www/', 110, 0, 0, 'https://mysql-143.phpok.com', 0, 0, 0, 'ftp.bizphp.net', 'pass', '', '', '', 0, 1, 'bizphp.net', 0, '', '', '', '', '', 0, '', 0),
-(10, '阿里云服务器', '', 1, '119.23.144.85', '22', 'root', 'abc@150467466', 30, '/www/server/data/', 'abc@#%!40782502', '/www/wwwroot/', 160, 0, 0, 'https://myadmin.weisant.cn', 0, 0, 0, '', 'pass', '', '', '', 0, 0, '', 1, 'http://119.23.144.85:27455', 'YhoUetA41fIFCo2PRjqOOSYngrlfNjoS', 'http://119.23.144.85:27455/d790e47d', 'jgowtmdg', 'd7abf8bf', 1, '', 0),
-(31, '河南-紫田-联通-中原', '', 1, '42.236.74.70', '4183', 'root', 'BCInHpOERvAbd9HB', 30, '/www/server/data/', '19ce2a82474722f0', '/www/wwwroot/', 10, 0, 0, 'https://phpmyadmin.jujuyou.cn/', 0, 0, 0, 'ftp.haijiepower.cn', 'pass', '', '', '', 0, 0, 'zt01.19blog.cn', 1, 'http://42.236.74.70:19830', 'dpxUpQ2nyu8qHI8u1lWRbNf366CLBbuv', 'http://42.236.74.70:19830/c9253707', 'rrotr42g', 'ea6ddefc', 1, '', 0),
-(15, '香港-百度云', '', 1, '154.85.40.157', '22', 'root', 'abc!@#150467466', 30, '/qghost/database/', 'b2wz710w5c', '/qghost/www/', 60, 0, 0, 'https://phpmyadmin.phpok.com', 0, 0, 0, 'ftp.phpok.ltd', 'pass', '', '', '', 0, 1, 'phpok.ltd', 0, '', '', '', '', '', 0, '', 0),
-(19, '客户-博仕教育', '', 1, '47.115.88.21', '22', 'root', 'BsJy20200222', 30, '/qghost/database/', 'abc147259dDe', '/qghost/www/', 120, 0, 0, 'https://phpmyadmin.zbspy.com', 0, 0, 0, 'ftp.zbspy.com', 'pass', '', '', '', 0, 0, '', 0, '', '', '', '', '', 0, '', 0),
-(32, '自用-博客-腾迅云', '', 1, '124.222.114.236', '22', 'root', 'abc@150467466', 30, '/www/server/data', '907820fbcad1a93c', '/www/wwwroot/', 190, 0, 0, 'https://phpmyadmin.19blog.cn', 0, 0, 0, 'ftp.19blog.cn', 'pass', '', '', '', 0, 0, '', 1, 'http://124.222.114.236:18888', 'ulR4odY5k55dX8KZgqbbs81P46k4i4nB', 'http://124.222.114.236:18888/c312d400', 'eda63of2', '002a02a5', 1, '', 0),
-(24, '邮件服务器', '', 1, '149.248.51.178', '22', 'root', 'bD%5J{tSZmXcWPd)', 30, '/qghost/database/', '', '/www/wwwroot/', 180, 0, 0, '', 0, 0, 0, '', 'pass', '', '', '', 0, 0, '', 1, 'http://149.248.51.178:8125', 'LlXkxzUBGcjBUPAg7gkm4Dmkx2SN3FJh', 'http://149.248.51.178:8125/08b2c576', 'wolebnev', '2a7faeea', 0, '', 0),
-(25, '客户-新新-香港-01', '', 1, '47.242.165.244', '22', 'root', 'abc@150467466', 30, '/www/server/data/', 'aa8f6283ec0ef8c4', '/www/wwwroot/', 140, 0, 0, 'https://myadmin.dzs119.com', 0, 0, 0, '', 'pass', '', '', '', 0, 0, '', 1, 'http://47.242.165.244:8111/', '5j7jzP5anRNDJOMKhqBtTgI0eqKcYsUI', 'http://47.242.165.244:8111/ea12de17', 'xunjgabs', '22e51702', 1, '', 0),
-(35, '腾迅云-香港', '', 1, '43.154.219.170', '22', 'root', 'abc@150467466', 30, '/www/server/data/', 'fd2de3b4f0d5ca56', '/www/wwwroot/', 255, 0, 0, 'https://phpmyadmin.phpok.cn/', 0, 0, 0, '', 'pass', '', '', '', 0, 0, '', 1, 'http://43.154.219.170:18245', 'rCwQQUOpj5YZS1naGpl3Cjwf2J5R19TN', 'http://43.154.219.170:18245/tencentcloud', 'elqpkdds', '9c24329e45bd', 1, '', 0),
-(33, '海外客户小站', '', 1, '67.198.232.60', '22', 'root', 'kuTR@R3phLP+', 30, '/www/server/data/', '848f962460fe3eeb', '/www/wwwroot/', 255, 0, 0, 'https://phpmyadmin.oklite.org/', 0, 0, 0, '', 'pass', '', '', '', 0, 0, '', 1, 'http://67.198.232.99:18839', 'dh8kDNfKS89pOmCHwal5CV8gZ6oh9NQG', 'http://67.198.232.99:18839/57a3fe3e', 'dcfnigkh', 'aa52154f', 1, '', 0),
-(36, '测试', '', 1, '120.78.197.135', '22', 'root', 'abc@150467466', 30, '/qghost/database/', '147258', '/qghost/www/', 255, 0, 0, '', 0, 0, 0, '', 'cert', 'res/202212/30/9ef98f4a2a12bd5b.jpg', 'res/202212/30/9ef98f4a2a12bd5b.jpg', '123456', 0, 0, '', 0, '', '', '', '', '', 0, '', 0);
-
-CREATE TABLE IF NOT EXISTS `qinggan_server_ip` (
-  `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `server_id` mediumint(8) UNSIGNED NOT NULL COMMENT '服务器ID',
-  `ip` varchar(200) NOT NULL COMMENT 'IP地址',
-  PRIMARY KEY (`id`),
-  KEY `server_id` (`server_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COMMENT='服务器IP地址池';
-
-INSERT INTO `qinggan_server_ip` (`id`, `server_id`, `ip`) VALUES
-(32, 4, '174.139.160.91'),
-(31, 4, '174.139.160.89'),
-(33, 33, '67.198.232.99'),
-(34, 33, '67.198.232.133');
+) ENGINE=MyISAM DEFAULT CHARSET=gbk COMMENT='搜索数据统计';
 
 CREATE TABLE IF NOT EXISTS `qinggan_site` (
   `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '应用ID',
@@ -18878,32 +18710,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_tag` (
   `seo_desc` varchar(255) NOT NULL COMMENT 'SEO描述',
   `tpl` varchar(255) NOT NULL COMMENT '模板名称',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=44 DEFAULT CHARSET=utf8 COMMENT='关键字管理器';
-
-INSERT INTO `qinggan_tag` (`id`, `site_id`, `identifier`, `title`, `url`, `target`, `hits`, `alt`, `is_global`, `replace_count`, `seo_title`, `seo_keywords`, `seo_desc`, `tpl`) VALUES
-(1, 1, '', '服务器', '', 0, 0, '', 0, 0, '', '', '', ''),
-(2, 1, '', '并发', '', 0, 0, '', 0, 0, '', '', '', ''),
-(3, 1, '', '处理能力', '', 0, 1, '', 0, 0, '', '', '', ''),
-(4, 1, '', 'windows 95', '', 0, 2, '', 0, 0, '', '', '', ''),
-(5, 1, '', '操作系统', '', 0, 0, '', 0, 0, '', '', '', ''),
-(6, 1, '', '浏览器', '', 0, 3, '', 0, 0, '', '', '', ''),
-(7, 1, '', 'IE', '', 0, 0, '', 0, 0, '', '', '', ''),
-(8, 1, '', 'Chrome', '', 0, 1, '', 0, 0, '', '', '', ''),
-(9, 1, '', '代沟', '', 0, 0, '', 0, 0, '', '', '', ''),
-(10, 1, '', '大数据', '', 0, 0, '', 0, 0, '', '', '', ''),
-(11, 1, '', '知识', '', 0, 0, '', 0, 0, '', '', '', ''),
-(12, 1, '', 'phpok', '', 0, 2, '', 0, 0, '', '', '', ''),
-(13, 1, '', '升级包', '', 0, 2, '', 0, 0, '', '', '', ''),
-(14, 1, '', '公司', '', 0, 1, '', 0, 0, '', '', '', ''),
-(15, 1, '', '协议', '', 0, 1, '', 0, 0, '', '', '', ''),
-(16, 1, '', '隐私', '', 0, 1, '', 0, 0, '', '', '', ''),
-(17, 1, '', '保密', '', 0, 2, '', 0, 0, '', '', '', ''),
-(18, 1, '', '注册', '', 0, 7, '', 0, 0, '', '', '', ''),
-(35, 1, '', '限制', '', 0, 0, '', 0, 0, '', '', '', ''),
-(36, 1, '', '测试', '', 0, 0, '', 0, 0, '', '', '', ''),
-(37, 1, '', '会员', '', 0, 0, '', 0, 0, '', '', '', ''),
-(38, 1, '', '下载', '', 0, 20, '', 0, 0, '', '', '', ''),
-(39, 1, '', '开放', '', 0, 4, '', 0, 0, '', '', '', '');
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关键字管理器';
 
 CREATE TABLE IF NOT EXISTS `qinggan_tag_node` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -18918,11 +18725,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_tag_node` (
   `cid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '分类ID',
   `taxis` tinyint(3) UNSIGNED NOT NULL DEFAULT '255' COMMENT '值越小越往前排，最大不超过255',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='标签节点管理器';
-
-INSERT INTO `qinggan_tag_node` (`id`, `tag_id`, `identifier`, `title`, `psize`, `ids`, `type`, `status`, `pid`, `cid`, `taxis`) VALUES
-(1, 38, 'downloadTag', '下载中心', 10, '46,45', 1, 1, 151, 0, 255),
-(2, 38, 'news', '测试', 1, '', 0, 1, 43, 8, 255);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='标签节点管理器';
 
 CREATE TABLE IF NOT EXISTS `qinggan_tag_stat` (
   `title_id` varchar(200) NOT NULL COMMENT '主题ID，以p开头的表示项目ID，以c开头的表示分类ID',
@@ -18931,32 +18734,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_tag_stat` (
   KEY `title_id` (`title_id`),
   KEY `tag_id` (`tag_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Tag主题统计';
-
-INSERT INTO `qinggan_tag_stat` (`title_id`, `tag_id`) VALUES
-('12', 12),
-('12', 13),
-('13', 6),
-('13', 7),
-('13', 8),
-('14', 4),
-('14', 5),
-('15', 9),
-('15', 10),
-('16', 11),
-('17', 1),
-('17', 2),
-('17', 3),
-('41', 15),
-('41', 16),
-('41', 17),
-('41', 18),
-('45', 35),
-('45', 36),
-('45', 37),
-('45', 38),
-('46', 38),
-('46', 39),
-('p87', 14);
 
 CREATE TABLE IF NOT EXISTS `qinggan_task` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自增ID',
@@ -18973,19 +18750,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_task` (
   `only_once` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1表示仅执行一次',
   `is_lock` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未锁定1已锁定',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COMMENT='计划任务';
-
-INSERT INTO `qinggan_task` (`id`, `year`, `month`, `day`, `hour`, `minute`, `second`, `exec_time`, `stop_time`, `action`, `param`, `only_once`, `is_lock`) VALUES
-(28, '2023', '05', '09', '10', '31', '56', 0, 0, 'order', 'id=2&status=create', 1, 0),
-(29, '2023', '05', '11', '08', '54', '44', 0, 0, 'order', 'id=3&status=create', 1, 0),
-(30, '2023', '05', '11', '08', '59', '46', 0, 0, 'order', 'id=4&status=create', 1, 0),
-(31, '2023', '05', '11', '09', '00', '34', 0, 0, 'order', 'id=5&status=create', 1, 0),
-(32, '2023', '05', '27', '13', '34', '42', 0, 0, 'order', 'id=1&status=end', 1, 0),
-(33, '2023', '05', '27', '13', '56', '03', 0, 0, 'order', 'id=1&status=shipping', 1, 0),
-(34, '2023', '05', '27', '15', '50', '01', 0, 0, 'order', 'id=2&status=unpaid', 1, 0),
-(35, '2023', '05', '27', '15', '50', '14', 0, 0, 'order', 'id=2&status=unpaid', 1, 0),
-(36, '2023', '05', '27', '15', '50', '23', 0, 0, 'order', 'id=2&status=unpaid', 1, 0),
-(37, '2023', '05', '27', '16', '14', '42', 0, 0, 'order', 'id=2&status=unpaid', 1, 0);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='计划任务';
 
 CREATE TABLE IF NOT EXISTS `qinggan_token` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
@@ -19050,11 +18815,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_address` (
   `firstname` varchar(255) NOT NULL COMMENT '名字',
   `lastname` varchar(255) NOT NULL COMMENT '姓氏',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='会员地址库';
-
-INSERT INTO `qinggan_user_address` (`id`, `user_id`, `country`, `province`, `city`, `county`, `address`, `address2`, `mobile`, `tel`, `email`, `fullname`, `zipcode`, `is_default`, `firstname`, `lastname`) VALUES
-(1, 23, '中国', '广东', '深圳', '', '测试地址01室', '', '15812345678', '0755-12345678', 'admin@phpok.com', '苏工', '', 1, '', ''),
-(2, 23, '中国', '福建', '泉州', '', '测试地址', '', '15818533971', '', 'admin@phpok.com', '苏工', '', 0, '', '');
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员地址库';
 
 CREATE TABLE IF NOT EXISTS `qinggan_user_ext` (
   `id` int(10) UNSIGNED NOT NULL COMMENT '会员ID',
@@ -19099,11 +18860,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_user_links` (
   PRIMARY KEY (`id`),
   KEY `fans_id` (`who_id`),
   KEY `user_id` (`user_id`,`is_idol`,`is_black`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='会员互关表，包括黑名单模式';
-
-INSERT INTO `qinggan_user_links` (`id`, `user_id`, `who_id`, `addtime`, `is_black`, `is_idol`) VALUES
-(7, 23, 56, 1625708061, 0, 1),
-(10, 56, 23, 1625710031, 0, 1);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员互关表，包括黑名单模式';
 
 CREATE TABLE IF NOT EXISTS `qinggan_user_relation` (
   `uid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '用户ID',
@@ -19165,140 +18922,7 @@ CREATE TABLE IF NOT EXISTS `qinggan_wealth_log` (
   `url` varchar(255) NOT NULL COMMENT '执行的URL',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未审核1已审核',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=140 DEFAULT CHARSET=utf8 COMMENT='财富获取或消耗日志';
-
-INSERT INTO `qinggan_wealth_log` (`id`, `wid`, `rule_id`, `goal_id`, `mid`, `val`, `note`, `appid`, `dateline`, `user_id`, `admin_id`, `ctrlid`, `funcid`, `url`, `status`) VALUES
-(1, 1, 5, 23, '', 10, '会员登录', 'api', 1621162689, 0, 0, 'login', 'index', '', 1),
-(2, 1, 15, 23, '2263', 10, '发布：测试保存', 'api', 1621162707, 23, 0, 'post', 'save', '', 1),
-(3, 1, 12, 23, '2263', 1, '阅读#2263', 'www', 1621162712, 23, 0, 'content', 'index', '', 1),
-(4, 1, 13, 23, '2263', 5, '评论：测试保存', 'api', 1621162977, 23, 0, 'comment', 'save', '', 1),
-(5, 1, 5, 23, '', 10, '会员登录', 'api', 1621619246, 0, 0, 'login', 'index', '', 1),
-(6, 1, 5, 23, '', 10, '会员登录', 'api', 1624356820, 0, 0, 'login', 'index', '', 1),
-(7, 1, 5, 23, '', 10, '会员登录', 'api', 1625556306, 0, 0, 'login', 'index', '', 1),
-(8, 1, 5, 23, '', 10, '会员登录', 'api', 1625637242, 0, 0, 'login', 'index', '', 1),
-(9, 1, 5, 23, '', 10, '会员登录', 'api', 1625706279, 0, 0, 'login', 'index', '', 1),
-(11, 1, 5, 23, '', 10, '用户登录', 'api', 1625896621, 0, 0, 'login', 'index', '', 1),
-(12, 1, 5, 23, '', 10, '用户登录', 'api', 1626227052, 0, 0, 'login', 'index', '', 1),
-(14, 1, 5, 23, '', 10, '用户登录', 'api', 1626348678, 0, 0, 'login', 'index', '', 1),
-(15, 1, 5, 23, '', 10, '用户登录', 'api', 1626401539, 0, 0, 'login', 'index', '', 1),
-(18, 1, 12, 23, '17', 1, '阅读#17', 'www', 1626433645, 23, 0, 'content', 'index', '', 1),
-(19, 1, 15, 23, '14', 10, '管理员编辑主题发布#14', 'admin', 1626435080, 0, 1, 'list', 'ok', '', 1),
-(20, 1, 12, 23, '14', 1, '阅读#14', 'www', 1626435088, 23, 0, 'content', 'index', '', 1),
-(21, 1, 5, 23, '', 10, '用户登录', 'api', 1638178758, 0, 0, 'login', 'index', '', 1),
-(22, 1, 12, 23, '6', 1, '阅读#6', 'www', 1638178762, 23, 0, 'content', 'index', '', 1),
-(23, 1, 13, 23, '6', 5, '管理员审核评论#5', 'admin', 1638179547, 0, 1, 'reply', 'status', '', 1),
-(24, 1, 12, 23, '13', 1, '阅读#13', 'www', 1638193786, 23, 0, 'content', 'index', '', 1),
-(25, 1, 12, 23, '42', 1, '阅读#42', 'www', 1638194410, 23, 0, 'content', 'index', '', 1),
-(26, 1, 12, 23, '41', 1, '阅读#41', 'www', 1638194417, 23, 0, 'content', 'index', '', 1),
-(27, 1, 12, 23, '47', 1, '阅读#47', 'www', 1638194439, 23, 0, 'content', 'index', '', 1),
-(28, 1, 12, 23, '5', 1, '阅读#5', 'www', 1638194662, 23, 0, 'content', 'index', '', 1),
-(29, 1, 5, 23, '', 10, '用户登录', 'api', 1638517597, 0, 0, 'login', 'index', '', 1),
-(30, 1, 15, 23, '2268', 10, '发布：测试信息', 'api', 1638535066, 23, 0, 'post', 'save', '', 1),
-(31, 1, 5, 23, '', 10, '用户登录', 'api', 1639192667, 0, 0, 'login', 'index', '', 1),
-(32, 1, 5, 23, '', 10, '用户登录', 'api', 1647052939, 0, 0, 'login', 'index', '', 1),
-(33, 1, 12, 23, '37', 1, '阅读#37', 'www', 1647053127, 23, 0, 'content', 'index', '', 1),
-(34, 1, 5, 23, '', 10, '用户登录', 'api', 1647411398, 0, 0, 'login', 'index', '', 1),
-(35, 1, 5, 23, '', 10, '用户登录', 'api', 1647468088, 0, 0, 'login', 'index', '', 1),
-(36, 1, 12, 23, '2282', 1, '阅读#2282', 'www', 1647494961, 23, 0, 'content', 'index', '', 1),
-(37, 1, 12, 23, '2267', 1, '阅读#2267', 'www', 1647520118, 23, 0, 'content', 'index', '', 1),
-(38, 6, 0, 23, '0', 10, '赠送', 'admin', 1647522437, 0, 1, 'wealth', 'val', 'admin.php...', 1),
-(39, 1, 12, 23, '2266', 1, '阅读#2266', 'www', 1647522477, 23, 0, 'content', 'index', '', 1),
-(40, 6, 0, 23, '', -0.1, '财富（余额）抵现', 'api', 1647522841, 23, 0, 'payment', 'create', '', 1),
-(41, 1, 14, 23, '2', 0.1, '订单完成结算', 'admin', 1647522889, 23, 1, 'order', 'status', '', 1),
-(42, 1, 5, 23, '', 10, '用户登录', 'api', 1647560071, 0, 0, 'login', 'index', '', 1),
-(43, 1, 13, 23, '2267', 5, '管理员审核评论#6', 'admin', 1647564520, 0, 1, 'reply', 'status', '', 1),
-(44, 1, 5, 23, '', 10, '用户登录', 'api', 1647651822, 0, 0, 'login', 'index', '', 1),
-(45, 1, 5, 23, '', 10, '用户登录', 'api', 1650241943, 0, 0, 'login', 'index', '', 1),
-(46, 1, 5, 23, '', 10, '用户登录', 'api', 1650331075, 0, 0, 'login', 'index', '', 1),
-(47, 1, 5, 23, '', 10, '用户登录', 'api', 1650520507, 0, 0, 'login', 'index', '', 1),
-(48, 1, 5, 23, '', 10, '用户登录', 'api', 1650585980, 0, 0, 'login', 'index', '', 1),
-(49, 1, 5, 23, '', 10, '用户登录', 'api', 1650675100, 0, 0, 'login', 'index', '', 1),
-(50, 1, 12, 23, '16', 1, '阅读#16', 'api', 1650717013, 23, 0, 'content', 'index', '', 1),
-(51, 1, 5, 23, '', 10, '用户登录', 'api', 1650729726, 0, 0, 'login', 'index', '', 1),
-(52, 1, 12, 23, '20', 1, '阅读#20', 'www', 1650732249, 23, 0, 'content', 'index', '', 1),
-(53, 1, 5, 23, '', 10, '用户登录', 'api', 1650854366, 0, 0, 'login', 'index', '', 1),
-(54, 1, 12, 23, '15', 1, '阅读#15', 'api', 1650872685, 23, 0, 'content', 'index', '', 1),
-(55, 1, 12, 23, '12', 1, '阅读#12', 'api', 1650872691, 23, 0, 'content', 'index', '', 1),
-(56, 1, 12, 23, '2280', 1, '阅读#2280', 'api', 1650876362, 23, 0, 'content', 'index', '', 1),
-(57, 1, 12, 23, '2279', 1, '阅读#2279', 'api', 1650876366, 23, 0, 'content', 'index', '', 1),
-(58, 1, 12, 23, '11', 1, '阅读#11', 'api', 1650883487, 23, 0, 'content', 'index', '', 1),
-(59, 1, 5, 23, '', 10, '用户登录', 'api', 1651098478, 0, 0, 'login', 'index', '', 1),
-(60, 1, 12, 23, '18', 1, '阅读#18', 'api', 1651137746, 23, 0, 'content', 'index', '', 1),
-(61, 1, 5, 23, '', 10, '用户登录', 'api', 1651213148, 0, 0, 'login', 'index', '', 1),
-(62, 1, 5, 23, '', 10, '用户登录', 'api', 1651365788, 0, 0, 'login', 'index', '', 1),
-(63, 1, 5, 23, '', 10, '用户登录', 'api', 1651489203, 0, 0, 'login', 'index', '', 1),
-(64, 1, 5, 23, '', 10, '用户登录', 'api', 1651524066, 0, 0, 'login', 'index', '', 1),
-(67, 1, 12, 23, '2286', 1, '阅读#2286', 'api', 1651628404, 23, 0, 'content', 'index', '', 1),
-(68, 1, 12, 23, '2281', 1, '阅读#2281', 'api', 1651655463, 23, 0, 'content', 'index', '', 1),
-(69, 1, 5, 23, '', 10, '用户登录', 'api', 1651820966, 0, 0, 'login', 'index', '', 1),
-(72, 1, 5, 23, '', 10, '用户登录', 'api', 1651889124, 0, 0, 'login', 'index', '', 1),
-(73, 1, 0, 23, '', -100, '财富（积分）抵现', 'api', 1651917231, 23, 0, 'payment', 'create', '', 1),
-(74, 1, 0, 23, '', -100, '财富（积分）抵现', 'api', 1651917250, 23, 0, 'payment', 'create', '', 1),
-(75, 1, 5, 23, '', 10, '用户登录', 'api', 1652078342, 0, 0, 'login', 'index', '', 1),
-(76, 1, 5, 23, '', 10, '用户登录', 'api', 1652840996, 0, 0, 'login', 'index', '', 1),
-(77, 1, 13, 23, '13', 5, '管理员审核评论#20', 'admin', 1653272538, 0, 1, 'reply', 'status', '', 1),
-(78, 1, 5, 23, '', 10, '用户登录', 'api', 1655710655, 0, 0, 'login', 'index', '', 1),
-(79, 1, 5, 23, '', 10, '用户登录', 'api', 1656055070, 0, 0, 'login', 'index', '', 1),
-(80, 1, 5, 23, '', 10, '用户登录', 'api', 1656486649, 0, 0, 'login', 'index', '', 1),
-(81, 1, 5, 23, '', 10, '用户登录', 'api', 1656929130, 0, 0, 'login', 'index', '', 1),
-(82, 1, 5, 23, '', 10, '用户登录', 'api', 1661420694, 0, 0, 'login', 'index', '', 1),
-(83, 1, 5, 23, '', 10, '用户登录', 'api', 1661485700, 0, 0, 'login', 'index', '', 1),
-(84, 1, 5, 23, '', 10, '用户登录', 'api', 1661926015, 0, 0, 'login', 'index', '', 1),
-(85, 1, 12, 23, '19', 1, '阅读#19', 'www', 1661932611, 23, 0, 'content', 'index', '', 1),
-(86, 1, 5, 23, '', 10, '用户登录', 'api', 1661996405, 0, 0, 'login', 'index', '', 1),
-(87, 1, 5, 23, '', 10, '用户登录', 'api', 1665579753, 0, 0, 'login', 'index', '', 1),
-(88, 1, 5, 23, '', 10, '用户登录', 'api', 1666887408, 0, 0, 'login', 'index', '', 1),
-(89, 1, 5, 23, '', 10, '用户登录', 'api', 1667124452, 0, 0, 'login', 'index', '', 1),
-(90, 1, 15, 23, '13', 10, '管理员编辑主题发布#13', 'admin', 1667124501, 0, 1, 'list', 'ok', '', 1),
-(91, 1, 5, 23, '', 10, '用户登录', 'api', 1667332245, 0, 0, 'login', 'index', '', 1),
-(92, 1, 5, 23, '', 10, '用户登录', 'api', 1667426340, 0, 0, 'login', 'index', '', 1),
-(93, 1, 5, 23, '', 10, '用户登录', 'api', 1667544433, 0, 0, 'login', 'index', '', 1),
-(94, 1, 5, 23, '', 10, '用户登录', 'api', 1670911715, 0, 0, 'login', 'index', '', 1),
-(95, 1, 5, 23, '', 10, '用户登录', 'api', 1677909098, 0, 0, 'login', 'sms', '', 1),
-(96, 1, 5, 23, '', 10, '用户登录', 'api', 1678153455, 0, 0, 'login', 'index', '', 1),
-(97, 1, 12, 23, '2453', 1, '阅读#2453', 'www', 1678153487, 23, 0, 'content', 'index', '', 1),
-(98, 1, 12, 23, '2454', 1, '阅读#2454', 'www', 1678161518, 23, 0, 'content', 'index', '', 1),
-(99, 1, 12, 23, '2455', 1, '阅读#2455', 'www', 1678177199, 23, 0, 'content', 'index', '', 1),
-(100, 1, 12, 23, '2456', 1, '阅读#2456', 'www', 1678182432, 23, 0, 'content', 'index', '', 1),
-(101, 1, 15, 23, '2457', 10, '发布：测试', 'api', 1678182987, 23, 0, 'post', 'ok', '', 1),
-(102, 1, 5, 23, '', 10, '用户登录', 'api', 1678282152, 0, 0, 'login', 'index', '', 1),
-(103, 1, 15, 23, '2458', 10, '发布：测试', 'api', 1678282189, 23, 0, 'post', 'ok', '', 1),
-(104, 1, 15, 23, '2459', 10, '发布：测试', 'api', 1678283056, 23, 0, 'post', 'ok', '', 1),
-(105, 1, 15, 23, '2460', 10, '发布：fasdfasdfdasf', 'api', 1678283199, 23, 0, 'post', 'ok', '', 1),
-(106, 1, 15, 23, '2461', 10, '发布：fasdfasdfdas', 'api', 1678283307, 23, 0, 'post', 'ok', '', 1),
-(107, 1, 15, 23, '2462', 10, '发布：fsadfasdfasd', 'api', 1678283330, 23, 0, 'post', 'ok', '', 1),
-(108, 1, 15, 23, '2463', 10, '发布：89o0iplmlkml', 'api', 1678283348, 23, 0, 'post', 'ok', '', 1),
-(109, 1, 5, 23, '', 10, '用户登录', 'api', 1678332302, 0, 0, 'login', 'index', '', 1),
-(110, 1, 5, 23, '', 10, '用户登录', 'api', 1679971629, 0, 0, 'login', 'index', '', 1),
-(111, 1, 15, 23, '2465', 10, '发布：本地测试', 'api', 1679972188, 23, 0, 'post', 'ok', '', 1),
-(112, 1, 15, 23, '2466', 10, '发布：测试3333', 'api', 1679972801, 23, 0, 'post', 'ok', '', 1),
-(113, 1, 15, 23, '2467', 10, '发布：测9999', 'api', 1679974385, 23, 0, 'post', 'ok', '', 1),
-(114, 1, 15, 23, '2468', 10, '发布：测试00000', 'api', 1679974729, 23, 0, 'post', 'ok', '', 1),
-(115, 1, 15, 23, '2469', 10, '发布：999999999999', 'api', 1679974854, 23, 0, 'post', 'ok', '', 1),
-(116, 1, 15, 23, '2470', 10, '发布：测1983333', 'api', 1679974906, 23, 0, 'post', 'ok', '', 1),
-(117, 1, 15, 23, '2471', 10, '发布：苏测试', 'api', 1679974939, 23, 0, 'post', 'ok', '', 1),
-(118, 1, 15, 23, '2472', 10, '发布：欢迎光临', 'api', 1679975047, 23, 0, 'post', 'ok', '', 1),
-(119, 1, 15, 23, '2473', 10, '发布：演示演示', 'api', 1679975515, 23, 0, 'post', 'ok', '', 1),
-(120, 1, 15, 23, '2474', 10, '发布：折腾下内容', 'api', 1679975722, 23, 0, 'post', 'ok', '', 1),
-(121, 1, 5, 23, '', 10, '用户登录', 'api', 1683092249, 0, 0, 'login', 'index', '', 1),
-(122, 1, 5, 23, '', 10, '用户登录', 'api', 1683514688, 0, 0, 'login', 'index', '', 1),
-(123, 1, 12, 23, '2510', 1, '阅读#2510', 'www', 1683515474, 23, 0, 'content', 'index', '', 1),
-(124, 1, 12, 23, '2509', 1, '阅读#2509', 'www', 1683515491, 23, 0, 'content', 'index', '', 1),
-(125, 1, 12, 23, '2508', 1, '阅读#2508', 'www', 1683515500, 23, 0, 'content', 'index', '', 1),
-(126, 1, 15, 23, '2511', 10, '发布：测试', 'api', 1683519131, 23, 0, 'post', 'ok', '', 1),
-(127, 1, 12, 23, '2511', 1, '阅读#2511', 'www', 1683519501, 23, 0, 'content', 'index', '', 1),
-(128, 1, 5, 23, '', 10, '用户登录', 'api', 1683599174, 0, 0, 'login', 'index', '', 1),
-(129, 1, 13, 23, '2455', 5, '管理员审核评论#43', 'admin', 1683600238, 0, 1, 'reply', 'status', '', 1),
-(130, 1, 5, 23, '', 10, '用户登录', 'api', 1683766131, 0, 0, 'login', 'index', '', 1),
-(131, 1, 5, 23, '', 10, '用户登录', 'api', 1683969716, 0, 0, 'login', 'index', '', 1),
-(132, 1, 5, 23, '', 10, '用户登录', 'api', 1685072903, 0, 0, 'login', 'index', '', 1),
-(133, 1, 5, 23, '', 10, '用户登录', 'api', 1685150372, 0, 0, 'login', 'index', '', 1),
-(134, 1, 15, 23, '2528', 10, '发布：这个也是测试用的', 'api', 1685155182, 23, 0, 'post', 'ok', '', 1),
-(135, 1, 12, 23, '2528', 1, '阅读#2528', 'www', 1685155193, 23, 0, 'content', 'index', '', 1),
-(136, 1, 13, 23, '2528', 5, '评论：这个也是测试用的', 'api', 1685155256, 23, 0, 'comment', 'save', '', 1),
-(137, 1, 14, 23, '1', 2275, '订单完成结算', 'admin', 1685165677, 23, 1, 'order', 'status', '', 1),
-(138, 6, 0, 23, '0', 1, '在线充值', 'api', 1685174596, 23, 0, 'payment', 'query', '', 1),
-(139, 6, 0, 23, '0', 0.3, '在线充值', 'api', 1685175163, 23, 0, 'payment', 'query', '', 1);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='财富获取或消耗日志';
 
 CREATE TABLE IF NOT EXISTS `qinggan_wealth_rule` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '规则ID',
@@ -23570,9 +23194,6 @@ CREATE TABLE IF NOT EXISTS `qinggan_yunmarket_client` (
   `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '安装时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='验证是否已安装';
-
-INSERT INTO `qinggan_yunmarket_client` (`id`, `md5`, `version`, `version_update`, `folder`, `dateline`) VALUES
-(32504, 'hf61jbm4ckijdfiak8kxtryyzymfy6ad', '1.0.0', '10000', 'extension/demo', 1683195547);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
