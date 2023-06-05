@@ -168,6 +168,9 @@ class wxpay_submit
 			}
 			$app->error($error);
 		}
+		if($info['err_code']){
+			$app->error($info['err_code'].', '.$info['err_code_des']);
+		}
 		$config = $wxpay->get_jsapi_param($info);
 		$array = array('appId'=>$config['appId']);
 		$array['timeStamp'] = $config['timeStamp'];

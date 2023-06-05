@@ -405,12 +405,17 @@ class payment_control extends phpok_control
 		$price = $this->get('price','float');
 		$paylist = array();
 		$tmplist = $this->model('payment')->get_all($site_id,1,$is_mobile);
+		$paytype = $this->platform();
 		if($tmplist){
 			foreach($tmplist as $key=>$value){
 				if(!$value['paylist']){
 					continue;
 				}
 				foreach($value['paylist'] as $k=>$v){
+					if($paytype != 'all' && $v['code'] != $paytype){
+						unset($value['paylist'][$k]);
+						continue;
+					}
 					if($code && $v['code'] != $code){
 						unset($value['paylist'][$k]);
 						continue;
@@ -729,5 +734,18 @@ class payment_control extends phpok_control
 			$this->success($html);
 		}
 		$this->error('未知错误');
+	}
+
+	private function platform()
+	{
+		$platform='all';
+		$a_strtolower = strtolower($_SERVER['HTTP_USER_AGENT']);
+		if(strpos($a_strtolower, "micromessenger"))//公众号MicroMessenger
+		{
+			$platform = 'wxpay';
+		}elseif(strpos($a_strtolower, "alipayclient")){
+			$platform = 'alipay';
+		}
+		return $platform;
 	}
 }
