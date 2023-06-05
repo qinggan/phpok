@@ -107,6 +107,7 @@ class api_control extends \phpok_control
 		if($token){
 			$data['token'] = $token;
 		}
+		$this->session()->assign('wx_openid',$openid);
 		$this->success($data);
 	}
 
