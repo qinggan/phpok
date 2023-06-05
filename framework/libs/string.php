@@ -35,7 +35,8 @@ class string_lib
 	//html，是否保留HTML样式
 	public function cut($string,$length=0,$dot='',$html=false)
 	{
-		if(!$length || !trim($string)){
+		$string = trim($string);
+		if(!$length || !$string){
 			return $string;
 		}
 		$str = $string;

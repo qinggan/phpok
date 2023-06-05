@@ -19,6 +19,7 @@ if(!defined("PHPOK_SET")){
  * PHPOK4最新框架，一般不直接调用此框架
  * @更新时间 2016年06月05日
 **/
+#[\AllowDynamicProperties]
 class _init_phpok
 {
 	/**

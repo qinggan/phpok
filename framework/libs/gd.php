@@ -1,7 +1,6 @@
 <?php
 /**
  * 缩略/水印图生成
- * @package phpok
  * @作者 qinggan <admin@phpok.com>
  * @版权 2015-2016 深圳市锟铻科技有限公司
  * @主页 http://www.phpok.com
@@ -10,6 +9,7 @@
  * @时间 2016年10月17日
 **/
 
+#[\AllowDynamicProperties]
 class gd_lib
 {
 	/**
@@ -172,7 +172,6 @@ class gd_lib
 		return true;
 	}
 
-	#[]
 	/**
 	 * 设置新图片的宽度和高度值
 	 * @参数 $width 图片宽度，为0表示自适应
@@ -218,7 +217,6 @@ class gd_lib
 		return true;
 	}
 
-	#[]
 	/**
 	 * 设置是否使用裁剪法来生成缩略图
 	 * @参数 $iscut 为0或false表示使用缩放法，其他值表示使用裁剪法
@@ -440,9 +438,14 @@ class gd_lib
 	**/
 	private function _create_img($source,$newpic,$width,$height,$getpicWH)
 	{
+		$width = intval($width);
+		$height = intval($height);
 		$truecolor = function_exists("imagecreatetruecolor") ? true : false;
-		$img_create = $truecolor ? "imagecreatetruecolor" : "imagecreate";
-		$img = $img_create($width,$height);
+		if($truecolor){
+			$img = imagecreatetruecolor($width,$height);
+		}else{
+			$img = imagecreate($width,$height);
+		}
 		$bg = $this->_to_rgb($this->bgcolor);
 		$bg["red"] = $bg["red"] ? $bg["red"] : 0;
 		$bg["green"] = $bg["green"] ? $bg["green"] : 0;
@@ -459,10 +462,11 @@ class gd_lib
 		if(!$tmpImg){
 			return false;
 		}
-		$img_create = $truecolor ? "imagecopyresampled" : "imagecopyresized";
-		$img_create($img,$tmpImg,$picX,$picY,$getpicWH["srcx"],$getpicWH["srcy"],$getpicWH["width"],$getpicWH["height"],$getpicWH["tempx"],$getpicWH["tempy"]);
 		if($truecolor){
+			imagecopyresampled($img,$tmpImg,$picX,$picY,$getpicWH["srcx"],$getpicWH["srcy"],$getpicWH["width"],$getpicWH["height"],$getpicWH["tempx"],$getpicWH["tempy"]);
 			imagesavealpha($img,true);
+		}else{
+			imagecopyresized($img,$tmpImg,$picX,$picY,$getpicWH["srcx"],$getpicWH["srcy"],$getpicWH["width"],$getpicWH["height"],$getpicWH["tempx"],$getpicWH["tempy"]);
 		}
 		if($this->mark){
 			$npicImg = $this->_get_imgfrom($this->mark);
