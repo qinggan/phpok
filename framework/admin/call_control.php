@@ -225,7 +225,7 @@ class call_control extends phpok_control
 			if(!$title){
 				$this->error(P_Lang('标题不能为空'),$error_url);
 			}
-			$identifier = $this->get("identifier");
+			$identifier = $this->get("identifier",'system');
 			$chk = $this->check_identifier($identifier);
 			if($chk != "ok"){
 				$this->error($chk,$error_url);
@@ -239,18 +239,6 @@ class call_control extends phpok_control
 			if(!$title){
 				$this->error(P_Lang('标题不能为空'),$error_url);
 			}
-			$identifier = $this->get('identifier','system');
-			$rs = $this->model('call')->get_one($id);
-			if(!$identifier){
-				$identifier = $rs['identifier'];
-			}
-			if($identifier != $rs['identifier']){
-				$chk = $this->check_identifier($identifier);
-				if($chk != "ok"){
-					$this->error($chk,$error_url);
-				}
-			}
-			$array['identifier'] = $identifier;
 		}
 		$array["title"] = $title;
 		$array["pid"] = $this->get("pid","int");

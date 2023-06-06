@@ -18,9 +18,15 @@
 				{lang标识串}
 			</label>
 			<div class="layui-input-inline default-auto">
-				<input id="identifier" name="identifier" value="{$rs.identifier}" class="layui-input" type="text">
+				<input id="identifier" name="identifier" value="{$rs.identifier}"{if $id} disabled{/if} class="layui-input{if $id} layui-disabled{/if}" type="text">
 			</div>
+			<!-- if !$id -->
 			<div class="layui-input-inline auto" id="HTML-POINT-PHPOK-IDENTIFIER"><input type="button" value="{lang随机码}" onclick="random_string(10)" class="layui-btn layui-btn-sm" /></div>
+			<!-- else -->
+			<div class="layui-form-mid">
+				{lang标识禁止修改}
+			</div>
+			<!-- /if -->
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
