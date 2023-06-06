@@ -101,6 +101,22 @@
 					lock.content('升级成功，请稍候…').time(1.5);
 				});
 			});
+		},
+		to_remote:function(id,title){
+			$.dialog.confirm('确定要将【'+title+'】标记为云模式吗？标记后可以实现在线升级',function(){
+				var url = get_url('yunmarket','remote','id='+id);
+				var lock = $.dialog.tips('正在升级，请稍候…',100).lock();
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						lock.content(rs.info).time(1.5);
+						return false;
+					}
+					lock.setting('close',function(){
+						$.phpok.reload();
+					});
+					lock.content('升级成功，请稍候…').time(1.5);
+				});
+			});
 		}
 	}
 })(jQuery);

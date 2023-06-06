@@ -92,7 +92,9 @@ ul.layout li{
 					</div>
 					<!-- /if -->
 				<!-- else -->
-				<div class="gray">{$value.tips}</div>
+				<div class="gray">
+					<input type="button" value="{$value.tips}" onclick="$.admin_yunmarket.to_remote('{$value.id}','{$value.title}')" class="layui-btn layui-btn-xs layui-btn-primary" />
+				</div>
 				<!-- /if -->
 			</td>
 		</tr>

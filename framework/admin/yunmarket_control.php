@@ -86,7 +86,7 @@ class yunmarket_control extends phpok_control
 		if(!$rs['is_install']){
 			if(file_exists($this->dir_root.$rs['folder'])){
 				$rs['is_install'] = true;
-				$rs['tips'] = P_Lang('本地安装模式');
+				$rs['tips'] = P_Lang('本地模式');
 				$rs['action'] = false;
 			}
 		}
@@ -143,7 +143,7 @@ class yunmarket_control extends phpok_control
 				if(!$value['is_install']){
 					if(file_exists($this->dir_root.$value['folder'])){
 						$value['is_install'] = true;
-						$value['tips'] = P_Lang('本地安装模式');
+						$value['tips'] = P_Lang('本地模式');
 						$value['action'] = false;
 					}
 				}
@@ -212,6 +212,37 @@ class yunmarket_control extends phpok_control
 			}
 		}
 		$this->success($type);
+	}
+
+	public function remote_f()
+	{
+		if(!$this->popedom['update']){
+			$this->error(P_Lang('没有权限操作'));
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$install_rs = $this->model('yunmarket')->get_install($id);
+		if($install_rs){
+			$this->error(P_Lang('软件已经是云模式，不用重复设定'));
+		}
+		$info = $this->model('yunmarket')->get_info($id);
+		if(!$info){
+			$this->error('内容信息不存在');
+		}
+		if(!$info['status']){
+			if(!$rs['info']){
+				$rs['info'] = '获取数据失败';
+			}
+			$this->error($rs['info']);
+		}
+		$rs = $info['info'];
+		//增加记录
+		$data = array('id'=>$rs['id'],'md5'=>$rs['md5'],'version'=>$rs['version'],'version_update'=>$rs['version_update'],'dateline'=>$this->time);
+		$data['folder'] = $rs['folder'];
+		$this->model('yunmarket')->install($data);
+		$this->success();
 	}
 
 	public function update_f()
