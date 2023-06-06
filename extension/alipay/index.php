@@ -134,7 +134,6 @@ class alipay_lib extends _init_lib
 		$request = new \AlipayTradeWapPayRequest ();
 		$request->setNotifyUrl($this->notify_url);
 		$request->setReturnUrl($this->return_url);
-		$request->setQuitUrl($this->quit_url);
 		$tmpdata = array();
 		$tmpdata['subject'] = $title ? $title : '订单'.$sn;
 		if($body){
