@@ -239,7 +239,7 @@ class yunmarket_control extends phpok_control
 		}
 		$rs = $info['info'];
 		//增加记录
-		$data = array('id'=>$rs['id'],'md5'=>$rs['md5'],'version'=>$rs['version'],'version_update'=>$rs['version_update'],'dateline'=>$this->time);
+		$data = array('id'=>$rs['id'],'md5'=>$rs['md5'],'version'=>'1.0.0','version_update'=>'10000','dateline'=>$this->time);
 		$data['folder'] = $rs['folder'];
 		$this->model('yunmarket')->install($data);
 		$this->success();

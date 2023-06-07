@@ -35,8 +35,8 @@
 			$.dialog.open(url,{
 				'title':title,
 				'lock':true,
-				'width':'500px',
-				'height':'500px'
+				'width':'80%',
+				'height':'80%'
 			});
 		},
 		install:function(id,title,is_ext)
