@@ -446,7 +446,6 @@ function project_groups()
 	$grouplist = $app->model('project')->group();
 	$list = $app->model('project')->group_projects();
 	if(!$list){
-		echo "<pre>".print_r(3,true)."</pre>";
 		return false;
 	}
 	foreach($list as $key=>$value){
