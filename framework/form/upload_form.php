@@ -176,7 +176,7 @@ class upload_form extends _init_auto
 			$upload_type['id'] = $rs['cate_id'];
 			$upload_type['etype'] = $cateinfo['etype'];
 			$upload_type['upload_binary'] = $cateinfo['upload_binary'];
-			$rs['cate_id'] = $cateinfo['id'];
+			$upload_type['compress'] = $cateinfo['compress'];
 		}else{
 			$folder = 'res/'.date("Ym/d/",$this->time);
 			$upload_type = array('title'=>P_Lang('附件'));
@@ -185,6 +185,7 @@ class upload_form extends _init_auto
 			$upload_type['id'] = 0;
 			$upload_type['etype'] = 0;
 			$upload_type['upload_binary'] = 0;
+			$upload_type['compress'] = false;
 			$rs['cate_id'] = 0;
 		}
 		$tmp = array();
