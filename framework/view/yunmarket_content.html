@@ -1,7 +1,8 @@
 <!-- include tpl=head_lay nopadding=true overflowy=false -->
 <style type="text/css">
 .content{
-	min-height:370px;
+	height:calc(100vh - 155px);
+	min-height:50px;
 	overflow-x:hidden;
 	overflow-y:auto
 }
@@ -57,19 +58,7 @@
 </div>
 <script type="text/javascript" src="js/highlighter/shcore.js"></script>
 <script type="text/javascript">
-function load_height()
-{
-	var h = $(window).height();
-	var nh = h - 125;
-	if(nh>370){
-		$("#content").height(nh);
-	}
-}
 $(document).ready(function(){
-	load_height();
-	$(window).resize(function(){
-		load_height();
-	});
 	SyntaxHighlighter.all();
 });
 </script>
