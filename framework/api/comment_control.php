@@ -58,11 +58,11 @@ class comment_control extends phpok_control
 		if(!$id){
 			$this->error(P_Lang('未指定主题'));
 		}
-		$condition = "tid='".$id."' AND parent_id='0' ";
+		$condition = "r.tid='".$id."' AND r.parent_id='0' ";
 		if($this->session->val('user_id')){
-			$condition .= " AND (status=1 OR (status=0 AND (uid=".$this->session->val('user_id')." OR session_id='".$this->session->sessid()."'))) ";
+			$condition .= " AND (r.status=1 OR (r.status=0 AND (r.uid=".$this->session->val('user_id')." OR r.session_id='".$this->session->sessid()."'))) ";
 		}else{
-			$condition .= " AND (status=1 OR (status=0 AND session_id='".$this->session->sessid()."')) ";
+			$condition .= " AND (r.status=1 OR (r.status=0 AND r.session_id='".$this->session->sessid()."')) ";
 		}
 		
 		$vouch = $this->get('vouch','int');
@@ -92,11 +92,11 @@ class comment_control extends phpok_control
 		}
 		//读取回复的回复
 		$idstring = implode(",",$idlist);
-		$condition  = " parent_id IN(".$idstring.") AND admin_id=0 ";
+		$condition  = " r.parent_id IN(".$idstring.") AND r.admin_id=0 ";
 		if($this->session->val('user_id')){
-			$condition .= " AND (status=1 OR (status=0 AND (uid=".$this->session->val('user_id')." OR session_id='".$this->session->sessid()."'))) ";
+			$condition .= " AND (r.status=1 OR (r.status=0 AND (r.uid=".$this->session->val('user_id')." OR r.session_id='".$this->session->sessid()."'))) ";
 		}else{
-			$condition .= " AND (status=1 OR (status=0 AND session_id='".session_id()."')) ";
+			$condition .= " AND (r.status=1 OR (r.status=0 AND r.session_id='".session_id()."')) ";
 		}
 		
 		$sublist = $this->model('reply')->get_list($condition,0,0);
