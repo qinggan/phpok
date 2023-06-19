@@ -562,7 +562,8 @@ class payment_control extends phpok_control
 		if(strpos($sn,'-') !== false){
 			$tmp = explode("-",$sn);
 			$sn = $tmp[0];
-			$rs = $this->model('payment')->log_one($tmp[1]);
+			$logid = end($tmp);
+			$rs = $this->model('payment')->log_one($logid);
 		}else{
 			$rs = $this->model('payment')->log_check_notstatus($sn);
 		}
