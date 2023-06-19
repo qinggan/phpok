@@ -40,7 +40,8 @@
 			<!-- /if -->
 			
 			<!-- if $popedom.set || $session.admin_rs.if_system -->
-			<button class="layui-btn layui-btn-sm" onclick="$.phpok_list.set({$pid})"><span class="layui-icon">&#xe642;</span>{lang编辑项目}</button>
+			<button class="layui-btn layui-btn-sm" title="{lang管理自身信息，如绑定模板，改名称，自定义列表显示字段等}" onclick="$.win('{$rs.title}_#{$pid}','{url ctrl=project func=set id=$pid/}')"><span class="layui-icon">&#xe614;</span> {lang管理}</button>
+			<button class="layui-btn layui-btn-sm" title="{lang扩展自身信息，如增加项目的大图等}" onclick="$.win('{$rs.title}_#{$pid}','{url ctrl=project func=content id=$pid/}')"><span class="layui-icon" style="margin-right:0;">&#xe642;</span> {lang修改}</button>
 			<!-- /if -->
 			<!-- if $rs.module && $search_list -->
 			<button class="layui-btn layui-btn-sm" onclick="$.admin.hide_show('search_html')"><span class="layui-icon">&#xe615;</span>{lang搜索}</button>
@@ -52,7 +53,7 @@
 		<table class="layui-table" id="tablelist" lay-filter="tablelist" data-psize="{$psize}" data-total="{$total}" data-ftype="{$m_rs.id}" data-totalRow="{$rs.admin-list-stat}" lay-data="{escape: false}">
 		<thead>
 		<tr>
-			<th lay-data="{field:'id', width:40,type:'checkbox',fixed:'left'}"></th>
+			<th lay-data="{field:'id', width:50,type:'checkbox',fixed:'left'}"></th>
 			<th lay-data="{field:'status', width:50,fixed:'left'}"></th>
 			<th lay-data="{field:'id', width:70,fixed:'left',sort:true,align:'center'}">ID</th>
 			<!-- if $rs.cate -->

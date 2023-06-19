@@ -783,7 +783,7 @@ class cart_control extends phpok_control
 		if($this->session->val('user_id')){
 			$user_rs = $this->model('user')->get_one($this->session->val('user_id'));
 			if($user_rs){
-				unset($user_rs['pass'],$user_rs['mobile'],$user_rs['email']);
+				unset($user_rs['pass']);
 				$r['user'] = $user_rs;
 			}
 		}
