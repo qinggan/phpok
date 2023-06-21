@@ -13,8 +13,8 @@
 				return;
 			}
 			var path = this.path;
+			bookmarks = editor.getSelection().createBookmarks2();//当前光标
 			editor.on('paste', function(event) {
-				bookmarks = editor.getSelection().createBookmarks2();//当前光标
 				var dataTransfer = event.data.dataTransfer;
 				var filesCount = dataTransfer.getFilesCount();
 				var oldUrl = event.data.dataValue;
@@ -45,6 +45,10 @@
 						start_loadData(tmplist,0);
 					}
 				}
+			});
+
+			editor.on('click',function(event){
+				bookmarks = editor.getSelection().createBookmarks2();//当前光标
 			});
 
 			function start_loadData(urls,i)
