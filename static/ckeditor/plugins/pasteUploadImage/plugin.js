@@ -3,6 +3,7 @@
 	CKEDITOR.plugins.add(CKEDITOR_NAME, {
 		init: function(editor) {
 			var config = editor.config;
+			var bookmarks;
 			var remoteDomain = config.imgToLocalRemoteDomain ? config.imgToLocalRemoteDomain : '*';
 			var ignoreDomain = config.imgToLocalIgnoreDomain ? config.imgToLocalIgnoreDomain : 'localhost,127.0.0.1,::1';
 			var imgUpload = config.imgToLocalUpload;
@@ -13,6 +14,7 @@
 			}
 			var path = this.path;
 			editor.on('paste', function(event) {
+				bookmarks = editor.getSelection().createBookmarks2();//当前光标
 				var dataTransfer = event.data.dataTransfer;
 				var filesCount = dataTransfer.getFilesCount();
 				var oldUrl = event.data.dataValue;
@@ -251,8 +253,8 @@
 
 			// 更新
 			function updateEditorVal(oldUrl, newUrl, isCreateImage) {
+				
 				var data = editor.getData();
-				var bookmarks = editor.getSelection().createBookmarks2();//当前光标
 				if (isCreateImage) {
 					if (!oldUrl) {
 						data = data + '<p><img src="' + newUrl + '"/></p>';
