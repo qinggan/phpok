@@ -242,16 +242,17 @@
 				}
 				txt += '文件已全部操作完成，请稍候…';
 				tips_update(txt,color);
-				//1秒后关闭提示框
+				//0.5秒后关闭提示框
 				setTimeout(function(){
 					var c = document.querySelector('div.modal-editor-upload');
 					document.querySelector('.modal-editor-upload-wrapper').removeChild(c);
-				}, 1000);
+				}, 500);
 			}
 
 			// 更新
 			function updateEditorVal(oldUrl, newUrl, isCreateImage) {
 				var data = editor.getData();
+				var bookmarks = editor.getSelection().createBookmarks2();//当前光标
 				if (isCreateImage) {
 					if (!oldUrl) {
 						data = data + '<p><img src="' + newUrl + '"/></p>';
@@ -262,6 +263,7 @@
 					data = replaceAll(data, oldUrl, newUrl);
 				}
 				editor.setData(data);
+				editor.getSelection().selectBookmarks(bookmarks);
 			}
 
 			function uniq(arr) {
