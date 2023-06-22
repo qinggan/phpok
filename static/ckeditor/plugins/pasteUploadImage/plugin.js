@@ -4,7 +4,6 @@
 		init: function(editor) {
 			var config = editor.config;
 			var bookmarks;
-			var contentData;
 			var remoteDomain = config.imgToLocalRemoteDomain ? config.imgToLocalRemoteDomain : '*';
 			var ignoreDomain = config.imgToLocalIgnoreDomain ? config.imgToLocalIgnoreDomain : 'localhost,127.0.0.1,::1';
 			var imgUpload = config.imgToLocalUpload;
@@ -15,10 +14,7 @@
 			}
 			var path = this.path;
 			editor.on('paste', function(event) {
-				//var dataTransfer = event.data.dataTransfer;
-				//console.log(dataTransfer);
-				//var filesCount = dataTransfer.getFilesCount();
-				contentData = event.data.dataValue;
+				var contentData = event.data.dataValue;
 				var urls = uniq(contentData.match(/(?<=img.*?[\s]src=")[^"]+(?=")/gi));
 				if(urls && urls.length>0){
 					var tmplist = new Array();
@@ -66,31 +62,6 @@
 				return true;
 			}
 
-			function uploadBase64(url)
-			{
-				var formData = new FormData();
-				formData.append('data',urls[i]);
-				var option = {
-					url:imgUpload,
-					data:formData
-				}
-				ajaxPost(option).then(function(rs) {
-					image = null;
-					if(rs.status && rs.info){
-						updateEditorVal(urls[i], rs.info);
-						//上传图片成功
-						goto_next(urls,i,true);
-						return;
-					}
-					var tip_info = rs.info ? rs.info : '上传失败';
-					tips_update(tip_info);
-					goto_next(urls,i,false);
-				}).catch(function() {
-					//上传图片失败
-					goto_next(urls,i, false);
-				});
-			}
-
 			function uploadImageBase64(urls,i)
 			{
 				var formData = new FormData();
@@ -110,8 +81,7 @@
 					var tip_info = rs.info ? rs.info : '上传失败';
 					tips_update(tip_info);
 					goto_next(urls,i,false);
-				}).catch(function() {
-					//上传图片失败
+				}).catch(function(e) {
 					goto_next(urls,i, false);
 				});
 			}
@@ -145,7 +115,7 @@
 					var tip_info = rs.info ? rs.info : '上传失败';
 					tips_update(tip_info);
 					goto_next(urls,i,false);
-				}).catch(function() {
+				}).catch(function(e) {
 					goto_next(urls,i, false);
 				});
 			}
@@ -250,7 +220,7 @@
 
 			function goto_next(urls,i , result) {
 				var txt = '';
-				var color = ''
+				var color = '';
 				if (result === 'request time out') {
 					txt = ' 总文件数 '+(urls.length).toString()+'，当前第 '+(i+1)+' 条上传超时，';
 					color = 'red';
@@ -267,7 +237,6 @@
 				var next_i = i+1;
 				if(urls[next_i] && urls[next_i] != 'undefined'){
 					txt += '即将上传下一条文件，请稍候…';
-					color = 'green';
 					tips_update(txt,color);
 					setTimeout(function(){
 						start_loadData(urls,next_i);
@@ -275,7 +244,6 @@
 					return true;
 				}
 				txt += '文件已全部操作完成，请稍候…';
-				color = 'green';
 				tips_update(txt,color);
 				//0.5秒后关闭提示框
 				setTimeout(function(){
@@ -288,12 +256,12 @@
 			// 更新
 			function updateEditorVal(oldUrl, newUrl) {
 				//取得当前编辑器的光标
-				bookmarks = editor.getSelection().bookmarks2(true);
+				bookmarks = editor.getSelection().createBookmarks2();
 				var data = editor.getData();
 				data = replaceAll(data,oldUrl,newUrl);
 				editor.setData(data,{
 					callback: function() {
-						editor.getSelection().bookmarks(bookmarks);
+						editor.getSelection().selectBookmarks(bookmarks);
 					}
 				});
 			}
