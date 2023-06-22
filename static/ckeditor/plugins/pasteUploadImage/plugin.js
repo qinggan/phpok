@@ -4,6 +4,7 @@
 		init: function(editor) {
 			var config = editor.config;
 			var bookmarks;
+			var contentData;
 			var remoteDomain = config.imgToLocalRemoteDomain ? config.imgToLocalRemoteDomain : '*';
 			var ignoreDomain = config.imgToLocalIgnoreDomain ? config.imgToLocalIgnoreDomain : 'localhost,127.0.0.1,::1';
 			var imgUpload = config.imgToLocalUpload;
@@ -13,12 +14,12 @@
 				return;
 			}
 			var path = this.path;
-			bookmarks = editor.getSelection().createBookmarks2();//当前光标
 			editor.on('paste', function(event) {
-				var dataTransfer = event.data.dataTransfer;
-				var filesCount = dataTransfer.getFilesCount();
-				var oldUrl = event.data.dataValue;
-				var urls = uniq(oldUrl.match(/(?<=img.*?[\s]src=")[^"]+(?=")/gi));
+				//var dataTransfer = event.data.dataTransfer;
+				//console.log(dataTransfer);
+				//var filesCount = dataTransfer.getFilesCount();
+				contentData = event.data.dataValue;
+				var urls = uniq(contentData.match(/(?<=img.*?[\s]src=")[^"]+(?=")/gi));
 				if(urls && urls.length>0){
 					var tmplist = new Array();
 					for(var i=0;i<urls.length;i++){
@@ -49,7 +50,7 @@
 
 			editor.on('click',function(event){
 				bookmarks = editor.getSelection().createBookmarks2();//当前光标
-			});
+			})
 
 			function start_loadData(urls,i)
 			{
@@ -63,6 +64,31 @@
 				}
 				uploadImageUrl(urls,i);
 				return true;
+			}
+
+			function uploadBase64(url)
+			{
+				var formData = new FormData();
+				formData.append('data',urls[i]);
+				var option = {
+					url:imgUpload,
+					data:formData
+				}
+				ajaxPost(option).then(function(rs) {
+					image = null;
+					if(rs.status && rs.info){
+						updateEditorVal(urls[i], rs.info);
+						//上传图片成功
+						goto_next(urls,i,true);
+						return;
+					}
+					var tip_info = rs.info ? rs.info : '上传失败';
+					tips_update(tip_info);
+					goto_next(urls,i,false);
+				}).catch(function() {
+					//上传图片失败
+					goto_next(urls,i, false);
+				});
 			}
 
 			function uploadImageBase64(urls,i)
@@ -188,19 +214,20 @@
 					color = 'green';
 				}
 				var html =
-					'<div class="modal-editor-upload" style="margin-bottom: 5px;padding-bottom: 5px;">' +
-					'<img style="width:32px;height:32px;vertical-align: middle;" src="'+path + 'images/upload.png" />' +
+					'<div class="modal-editor-upload" style="position:fixed;top:35vh;left:0;width:100%;text-align:center;">' +
+					'<span style="padding:10px;background:#fff;"><img style="width:32px;height:32px;vertical-align: middle;" src="'+path + 'images/upload.png" />' +
 					'<label style="color:'+color+';"> '+txt+' </label>' +
-					'</div>';
-				var wrapper = document.querySelector('.modal-editor-upload-wrapper');
+					'</span></div>';
+				var wrapper = top.document.querySelector('.modal-editor-upload-wrapper');
 				if (!wrapper) {
-					var wrapper = document.createElement('div');
+					var wrapper = top.document.createElement('div');
 					wrapper.className = 'modal-editor-upload-wrapper';
-					wrapper.style.cssText = 'width:auto;background-color:#fdfdfd;position:fixed;right: 30px;top: 100px;'
+					wrapper.style.cssText = 'width:100%;height:100vh;background-color:rgba(0,0,0,0.1);position:fixed;left:0;top:0;z-index:999999'
 					wrapper.innerHTML = html;
-					var edi = document.getElementById('cke_' + editor.name);
-					edi.appendChild(wrapper);
-					edi.style.position = 'relative';
+					//var edi = document.getElementById('cke_' + editor.name);
+					//edi.appendChild(wrapper);
+					top.document.body.appendChild(wrapper);
+					//edi.style.position = 'relative';
 				} else {
 					wrapper.innerHTML += html;
 				}
@@ -215,7 +242,7 @@
 					color = 'green';
 				}
 				var selector = 'div.modal-editor-upload';
-				var content = document.querySelector(selector);
+				var content = top.document.querySelector(selector);
 				var label = content.querySelector('label');
 				label.innerHTML = txt;
 				label.style.color = color;
@@ -240,6 +267,7 @@
 				var next_i = i+1;
 				if(urls[next_i] && urls[next_i] != 'undefined'){
 					txt += '即将上传下一条文件，请稍候…';
+					color = 'green';
 					tips_update(txt,color);
 					setTimeout(function(){
 						start_loadData(urls,next_i);
@@ -247,29 +275,27 @@
 					return true;
 				}
 				txt += '文件已全部操作完成，请稍候…';
+				color = 'green';
 				tips_update(txt,color);
 				//0.5秒后关闭提示框
 				setTimeout(function(){
-					var c = document.querySelector('div.modal-editor-upload');
-					document.querySelector('.modal-editor-upload-wrapper').removeChild(c);
+					top.document.body.removeChild(top.document.querySelector('.modal-editor-upload-wrapper'));
+					//var c = document.querySelector('div.modal-editor-upload');
+					//document.querySelector('.modal-editor-upload-wrapper').removeChild(c);
 				}, 500);
 			}
 
 			// 更新
-			function updateEditorVal(oldUrl, newUrl, isCreateImage) {
-				
+			function updateEditorVal(oldUrl, newUrl) {
+				//取得当前编辑器的光标
+				bookmarks = editor.getSelection().bookmarks2(true);
 				var data = editor.getData();
-				if (isCreateImage) {
-					if (!oldUrl) {
-						data = data + '<p><img src="' + newUrl + '"/></p>';
-					} else {
-						data = data.replace(oldUrl, '<img src="' + newUrl + '"/>');
+				data = replaceAll(data,oldUrl,newUrl);
+				editor.setData(data,{
+					callback: function() {
+						editor.getSelection().bookmarks(bookmarks);
 					}
-				} else {
-					data = replaceAll(data, oldUrl, newUrl);
-				}
-				editor.setData(data);
-				editor.getSelection().selectBookmarks(bookmarks);
+				});
 			}
 
 			function uniq(arr) {
