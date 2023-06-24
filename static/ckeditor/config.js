@@ -97,6 +97,6 @@ CKEDITOR.editorConfig = function( config ) {
 	//自动高度
 	config.autoGrow_onStartup = true;
 	config.autoGrow_bottomSpace = 30;
-	config.autoGrow_minHeight = 200;
+	config.autoGrow_minHeight = 300;
 	//config.autoGrow_maxHeight = 1600;
 };

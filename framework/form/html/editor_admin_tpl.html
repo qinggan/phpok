@@ -33,7 +33,7 @@ $(document).ready(function(){
 			{ name: 'tools', items: [ 'Maximize', 'ShowBlocks' ] },
 			{ name: 'document', items: [ 'Source','Preview'] }
 		],
-		{if $_removePlugins}removePlugins:'{$_removePlugins}',{/if}
+		removePlugins:'easyimage,cloudservices,ExportPdf{if $_removePlugins},{$_removePlugins}{/if}',
 		filebrowserImageBrowseUrl:'{url ctrl=ckeditor func=images /}',
 		filebrowserImageBrowseUrlSingle:'{url ctrl=ckeditor func=image /}',
 		filebrowserHtml5videoBrowseUrl: '{url ctrl=ckeditor func=videolist /}',
@@ -43,7 +43,7 @@ $(document).ready(function(){
 		filebrowserUpload:'{url ctrl=ckeditor func=upload /}',
 		imgToLocalRemoteDomain:'{$_remoteDomain}',
 		imgToLocalIgnoreDomain:'{$_ignoreDomain}',
-		imgToLocalUpload:'{url ctrl=ckeditor func=remote /}'
+		imgToLocalUpload:'{url ctrl=ckeditor func=remote /}',
 	});
 	CKEDITOR.instances['{$_rs.identifier}'].on('change',function() {
 		CKEDITOR.instances['{$_rs.identifier}'].updateElement();
