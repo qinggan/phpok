@@ -1232,17 +1232,13 @@ class phpok_call extends _init_auto
 			$rs['cateid'] = $tmp['id'];
 			unset($tmp,$identifier);
 		}
-		$cate = $this->model('cate')->cate_one($rs['cateid'],$rs['site']);
+		$cate = $this->model('cate')->get_one($rs['cateid']);
 		if(!$cate){
 			unset($rs);
 			return false;
 		}
 		if($cate['tag']){
 			$cate['tag'] = $this->model('tag')->tag_html($cate['tag']);
-		}
-		$extlist = $this->model('ext')->get_all_like('cate');
-		if($extlist && $extlist['cate-'.$rs['cateid']]){
-			$cate = array_merge($extlist['cate-'.$rs['cateid']],$cate);
 		}
 		if($cate['url']){
 			if($cache_id){
