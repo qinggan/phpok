@@ -25,6 +25,9 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'about', items: [ 'About' ] }
 	];
 
+	//去除系统自带的 exportpdf
+	config.removePlugins = 'easyimage, cloudservices, exportpdf';
+
 	//纯文本粘贴，建议禁用
 	config.forcePasteAsPlainText = false;
 
@@ -75,6 +78,7 @@ CKEDITOR.editorConfig = function( config ) {
 
 	//扩展插件
 	config.extraPlugins = "html5video,html5audio,autogrow,syntaxhighlight,baidumap,fixed,arclist,filelist,images,quickformat,pasteUploadImage,kbd,tableresize";
+	
 	config.image_previewText = "专注企业 互联网+ 发展，将互联网思维植入传统企业，帮 助企业搭建属于自己的互联网经营平台，引领商业新生态 的变革，帮助企业做大做强。我们为每个客户提供专业化 和定制化的互联网+方案，坚持以客户需求为导向，竭力 为客户带来最大的商业价值。相信我们是您值得信赖的合作伙伴！";
 	config.image_prefillDimensions  = false;
 

@@ -31,8 +31,6 @@
 				insertedElement.appendText(plainSelectedText);
 				editor.insertElement(insertedElement);
 			}
-
-			editor.setData(tmp);
 			return true
 		}
 	},
