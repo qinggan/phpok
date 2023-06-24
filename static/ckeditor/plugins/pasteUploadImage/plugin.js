@@ -4,6 +4,8 @@
 		init: function(editor) {
 			var config = editor.config;
 			var bookmarks;
+			var contentData;
+			var replaceData = new Array();
 			var remoteDomain = config.imgToLocalRemoteDomain ? config.imgToLocalRemoteDomain : '*';
 			var ignoreDomain = config.imgToLocalIgnoreDomain ? config.imgToLocalIgnoreDomain : 'localhost,127.0.0.1,::1';
 			var imgUpload = config.imgToLocalUpload;
@@ -14,7 +16,8 @@
 			}
 			var path = this.path;
 			editor.on('paste', function(event) {
-				var contentData = event.data.dataValue;
+				replaceData = new Array();
+				contentData = event.data.dataValue;
 				var urls = uniq(contentData.match(/(?<=img.*?[\s]src=")[^"]+(?=")/gi));
 				if(urls && urls.length>0){
 					var tmplist = new Array();
@@ -45,7 +48,7 @@
 			});
 
 			editor.on('click',function(event){
-				bookmarks = editor.getSelection().createBookmarks2();//当前光标
+				//bookmarks = editor.getSelection().createBookmarks2();//当前光标
 			})
 
 			function start_loadData(urls,i)
@@ -92,11 +95,10 @@
 				canvas.height = img.height;
 				var ctx = canvas.getContext("2d");
 				ctx.drawImage(img, 0, 0, img.width, img.height);
-				var dataURL = canvas.toDataURL("image/png");
+				var dataURL = canvas.toDataURL("image/jpeg");
 				return dataURL
 			}
 
-			//傻了，漏掉了跨域问题
 			function uploadImageUrl(urls,i) {
 				var oldUrl = urls[i];
 				var formData = new FormData();
@@ -248,22 +250,30 @@
 				//0.5秒后关闭提示框
 				setTimeout(function(){
 					top.document.body.removeChild(top.document.querySelector('.modal-editor-upload-wrapper'));
-					//var c = document.querySelector('div.modal-editor-upload');
-					//document.querySelector('.modal-editor-upload-wrapper').removeChild(c);
 				}, 500);
+			}
+
+			function updateEditorContent()
+			{
+				bookmarks = editor.getSelection().createBookmarks2();
+				var data = editor.getData();
+				for(var i in replaceData){
+					data = replaceAll(data,replaceData[i]['old'],replaceData[i]['new']);
+				}
+				editor.setData(data,{
+					callback: function() {
+						editor.getSelection().selectBookmarks(bookmarks);
+						editor.focus();
+					}
+				});
 			}
 
 			// 更新
 			function updateEditorVal(oldUrl, newUrl) {
-				//取得当前编辑器的光标
-				bookmarks = editor.getSelection().createBookmarks2();
 				var data = editor.getData();
 				data = replaceAll(data,oldUrl,newUrl);
-				editor.setData(data,{
-					callback: function() {
-						editor.getSelection().selectBookmarks(bookmarks);
-					}
-				});
+				editor.document.$.body.innerHTML = data;
+				editor.updateElement();
 			}
 
 			function uniq(arr) {
