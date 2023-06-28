@@ -23,6 +23,7 @@ class task_control extends phpok_control
 		//指定未来时间发布，自动写入到计划任务上来
 		$this->crontab_title();
 		$this->crontab_apps();
+		$this->crontab_payments();
 		//获取计划任务
 		$rslist = $this->model('task')->get_all();
 		if(!$rslist){
@@ -99,6 +100,38 @@ class task_control extends phpok_control
 				include($this->dir_app.$key.'/task.php');
 			}
 		}
+	}
+
+	/**
+	 * 
+	**/
+	private function crontab_payments()
+	{
+		$startdate = strtotime(date("Y-m-d",$this->time));
+		$stopdate = $startdate + 24*60*60;
+		$condition="status=0 AND payment_id!=0 AND dateline>=".$startdate." AND dateline<=".$stopdate;
+		$rslist = $this->model('payment')->log_list($condition,0,5);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			if(!is_numeric($value['payment_id'])){
+				continue;
+			}
+			$payment_rs = $this->model('payment')->get_one($value['payment_id']);
+			if(!$payment_rs){
+				continue;
+			}
+			$file = $this->dir_root.'gateway/payment/'.$payment_rs['code'].'/query.php';
+			if(!file_exists($file)){
+				continue;
+			}
+			include_once($file);
+			$name = $payment_rs['code'].'_query';
+			$cls = new $name($value,$payment_rs);
+			$cls->submit();
+		}
+		return true;
 	}
 
 	/**

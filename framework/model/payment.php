@@ -75,6 +75,16 @@ class payment_model_base extends phpok_model
 		return $this->db->get_one($sql);
 	}
 
+	public function log_list($condition='',$offset=0,$psize=30)
+	{
+		$sql = "SELECT * FROM ".$this->db->prefix."payment_log WHERE 1=1 ";
+		if($condition){
+			$sql .= " AND ".$condition." ";
+		}
+		$sql .= " ORDER BY id DESC LIMIT ".$offset.",".intval($psize);
+		return $this->db->get_all($sql);
+	}
+
 	public function log_update($data,$id=0)
 	{
 		if(!$id || !$data || !is_array($data)){
