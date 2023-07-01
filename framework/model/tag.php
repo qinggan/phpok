@@ -2,9 +2,9 @@
 /**
  * 标签管理器
  * @作者 qinggan <admin@phpok.com>
- * @主页 http://www.phpok.com
- * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2017年04月21日
 **/
 

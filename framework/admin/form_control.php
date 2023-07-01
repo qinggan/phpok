@@ -2,9 +2,9 @@
 /**
  * 自定义表单的字段异步处理
  * @作者 qinggan <admin@phpok.com>
- * @主页 http://www.phpok.com
+ * @主页 https://www.phpok.com
  * @版本 6.x
- * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2023年3月1日
 **/
 

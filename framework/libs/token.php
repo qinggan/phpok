@@ -1,11 +1,10 @@
 <?php
 /**
  * 加密及解密（支持两种模式，RSA 和 Token 模式）
- * @作者 苏相锟 <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司 / 苏相锟
+ * @作者 qinggan <admin@phpok.com>
  * @主页 https://www.phpok.com
  * @版本 5.x
- * @授权 GNU Lesser General Public License  https://www.phpok.com/lgpl.html
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2020年12月21日
 **/
 

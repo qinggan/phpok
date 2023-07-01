@@ -2,10 +2,9 @@
 /**
  * 读取内容列表，涉及到的主要表有 list及list_数字ID
  * @author qinggan <admin@phpok.com>
- * @copyright 2015-2016 深圳市锟铻科技有限公司
  * @homepage http://www.phpok.com
  * @version 6.x
- * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @update 2016年06月26日
 **/
 

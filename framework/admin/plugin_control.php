@@ -2,10 +2,9 @@
 /**
  * 插件中心
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
- * @主页 http://www.phpok.com
+ * @主页 https://www.phpok.com
  * @版本 5.x
- * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2018年06月26日
 **/
 
@@ -751,7 +750,7 @@ class plugin_control extends phpok_control
 			$string.= " * @作者 ".$author."\n";
 		}
 		$string.= " * @版本 ".$this->version."\n";
-		$string.= " * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License\n";
+		$string.= " * @授权 MIT License <https://www.phpok.com/mit.html>\n";
 		$string.= " * @时间 ".date("Y年m月d日 H时i分",$this->time)."\n";
 		$string.= "**/";
 		return $string;

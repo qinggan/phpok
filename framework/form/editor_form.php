@@ -1,10 +1,10 @@
 <?php
 /**
  * HTML编辑器配置
- * @作者 苏相锟 <admin@phpok.com>
+ * @作者 qinggan <admin@phpok.com>
  * @主页 https://www.phpok.com
  * @版本 5.x
- * @授权 GNU Lesser General Public License https://www.phpok.com/lgpl.html 
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2021年5月11日
 **/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}

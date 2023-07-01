@@ -2,9 +2,9 @@
 /**
  * 在PHPOK模板中常用的函数，此函数在action前才加载
  * @作者 qinggan <admin@phpok.com>
- * @主页 http://www.phpok.com
- * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html 开源授权协议：GNU Lesser General Public License
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2023年5月30日
 **/
 

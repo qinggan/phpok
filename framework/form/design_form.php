@@ -1,10 +1,10 @@
 <?php
 /**
  * 应用于复杂的设计，仅适用于后台
- * @作者 苏相锟 <admin@phpok.com>
+ * @作者 qinggan <admin@phpok.com>
  * @主页 https://www.phpok.com
  * @版本 5.x
- * @授权 GNU Lesser General Public License https://www.phpok.com/lgpl.html 
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2021年1月2日
 **/
 

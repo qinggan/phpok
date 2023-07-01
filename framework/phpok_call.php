@@ -3,8 +3,8 @@
  * 调用中心类
  * @作者 qinggan <admin@phpok.com>
  * @主页 https://www.phpok.com
- * @版本 4.x
- * @授权 GNU Lesser General Public License (LGPL)
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2017年04月02日
 **/
 

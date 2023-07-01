@@ -2,10 +2,9 @@
 /**
  * 常用函数
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
- * @主页 http://www.phpok.com
- * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2017年06月21日
 **/
 
@@ -710,7 +709,7 @@ function tpl_head($array=array())
 	$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
 	$html .= '<meta http-equiv="Expires" content="-1" />'."\n\t";
 	$html .= '<meta name="renderer" content="webkit" />'."\n\t";
-	if($app->license == 'LGPL'){
+	if($app->license == 'LGPL' || $app->license == 'MIT'){
 		$html .= '<meta name="author" content="phpok,admin@phpok.com" />'."\n\t";
 	}
 	$html .= '<meta name="license" content="'.$app->license.'" />'."\n\t";

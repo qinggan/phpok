@@ -1,10 +1,10 @@
 <?php
 /**
  * 核心应用类
- * @作者 苏相锟 <admin@phpok.com>
+ * @作者 qinggan <admin@phpok.com>
  * @主页 https://www.phpok.com
  * @版本 5.x
- * @授权 GNU Lesser General Public License https://www.phpok.com/lgpl.html
+ * @授权 MIT License <https://www.phpok.com/mit.html> https://www.phpok.com/lgpl.html
  * @时间 2021年3月1日
 **/
 
@@ -79,7 +79,7 @@ class _init_phpok
 	/**
 	 * 授权类型，对应license.php里的常量LICENSE
 	**/
-	public $license = "LGPL";
+	public $license = "MIT";
 
 	/**
 	 * 授权码，16位或32位的授权码，要求全部大写，对应license.php里的常量LICENSE_CODE
@@ -1321,8 +1321,8 @@ class _init_phpok
 		}
 		if(file_exists($this->dir_root."license.php")){
 			include($this->dir_root."license.php");
-			$license_array = array("LGPL","PBIZ","CBIZ");
-			$this->license = (defined("LICENSE") && in_array(LICENSE,$license_array)) ? LICENSE : "LGPL";
+			$license_array = array("MIT","PBIZ","CBIZ");
+			$this->license = (defined("LICENSE") && in_array(LICENSE,$license_array)) ? LICENSE : "MIT";
 			if(defined("LICENSE_DATE")){
 				$this->license_date = LICENSE_DATE;
 			}

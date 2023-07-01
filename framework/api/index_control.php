@@ -18,8 +18,8 @@ class index_control extends phpok_control
 
 	public function copyright_f()
 	{
-		if($this->license == 'LGPL'){
-			$tip = '授权模式：<span style="color:blue;font-weight:bold">LGPL 免费商用授权</span><br/>请放心使用，有问题可登录官网：<a href="https://www.phpok.com/" target="_blank">WWW.PHPOK.COM</a>';
+		if($this->license == 'LGPL' || $this->license == 'MIT'){
+			$tip = '授权模式：<span style="color:blue;font-weight:bold">开源免费商用授权</span><br/>请放心使用，有问题可登录官网：<a href="https://www.phpok.com/" target="_blank">WWW.PHPOK.COM</a>';
 			$this->success($tip);
 		}
 		if($this->license == 'PBIZ' || $this->license == 'CBIZ'){

@@ -1,12 +1,10 @@
 <?php
 /**
  * PHPOK4升级引挈控制器
- * @package phpok\admin\update
  * @author qinggan <admin@phpok.com>
- * @copyright 2015-2016 深圳市锟铻科技有限公司
  * @homepage http://www.phpok.com
  * @version 4.x
- * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @update 2016年07月19日
 **/
 

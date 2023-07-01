@@ -1,12 +1,10 @@
 <?php
 /**
  * 远程访问类，适用于生成静态页及远程获取数据，系统生成静态页类也是基于此项生成
- * @package phpok\libs
  * @作者 qinggan <admin@phpok.com>
- * @版权 2015-2016 深圳市锟铻科技有限公司
- * @主页 http://www.phpok.com
- * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2016年11月18日
 **/
 class html_lib

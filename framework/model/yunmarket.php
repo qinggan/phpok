@@ -1,9 +1,9 @@
 <?php
 /**
  * 云市场应用
- * @作者 苏相锟 <admin@phpok.com>
+ * @作者 qinggan <admin@phpok.com>
  * @版本 6.x
- * @授权 GNU Lesser General Public License (LGPL)
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2023年4月23日
  * @更新 2023年4月23日
 **/

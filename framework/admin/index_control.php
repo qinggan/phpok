@@ -2,10 +2,9 @@
 /**
  * 后台首页控制台
  * @作者 qinggan <admin@phpok.com>
- * @版权 深圳市锟铻科技有限公司
- * @主页 http://www.phpok.com
- * @版本 4.x
- * @授权 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2017年08月13日
 **/
 
@@ -31,10 +30,10 @@ class index_control extends phpok_control
 	private function _index()
 	{
 		if(!$this->license_code){
-			$this->license = "LGPL";
+			$this->license = "MIT";
 		}
 		$license = strtoupper($this->license);
-		$code = P_Lang('LGPL开源授权');
+		$code = P_Lang('开源授权');
 		if($license == "PBIZ" && $this->license_code && $this->license_name){
 			$code = P_Lang('个人（{license}）商业授权',array('license'=>$this->license_name));
 		}elseif($license == "CBIZ" && $this->license_code && $this->license_name){
@@ -1047,8 +1046,8 @@ class index_control extends phpok_control
 	public function copyright_f()
 	{
 		$type = $this->get('type');
-		if($type == 'LGPL'){
-			$this->error(P_Lang('LGPL授权不需要修改'));
+		if($type == 'LGPL' || $type == 'MIT'){
+			$this->error(P_Lang('开源授权不需要修改'));
 		}
 		$company = $this->get('company');
 		if(!$company){

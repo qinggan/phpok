@@ -2,9 +2,9 @@
 /**
  * 日志相关
  * @作者 qinggan <admin@phpok.com>
- * @主页 http://www.phpok.com
- * @版本 4.x
- * @许可 http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2021年5月31日
 **/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}

@@ -3,7 +3,6 @@
  * 通过Api获取文章列表，返回数组结果信
  * @file framework/api/project_control.php
  * @author phpok.com <admin@phpok.com>
- * @copyright 2015-2016 深圳市锟铻科技有限公司
  * @version 4.5.0
  * @date 2016年01月27日
  */

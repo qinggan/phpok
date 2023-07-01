@@ -4,7 +4,7 @@
  * @author qinggan <admin@phpok.com>
  * @homepage http://www.phpok.com
  * @version 4.x
- * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @update 2014年7月10日
 **/
 

@@ -3,7 +3,7 @@
  * 邮件相关操作
  * @作者 qinggan <admin@phpok.com>
  * @版本 6.x
- * @授权 GNU Lesser General Public License (LGPL)
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2016年07月30日
  * @更新 2023年2月8日
 **/
