@@ -1,9 +1,10 @@
 <?php
 /**
  * PHPOK企业站系统，使用PHP语言及MySQL数据库编写的企业网站建设系统，基于LGPL协议开源授权
- * @author phpok.com
- * @version 5.x
- * @license http://www.phpok.com/lgpl.html PHPOK开源授权协议：GNU Lesser General Public License
+ * @作者 qinggan <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 5.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
  */
 
 if(!defined("PHPOK_SET")){
@@ -11,9 +12,9 @@ if(!defined("PHPOK_SET")){
 }
 
 /**
-* 授权方式，支持LGPL，PBIZ，CBIZ，三种模式，PBIZ，表示个人商业授权，CBIZ表示企业商业授权
+* 授权方式，支持MIT，PBIZ，CBIZ，三种模式，PBIZ，表示个人商业授权，CBIZ表示企业商业授权
 */
-define("LICENSE","LGPL");
+define("LICENSE","MIT");
 
 /**
 * 授权时间
