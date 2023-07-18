@@ -8,8 +8,13 @@
  * @时间 2016年12月16日
 **/
 
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
 
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class phpzip_lib
 {
 	private $ctrl_dir = array();

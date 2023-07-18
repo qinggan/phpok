@@ -1,12 +1,21 @@
 <?php
 /**
  * 附件上传操作类
- * @author qinggan <admin@phpok.com>
- * @homepage http://www.phpok.com
- * @version 4.x
+ * @作者 qinggan <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 6.x
  * @授权 MIT License <https://www.phpok.com/mit.html>
- * @update 2014年7月10日
+ * @时间 2014年7月10日
+ * @更新 2023年7月18日
 **/
+
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
 
 class upload_lib
 {
