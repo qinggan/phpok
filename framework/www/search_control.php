@@ -148,6 +148,7 @@ class search_control extends phpok_control
 						$kc_ext[$v][] = " l.seo_desc LIKE '%".$value."%'";
 						$kc_ext[$v][] = " l.title LIKE '%".$value."%'";
 						$kc_ext[$v][] = " l.tag LIKE '%".$value."%'";
+						$kc_ext[$v][] = " l.identifier LIKE '%".$value."%'";
 					}
 				}else{
 					$kc[] = " l.seo_title LIKE '%".$value."%'";
@@ -155,6 +156,7 @@ class search_control extends phpok_control
 					$kc[] = " l.seo_desc LIKE '%".$value."%'";
 					$kc[] = " l.title LIKE '%".$value."%'";
 					$kc[] = " l.tag LIKE '%".$value."%'";
+					$kc[] = " l.identifier LIKE '%".$value."%'";
 				}
 			}
 			if($kc && is_array($kc)){
