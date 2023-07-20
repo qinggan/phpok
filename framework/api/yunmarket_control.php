@@ -116,7 +116,11 @@ class yunmarket_control extends phpok_control
 					$tmp['thumb'] = '';
 					$tmp['note'] = '';
 					if($value['thumb']){
-						$tmp['thumb'] = '//'.$this->site['domain'].'/'.$value['thumb']['gd']['thumb'];
+						if(strpos($value['thumb']['filename'],'https://') === false && strpos($value['thumb']['filename'],'http://') === false){
+							$tmp['thumb'] = '//'.$this->site['domain'].'/'.$value['thumb']['gd']['thumb'];
+						}else{
+							$tmp['thumb'] = $value['thumb']['filename'];
+						}
 					}
 					if($value['note']){
 						$tmp['note'] = $value['note'];
