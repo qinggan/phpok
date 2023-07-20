@@ -9,6 +9,13 @@
  * @时间 2020年1月7日
 **/
 
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class similar_lib
 {
 	var $str1;

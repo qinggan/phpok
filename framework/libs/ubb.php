@@ -1,13 +1,21 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/libs/ubb.php
-	备注： UBB类，暂时仅支持UBB转HTML
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年02月03日 11时47分
-*****************************************************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * UBB类，暂时仅支持UBB转HTML
+ * @作者 qinggan <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
+ * @时间 2015年2月3日
+ * @更新 2023年7月20日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class ubb_lib
 {
 	public function __construct()

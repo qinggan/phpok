@@ -3,7 +3,7 @@
  * 检测是否手机浏览器
  * @作者 qinggan <admin@phpok.com>
  * @主页 https://www.phpok.com
- * @版本 5.x
+ * @版本 6.x
  * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2020年8月28日
 **/
@@ -12,6 +12,7 @@
 if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
+
 class mobile_lib extends _init_lib
 {
 	private $obj;

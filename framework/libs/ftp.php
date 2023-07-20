@@ -1,12 +1,21 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/libs/ftp.php
-	Note	: FTP基本操作
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013-02-18 17:46
-***********************************************************/
+/**
+ * FTP基本操作
+ * @作者 qinggan <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
+ * @时间 2013年2月18日
+ * @更新 2023年7月20日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class ftp_lib
 {
 

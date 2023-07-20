@@ -1,11 +1,21 @@
 <?php
-/***********************************************************
-	Filename: libs/autoload/trans.php
-	Note	: 数据安全传输
-	Version : 3.0
-	Author  : qinggan
-	Update  : 2009-10-20
-***********************************************************/
+/**
+ * 数据安全传输
+ * @作者 qinggan <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
+ * @时间 2009年10月20日
+ * @更新 2023年7月20日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class trans_lib
 {
 	var $script = false;

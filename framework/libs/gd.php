@@ -8,6 +8,13 @@
  * @时间 2016年10月17日
 **/
 
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 #[\AllowDynamicProperties]
 class gd_lib
 {

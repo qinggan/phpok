@@ -1,13 +1,21 @@
 <?php
-/***********************************************************
-	Filename: {phpok}/libs/ext.php
-	Note	: 扩展表内容读取及格式化
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2013年7月20日
-***********************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 扩展表内容读取及格式化
+ * @作者 qinggan <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
+ * @时间 2013年7月20日
+ * @更新 2023年7月20日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class ext_lib
 {
 	var $app;

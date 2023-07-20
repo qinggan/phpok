@@ -8,6 +8,13 @@
  * @时间 2018年11月24日
 **/
 
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class video_url_lib
 {
 	private $show_type = 'html';

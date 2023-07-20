@@ -1,13 +1,21 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/libs/xml.php
-	备注： PHP操作XML类，读取方法：SimpleXML>正则解析
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年01月05日 14时23分
-*****************************************************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * PHP操作XML类，读取方法：SimpleXML>正则解析
+ * @作者 qinggan <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
+ * @时间 2015年1月5日
+ * @更新 2023年7月20日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class xml_lib
 {
 	private $xml_read_func = 'phpok';
@@ -269,4 +277,3 @@ class xml_lib
 		return $array;
 	}
 }
-?>

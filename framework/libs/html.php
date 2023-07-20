@@ -7,6 +7,14 @@
  * @授权 MIT License <https://www.phpok.com/mit.html>
  * @时间 2016年11月18日
 **/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class html_lib
 {
 	private $app;
