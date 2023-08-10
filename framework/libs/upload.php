@@ -192,7 +192,7 @@ class upload_lib
 		if(!$chk){
 			return $ext;
 		}
-		$filetypes = "jpg,gif,png";
+		$filetypes = "jpg,gif,png,jpeg";
 		if($this->cate && $this->cate['filetypes']){
 			$filetypes .= ",".$this->cate['filetypes'];
 		}
@@ -487,16 +487,12 @@ class upload_lib
 			}
 			return true;
 		}
+		// 忽略视频的检测
 		if(in_array($ext,array('mpeg','mpg','mp4','avi','wmv','mov','rm','rmvb','ram','swf','flv','asf','mkv','3gp'))){
-			if(!$this->video_check($bin)){
-				return false;
-			}
 			return true;
 		}
+		// 忽略音频的检测
 		if(in_array($ext,array('mp3','wma','ra','wav','mid','midi'))){
-			if(!$this->audio_check($bin)){
-				return false;
-			}
 			return true;
 		}
 		if(in_array($ext,array('zip','rar','gz','tar','tgz'))){
