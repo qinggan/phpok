@@ -302,13 +302,13 @@ CREATE TABLE IF NOT EXISTS `qinggan_config` (
 ) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COMMENT='系统变量参数';
 
 INSERT INTO `qinggan_config` (`id`, `site_id`, `identifier`, `langid`, `content`) VALUES
-(1, 1, 'api_code', '', 'edn2t2*e@~d*st2z'),
-(2, 1, 'public_key', '', '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA46Mg7yX2/ogXS+r7zm9Z\nSQntCYsti7+jfu/BvefOXsvpYC7yuIA35tluEALIK3VXX3R3aMlelEPwmXRyTjCv\nmMeIEz0Ks/CLgu5DK0pCRe0pmUwDwkFeqjcKG6BxyVYoBS0xa5xCi/gB6ONbpvPL\nQQI+H3QAOa85kjE4u3TRIPsGIKzJOjmsP1YRoyaOHe9qKhXK3xUwV6gveqamStUv\nBhYhKS+Ec6MgNHNZrKIPj7eWBIWndR/pkepGof0x+ZV6h3VwB8U/batO4eVT/Ij8\n5lKuUut7lQ1t8548fTYa2KNTIzivPmxaOtRn8XxwK/o7dlSxJX7H6Xg4fpXkUIYL\nEwIDAQAB\n-----END PUBLIC KEY-----\n'),
-(3, 1, 'private_key', '', '-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDjoyDvJfb+iBdL\n6vvOb1lJCe0Jiy2Lv6N+78G9585ey+lgLvK4gDfm2W4QAsgrdVdfdHdoyV6UQ/CZ\ndHJOMK+Yx4gTPQqz8IuC7kMrSkJF7SmZTAPCQV6qNwoboHHJVigFLTFrnEKL+AHo\n41um88tBAj4fdAA5rzmSMTi7dNEg+wYgrMk6Oaw/VhGjJo4d72oqFcrfFTBXqC96\npqZK1S8GFiEpL4RzoyA0c1msog+Pt5YEhad1H+mR6kah/TH5lXqHdXAHxT9tq07h\n5VP8iPzmUq5S63uVDW3znjx9NhrYo1MjOK8+bFo61GfxfHAr+jt2VLElfsfpeDh+\nleRQhgsTAgMBAAECggEAXgoMFv+2E9yg0yoWMGfrmLLTC7hFbpASuOPPQ+a5aIwQ\nsz1x5CqD7YgxYcfkbZ+iIrr4gX9+5P1ULfDfL9IJGLKFUn1LKJ7c45AOi5m32y9o\nmf2/J8bdlq/6KwOTPjureMf8vJnnG++uykjymfvpIcgNZe0EEtCClhRjfX16z4Zc\nt/Dg+ntw8N3cgNRDlDOv+AcwlXlB0GvOrTLxnaJlEY0PlCDcV8hI69IUMQuOg9TH\nAZd2LT+4VFsYXf75kfO2xNrEZuLdM/YoFEu6KUhIC+BBp1PRNGUXGPNxa9YADxrk\nm/O7LsUSv8Atbgl+5lzibQCPVrvcpp6xdGl/SipAYQKBgQD2jFla7MopI8xOdoOR\nLmGnOiQA1xfaQCY4dKa2uEvyw/C5nw71tsBDOdBz53qV9ptU9ETRo/Hmo/zSAxza\ny1TARACSTHFJM59qoyzKxr8UnGzjcyHOzhoEkGE00dzzly1x6jdcMbcOvHS5oh82\nxXPLu0mya56soEgg0BONYLrcuQKBgQDsXS9SIYUdNiN1iaJl3oWSQ0GIGclWYOfF\np+bLlDzsHQ9mbnS+13gkGlJpYYhhOjiTOpdC48oNGlYaWPL9tA5Nvv0Ih+phUAvQ\nx/rL1+jfCiU0uUVUbB4srrn9v2/2DrGpGviYfJCrKEM6NmlgDmHkhuBxFp+H6Ck6\nIJdLw264KwKBgGFe/q9NU246CCd44O9GrSSZbryyNmZo7W9girMhSEWBoyH8MrFS\nUs56F9yesChn8+LycfeF0zSu0Vu0BQJYSYmBkeQ1sowhijVYaolPQwoF2W9e+hwu\nA9KHnwx4UdYWf8k8ok6UB+MXBNaHs+Iyy0/MEQgZPtqYlsP2ybINYN9pAoGAM0zG\nSH0d9wkZCRmmNZXmR6hxQKjYGfdOVofqf6Tc1CI6hXDTxdfeK3fLCzQv9Wo9fTbq\nPYpTACUHKxDDLG037YfWQ1O8ewJ0jgvZUwS5di8thBPyCDCvG+OQWpKCKlVmGd3Q\ntsfSXlOOw8Orez2j4YWkkOboGQc6a3NHYxo3naECgYAKuHpk49/oSyFyTA13sHT4\nj6yCc4j1vXQY5h/E6c2LhkhfJ0K4kzBNqEewHLjXntsgO0uy6fzcaVLYoUJjb8g8\nqYsZPb7QfGlEqRh2wdjaRPpC1MmcDR5RKNmSen1SsQRqfLtR+wSpJlQcPL150aO0\nDxDZhpGyk042Wb4+X6h6PA==\n-----END PRIVATE KEY-----'),
+(1, 1, 'api_code', '', ''),
+(2, 1, 'public_key', '', ''),
+(3, 1, 'private_key', '', ''),
 (10, 1, 'admin_homepage_setting', '', ''),
 (11, 1, 'ok_status', '', '1'),
 (12, 1, 'ok_appid', '', '3'),
-(13, 1, 'ok_appkey', '', 'vhDsxyZSsHnBeXlV'),
+(13, 1, 'ok_appkey', '', ''),
 (16, 1, 'chktype', '', 'rsa'),
 (17, 1, 'ok_links', '', 'a:2:{s:7:\"ip2city\";s:0:\"\";s:9:\"translate\";s:0:\"\";}');
 
