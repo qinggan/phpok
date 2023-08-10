@@ -1068,9 +1068,9 @@ class index_control extends phpok_control
 		$content = '<?php'."\n";
 		$content.= "/*****************************************************************************************\n";
 		$content.= "	文件： license.php\n";
-		$content.= "	说明： PHPOK-VIP 许可证书\n";
-		$content.= "	版本： PHPOK ".VERSION."\n";
-		$content.= "	作者： phpok.com<admin@phpok.com>\n";
+		$content.= "	说明： 商业授权许可证\n";
+		$content.= "	版本： ".VERSION."\n";
+		$content.= "	作者： qinggan<admin@phpok.com>\n";
 		$content.= "	更新： ".date("Y-m-d H:i",$this->time)."\n";
 		$content.= "*****************************************************************************************/\n";
 		$content.= 'if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}'."\n";
