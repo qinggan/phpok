@@ -124,14 +124,13 @@ class all_control extends phpok_control
 		$this->view('all_tpl');
 	}
 
+	/**
+	 * 初始化站点模板
+	**/
 	public function tpl_resetting_f()
 	{
 		if(!$this->popedom["site"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$id = $this->get('id','int');
-		if(!$id){
-			$this->error(P_Lang('未指定站点ID'));
 		}
 		$this->model('site')->tpl_reset();
 		$this->success();

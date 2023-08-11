@@ -13,46 +13,26 @@
 		setting_style:function(site_id)
 		{
 			var tpl_id = $("#tpl_id").val();
-			$.dialog.open(get_url('all','tpl_setting','id='+site_id+"&tplid="+tpl_id),{
-				'title':p_lang('站点ID {id} 自定义模板设置','<span class="red">#'+site_id+'</span>'),
-				'lock':true,
-				'id':'phpok_tpl_setting',
-				'width':'800px',
-				'height':'70%',
-				'lock':true,
-				'drag':false,
-				'button': [{
-					name:p_lang('提交保存配置'),
-					callback: function () {
-						var iframe = this.iframe.contentWindow;
-						if (!iframe.document.body) {
-							alert('iframe还没加载完毕呢');
-							return false;
-						};
-						iframe.save();
-						return false;
-					},
-					focus:true
-				},{
-					name:p_lang('初始化模板配置'),
-					callback: function () {
-						var iframe = this.iframe.contentWindow;
-						var url = get_url('all','tpl_resetting','id='+site_id);
-						$.phpok.json(url,function(rs){
-							if(rs.status){
-								$.dialog.alert(p_lang('数据初始化成功'),function(){
-									iframe.$.phpok.reload();
-								},'succeed');
-								return true;
-							}
-							$.dialog.alert(rs.info);
-							return false;
-						});
-						return false;
+			var url = get_url('all','tpl_setting','id='+site_id+"&tplid="+tpl_id);
+			$.win(p_lang('站点ID {id} 自定义模板设置','#'+site_id),url);
+		},
+		resetting:function()
+		{
+			$.dialog.confirm('确定要初始化风格配置吗？',function(){
+				var url = get_url('all','tpl_resetting');
+				$.phpok.json(url,function(rs){
+					if(rs.status){
+						$.dialog.tips(p_lang('模板初始化成功'),function(){
+							$.phpok.reload();
+						}).lock();
+						return true;
 					}
-				}],
-				'cancel':true,'cancelVal':p_lang('关闭')
-			})
+					$.dialog.tips(rs.info);
+					return false;
+				});
+				return false;
+			});
+			return false;
 		},
 		//保存全局信息
 		save:function()

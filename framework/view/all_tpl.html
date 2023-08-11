@@ -1,26 +1,24 @@
-<!-- include tpl=head_lay nopadding=true -->
+<!-- include tpl=head_lay -->
 <script type="text/javascript">
-function save()
+function save(obj)
 {
-	var opener = $.dialog.opener;
-	$("#post_save").ajaxSubmit({
+	$(obj).ajaxSubmit({
 		'url':get_url('all','tpl_setting_save'),
 		'type':'post',
 		'dataType':'json',
 		'success':function(rs){
 			if(rs.status){
-				$.dialog.alert('操作成功',function(){
-					opener.$.dialog.close();
-				},'succeed');
+				$.dialog.tips('自定义模板设置成功').lock();
 				return true;
 			}
-			$.dialog.alert(rs.info);
+			$.dialog.tips(rs.info);
 			return false;
 		}
 	});
+	return false;
 }
 </script>
-<form method="post" id="post_save" onsubmit="return false">
+<form method="post" id="post_save" onsubmit="return save(this)">
 <div class="layui-card">
 	<div class="layui-card-body">
 		<table class="layui-table">
@@ -48,6 +46,14 @@ function save()
 		</table>
 	</div>
 </div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存配置}" class="layui-btn layui-btn-lg layui-btn-danger" />
+		<input type="button" value="{lang初始化配置}" class="layui-btn layui-btn-lg" onclick="$.admin_all.resetting()" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-lg layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
 </form>
 
-<!-- include tpl=foot_open -->
+<!-- include tpl=foot_lay -->
