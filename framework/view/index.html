@@ -113,7 +113,7 @@
 			                <cite>{lang后台首页}</cite>
 			              </a>
 			            </li>
-			            <!-- if $list_rslist && !$session.adm_develop -->
+			            <!-- if $list_rslist -->
 			            <li data-name="list" class="layui-nav-item">
 			              <a href="javascript:;" lay-tips="{lang内容管理}" lay-direction="2">
 			                <i class="layui-icon layui-icon-app"></i>
@@ -126,7 +126,7 @@
 						  </dl>
 			            </li>
 			            <!-- /if -->
-			            <!-- if $all_info && !$session.adm_develop -->
+			            <!-- if $all_info -->
 			            <li data-name="all" class="layui-nav-item">
 			              <a href="javascript:;" lay-tips="{lang全局管理}" lay-direction="2">
 			                <i class="layui-icon layui-icon-util"></i>
@@ -154,20 +154,6 @@
 								<!-- /loop -->
 								<!-- /if -->
 						  </dl>
-			            </li>
-			            <!-- /if -->
-			            <!-- if $session.adm_develop -->
-			            <li data-name="list" class="layui-nav-item">
-			              <a href="javascript:;" lay-href="{url ctrl=list/}" lay-text="{lang内容管理}">
-			                <i class="layui-icon layui-icon-app"></i>
-			                <cite>{lang内容管理}</cite>
-			              </a>
-			            </li>
-			            <li data-name="all" class="layui-nav-item">
-			              <a href="javascript:;" lay-tips="{lang全局管理}" lay-href="{url ctrl=all/}" lay-direction="2">
-			                <i class="layui-icon layui-icon-util"></i>
-			                <cite>{lang全局管理}</cite>
-			              </a>
 			            </li>
 			            <!-- /if -->
 			            <!-- loop from=$iconlist key=$key value=$value id=$tmpid -->
