@@ -182,12 +182,13 @@ function phpok_head_css()
 **/
 function P_Lang($info,$replace='')
 {
-	$status = isset($GLOBALS['app']->config['multiple_language']) ? $GLOBALS['app']->config['multiple_language'] : false;
+	global $app;
+	$status = isset($app->config['multiple_language']) ? $app->config['multiple_language'] : false;
 	if($status){
-		return $GLOBALS['app']->lang_format($info,$replace);
+		return $app->lang_format($info,$replace);
 	}
-	if($replace && is_string($replace)){
-		$replace  = unserialize($replace);
+	if($replace && (is_string($replace) || is_int($replace) || is_float($replace))){
+		$replace = explode(",",$replace);
 	}
 	if($replace && is_array($replace)){
 		foreach($replace as $key=>$value){

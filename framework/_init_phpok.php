@@ -341,8 +341,8 @@ class _init_phpok
 
 	private function _lang_format($info,$var='')
 	{
-		if($var && is_string($var)){
-			$var  = unserialize($var);
+		if($var && (is_string($var) || is_int($var) || is_float($var))){
+			$var = explode(",",$var);
 		}
 		if($var && is_array($var)){
 			foreach($var as $key=>$value){
@@ -2345,13 +2345,13 @@ class _init_phpok
 	{
 		//判断是否写入日志
 		$_savelog = false;
-		if($this->config['log']['status']){
+		if($this->config['log'] && $this->config['log']['status']){
 			$_savelog = true;
-			//状态成功的时候，不写入日志
-			if(!isset($this->config['log']['type']) && ($status || (is_bool($content) && $content))){
+			if($status || (is_bool($info) && $info)){
 				$_savelog = false;
 			}
-			if($this->config['log']['forbid'] && in_array($this->ctrl,explode(",",$this->config['log']['forbid']))){
+			$tmp = array('index','log');
+			if(in_array($this->ctrl,$tmp)){
 				$_savelog = false;
 			}
 		}
@@ -2366,10 +2366,11 @@ class _init_phpok
 			if($url){
 				$data['url'] = $url;
 			}
-			$session_val = $this->session()->sessid();
-			$data['session_name'] = $this->session()->sid();
-			$data['session_val'] = $session_val;
-
+			if($this->ctrl == 'login'){
+				$session_val = $this->session()->sessid();
+				$data['session_name'] = $this->session()->sid();
+				$data['session_val'] = $session_val;
+			}
 			if($_savelog){
 				$this->model('log')->save($info);
 			}

@@ -126,7 +126,7 @@ class login_control extends phpok_control
 				$time = date("Y-m-d H:i:s",$check['unlock_time']);
 				$this->error(P_Lang('管理员账户系统锁定，解锁时间是-1 {time}',array('time'=>$time)));
 			}
-			$this->model('admin')->lock_delete($user);			
+			$this->model('admin')->lock_delete($user);
 		}
 		
 		$pass = $this->get('pass');
@@ -183,6 +183,8 @@ class login_control extends phpok_control
 		}
 		//删除锁定
 		$this->model('admin')->lock_delete($rs['account']);
+		//增加日志
+		$this->model('log')->add(P_Lang('管理员登录成功'));
 		$this->success(P_Lang('管理员登录成功'));
 	}
 
@@ -290,6 +292,7 @@ class login_control extends phpok_control
 		$this->lib('token')->keyid($keyid);
 		$this->lib('token')->expiry(300);
 		$logincode = $this->lib('token')->encode($data);
+		$this->model('log')->add(P_Lang('生成客户端密钥，用于下次扫码快速确认登录'));
 		$this->success(array('account'=>$rs['account'],'logincode'=>$logincode));
 	}
 
@@ -362,7 +365,7 @@ class login_control extends phpok_control
 		//删除checking文件，创建登录文件
 		$this->lib('file')->rm($this->dir_cache.$fid.'-checking.php');
 		$this->lib('file')->vi($this->lib('json')->encode($data),$this->dir_cache.$fid.'-'.$fcode.'.php');
-		$this->success($content);
+		$this->success();
 	}
 
 	public function checking_f()

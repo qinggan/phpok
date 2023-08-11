@@ -19,18 +19,6 @@ class all_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
-	public function index_f()
-	{
-		if(!$this->popedom["list"]){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$rslist = $this->model('site')->all_list($_SESSION["admin_site_id"]);
-		$this->assign("rslist",$rslist);
-		$rs = $this->model('site')->get_one($_SESSION['admin_site_id']);
-		$this->assign("rs",$rs);
-		$this->view("all_index");
-	}
-
 	public function setting_f()
 	{
 		if(!$this->popedom["site"]){
@@ -41,16 +29,15 @@ class all_control extends phpok_control
 		$tpl_list = $this->model('tpl')->get_all();
 		$this->assign("tpl_list",$tpl_list);
 		// 获取网站语言包列表
-		$multiple_language = isset($this->config['multiple_language']) ? $this->config['multiple_language'] : false;
+		$multiple_language = false;
+		if(isset($this->config['multiple_language'])){
+			$multiple_language = $this->config['multiple_language'];
+		}
 		if($multiple_language){
 			$langlist = $this->model('lang')->get_list();
 			$this->assign("langlist",$langlist);
 		}
 		$this->assign('multiple_language',$multiple_language);
-
-		//项目列表
-		$project_list = $this->model('project')->project_all($_SESSION['admin_site_id'],'id','status=1 AND hidden=1 AND module>0');
-		$this->assign("project_list",$project_list);
 
 		//读取网站货币
 		$currency_list = $this->model('currency')->get_list();
@@ -100,6 +87,7 @@ class all_control extends phpok_control
 		$code_editor_info = form_edit('meta',$rs['meta'],'code_editor','width=650&height=200');
 		$this->assign('code_editor_info',$code_editor_info);
 		$this->assign("rs",$rs);
+		$this->model('log')->add(P_Lang('查阅【网站信息】'));
 		$this->view("all_setting");
 	}
 
@@ -505,7 +493,7 @@ class all_control extends phpok_control
 		$this->view("all_gset");
 	}
 
-	function gset_save_f()
+	public function gset_save_f()
 	{
 		if(!$this->popedom["gset"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
@@ -530,24 +518,6 @@ class all_control extends phpok_control
 		$this->success();
 	}
 
-	private function all_check($identifier,$id=0)
-	{
-		if(!$identifier){
-			return "标识串不能为空";
-		}
-		$identifier = strtolower($identifier);
-		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$identifier)){
-			return "标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头";
-		}
-		if($identifier == "phpok" || $identifier == "config"){
-			return "系统标识串：config 和 phpok 不允许用户自定义使用";
-		}
-		$check = $this->model('site')->all_check($identifier,$_SESSION["admin_site_id"],$id);
-		if($check){
-			return "标识串已经被使用了";
-		}
-		return "ok";
-	}
 
 	public function all_check_f()
 	{
@@ -691,5 +661,25 @@ class all_control extends phpok_control
 			$this->error('证书生成失败，请检查系统环境');
 		}
 		$this->success($rs);
+	}
+
+
+	private function all_check($identifier,$id=0)
+	{
+		if(!$identifier){
+			return "标识串不能为空";
+		}
+		$identifier = strtolower($identifier);
+		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$identifier)){
+			return "标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头";
+		}
+		if($identifier == "phpok" || $identifier == "config"){
+			return "系统标识串：config 和 phpok 不允许用户自定义使用";
+		}
+		$check = $this->model('site')->all_check($identifier,$_SESSION["admin_site_id"],$id);
+		if($check){
+			return "标识串已经被使用了";
+		}
+		return "ok";
 	}
 }

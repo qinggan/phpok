@@ -155,8 +155,8 @@ class phpok_language
 
 	private function _format($info,$var='')
 	{
-		if($var && is_string($var)){
-			$var  = unserialize($var);
+		if($var && (is_string($var) || is_int($var) || is_float($var))){
+			$var = explode(",",$var);
 		}
 		if($var && is_array($var)){
 			foreach($var as $key=>$value){

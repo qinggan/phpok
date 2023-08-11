@@ -17,6 +17,17 @@ class log_model_base extends phpok_model
 	}
 
 	/**
+	 * 增加日志，手工标记
+	**/
+	public function add($note='')
+	{
+		if(!$note){
+			return false;
+		}
+		$this->save($note,true);
+	}
+
+	/**
 	 * 保存日志
 	 * @参数 $note 日志说明
 	 * @参数 $mask 是否手动标记，为true时表示手动标志
