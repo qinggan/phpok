@@ -57,7 +57,6 @@ class appsys_control extends phpok_control
 		$rslist = $this->model('appsys')->get_uninstall($keywords,$offset,$psize);
 		if($rslist){
 			$total = $this->model('appsys')->get_total();
-
 			$installed = $this->model('appsys')->installed();
 			if($installed){
 				$total = $total - count($installed);
@@ -70,6 +69,7 @@ class appsys_control extends phpok_control
 			$this->assign("pagelist",$pagelist);
 			$this->assign("pageurl",$pageurl);
 		}
+		$this->model('log')->add(P_Lang('访问【安装应用】'));
 		$this->view('appsys_list');
 	}
 
@@ -99,6 +99,7 @@ class appsys_control extends phpok_control
 		}
 		$this->assign('id',$id);
 		$this->assign('type',$type);
+		$this->model('log')->add(P_Lang('访问【应用的帮助手册#{0}】',$id));
 		$this->view('appsys_helpinfo');
 	}
 
@@ -121,6 +122,7 @@ class appsys_control extends phpok_control
 		$this->assign('edit',$edit);
 		$this->assign('id',$id);
 		$this->assign('type',$type);
+		$this->model('log')->add(P_Lang('访问【编辑应用帮助手册】'));
 		$this->view('appsys_help');
 	}
 
@@ -137,32 +139,7 @@ class appsys_control extends phpok_control
 		$file = $this->dir_app.$id.'/'.$type.'-help.md';
 		$content = $this->get('content','html_js');
 		$this->lib('file')->vim($content,$file);
-		$this->success();
-	}
-
-	public function setting_f()
-	{
-		if(!$this->popedom['setting']){
-			$this->error(P_Lang('您没有配置环境权限'));
-		}
-		$rs = $this->model('appsys')->server();
-		if($rs && is_array($rs)){
-			$this->assign('rs',$rs);
-		}
-		$this->view('appsys_setting');
-	}
-
-	public function setting_save_f()
-	{
-		if(!$this->popedom['setting']){
-			$this->error(P_Lang('您没有配置环境权限'));
-		}
-		$data = array();
-		$data['server'] = $this->get('server');
-		$data['ip'] = $this->get('ip');
-		$data['folder'] = $this->get('folder');
-		$data['https'] = $this->get('https','int');
-		$this->model('appsys')->server($data);
+		$this->model('log')->add(P_Lang('保存【帮助手册信息】'));
 		$this->success();
 	}
 
@@ -180,39 +157,6 @@ class appsys_control extends phpok_control
 		$this->success();
 	}
 
-	public function remote_f()
-	{
-		if(!$this->popedom['remote']){
-			$this->error(P_Lang('您没有更新远程数据权限'));
-		}
-		$server = $this->model('appsys')->server();
-		if(!$server || !$server['server']){
-			$this->error(P_Lang('未配置好远程服务器环境，请更新配置环境'));
-		}
-		$url  = $server['https'] ? 'https://' : 'http://';
-		$url .= $server['server'];
-		if(substr($url,-1) == '/'){
-			$url = substr($url,0,-1);
-		}
-		$folder = !$server['folder'] ? '/' : (substr($server['folder'],0,1) != '/' ? '/'.$server['folder'] : $server['folder']);
-		$url .= $folder;
-		$this->lib('curl')->timeout(30);
-		if($server['ip']){
-			$this->lib('curl')->host_ip($server['ip']);
-		}
-		$url .= "?code=".md5(strtoupper(LICENSE_CODE)).'&domain='.rawurlencode(LICENSE_SITE);
-		$data = $this->lib('curl')->get_json($url);
-		if(!$data){
-			$this->error(P_Lang('远程更新数据失败'));
-		}
-		if(!$data['status']){
-			$tip = $data['info'] ? $data['info'] : ($data['error'] ? $data['error'] : P_Lang('获取数据失败'));
-			$this->error($tip);
-		}
-		$this->lib('xml')->save($data['info'],$this->dir_data.'xml/appall.xml');
-		$this->success();
-	}
-
 	public function import_f()
 	{
 		$array = array("identifier"=>'zipfile',"form_type"=>'upload');
@@ -220,6 +164,7 @@ class appsys_control extends phpok_control
 		$this->lib('form')->cssjs($array);
 		$upload = $this->lib('form')->format($array);
 		$this->assign('upload_html',$upload);
+		$this->model('log')->add(P_Lang('访问【导入应用】'));
 		$this->view('appsys_upload');
 	}
 
@@ -264,6 +209,7 @@ class appsys_control extends phpok_control
 		$config = $this->model('appsys')->get_one($info[0]);
 		$config['installed'] = false;
 		$this->lib('xml')->save($config,$this->dir_app.$info[0].'/config.xml');
+		$this->model('log')->add(P_Lang('解压应用#{0}',$info[0]));
 		$this->success();
 	}
 
@@ -273,6 +219,7 @@ class appsys_control extends phpok_control
 		if($rslist){
 			$this->assign('rslist',$rslist);
 		}
+		$this->model('log')->add(P_Lang('访问【应用备份列表】'));
 		$this->view('appsys_backuplist');
 	}
 
@@ -298,6 +245,7 @@ class appsys_control extends phpok_control
 		}
 		$this->lib('phpzip')->set_root($this->dir_app);
 		$this->lib('phpzip')->zip($this->dir_app.$id,$zipfile);
+		$this->model('log')->add(P_Lang('备份应用#{0}',$id));
 		$this->success();
 	}
 
@@ -316,6 +264,7 @@ class appsys_control extends phpok_control
 		if(is_file($this->dir_data.'zip/'.$id)){
 			$this->lib('file')->rm($this->dir_data.'zip/'.$id);
 		}
+		$this->model('log')->add(P_Lang('删除备份的应用#{0}',$id));
 		$this->success();
 	}
 
@@ -339,6 +288,7 @@ class appsys_control extends phpok_control
 			include_once($this->dir_app.$id.'/'.$rs['uninstall']);
 		}
 		$this->model('appsys')->uninstall($id);
+		$this->model('log')->add(P_Lang('卸载应用#{0}',$id));
 		$this->success(P_Lang('应用卸载成功'),$this->url('appsys'));
 	}
 
@@ -363,6 +313,7 @@ class appsys_control extends phpok_control
 			$this->error(P_Lang('没有找到备份文件，不能删除'));
 		}
 		$this->lib('file')->rm($this->dir_app.$id);
+		$this->model('log')->add(P_Lang('删除应用#{0}',$id));
 		$this->success();
 	}
 
@@ -387,6 +338,7 @@ class appsys_control extends phpok_control
 		}
 		$this->lib('phpzip')->set_root($this->dir_app);
 		$this->lib('phpzip')->zip($this->dir_app.$id,$zipfile);
+		$this->model('log')->add(P_Lang('导出应用#{0}',$id));
 		$this->lib('file')->download($zipfile,$rs['title'].'.zip');
 	}
 
@@ -402,56 +354,11 @@ class appsys_control extends phpok_control
 		if(!$id){
 			$this->error(P_Lang('未指定项目'),$this->url('appsys'));
 		}
-		if(is_dir($this->dir_app.$id)){
-			//检查Config文件
-			if(is_file($this->dir_app.$id.'/config.xml')){
-				$info = $this->lib('xml')->read($this->dir_app.$id.'/config.xml',true);
-				if($info && $info['install'] && is_file($this->dir_app.$id.'/'.$info['install'])){
-					include_once($this->dir_app.$id.'/'.$info['install']);
-				}
-			}
-			$this->model('appsys')->install($id);
-			$this->success(P_Lang('安装成功'),$this->url('appsys'));
+		if(!file_exists($this->dir_app.$id)){
+			$this->error(P_Lang('应用文件不存在'));
 		}
-		if(!is_file($this->dir_data.'zip/'.$id.'.zip')){
-			$server = $this->model('appsys')->server();
-			if(!$server || !$server['server']){
-				$this->error(P_Lang('未配置好远程服务器环境，请更新配置环境'),$this->url('appsys'));
-			}
-			$url  = $server['https'] ? 'https://' : 'http://';
-			$url .= $server['server'];
-			if(substr($url,-1) == '/'){
-				$url = substr($url,0,-1);
-			}
-			$folder = !$server['folder'] ? '/' : (substr($server['folder'],0,1) != '/' ? '/'.$server['folder'] : $server['folder']);
-			$url .= $folder;
-			$this->lib('curl')->timeout(30);
-			if($server['ip']){
-				$this->lib('curl')->host_ip($server['ip']);
-			}
-			$info = $this->lib('curl')->get_json($url.'?id='.$id);
-			if(!$info['status']){
-				$info = $info['info'] ? $info['info'] : ($info['error'] ? $info['error'] : '安装失败');
-				$this->error(P_Lang($info),$this->url('appsys'));
-			}
-			$content = base64_decode($info['info']);
-			$this->lib('file')->save_pic($content,$this->dir_data.'zip/'.$id.'.zip');
-		}
-		if(!is_file($this->dir_data.'zip/'.$id.'.zip')){
-			$this->error(P_Lang('项目不存在'));
-		}
-		//解压到目标文件
-		$ziplist = $this->lib('phpzip')->zip_info($this->dir_data.'zip/'.$id.'.zip');
-		if(!$ziplist){
-			$this->error(P_Lang('压缩包数据有错误'),$this->url('appsys'));
-		}
-		if(count($ziplist)==1){
-			if(!file_exists($this->dir_app.$id)){
-				$this->lib('file')->make($this->dir_app.$id);
-			}
-			$this->lib('phpzip')->unzip($this->dir_data.'zip/'.$id.'.zip',$this->dir_app.$id);
-		}else{
-			$this->lib('phpzip')->unzip($this->dir_data.'zip/'.$id.'.zip',$this->dir_app);
+		if(!is_dir($this->dir_app.$id)){
+			$this->error(P_Lang('这不是一个应用'));
 		}
 		//检查Config文件
 		if(is_file($this->dir_app.$id.'/config.xml')){
@@ -461,6 +368,7 @@ class appsys_control extends phpok_control
 			}
 		}
 		$this->model('appsys')->install($id);
+		$this->model('log')->add(P_Lang('安装应用#{0}',$id));
 		$this->success(P_Lang('安装成功'),$this->url('appsys'));
 	}
 
@@ -615,6 +523,7 @@ class appsys_control extends phpok_control
 		$content .= $this->_php_safe();
 		$content .= $this->_php_html($identifier);
 		$this->lib('file')->vim($content,$this->dir_app.$identifier.'/html.php');
+		$this->model('log')->add(P_Lang('创建应用#{0}',$identifier));
 		$this->success();
 	}
 

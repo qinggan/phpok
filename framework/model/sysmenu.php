@@ -1,28 +1,59 @@
 <?php
-/***********************************************************
-	Filename: phpok/model/sysmenu.php
-	Note	: 后台核心应用管理，主表：qinggan_sysmenu
-	Version : 4.0
-	Web		: www.phpok.com
-	Author  : qinggan <qinggan@188.com>
-	Update  : 2012-10-27 14:36
-***********************************************************/
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
+/**
+ * 后台核心应用管理
+ * @作者 qinggan <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
+ * @时间 2012年10月27日
+ * @更新 2023年8月13日
+**/
+
+/**
+ * 安全限制，防止直接访问
+**/
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
 class sysmenu_model_base extends phpok_model
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::model();
 	}
 
+	public function get_title($ctrl,$func='')
+	{
+		if(!$ctrl){
+			return false;
+		}
+		$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE appfile='".$ctrl."'";
+		$list = $this->db->get_all($sql);
+		if(!$list){
+			return false;
+		}
+		$rs = array();
+		foreach($list as $key=>$value){
+			if($func && $value['func'] == $func){
+				$rs = $value;
+				break;
+			}
+		}
+		if(!$rs['title']){
+			$rs = $list[0];
+		}
+		return $rs;
+	}
+
 	# 获取一条信息
-	function get_one($id)
+	public function get_one($id)
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 
-	function get_one_condition($condition="")
+	public function get_one_condition($condition="")
 	{
 		$sql = "SELECT * FROM ".$this->db->prefix."sysmenu ";
 		if($condition)
@@ -82,7 +113,7 @@ class sysmenu_model_base extends phpok_model
 	}
 
 	//根据菜单取得导航高亮对应的菜单ID
-	function get_current_id($site_id=0,$ctrl='',$condition=array())
+	public function get_current_id($site_id=0,$ctrl='',$condition=array())
 	{
 		$site_id = $site_id ? '0,'.$site_id : '0';
 		$sql = "SELECT * FROM ".$this->db->prefix."sysmenu WHERE site_id IN(".$site_id.") ";
@@ -116,13 +147,6 @@ class sysmenu_model_base extends phpok_model
 		return $r;
 	}
 
-	function sort($string)
-	{
-		if(!$string) return false;
-		$list = explode('&',$string);
-		sort($list);
-		return implode('&',$list);
-	}
 
 	public function get_menu_id($site_id=0,$ctrl="",$func="",$identifier="")
 	{
@@ -169,5 +193,14 @@ class sysmenu_model_base extends phpok_model
 		return false;
 	}
 
+	private function sort($string)
+	{
+		if(!$string){
+			return false;
+		}
+		$list = explode('&',$string);
+		sort($list);
+		return implode('&',$list);
+	}
+
 }
-?>

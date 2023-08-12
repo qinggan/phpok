@@ -47,7 +47,6 @@ class address_control extends phpok_control
 		if(!$this->popedom['list']){
 			$this->error(P_Lang('您没有此权限操作'));
 		}
-		$this->model('log')->add(P_Lang('访问【用户地址库】'));
 		$pageurl = $this->url('address');
 		$type = $this->get('type');
 		$keywords = $this->get('keywords');
@@ -71,7 +70,6 @@ class address_control extends phpok_control
 		if(!$this->popedom['list']){
 			$this->error(P_Lang('您没有此权限操作'));
 		}
-		$this->model('log')->add(P_Lang('访问【用户地址库信息】'));
 		$tpl = $this->get('tpl');
 		if(!$tpl){
 			$pageurl = $this->url('address','open');
@@ -191,7 +189,6 @@ class address_control extends phpok_control
 			if(!$this->popedom['modify']){
 				$this->error(P_Lang('您没有修改地址库权限'));
 			}
-			$this->model('log')->add(P_Lang('访问【修改地址库#{0}】',array($id)));
 			$rs = $this->model('user')->address_one($id);
 			$this->assign('rs',$rs);
 			$this->assign('id',$id);
@@ -199,7 +196,6 @@ class address_control extends phpok_control
 			if(!$this->popedom['add']){
 				$this->error(P_Lang('您没有添加地址库权限'));
 			}
-			$this->model('log')->add(P_Lang('访问【添加地址库】'));
 		}
 		$this->view("address_set");
 	}

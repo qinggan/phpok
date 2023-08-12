@@ -101,7 +101,6 @@ class admin_control extends phpok_control
 		if(!$this->popedom["list"]){
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
-		$this->model('log')->add(P_Lang('访问【管理员列表】'));
 		$pageid = $this->get($this->config["pageid"],"int");
 		if(!$pageid){
 			$pageid = 1;

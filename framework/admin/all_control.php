@@ -121,6 +121,7 @@ class all_control extends phpok_control
 		$this->assign('tpls',$tpls);
 		$this->assign('id',$id);
 		$this->assign('tplid',$tplid);
+		$this->model('log')->add(P_Lang('查阅【自定义模板】'));
 		$this->view('all_tpl');
 	}
 
@@ -133,6 +134,7 @@ class all_control extends phpok_control
 			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$this->model('site')->tpl_reset();
+		$this->model('log')->add(P_Lang('初始化【自定义模板】'));
 		$this->success();
 	}
 
@@ -157,6 +159,7 @@ class all_control extends phpok_control
 		}else{
 			$this->model('site')->tpl_setting($all);
 		}
+		$this->model('log')->add(P_Lang('保存【自定义模板】'));
 		$this->success();
 	}
 
@@ -233,40 +236,8 @@ class all_control extends phpok_control
 		$array['favicon'] = $this->get('favicon');
 
 		$this->model('site')->save($array,$this->session->val('admin_site_id'));
+		$this->model('log')->add(P_Lang('更新【网站信息】'));
 		$this->success(P_Lang('网站信息更新完成'),$this->url("all","setting"));
-	}
-
-	public function domain_check_f()
-	{
-		$domain = $this->get("domain");
-		$isadd = $this->get("isadd","int");
-		$id = $this->get("id","int");
-		if(!$domain){
-			$this->json(P_Lang('域名不能为空'));
-		}
-		if(substr($domain,0,7) == "https://" || substr($domain,0,8) == "https://"){
-			$this->json(P_Lang('域名填写不规范，不能含有http://或https://'));
-		}
-		if($domain && $domain != str_replace("/","",$domain)){
-			$this->json(P_Lang('域名不符合规范，不能有 / 符号'));
-		}
-		$domain_rs = $this->model('site')->domain_check($domain);
-		if($domain_rs){
-			if($isadd){
-				$this->json(P_Lang('域名已经被使用'));
-			}
-			if($id){
-				if($domain_rs["id"] != $id){
-					$this->json(P_Lang('域名已经存在'));
-				}
-			}else{
-				$rs = $this->model('site')->get_one($_SESSION["admin_site_id"]);
-				if($domain_rs["id"] != $rs["domain_id"]){
-					$this->json(P_Lang('域名已经被使用'));
-				}
-			}
-		}
-		$this->json(true);
 	}
 
 	public function domain_f()
@@ -278,6 +249,7 @@ class all_control extends phpok_control
 		$this->assign("rs",$rs);
 		$rslist = $this->model('site')->domain_list($_SESSION["admin_site_id"]);
 		$this->assign("rslist",$rslist);
+		$this->model('log')->add(P_Lang('查阅【网站域名】'));
 		$this->view("all_domain");
 	}
 
@@ -329,6 +301,7 @@ class all_control extends phpok_control
 			}
 		}
 		$this->assign('vcodelist',$vcodelist);
+		$this->model('log')->add(P_Lang('查阅【验证码】'));
 		$this->view('all_vcode');
 	}
 
@@ -357,6 +330,7 @@ class all_control extends phpok_control
 			}
 		}
 		$this->lib('xml')->save($tmp,$this->dir_data.'xml/vcode_'.$this->session->val('admin_site_id').'.xml');
+		$this->model('log')->add(P_Lang('保存【验证码】'));
 		$this->success();
 	}
 
@@ -387,18 +361,12 @@ class all_control extends phpok_control
 		}
 		$id = $this->get("id","int");
 		$rs = $this->model('site')->get_one($this->session->val('admin_site_id'));
-		//$domain_rs = $this->model('site')->domain_check($domain);
 		if($id){
-			//if($domain_rs && $domain_rs["id"] != $id){
-			//	$this->error(P_Lang('域名已存在，请检查'));
-			//}
 			$this->model('site')->domain_update($domain,$id);
 		}else{
-			//if($domain_rs){
-			//	$this->error(P_Lang('域名已存在，请检查'));
-			//}
-			$this->model('site')->domain_add($domain,$_SESSION["admin_site_id"]);
+			$this->model('site')->domain_add($domain,$this->session->val('admin_site_id'));
 		}
+		$this->model('log')->add(P_Lang('保存【域名设置】'));
 		$this->success();
 	}
 
@@ -421,13 +389,14 @@ class all_control extends phpok_control
 		if($domain_rs["site_id"] != $_SESSION["admin_site_id"]){
 			$this->error(P_Lang('域名配置与网站不一致，请联系管理员'));
 		}
-		$rs = $this->model('site')->get_one($_SESSION["admin_site_id"]);
+		$rs = $this->model('site')->get_one($this->session->val('admin_site_id'));
 		if($domain_rs["id"] == $rs["domain_id"]){
 			$this->error(P_Lang('此域名已经是主域名了，不用再设置'));
 		}
 		$array = array();
 		$array["domain_id"] = $id;
-		$this->model('site')->save($array,$_SESSION["admin_site_id"]);
+		$this->model('site')->save($array,$this->session->val('admin_site_id'));
+		$this->model('log')->add(P_Lang('设置【默认域名】'));
 		$this->success();
 	}
 
@@ -451,6 +420,7 @@ class all_control extends phpok_control
 			$this->error(P_Lang('域名配置与网站不一致，请联系管理员'));
 		}
 		$this->model('site')->domain_delete($id);
+		$this->model('log')->add(P_Lang('删除域名'));
 		$this->success();
 	}
 
@@ -468,13 +438,18 @@ class all_control extends phpok_control
 		}
 		$act_mobile = $this->get('act_mobile','int');
 		$this->model('site')->set_mobile($id,$act_mobile);
+		if($act_mobile){
+			$this->model('log')->add(P_Lang('设置【手机域名】'));
+		}else{
+			$this->model('log')->add(P_Lang('取消【手机域名】'));
+		}
 		$this->success();
 	}
 
 	public function gset_f()
 	{
 		if(!$this->popedom["gset"]){
-			error(P_Lang('您没有权限执行此操作'),'','error');
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$id = $this->get("id","int");
 		$rs = array();
@@ -489,6 +464,7 @@ class all_control extends phpok_control
 		}
 		$this->assign("rs",$rs);
 		$this->assign("icolist",$icolist);
+		$this->model('log')->add(P_Lang('配置【全局项目扩展】'));
 		$this->view("all_gset");
 	}
 
@@ -514,22 +490,15 @@ class all_control extends phpok_control
 		$array['is_api'] = $this->get('is_api','int');
 		$array["site_id"] = $this->session->val('admin_site_id');
 		$this->model('site')->all_save($array,$id);
+		$this->model('log')->add(P_Lang('保存【全局扩展】'));
 		$this->success();
 	}
 
-
-	public function all_check_f()
-	{
-		$identifier = $this->get("identifier");
-		$id = $this->get("id","int");
-		$chk = $this->all_check($identifier,$id);
-		if($chk == "ok"){
-			$this->json(true);
-		}else{
-			$this->json(P_Lang($chk));
-		}
-	}
-
+	/**
+	 * 编辑扩展配置
+	 * @参数 $id 扩展ID
+	 * @返回 HTML页面
+	**/
 	public function set_f()
 	{
 		if(!$this->popedom["set"]){
@@ -556,6 +525,7 @@ class all_control extends phpok_control
 			}
 			$this->assign('extlist',$tmp);
 		}
+		$this->model('log')->add(P_Lang('访问【扩展编辑#{0}】',$id));
 		$this->view("all_set");
 	}
 
@@ -573,6 +543,7 @@ class all_control extends phpok_control
 			$this->error(P_Lang('全局配置不存在'));
 		}
 		ext_save("all-".$id);
+		$this->model('log')->add(P_Lang('保存【扩展编辑#{0}】',$id));
 		$this->success(P_Lang('扩展全局内容设置成功'),$this->url("all"));
 	}
 
@@ -590,14 +561,8 @@ class all_control extends phpok_control
 			$this->error(P_Lang('系统模块不允许删除'));
 		}
 		$this->model('site')->ext_delete($id);
+		$this->model('log')->add(P_Lang('删除【全局扩展组#{0}】',$id));
 		$this->success();
-	}
-
-	public function email_f()
-	{
-		$content = form_edit('content','','editor','height=300&btn_image=1&etype=simple');
-		$this->assign('content',$content);
-		$this->view("all_email");
 	}
 
 	public function system_f()
@@ -617,6 +582,7 @@ class all_control extends phpok_control
 		$links = $rs['ok_links'] ? unserialize($rs['ok_links']) : array();
 		$this->assign('links',$links);
 		$this->assign('rs',$rs);
+		$this->model('log')->add(P_Lang('访问【系统参数】'));
 		$this->view("all_system");
 	}
 
@@ -649,6 +615,7 @@ class all_control extends phpok_control
 			$data['ok_links'] = serialize($data['ok_links']);
 		}
 		$this->model('config')->save($data);
+		$this->model('log')->add(P_Lang('保存系统参数'));
 		$this->success();
 	}
 
@@ -659,6 +626,7 @@ class all_control extends phpok_control
 		if(!$rs){
 			$this->error('证书生成失败，请检查系统环境');
 		}
+		$this->model('log')->add(P_Lang('执行新证书生成'));
 		$this->success($rs);
 	}
 

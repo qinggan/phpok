@@ -1579,6 +1579,15 @@ class _init_phpok
 	final public function view($file,$type="file",$path_format=true)
 	{
 		$this->_counter_node_plugin_code();
+		if($this->app_id == 'admin'){
+			$menu_rs = $this->model('sysmenu')->get_title($this->ctrl,$this->func);
+			if(!$menu_rs){
+				$note = P_Lang('访问文件 {0} 方法 {1}',array($this->ctrl,$this->func));
+			}else{
+				$note = P_Lang('访问【{0}】',$menu_rs['title']);
+			}
+			$this->model('log')->save($note);
+		}
 		$this->tpl->display($file,$type,$path_format);
 	}
 

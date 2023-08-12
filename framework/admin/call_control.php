@@ -21,13 +21,6 @@ class call_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
-	function phpok_autoload()
-	{
-		$site_id = $this->session->val('admin_site_id');
-		$this->model('call')->site_id($site_id);
-		$this->model('call')->psize($this->psize);
-	}
-
 	public function index_f()
 	{
 		if(!$this->popedom["list"]){
@@ -69,7 +62,7 @@ class call_control extends phpok_control
 		$id = $this->get("id");
 		if($id){
 			if(!$this->popedom["modify"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
 			$rs = $this->model('call')->get_one($id);
 			if($rs['ext']){
@@ -79,12 +72,14 @@ class call_control extends phpok_control
 			}
 			$this->assign("rs",$rs);
 			$this->assign("id",$id);
+			$this->model('log')->add(P_Lang('访问【编辑数据调用#{0}】',$id));
 		}else{
 			if(!$this->popedom["add"]){
-				error(P_Lang('您没有权限执行此操作'),'','error');
+				$this->error(P_Lang('您没有权限执行此操作'));
 			}
+			$this->model('log')->add(P_Lang('访问【添加数据调用】'));
 		}
-		$site_id = $_SESSION["admin_site_id"];
+		$site_id = $this->session()->val('admin_site_id');
 		$rslist = $this->model('project')->get_all_project($site_id);
 		$this->assign("rslist",$rslist);
 		$attrlist = $this->model('list')->attr_list();
@@ -101,7 +96,6 @@ class call_control extends phpok_control
 		//读取菜单列表
 		$menulist = $this->model('menu')->group();
 		$this->assign('menulist',$menulist);
-		
 		$this->view("phpok_set");
 	}
 
@@ -123,52 +117,6 @@ class call_control extends phpok_control
 		$catelist = $this->model('cate')->cate_option_list($catelist);
 		$this->success(array('catelist'=>$catelist));
 	}
-	
-	public function type_list_f()
-	{
-		$id = $this->get("id","int");
-		if(!$id){
-			$val = $this->get("val");
-			$this->assign("val",$val);
-			$content = $this->fetch("phpok_ajax_list");
-			$this->json($content,true);
-		}
-		$this->assign("id",$id);
-		$val = $this->get("val");
-		$this->assign("val",$val);
-		$rs = $this->model('project')->get_one($id);
-		$this->assign("rs",$rs);
-		$son_rs = $this->model('project')->get_son($id);
-		if($son_rs){
-			$this->assign("son_rs",$son_rs);
-		}
-		if($rs["module"]){
-			if($rs["cate"]){
-				$cate_rs = $this->model('cate')->get_one($rs["cate"]);
-				$catelist = array();
-				$this->model('cate')->get_sublist($list,$rs["cate"]);
-				$this->assign("catelist",$catelist);
-			}
-		}
-		$content = $this->fetch("phpok_ajax_list");
-		$this->json($content,true);
-	}
-
-	public function fields_f()
-	{
-		$pid = $this->get("pid","int");
-		if(!$pid){
-			$this->json(P_Lang('未指定ID'));
-		}
-		$p_rs = $this->model('project')->get_one($pid,false);
-		if(!$p_rs['module']){
-			$this->json(P_Lang('未绑定模块'));
-		}
-		$rslist = $this->model('module')->fields_all($p_rs['module']);
-		$this->assign('rslist',$rslist);
-		$info = $this->fetch("phpok_ajax_fields");
-		$this->json($info,true);
-	}
 
 	public function arclist_f()
 	{
@@ -187,29 +135,6 @@ class call_control extends phpok_control
 		$info = $this->fetch("phpok_ajax_fields");
 		$order = $this->fetch("phpok_ajax_orderby");
 		$this->success(array('need'=>$info,'orderby'=>$order,'attr'=>$p_rs['is_attr'],'rslist'=>$rslist,'mtype'=>$module['mtype'],'sub'=>$p_rs['']),true);
-	}
-
-	private function check_identifier($identifier)
-	{
-		if(!$identifier){
-			return P_Lang('未指定标识串');
-		}
-		$identifier = strtolower($identifier);
-		if(!preg_match("/^[a-z][a-z0-9\_\-]+$/u",$identifier)){
-			return P_Lang('字段标识不符合系统要求，限小写字母、数字、中划线及下划线且必须是小写字母开头');
-		}
-		$rs = $this->model('call')->chk_identifier($identifier);
-		if($rs){
-			return P_Lang('字符串已被使用');
-		}
-		return "ok";		
-	}
-
-	public function check_f()
-	{
-		$identifier = $this->get("identifier");
-		$check = $this->check_identifier($identifier);
-		$this->json($check == 'ok' ? true : $check);
 	}
 
 	public function save_f()
@@ -232,6 +157,7 @@ class call_control extends phpok_control
 			}
 			$array["identifier"] = $identifier;
 			$array["site_id"] = $this->session->val('admin_site_id');
+			$this->model('log')->add(P_Lang('添加数据调用'));
 		}else{
 			if(!$this->popedom["modify"]){
 				$this->error(P_Lang('您没有权限执行此操作'));
@@ -239,6 +165,7 @@ class call_control extends phpok_control
 			if(!$title){
 				$this->error(P_Lang('标题不能为空'),$error_url);
 			}
+			$this->model('log')->add(P_Lang('保存修改数据调用#{0}',$id));
 		}
 		$array["title"] = $title;
 		$array["pid"] = $this->get("pid","int");
@@ -286,32 +213,8 @@ class call_control extends phpok_control
 			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('call')->del($id);
+		$this->model('log')->add(P_Lang('删除数据调用#{0}',$id));
 		$this->success();
-	}
-
-	//取得模块的扩展字段
-	public function mfields_f()
-	{
-		$id = $this->get("id");
-		if(!$id){
-			$this->json(P_Lang('未指定项目ID'));
-		}
-		$rs = $this->model('project')->get_one($id);
-		if(!$rs || !$rs["module"]){
-			$this->json(P_Lang('无数据或未设置模块'));
-		}
-		$mid = $rs["module"];
-		$rslist = $this->model('module')->fields_all($mid);
-		if(!$rslist){
-			$this->json(P_Lang('没有自定义字段'));
-		}
-		$list = array();
-		foreach($rslist AS $key=>$value){
-			if($value["field_type"] != "longtext" && $value["field_type"] != "longblob" && $value["field_type"] != "text"){
-				$list[] = array("id"=>$value["id"],"identifier"=>$value["identifier"],"title"=>$value["title"]);
-			}
-		}
-		$this->json($list,true);
 	}
 
 	public function status_f()
@@ -329,6 +232,30 @@ class call_control extends phpok_control
 		if(!$action){
 			$this->error(P_Lang('操作失败，请检查SQL语句'));
 		}
+		$this->model('log')->add(P_Lang('修改数据调用状态#{0}_{1}',array($id,$status)));
 		$this->success($status);
+	}
+
+	private function check_identifier($identifier)
+	{
+		if(!$identifier){
+			return P_Lang('未指定标识串');
+		}
+		$identifier = strtolower($identifier);
+		if(!preg_match("/^[a-z][a-z0-9\_\-]+$/u",$identifier)){
+			return P_Lang('字段标识不符合系统要求，限小写字母、数字、中划线及下划线且必须是小写字母开头');
+		}
+		$rs = $this->model('call')->chk_identifier($identifier);
+		if($rs){
+			return P_Lang('字符串已被使用');
+		}
+		return "ok";		
+	}
+	
+	private function phpok_autoload()
+	{
+		$site_id = $this->session->val('admin_site_id');
+		$this->model('call')->site_id($site_id);
+		$this->model('call')->psize($this->psize);
 	}
 }
