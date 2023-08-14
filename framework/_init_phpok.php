@@ -1305,6 +1305,9 @@ class _init_phpok
 				$this->$name .= "/";
 			}
 		}
+		if(!file_exists($this->dir_cache)){
+			$this->lib('file')->make($this->dir_cache);
+		}
 		if(!defined('OKAPP')){
 			define('OKAPP',ROOT.'_app/');
 		}
