@@ -102,6 +102,9 @@ class log_model_base extends phpok_model
 		if(!$file){
 			$file = $this->dir_data."log/".date("Ymd",$this->time).'.php';
 		}
+		if(!file_exists($file)){
+			$this->lib('file')->make($file,'file');
+		}
 		$handle = fopen($file,'ab');
 		flock($handle,LOCK_EX | LOCK_NB);
 		fwrite($handle,$html);
