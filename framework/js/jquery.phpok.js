@@ -348,7 +348,9 @@
 		{
 			var obj = this._obj(id);
 			obj.prop('checked',true);
-            window.setTimeout("layui.form.render('checkbox')",100);
+			if(typeof layui != 'undefined'){
+				window.setTimeout("layui.form.render('checkbox')",100);
+			}
 			return true;
 		},
 
@@ -360,7 +362,9 @@
 		{
 			var obj = this._obj(id);
 			obj.removeAttr('checked');
-            window.setTimeout("layui.form.render('checkbox')",100);
+			if(typeof layui != 'undefined'){
+				window.setTimeout("layui.form.render('checkbox')",100);
+			}
 			return true;
 		},
 
@@ -381,7 +385,9 @@
 					num++;
 				}
 			});
-            window.setTimeout("layui.form.render('checkbox')",100)
+			if(typeof layui != 'undefined'){
+				window.setTimeout("layui.form.render('checkbox')",100);
+			}
 			return true;
 		},
 
@@ -398,8 +404,10 @@
 				}else{
 					$(this).prop('checked',true);
 				}
-				window.setTimeout("layui.form.render('checkbox')",100)
 			});
+			if(typeof layui != 'undefined'){
+				window.setTimeout("layui.form.render('checkbox')",100);
+			}
 		},
 
 		/**
