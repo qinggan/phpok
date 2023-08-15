@@ -109,7 +109,7 @@
 		<id><![CDATA[86c6c14744876fb44124fb10f783d6f2]]></id>
 	</url>
 	<url>
-		<id><![CDATA[7a55e5d427be87520d72ea34ef685657]]></id>
+		<id><![CDATA[94bf8f2f89eeddec4e7cc49f7013e90e]]></id>
 		<title><![CDATA[项目+分类+分页]]></title>
 		<rule><![CDATA[([a-z0-9A-Z\_\-]+)\/([a-z0-9A-Z\_\-]+)\/([0-9]+)\.html$]]></rule>
 		<val><![CDATA[index.php?id=$1&cate=$2&pageid=$3]]></val>
