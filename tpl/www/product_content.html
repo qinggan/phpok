@@ -159,14 +159,12 @@ $(document).ready(function(){
 							</div>
 						</li>
 						<!-- /loop -->
-						<!-- if $rs.qty -->
 						<li class="list-group-item">
 							<div class="row">
 								<div class="col col-md-3 text-end"><b>库存</b></div>
-								<div class="col" id="stock_qty">{$rs.qty}</div>
+								<div class="col" id="stock_qty"><!-- if $rs.qty -->{$rs.qty}<!-- else --><span class="text-danger">库存不足</span><!-- /if --></div>
 							</div>
 						</li>
-						<!-- /if -->
 						<li class="list-group-item">
 							<div class="row">
 								<div class="col col-md-3 text-end"><b>购买数量</b></div>

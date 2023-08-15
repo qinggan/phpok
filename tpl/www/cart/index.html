@@ -60,15 +60,15 @@ function cart_checkout()
 		<!-- /loop -->
 	</tbody>
 	</table>
-	<div class="row pt-4 pb-4 border-top">
+	<div class="row pt-4 pb-4">
 		<div class="col text-end">当前选中的产品价格是：<span class="text-danger" id="total_price">{$price}</span></div>
 	</div>
-	<div class="row mb-4 border-top pt-4">
+	<div class="row mb-4 pt-4">
 		<div class="col">
 			<div class="btn-group" role="group" aria-label="">
-				<button type="button" class="btn btn-primary">全选</button>
-				<button type="button" class="btn btn-primary">全不选</button>
-				<button type="button" class="btn btn-primary">反选</button>
+				<button type="button" class="btn btn-primary" onclick="$.checkbox.all()">全选</button>
+				<button type="button" class="btn btn-primary" onclick="$.checkbox.none()">全不选</button>
+				<button type="button" class="btn btn-primary" onclick="$.checkbox.anti()">反选</button>
 			</div>
 			<input type="button" value="批量删除" onclick="$.cart.del()" class="btn btn-danger" />
 		</div>
