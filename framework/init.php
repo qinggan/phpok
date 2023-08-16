@@ -192,7 +192,7 @@ function P_Lang($info,$replace='')
 	}
 	if($replace && is_array($replace)){
 		foreach($replace as $key=>$value){
-			$info = str_replace(array('{'.$key.'}','['.$key.']'),$value,$info);
+			$info = str_replace(array('{'.$key.'}','['.$key.']'),'<b class=red>'.$value.'</b>',$info);
 		}
 	}
 	return $info;

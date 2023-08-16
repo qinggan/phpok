@@ -346,7 +346,7 @@ class _init_phpok
 		}
 		if($var && is_array($var)){
 			foreach($var as $key=>$value){
-				$info = str_replace(array('{'.$key.'}','['.$key.']'),$value,$info);
+				$info = str_replace(array('{'.$key.'}','['.$key.']'),'<b class=red>'.$value.'</b>',$info);
 			}
 		}
 		return $info;
@@ -1588,6 +1588,12 @@ class _init_phpok
 				$note = P_Lang('访问文件 {0} 方法 {1}',array($this->ctrl,$this->func));
 			}else{
 				$note = P_Lang('访问【{0}】',$menu_rs['title']);
+			}
+			if($this->ctrl == 'list'){
+				$p_rs = $this->tpl->val('rs');
+				if($p_rs){
+					$note = P_Lang('访问【{0}】',array($p_rs['title']));
+				}
 			}
 			$this->model('log')->save($note);
 		}

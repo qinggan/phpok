@@ -1351,12 +1351,12 @@ class list_control extends phpok_control
 			$id = $this->model('list')->save($array);
 			$tmpadd = true;
 			$this->lib('file')->rm($this->dir_data.'cache/autosave_'.$this->session->val('admin_id').'_'.$p_rs['id'].'.php');
-			$this->lib('log')->add('添加内容【{0}】',$array['title']);
+			$this->model('log')->add(P_Lang('项目【{0}】，添加ID #{1}，主题 {2}',array($p_rs['title'],$id,$array['title'])));
  		}else{
 	 		//检测是否数据有变化
 	 		$this->model('log')->title_save($id,$array['title']);
  			$this->model('list')->save($array,$id);
- 			$this->lib('log')->add('修改内容 #{0}【{1}】',array($id,$array['title']));
+ 			$this->model('log')->add(P_Lang('项目【{0}】，修改ID #{1}，主题 {2}',array($p_rs['title'],$id,$array['title'])));
  		}
  		if(!$id){
 	 		$this->error(P_Lang('存储数据失败，请检查'));
