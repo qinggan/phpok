@@ -160,7 +160,7 @@ class phpok_language
 		}
 		if($var && is_array($var)){
 			foreach($var as $key=>$value){
-				$info = str_replace(array('{'.$key.'}','['.$key.']'),'<b class=red>'.$value.'</b>',$info);
+				$info = str_replace(array('{'.$key.'}','['.$key.']'),'<b>'.$value.'</b>',$info);
 			}
 		}
 		return $info;

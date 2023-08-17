@@ -697,13 +697,11 @@ function phpok_config($id='')
 //WEB前台通用模板，如果您的程序比较复杂，请自己写Head
 function tpl_head($array=array())
 {
-	$app = $GLOBALS['app'];
+	global $app;
 	$html  = '<!DOCTYPE html>'."\n";
 	$html .= '<html>'."\n";
 	$html .= '<head>'."\n\t".'<meta charset="utf-8" />'."\n\t";
-	if(isset($array['mobile']) && $array['mobile']){
-		$html .= '<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />'."\n\t";
-	}
+	$html .= '<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />'."\n\t";
 	$html .= '<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />'."\n\t";
 	$html .= '<meta http-equiv="Cache-control" content="no-cache,no-store,must-revalidate" />'."\n\t";
 	$html .= '<meta http-equiv="Pragma" content="no-cache" />'."\n\t";
@@ -717,7 +715,6 @@ function tpl_head($array=array())
 	if($array['seo_title']){
 		$seo['title'] = $array['seo_title'];
 	}
-
 	if($app->site['meta']){
 		$app->site['meta'] = trim(str_replace(array("\t","\r"),"",$app->site['meta']));
 		if($app->site['meta']){
@@ -802,8 +799,14 @@ function tpl_head($array=array())
 	if($ico){
 		$html .= '<link rel="shortcut icon" href="'.$app->url.$ico.$cssjs_debug.'" />'."\n\t";
 	}
+	//增加Bootstrap
+	if(!isset($array['css'])){
+		$array['css'] = '';
+	}
+	$array['css'] = 'static/bootstrap/css/bootstrap.css,static/fontawesome/css/font-awesome.css,static/wow/animate.css,'.$array['css'];
 	if($array["css"]){
 		$tmp = explode(",",$array['css']);
+		$tmp = array_unique($tmp);
 		foreach($tmp as $key=>$value){
 			$value = trim($value);
 			if(!$value){
@@ -839,8 +842,13 @@ function tpl_head($array=array())
 		$jsurl .= "&_ext=".rawurlencode($exclude_js);
 	}
 	$html .= '<script type="text/javascript" src="'.$jsurl.'" charset="utf-8"></script>'."\n\t";
+	if(!isset($array['js'])){
+		$array['js'] = '';
+	}
+	$array['js'] = 'static/bootstrap/js/bootstrap.bundle.js,static/wow/wow.js,'.$array['js'];
 	if($array['js']){
 		$tmp = explode(",",$array['js']);
+		$tmp = array_unique($tmp);
 		$tpldir = $app->tpl->dir_tpl;
 		$tpldir_length = strlen($tpldir);
 		foreach($tmp as $key=>$value){
@@ -849,9 +857,9 @@ function tpl_head($array=array())
 				continue;
 			}
 			if(substr($value,0,$tpldir_length) == $tpldir){
-				$html .= '<script type="text/javascript" src="'.$app->url.$value.$cssjs_debug.'" charset="utf-8"></script>'."\n\t";
+				$html .= '<script type="text/javascript" src="'.$app->url.$value.$cssjs_debug.'"></script>'."\n\t";
 			}else{
-				$html .= '<script type="text/javascript" src="'.$app->url.'js/'.$value.$cssjs_debug.'" charset="utf-8"></script>'."\n\t";
+				$html .= '<script type="text/javascript" src="'.$app->url.'js/'.$value.$cssjs_debug.'"></script>'."\n\t";
 			}
 		}
 	}

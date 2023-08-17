@@ -1,0 +1,98 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		<b>原文主题：</b>{$title_rs.title}
+		<span class="darkblue i fr">{lang发布时间} {func date 'Y-m-d H:i:s' $title_rs.dateline}</span>
+	</div>
+	<div class="layui-card-body">
+		<div class="content">{func phpok_cut $title_rs.content 255 …}</div>
+		<div align="center">
+			<a href="{$sys.url}{$sys.www_file}?id={$title_rs.id}" target="_blank" class="layui-btn layui-btn-sm">查看原文</a>
+		</div>
+	</div>
+</div>
+<form method="post" class="layui-form" id="post_save" onsubmit="return $.admin_reply.edit_ok(this)">
+<input type="hidden" name="tid" id="tid" value="{$tid}" />
+<input type="hidden" name="type" id="type" value="{$type}" />
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang评论信息}
+	</div>
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang评论标题}
+			</label>
+			<div class="layui-input-block">
+				<input type="text" name="title" id="title" value="{lang回复：}{$title_rs.title}" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang评论内容}
+			</label>
+			<div class="layui-input-block">
+				{$edit_content}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang附件图片}
+			</label>
+			<div class="layui-input-block">
+				{$res_content}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang评论星级}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="star" id="star_1" value="1" title="{lang一星}" />
+				<input type="radio" name="star" id="star_2" value="2" title="{lang二星}" />
+				<input type="radio" name="star" id="star_3" value="3" checked title="{lang三星}" />
+				<input type="radio" name="star" id="star_4" value="4" title="{lang四星}" />
+				<input type="radio" name="star" id="star_5" value="5" title="{lang五星}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang会员}
+			</label>
+			<div class="layui-input-inline auto">
+				{$edit_user}
+			</div>
+			<div class="layui-form-mid gray">
+				{lang指定会员评论，留空表示游客评论，不支持修改}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang审核状态}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="status" id="status_0" value="0" title="{lang未审核}" />
+				<input type="radio" name="status" id="status_1" value="1" checked title="{lang已审核}" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang推荐}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="vouch" id="vouch_0" value="0" checked title="{lang否}" />
+				<input type="radio" name="vouch" id="vouch_1" value="1" title="{lang是}" />
+			</div>
+		</div>
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+</form>
+
+<!-- include tpl=foot_lay -->

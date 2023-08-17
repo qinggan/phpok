@@ -391,10 +391,17 @@ class phpok_template
 			$tmp = explode(",",$lst[1]);
 			foreach($tmp as $key=>$value){
 				$tmp2 = explode(":",$value);
-				if(substr($tmp2[1],0,1) == '$'){
-					$tmp2[1] = '\'.'.$this->str_format($tmp2[1],false,false).'.\'';
+				if($tmp2[1]){
+					if(substr($tmp2[1],0,1) == '$'){
+						$tmp2[1] = '\'.'.$this->str_format($tmp2[1],false,false).'.\'';
+					}
+					$param[$tmp2[0]] = $tmp2[1];
+				}else{
+					if(substr($tmp2[0],0,1) == '$'){
+						$tmp2[0] = '\'.'.$this->str_format($tmp2[0],false,false).'.\'';
+					}
+					$param[] = $tmp2[0];
 				}
-				$param[$tmp2[0]] = '<span style="color:red">'.$tmp2[1].'</span>';
 			}
 		}
 		if($param){

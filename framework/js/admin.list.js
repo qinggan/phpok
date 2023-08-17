@@ -52,6 +52,18 @@
 		},
 		edit:function(id,pid,ptitle,type,width,height)
 		{
+			if(!id || id == 'undefined' || id == 0){
+				var ids = $.checkbox.join('.ids');
+				if(!ids){
+					$.dialog.tips(p_lang('未指定要操作的主题'));
+					return false;
+				}
+				if(ids.indexOf(',') >-1){
+					$.dialog.tips(p_lang('只能选择一个主题'));
+					return false;
+				}
+				id = ids;
+			}
 			var title = ptitle+"_"+p_lang('编辑')+'_#'+id;
 			if(type && type == 1){
 				if(!width || width == 'undefined'){
@@ -388,6 +400,18 @@
 		**/
 		reply_it:function(id)
 		{
+			if(!id || id == 'undefined' || id == 0){
+				var ids = $.checkbox.join('.ids');
+				if(!ids){
+					$.dialog.tips(p_lang('未指定要操作的主题'));
+					return false;
+				}
+				if(ids.indexOf(',') >-1){
+					$.dialog.tips(p_lang('只能选择一个主题'));
+					return false;
+				}
+				id = ids;
+			}
 			var title = p_lang('评论_#{id}',id);
 			var url = get_url('reply','list','tid='+id);
 			$.win(title,url);
@@ -525,11 +549,23 @@
 		},
 		preview:function(id,is_front)
 		{
+			if(!id || id == 'undefined' || id == 0){
+				var ids = $.checkbox.join('.ids');
+				if(!ids){
+					$.dialog.tips(p_lang('未指定要操作的主题'));
+					return false;
+				}
+				if(ids.indexOf(',') >-1){
+					$.dialog.tips(p_lang('只能选择一个主题'));
+					return false;
+				}
+				id = ids;
+			}
 			if(is_front && is_front == 1){
-				$.phpok.open(webroot+"?id="+id);
+				$.phpok.open(webroot+"?id="+id+"&me=1");
 				return false;
 			}
-			var h = $(window).height() - 80;
+			var h = $(window).height() - 120;
 			$.phpok.json(get_url('list','preview','id='+id),function(rs){
 				if(!rs.status){
 					$.dialog.alert(rs.info);
@@ -540,11 +576,11 @@
 				}
 				notice_obj = $.dialog({
 					title: '主题_#'+id,
-					width: '300px', // 必须指定一个像素宽度值或者百分比，否则浏览器窗口改变可能导致artDialog收缩
-					left:'100%',
+					width: '500px',
+					left:'80px',
 					top:'100%',
 					padding:0,
-					content: '<div style="overflow:auto;height:'+h+'px;">'+rs.info+'</div>'
+					content: '<div style="overflow-x:hidden;overflow-y:auto;height:'+h+'px;">'+rs.info+'</div>'
 				});
 			});
 		},

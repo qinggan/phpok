@@ -346,7 +346,7 @@ class _init_phpok
 		}
 		if($var && is_array($var)){
 			foreach($var as $key=>$value){
-				$info = str_replace(array('{'.$key.'}','['.$key.']'),'<b class=red>'.$value.'</b>',$info);
+				$info = str_replace(array('{'.$key.'}','['.$key.']'),'<b>'.$value.'</b>',$info);
 			}
 		}
 		return $info;
@@ -1593,9 +1593,14 @@ class _init_phpok
 				$p_rs = $this->tpl->val('rs');
 				if($p_rs){
 					$note = P_Lang('访问【{0}】',array($p_rs['title']));
+					$this->model('log')->save($note);
+				}
+			}else{
+				//仅限首页及列表页~其他页面不登记
+				if($this->func == 'index' || $this->func == 'list'){
+					$this->model('log')->save($note);
 				}
 			}
-			$this->model('log')->save($note);
 		}
 		$this->tpl->display($file,$type,$path_format);
 	}

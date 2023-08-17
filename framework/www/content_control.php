@@ -87,14 +87,15 @@ class content_control extends phpok_control
 			}
 		}
 		$me = $this->get('me','int');
+		if($me && !$this->session->val('user_id') && !$this->session->val('admin_id')){
+			$me = false;
+		}
 		$rs = $this->model('content')->get_one($id,($me ? false : true));
 		if(!$rs){
 			$this->error_404();
 		}
-		if(!$rs['status'] && $me){
-			if(!$this->session->val('user_id') || !$rs['user_id'] || $rs['user_id'] != $this->session->val('user_id')){
-				$this->error_404();
-			}
+		if(!$rs['status'] && $me && !$this->session->val('admin_id') && $rs['user_id'] != $this->session->val('user_id')){
+			$this->error_404();
 		}
 		if(!$rs['project_id']){
 			$this->error(P_Lang('未绑定项目'),$this->url,5);
@@ -108,6 +109,9 @@ class content_control extends phpok_control
 		}
 		if(!$this->model('popedom')->check($project['id'],$this->user_groupid,'read')){
 			$this->error(P_Lang('您没有阅读此文章权限'));
+		}
+		if(!$project['is_front'] && !$this->session->val('admin_id')){
+			$this->error_404(P_Lang('项目不存在或不可访问'));
 		}
 		$tplfile = array();
 		if($project['parent_id']){

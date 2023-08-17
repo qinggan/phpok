@@ -496,6 +496,8 @@ class list_control extends phpok_control
 				$condition .= " AND l.id>".intval($keywords['id'])." ";
 			}elseif($keywords['_id'] == 2){
 				$condition .= " AND l.id<".intval($keywords['id'])." ";
+			}elseif($keywords['_id'] == 3){
+				$condition .= " AND l.parent_id=".intval($keywords['id'])." ";
 			}else{
 				$condition .= " AND l.id=".intval($keywords['id'])." ";
 			}
@@ -649,29 +651,11 @@ class list_control extends phpok_control
 		$total = $this->model('list')->get_total($mid,$condition);
 		if($total > 0){
 			$rslist = $this->model('list')->get_list($mid,$condition,$offset,$psize,$orderby);
-			$sub_idlist = $rslist ? array_keys($rslist) : array();
-			$extcate_ids = $sub_idlist;
-			if($project_rs['subtopics']){
-				$sub_idstring = implode(",",$sub_idlist);
-				$condition = "l.site_id='".$site_id."' AND l.project_id='".$pid."' AND l.parent_id IN(".$sub_idstring.") ";
-				$sublist = $this->model('list')->get_list($mid,$condition,0,0,$orderby);
-				if($sublist){
-					foreach($sublist as $key=>$value){
-						$rslist[$value["parent_id"]]["sonlist"][$value["id"]] = $value;
-						$extcate_ids[] = $value['id'];
-					}
-				}
-			}
-			$extcate_ids = array_unique($extcate_ids);
+			$extcate_ids = $rslist ? array_keys($rslist) : array();
 			if($project_rs['cate'] && $project_rs['cate_multiple']){
 				$clist = $this->model('list')->catelist($extcate_ids);
 				$this->assign('clist',$clist);
 			}
-			if($project_rs['comment_status']){
-				$comments = $this->model('reply')->comment_stat($extcate_ids);
-				$this->assign('comments',$comments);
-			}
-			unset($sublist,$sub_idstring,$sub_idlist);
 			$string = 'home='.P_Lang('首页').'&prev='.P_Lang('上一页').'&next='.P_Lang('下一页').'&last='.P_Lang('尾页').'&half=5';
 			$string.= '&add='.P_Lang('数量：').'(total)/(psize)'.P_Lang('，').P_Lang('页码：').'(num)/(total_page)&always=1';
 			if(isset($_POST) && count($_POST)>0){
@@ -1953,99 +1937,6 @@ class list_control extends phpok_control
 		$this->success($content);
 	}
 
-	private function _attrlist($glist,$vals,$tid=0)
-	{
-		$tmplist = explode(",",$vals);
-		$tmps = array();
-		foreach($tmplist as $key=>$value){
-			$tmp = explode("_",$value);
-			if($tmp[0] && $glist[$tmp[0]] && $tmp[1] && intval($tmp[1])){
-				$tmps[] = intval($tmp[1]);
-			}
-		}
-		$vals = implode(",",$tmps);
-		$condition = "id IN(".$vals.")";
-		$vlist = $this->model('options')->values_list($condition,0,9999,'id');
-		if(!$vlist){
-			return false;
-		}
-		foreach($vlist as $key=>$value){
-			if($glist[$value['aid']]['optlist'][$value['id']]){
-				unset($glist[$value['aid']]['optlist'][$value['id']]);
-			}
-		}
-		$this->assign('glist',$glist);
-		$mlist = array();
-		foreach($vlist as $key=>$value){
-			if(!$glist[$value['aid']]){
-				continue;
-			}
-			if(!isset($mlist[$value['aid']])){
-				$mlist[$value['aid']] = $glist[$value['aid']];
-			}
-			$mlist[$value['aid']]['rslist'][$value['id']] = $value;
-		}
-		ksort($mlist);
-		$tmplist = array();
-		foreach($mlist as $key=>$value){
-			ksort($value['rslist']);
-			$tmplist[] = array_keys($value['rslist']);
-			$mlist[$key] = $value;
-		}
-		$res = array();
-		$idlist = $this->_cartesian($res,$tmplist);
-		if($idlist){
-			foreach($idlist as $key=>$value){
-				$tmp = explode(",",$value);
-				sort($tmp);
-				$idlist[$key] = implode(",",$tmp);
-			}
-		}
-
-		$alldata = array();
-		if($tid){
-			$alldata = $this->model('stock')->val_all($tid);
-		}
-		$rslist = array();
-		foreach($idlist as $key=>$value){
-			$tmp = explode(",",$value);
-			$rs = array();
-			$info = array();
-			foreach($tmp as $k=>$v){
-				$info[$vlist[$v]['aid']] = $vlist[$v]['title'];
-			}
-			$info_count = count($info);
-			$glist_count = count($glist);
-			for($i=$info_count;$i<$glist_count;$i++){
-				$info[] = '-';
-			}
-			if($alldata && $alldata[$value]){
-				$rs = $alldata[$value];
-			}
-			$rs['attr'] = $value;
-			$rs['info'] = $info;
-			$rslist[] = $rs;
-		}
-		$this->assign('rslist',$rslist);
-	}
-
-	private function _cartesian($res = array(), $arr = array())
-	{
-		if (empty($res)){
-			$res = (array)array_shift($arr);
-		}
-		if (empty($arr)){
-			return $res;
-		}
-		$current = array_shift($arr); # 接下来要参与计算的一组属性
-		$last = [];
-		foreach ($res as $row => $row_val) { # 循环上一次已经算出的集合
-			foreach ($current as $col => $col_val) {
-				$last[] = $row_val . ',' . $col_val;
-			}
-		}
-		return $this->_cartesian($last,$arr); # 递归处理, 直到$arr滚到最后一组属性
-	}
 
 
 	public function comment_f()
@@ -2311,6 +2202,100 @@ class list_control extends phpok_control
 		$this->success();
 	}
 
+	private function _attrlist($glist,$vals,$tid=0)
+	{
+		$tmplist = explode(",",$vals);
+		$tmps = array();
+		foreach($tmplist as $key=>$value){
+			$tmp = explode("_",$value);
+			if($tmp[0] && $glist[$tmp[0]] && $tmp[1] && intval($tmp[1])){
+				$tmps[] = intval($tmp[1]);
+			}
+		}
+		$vals = implode(",",$tmps);
+		$condition = "id IN(".$vals.")";
+		$vlist = $this->model('options')->values_list($condition,0,9999,'id');
+		if(!$vlist){
+			return false;
+		}
+		foreach($vlist as $key=>$value){
+			if($glist[$value['aid']]['optlist'][$value['id']]){
+				unset($glist[$value['aid']]['optlist'][$value['id']]);
+			}
+		}
+		$this->assign('glist',$glist);
+		$mlist = array();
+		foreach($vlist as $key=>$value){
+			if(!$glist[$value['aid']]){
+				continue;
+			}
+			if(!isset($mlist[$value['aid']])){
+				$mlist[$value['aid']] = $glist[$value['aid']];
+			}
+			$mlist[$value['aid']]['rslist'][$value['id']] = $value;
+		}
+		ksort($mlist);
+		$tmplist = array();
+		foreach($mlist as $key=>$value){
+			ksort($value['rslist']);
+			$tmplist[] = array_keys($value['rslist']);
+			$mlist[$key] = $value;
+		}
+		$res = array();
+		$idlist = $this->_cartesian($res,$tmplist);
+		if($idlist){
+			foreach($idlist as $key=>$value){
+				$tmp = explode(",",$value);
+				sort($tmp);
+				$idlist[$key] = implode(",",$tmp);
+			}
+		}
+
+		$alldata = array();
+		if($tid){
+			$alldata = $this->model('stock')->val_all($tid);
+		}
+		$rslist = array();
+		foreach($idlist as $key=>$value){
+			$tmp = explode(",",$value);
+			$rs = array();
+			$info = array();
+			foreach($tmp as $k=>$v){
+				$info[$vlist[$v]['aid']] = $vlist[$v]['title'];
+			}
+			$info_count = count($info);
+			$glist_count = count($glist);
+			for($i=$info_count;$i<$glist_count;$i++){
+				$info[] = '-';
+			}
+			if($alldata && $alldata[$value]){
+				$rs = $alldata[$value];
+			}
+			$rs['attr'] = $value;
+			$rs['info'] = $info;
+			$rslist[] = $rs;
+		}
+		$this->assign('rslist',$rslist);
+	}
+
+	private function _cartesian($res = array(), $arr = array())
+	{
+		if (empty($res)){
+			$res = (array)array_shift($arr);
+		}
+		if (empty($arr)){
+			return $res;
+		}
+		$current = array_shift($arr); # 接下来要参与计算的一组属性
+		$last = [];
+		foreach ($res as $row => $row_val) { # 循环上一次已经算出的集合
+			foreach ($current as $col => $col_val) {
+				$last[] = $row_val . ',' . $col_val;
+			}
+		}
+		return $this->_cartesian($last,$arr); # 递归处理, 直到$arr滚到最后一组属性
+	}
+
 	private function mainlist($project)
 	{
 		$data = array();
@@ -2346,4 +2331,6 @@ class list_control extends phpok_control
 		$data['is_virtual'] = P_Lang('是否虚拟');
 		return $data;
 	}
+
+
 }

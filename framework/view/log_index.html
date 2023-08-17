@@ -1,4 +1,14 @@
 <!-- include tpl=head_lay -->
+<style type="text/css">
+.log-title{
+	max-width:500px;
+	word-wrap:break-word;
+	word-break:break-all;
+}
+.log-title b{
+	color:red;
+}
+</style>
 <div class="layui-card">
 	<div class="layui-card-header">
 		<form method="post" class="layui-form" action="{url ctrl=log/}">
@@ -31,18 +41,16 @@
 			<!-- loop from=$rslist key=$key value=$value id=$tmpid  -->
 			<tr data-index="0" id="list_{$value.id}">
 				<td>{$tmpid.num}</td>
-				<td style="max-width:500px;word-wrap:break-word;word-break:break-all;">
+				<td class="log-title">
 					<!-- if $value.note --><div>{$value.note}</div><!-- /if -->
 					<div class="gray">{$value.url}</div>
 				</td>
 				<td>{$value.ip}</td>
 				<td data-field="title">
-					<div class="layui-table-cell laytable-cell-1-title">
 						<!-- if $value.account --><span class="red">{$value.account}</span><!-- /if -->
 						<!-- if $value.account && $value.user --> / <!-- /if -->
 						<!-- if $value.user --><span class="blue">{$value.user}</span><!-- /if -->
 						<!-- if !$value.admin_id && !$value.user_id -->{lang访客/系统}<!-- /if -->
-					</div>
 				</td>
 				<td>
 					<!-- if $value.appid == 'admin' -->后台<!-- elseif $value.appid == 'api' -->接口<!-- else -->前台<!-- /if -->

@@ -1,14 +1,27 @@
-<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-<div class="layui-card">
-	<div class="layui-card-body">
-		<div class="layui-row">
-			<div class="layui-col-xs12" style="font-weight:bold;{$value.style}">
-		    	{$value.title}：<i style="color:darkred;">&#123$rs.{$value.field}&#125</i>
-			</div>
-			<div class="layui-col-xs12">
-				<div style="width:100%;overflow:auto;max-height:200px;">{$value.content}</div>
-			</div>
-		</div>		
-	</div>
-</div>
-<!-- /loop -->
+<style type="text/css">
+.ellipsis-line {
+    padding: 5px;
+    max-width: 450px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+</style>
+<table class="layui-table" style="margin-top:0;margin-bottom:0;">
+	<tr>
+		<th>名称</th>
+		<th>列表调用</th>
+		<th>详细调用</th>
+	</tr>
+	<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
+	<tr>
+		<td>{$value.title}</td>
+		<td>&#123$value.{$value.field}&#125</td>
+		<td>&#123$rs.{$value.field}&#125</td>
+	</tr>
+	<tr>
+		<td colspan="3"><div class="ellipsis-line">{$value.content ? $value.content : '-'}</div></td>
+	</tr>
+	<!-- /loop -->
+</table>
+

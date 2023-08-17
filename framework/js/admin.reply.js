@@ -155,6 +155,7 @@
 				'success':function(rs){
 					if(rs.status){
 						tip.content(p_lang('操作成功')).time(1.5);
+						$.admin.close(get_url('reply','list'));
 						return true;
 					}
 					tip.content(rs.info).time(2);

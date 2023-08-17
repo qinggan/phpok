@@ -129,9 +129,12 @@ function list_content_search(obj)
 				<div class="layui-row">
 					<div class="layui-col-xs6">
 				    	<select name="keywords[_id]">
-							<option value="0">{langID} =</option>
-							<option value="1">{langID} &gt;</option>
-							<option value="2">{langID} &lt;</option>
+							<option value="0"{if !$keywords._id} selected{/if}>{langID} =</option>
+							<option value="1"{if $keywords._id == 1} selected{/if}>{langID} &gt;</option>
+							<option value="2"{if $keywords._id == 2} selected{/if}>{langID} &lt;</option>
+							<!-- if $rs.subtopics -->
+							<option value="3"{if $keywords._id == 3} selected{/if}>{lang父级ID}</option>
+							<!-- /if -->
 						</select>
 					</div>
 					<div class="layui-col-xs6">
@@ -162,7 +165,25 @@ function list_content_search(obj)
 <!-- /if -->
 <div class="layui-card" phpok-id="JS_LIST">
 	<div class="layui-card-header">
-		{lang列表}
+		<div class="layui-btn-group" name="list-content-btns" id="btn_{$value.id}" data-id="{$value.id}">
+			<input type="button" value="{lang查看}" onclick="$.admin_list.preview(0,'{$rs.is_front}')" class="layui-btn layui-btn-sm layui-btn-normal" />
+			<!-- if $popedom.modify -->
+			<input type="button" value="{lang编辑}" onclick="$.phpok_list.edit(0,'{$pid}','{$rs.nick_title ? $rs.nick_title : $rs.title}','{$rs.admin-post-style}','{$rs.admin-post-width}','{$rs.admin-post-height}')" class="layui-btn layui-btn-sm" />
+			<!-- /if -->
+			<!-- if $popedom.comment && $rs.comment_status -->
+			<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_list.reply_it(0)">
+				{lang评论}
+			</button>
+			<!-- /if -->
+			<!-- if $rs.subtopics && $popedom.add && $keywords._id != 3 -->
+			<button type="button" onclick="$.win('{lang加子主题}_{$rs.nick_title ? $rs.nick_title : $rs.title}','{url ctrl=list func=edit pid=$rs.id/}')" title="{lang加子主题}" class="layui-btn layui-btn-sm">
+				加子主题
+			</button>
+			<!-- /if -->
+			<!-- if $popedom.delete -->
+			<input type="button" value="{lang删除}" onclick="$.admin_list.content_del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+			<!-- /if -->
+		</div>
 		<span id="AP_ACTION_HTML"></span>
 		<div class="layui-btn-group fr">
 			<!-- if $popedom.add -->
@@ -195,12 +216,9 @@ function list_content_search(obj)
 			<!-- loop from=$layout key=$key value=$value -->
 			<th lay-data="{field:'{$key}'{if $value.width},width:{$value.width}{/if}{if $popedom.modify},edit:{$value.edit}{/if},sort:{$value.sort},align:'{$value.align}',totalRow:{$value.stat}{if $value.stat_title},totalRowText:'{$value.stat_title}'{/if}}">{$value.title}</th>
 			<!-- /loop -->
-			<th lay-data="{field:'_action', width:{if $rs.comment_status && $rs.subtopics}240{elseif !$rs.comment_status && $rs.subtopics}210{elseif $rs.comment_status && !$rs.subtopics}180{else}150{/if},align:'left',fixed:'right',unresize:true}">{lang操作}</th>
 		</tr>
 		</thead>
-		<!-- php:$tmp_m = 0 -->
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-		<!-- php:$tmp_m++ -->
 		<tr id="list_{$value.id}" class="layui-tips" title="{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}: {$value.title}&#10;{lang日期}: {func date 'Y-m-d H:i:s' $value.dateline}">
 			<td class="center"><input type="checkbox" class="ids" name="ids[]" id="id_{$value.id}" value="{$value.id}" /></td>
 			<td><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.status}onclick="$.admin_list.status({$value.id},this)"{else} style="cursor: default;"{/if} data-value="{$value.status}"></span></td>
@@ -212,7 +230,7 @@ function list_content_search(obj)
 					<a href="{url ctrl=list func=action id=$pid/}&keywords[attr]={$attr_v}" class="red size10">[{$attrlist[$attr_v]}]</a> 
 					<!-- /loop -->
 				<!-- /if -->
-				{$value.title}
+				<label for="id_{$value.id}">{$value.title}</label>
 				<!-- if $value.identifier -->
 				<span class="gray i">（{$value.identifier}）</span>
 				<!-- /if -->
@@ -266,116 +284,7 @@ function list_content_search(obj)
 					<!-- /if -->
 				<!-- /if -->
 			<!-- /loop -->
-			<td>
-				<div class="layui-btn-group" name="list-content-btns" id="btn_{$value.id}" data-id="{$value.id}">
-					<input type="button" value="{lang查看}" onclick="$.admin_list.preview('{$value.id}','{$rs.is_front}')" class="layui-btn layui-btn-xs layui-btn-normal" />
-					<!-- if $popedom.modify -->
-					<input type="button" value="{lang编辑}" onclick="$.phpok_list.edit('{$value.id}','{$pid}','{$rs.nick_title ? $rs.nick_title : $rs.title}','{$rs.admin-post-style}','{$rs.admin-post-width}','{$rs.admin-post-height}')" class="layui-btn layui-btn-xs" />
-					<!-- /if -->
-					<!-- if $popedom.delete -->
-					<input type="button" value="{lang删除}" onclick="$.admin_list.content_del('{$value.id}')" class="layui-btn layui-btn-xs layui-btn-danger" />
-					<!-- /if -->
-					<!-- if $popedom.comment && ($rs.comment_status || $comments[$value.id]) -->
-					<button type="button" class="layui-btn layui-btn-xs" onclick="$.admin_list.reply_it('{$value.id}')">
-						{lang评论}
-						<!-- if $comments[$value.id][uncheck] --><span class="layui-badge-dot layui-bg-orange"></span><!-- /if -->
-					</button>
-					<!-- /if -->
-					<!-- if $rs.subtopics && !$value.parent_id && $popedom.add -->
-					<button type="button" onclick="$.win('{lang加子主题}_{$rs.nick_title ? $rs.nick_title : $rs.title}','{url ctrl=list func=edit parent_id=$value.id pid=$value.project_id/}')" title="{lang加子主题}" class="layui-btn layui-btn-xs"><i class="layui-icon">&#xe624;</i></button>
-					<!-- /if -->
-				</div>
-			</td>
 		</tr>
-			<!-- loop from=$value.sonlist key=$kk value=$vv -->
-			<!-- php:$tmp_m++ -->
-			<tr id="list_{$vv.id}" class="layui-tips" title="{$rs.alias_title ? $rs.alias_title : P_Lang('主题')}: {$vv.title}&#10;{lang日期}: {func date 'Y-m-d H:i:s' $vv.dateline}">
-				<td class="center"><input type="checkbox" class="ids" name="ids[]" id="id_{$vv.id}" value="{$vv.id}" /></td>
-				<td><span class="status{$vv.status}" id="status_{$vv.id}" {if $popedom.status}onclick="$.admin_list.status({$vv.id},this)"{else} style="cursor: default;"{/if} value="{$vv.status}"></span></td>
-				<td class="center">{$vv.id}</td>
-				<td><label for="id_{$vv.id}">
-					&nbsp; &nbsp; ├─ <a href="{$sys.url}?id={$vv.identifier ? $vv.identifier : $vv.id}" target="_blank" title="{lang前台访问}" style="{$vv.style}">{$vv.title}</a>
-					<!-- if $vv.attr -->
-						<!-- php:$attr = explode(",",$vv['attr']) -->
-						<!-- loop from=$attr key=$attr_k value=$attr_v -->
-						<a href="{url ctrl=list func=action id=$pid/}&keywords[attr]={$attr_v}" class="gray">[{$attrlist[$attr_v]}]</a>
-						<!-- /loop -->
-					<!-- /if -->
-					<!-- if $vv.identifier -->
-					<span class="gray i">（{$vv.identifier}）</span>
-					<!-- /if -->
-					<!-- if $rs.is_biz && $vv.price>0 -->
-					<span class="red i"> {func price_format $vv.price $vv.currency_id}</span>
-					<!-- /if -->
-					<!-- if $vv.hidden -->
-					<small class="red i">(隐藏)</small>
-					<!-- /if -->
-					<!-- if $clist && $clist[$vv.id] -->
-					<div class="extcate">
-						分类：
-						<!-- loop from=$clist[$vv.id] key=$ck value=$cv -->
-						<a href="{url ctrl=list func=action id=$pid/}&keywords[cateid]={$cv}" class="i">{$cateall[$cv]}</a> 
-						<!-- /loop -->
-					</div>
-					<!-- /if -->
-					
-				</label>
-				</td>
-				<!-- if $rs.is_biz -->
-				<td><!-- if $vv.price -->{func price_format $value.price $value.currency_id}<!-- /if --></td>
-				<!-- /if -->
-				<!-- if $rs.cate -->
-				<td class="gray center">
-					<!-- if $vv.cate_id && is_array($vv.cate_id) -->
-					<a href="{url ctrl=list func=action id=$pid/}&keywords[cateid]={$vv.cate_id.id}">{$vv.cate_id.title}</a>
-					<!-- else -->
-					{lang未设分类}
-					<!-- /if -->
-				</td>
-				<!-- /if -->
-				<!-- loop from=$layout key=$k value=$v -->
-					<!-- if $k == "dateline" -->
-					<td class="center">{echo date("Y-m-d H:i",$vv[dateline])}</td>
-					<!-- elseif $k == "hits" -->
-					<td class="center">{$vv.hits}</td>
-					<!-- elseif $k == 'sort' -->
-					<td class="center">{$vv.sort}</td>
-					<!-- elseif $k == 'user_id' -->
-					<td>{$vv._user ? $vv._user : '-'}</td>
-					<!-- else -->
-						<!-- if is_array($vv[$k])  -->
-							<!-- php:$c_list = $vv[$k]['_admin'] -->
-							<!-- if $c_list.type == 'pic' -->
-							<td><img src="{$c_list.info}" width="28px" height="28px" border="0" class="hand" onclick="preview_attr('{$c_list.id}')" style="border:1px solid #dedede;padding:1px;" /></td>
-							<!-- else -->
-								<!-- if is_array($c_list.info) -->
-								<td>{echo implode(' / ',$c_list.info)}</td>
-								<!-- else -->
-								<td>{$c_list.info ? $c_list.info : '-'}</td>
-								<!-- /if -->
-							<!-- /if -->
-						<!-- else -->
-						<td>{$vv[$k] ? $vv[$k] : '-'}</td>
-						<!-- /if -->
-					<!-- /if -->
-				<!-- /loop -->
-				<td>
-					<div class="layui-btn-group" name="list-content-btns" id="btn_{$vv.id}" data-id="{$vv.id}">
-						<input type="button" value="{lang查看}" onclick="$.admin_list.preview('{$vv.id}','{$rs.is_front}')" class="layui-btn layui-btn-xs layui-btn-normal" />
-						<!-- if $popedom.modify -->
-						<input type="button" value="{lang编辑}" onclick="$.phpok_list.edit('{$vv.id}','{$pid}','{$rs.nick_title ? $rs.nick_title : $rs.title}','{$rs.admin-post-style}','{$rs.admin-post-width}','{$rs.admin-post-height}')" class="layui-btn layui-btn-xs" />
-						<!-- /if -->
-						<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="$.admin_list.content_del('{$vv.id}')" class="layui-btn layui-btn-xs layui-btn-danger" /><!-- /if -->
-						<!-- if $popedom.comment && ($rs.comment_status || $comments[$vv.id]) -->
-						<button type="button"class="layui-btn layui-btn-xs" onclick="$.admin_list.reply_it('{$vv.id}')">
-							{lang评论}
-							<!-- if $comments[$vv.id][uncheck] --><span class="layui-badge layui-bg-orange">{$comments[$vv.id][uncheck]}</span><!-- /if -->
-						</button>
-						<!-- /if -->
-					</div>
-				</td>
-			</tr>
-			<!-- /loop -->
 		<!-- /loop -->
 		</table>
 		<div style="margin-top:10px;" phpok-id="JS_BATCH">

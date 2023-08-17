@@ -35,7 +35,7 @@ class reply_control extends phpok_control
 		}
 		$pageurl = $this->url("reply");
 		$status = $this->get("status","int");
-		$condition = "r.admin_id=0 ";
+		$condition = "(r.admin_id=0 OR r.admin_id>0 AND r.parent_id=0) ";
 		if($status){
 			$n_status = $status == 1 ? "1" : "0";
 			$condition .= "AND r.status=".$n_status." ";
@@ -55,7 +55,7 @@ class reply_control extends phpok_control
 		}
 		$psize = $this->config["psize"] ? $this->config["psize"] : 30;
 		$total = $this->model('reply')->get_total($condition);
-		if($total>0){
+		if($total){
 			$offset = ($pageid-1) * $psize;
 			$rslist = $this->model('reply')->get_all($condition,$offset,$psize);
 			if(!isset($rslist)){
@@ -120,16 +120,20 @@ class reply_control extends phpok_control
 			$this->assign("keywords",$keywords);
 		}
 		$pageid = $this->get($this->config["pageid"],"int");
-		if(!$pageid) $pageid = 1;
+		if(!$pageid){
+			$pageid = 1;
+		}
 		$psize = $this->config["psize"] ? $this->config["psize"] : 30;
 		$total = $this->model('reply')->get_total($condition);
 		if(!$total){
-			$this->error(P_Lang('没有评论内容'));
+			$this->model('log')->add(P_Lang('访问评论列表 #{0},【{1}】',array($tid,$rs['title'])));
+			$this->view('list_comment');
 		}
 		$offset = ($pageid-1) * $psize;
 		$rslist = $this->model('reply')->get_list($condition,$offset,$psize,"id DESC");
 		if(!$rslist){
-			$this->error(P_Lang('没有找到评论内容'));
+			$this->model('log')->add(P_Lang('访问评论列表 #{0},【{1}】',array($tid,$rs['title'])));
+			$this->view('list_comment');
 		}
 		$uidlist = array();
 		$ids = array();
@@ -149,6 +153,7 @@ class reply_control extends phpok_control
 				$rslist[$key] = $value;
 			}
 		}
+
 		$condition = "tid='".$tid."' AND parent_id IN(".implode(",",$ids).")";
 		$sublist = $this->model('reply')->get_list($condition,0,0);
 		if($sublist){
@@ -189,6 +194,7 @@ class reply_control extends phpok_control
 			$this->assign("pagelist",$pagelist);
 		}
 		$this->assign("total",$total);
+		$this->model('log')->add(P_Lang('访问评论列表 #{0}，【{1}】，第 {2} 页',array($tid,$rs['title'],$pid)));
 		$this->view('list_comment');
 	}
 
@@ -273,6 +279,35 @@ class reply_control extends phpok_control
 	}
 
 	/**
+	 * 新增评论
+	 * @参数 tid 主题ID
+	 * @返回 页面
+	**/
+	public function add_f()
+	{
+		if(!$this->popedom["modify"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$tid = $this->get('tid','int');
+		$type = $this->get('type');
+		if(!$tid || !$type){
+			$this->error(P_Lang('未指定ID'));
+		}
+		if($type != 'title' && $type != 'order'){
+			$this->error(P_Lang('不支持此功能，请检查'));
+		}
+		$title_rs = $this->model('list')->get_one($tid);
+		$this->assign("title_rs",$title_rs);
+		$this->assign('tid',$tid);
+		$this->assign('type',$type);
+		$edit_content = form_edit('content','','editor','width=680&height=180');
+		$this->assign('edit_content',$edit_content);
+		$this->assign('res_content',form_edit('pictures','','upload','is_multiple=1'));
+		$this->assign('edit_user',form_edit('user_id','','user'));
+		$this->view("reply_add");
+	}
+
+	/**
 	 * 编辑评论内容
 	 * @参数 id 评论ID
 	**/
@@ -302,7 +337,7 @@ class reply_control extends phpok_control
 	}
 
 	/**
-	 * 保存编辑的评论
+	 * 保存评论
 	 * @参数 id 评论ID
 	 * @参数 star 星数，最多5，最少为0
 	 * @参数 content 评论内容
@@ -310,20 +345,40 @@ class reply_control extends phpok_control
 	**/
 	public function edit_save_f()
 	{
-		$id = $this->get('id','int');
-		if(!$id){
-			$this->error(P_Lang('未指定ID'));
+		if(!$this->popedom["modify"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
+		$id = $this->get('id','int');
 		$array = array();
 		$array["star"] = $this->get("star","int");
 		$array["content"] = $this->get("content",'html');
 		$array["status"] = $this->get("status","int");
 		$array['res'] = $this->get('pictures');
 		$array['vouch'] = $this->get('vouch','int');
-		$this->model('reply')->save($array,$id);
-		$rs = $this->model('reply')->get_one($id);
-		if($array["status"] && $rs['tid'] && $rs['uid']){
-			$this->model('wealth')->add_integral($rs['tid'],$rs['uid'],'comment',P_Lang('管理员编辑评论#{id}',array('id'=>$rs['id'])));
+		if($id){
+			$rs = $this->model('reply')->get_one($id);
+			if(!$rs){
+				$this->error(P_Lang('数据记录不存在'));
+			}
+			$this->model('reply')->save($array,$id);
+			$this->model('log')->add(P_Lang('修改评论，评论ID #{0}_{1}',array($id,$rs['title'])));
+			if($array["status"] && $rs['tid'] && $rs['uid'] && !$rs['status']){
+				$this->model('wealth')->add_integral($rs['tid'],$rs['uid'],'comment',P_Lang('管理员编辑评论#{id}',array('id'=>$rs['id'])));
+				$this->model('log')->add(P_Lang('审核评论ID #{0} 通过，增加积分操作',$id));
+			}
+		}else{
+			$tid = $this->get('tid','int');
+			if(!$tid){
+				$this->error(P_Lang('未指定ID'));
+			}
+			$array['tid'] = $tid;
+			$array['vtype'] = $this->get('type');
+			$array['title'] = $this->get('title');
+			$array['uid'] = $this->get('user_id','int');
+			$array['admin_id'] = $this->session->val('admin_id');
+			$array['addtime'] = $this->time;
+			$this->model('reply')->save($array);
+			$this->model('log')->add(P_Lang('新增评论，主题ID #{0}_{1}',array($tid,$array['title'])));
 		}
 		$this->success();
 	}

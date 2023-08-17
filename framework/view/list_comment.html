@@ -1,6 +1,14 @@
 <!-- include tpl=head_lay -->
 <script type="text/javascript" src="{url ctrl=js func=ext js=admin.reply.js/}"></script>
 <div class="layui-card">
+	<div class="layui-card-header">
+		{lang评论信息}
+		<div class="fr">
+			<button type="button" onclick="$.win('{lang新增评论#[0]|$rs.id}','{url ctrl=reply func=add tid=$rs.id type=title /}')" class="layui-btn layui-btn-sm">
+				{lang新增评论}
+			</button>
+		</div>
+	</div>
 	<div class="layui-card-body">
 		<table class="layui-table">
 		<thead>
@@ -62,17 +70,10 @@
 			</td>
 			<td>{func date 'Y-m-d H:i:s' $value.addtime}</td>
 			<td>
-				<div>
 				<div class="layui-btn-group">
-					<input type="button" value="{lang管理员回复}" onclick="$.admin_reply.adm({$value.id})" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang用户回复}" onclick="$.admin_reply.sublist({$value.id})" class="layui-btn layui-btn-sm" />
-				</div>
-				</div>
-				<div style="margin-top:10px;">
-				<div class="layui-btn-group">
-					<input type="button" value="{lang修改}" onclick="$.admin_reply.edit({$value.id})" class="layui-btn layui-btn-sm" />
-					<input type="button" value="{lang删除}" onclick="$.admin_reply.del({$value.id})" class="layui-btn layui-btn-sm layui-btn-danger" />
-				</div>
+					<input type="button" value="{lang管理员回复}" onclick="$.admin_reply.adm({$value.id})" class="layui-btn layui-btn-xs" />
+					<input type="button" value="{lang修改}" onclick="$.admin_reply.edit({$value.id})" class="layui-btn layui-btn-xs" />
+					<input type="button" value="{lang删除}" onclick="$.admin_reply.del({$value.id})" class="layui-btn layui-btn-xs layui-btn-danger" />
 				</div>
 			</td>
 		</tr>
