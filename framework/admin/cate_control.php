@@ -317,6 +317,7 @@ class cate_control extends phpok_control
 				$this->error(P_Lang('分类添加失败，请检查'),$error_url);
 			}
 			ext_save("admin-add-cate",true,"cate-".$id);
+			$this->model('log')->add(P_Lang('添加分类 #{0}，【{1}】',array($id,$array['title'])));
 		}else{
 			$rs = $this->model('cate')->get_one($id);
 			if($parent_id == $id){
@@ -341,6 +342,7 @@ class cate_control extends phpok_control
 				$this->error(P_Lang('分类更新失败'),$error_url);
 			}
 			ext_save("cate-".$id);
+			$this->model('log')->add(P_Lang('修改分类 #{0}，【{1}】',array($id,$array['title'])));
 		}
 		$this->_save_tag($id);
 		if(!$parent_id && $id){
