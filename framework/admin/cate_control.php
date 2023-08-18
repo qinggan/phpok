@@ -112,6 +112,7 @@ class cate_control extends phpok_control
 			}
 			$parent_id = $rs['parent_id'];
 			$this->assign('parent_id',$rs['parent_id']);
+			$this->model('log')->add(P_Lang('访问【编辑分类信息】#{0}',$id));
 		}else{
 			if(!$this->popedom["add"]){
 				$this->error(P_Lang('您没有权限执行此操作'));
@@ -152,6 +153,7 @@ class cate_control extends phpok_control
 					}
 				}
 			}
+			$this->model('log')->add(P_Lang('访问【添加分类】'));
 		}
 		$used_fields = array();
 		if($extlist){
@@ -214,18 +216,8 @@ class cate_control extends phpok_control
 		$parentlist = $this->model('cate')->get_all($this->session->val('admin_site_id'));
 		$parentlist = $this->model('cate')->cate_option_list($parentlist);
 		$this->assign("parentlist",$parentlist);
+		$this->model('log')->add(P_Lang('访问【批量添加分类】'));
 		$this->view("cate_set_more");
-	}
-
-	/**
-	 * 添加根分类
-	**/
-	public function add_f()
-	{
-		if(!$this->popedom["add"]){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$this->view("cate_open_add");
 	}
 
 	/**
@@ -243,6 +235,8 @@ class cate_control extends phpok_control
 		$rs = $this->model('cate')->cate_info($id,false);
 		$content = $rs['status'] ? 0 : 1;
 		$this->model('cate')->save(array('status'=>$content),$id);
+		$tip = $content ? P_Lang('启用') : P_Lang('禁用');
+		$this->model('log')->add(P_Lang('更改分类 #{0}，状态为【{1}】',array($id,$tip)));
 		$this->success($content);
 	}
 
@@ -268,44 +262,9 @@ class cate_control extends phpok_control
 			}
 			$this->model('cate')->save(array('status'=>$status),$value);
 		}
+		$tip = $status ? P_Lang('启用') : P_Lang('禁用');
+		$this->model('log')->add(P_Lang('批量更改分类 #{0}，状态为【{1}】',array($ids,$tip)));
 		$this->success();
-	}
-
-	/**
-	 * 弹窗分类信息保存
-	**/
-	public function open_save_f()
-	{
-		if(!$this->popedom['add']){
-			$this->json(P_Lang('您没有权限执行此操作'));
-		}
-		$title = $this->get("title");
-		$identifier = $this->get("identifier");
-		if(!$title || !$identifier) $this->json("信息不完整");
-		$identifier2 = strtolower($identifier);
-		//字符串是否符合条件
-		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$identifier2)){
-			$this->json(P_Lang('标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头'));
-		}
-		$check = $this->model('id')->check_id($identifier2,$this->session->val('admin_site_id'));
-		if($check){
-			$this->json(P_Lang('标识已被使用'));
-		}
-		$array = array();
-		$array["site_id"] = $this->session->val('admin_site_id');
-		$array["parent_id"] = 0;
-		$array["title"] = $title;
-		$array["taxis"] = $this->model('cate')->cate_next_taxis(0);
-		$array["psize"] = "";
-		$array["tpl_list"] = "";
-		$array["tpl_content"] = "";
-		$array["status"] = 1;
-		$array["identifier"] = $identifier;
-		$id = $this->model('cate')->save($array);
-		if(!$id){
-			$this->json(P_Lang('分类添加失败，请检查！'));
-		}
-		$this->json(P_Lang('分类添加成功'),true);
 	}
 
 	/**
@@ -483,23 +442,6 @@ class cate_control extends phpok_control
 		$this->success(P_Lang('分类信息配置成功'));
 	}
 
-	private function _save_tag($id)
-	{
-		$rs = $this->model('cate')->cate_info($id,false);
-		$this->model('tag')->update_tag($rs['tag'],'c'.$id);
-		return true;
-	}
-
-	function son_cate_list(&$son_cate_list,$id)
-	{
-		$list = $this->model('cate')->get_son_id_list($id);
-		if($list){
-			foreach($list as $key=>$value){
-				$son_cate_list[] = $value;
-			}
-			$this->son_cate_list($son_cate_list,implode(",",$list));
-		}
-	}
 
 	/**
 	 * 删除分类操作
@@ -636,5 +578,23 @@ class cate_control extends phpok_control
 		}
 		$this->model('cate')->update_taxis($id,$taxis);
 		$this->json(true);
+	}
+
+	private function son_cate_list(&$son_cate_list,$id)
+	{
+		$list = $this->model('cate')->get_son_id_list($id);
+		if($list){
+			foreach($list as $key=>$value){
+				$son_cate_list[] = $value;
+			}
+			$this->son_cate_list($son_cate_list,implode(",",$list));
+		}
+	}
+
+	private function _save_tag($id)
+	{
+		$rs = $this->model('cate')->cate_info($id,false);
+		$this->model('tag')->update_tag($rs['tag'],'c'.$id);
+		return true;
 	}
 }

@@ -117,5 +117,8 @@ $(document).ready(function(){
 		form.on('select(module)',function(data){
 			$.admin_project.module_change(data.elem);
 		});
+		form.on('select(cate-select)',function(data){
+			update_show_select(data.value);
+		})
 	});
 });

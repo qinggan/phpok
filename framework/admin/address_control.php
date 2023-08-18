@@ -92,6 +92,7 @@ class address_control extends phpok_control
 			$types = 'shipping';
 		}
 		$this->assign('types',$types);
+		$this->model('log')->add(P_Lang('弹窗查看用户的地址库信息'));
 		$this->view($tpl);
 	}
 
@@ -105,6 +106,7 @@ class address_control extends phpok_control
 		if(!$rs){
 			$this->error(P_Lang('地址信息不存在'));
 		}
+		$this->model('log')->add(P_Lang('查看地址信息#{0}',$id));
 		$this->success($rs);
 	}
 
@@ -169,7 +171,7 @@ class address_control extends phpok_control
 		$this->model('user')->address_save($array,$id);
 		if($id){
 			$tip = P_Lang('地址信息编辑成功');
-			$this->model('log')->add(P_Lang('编辑地址信息{0}',$id));
+			$this->model('log')->add(P_Lang('编辑地址信息，ID#{0}',$id));
 		}else{
 			$tip = P_Lang('地址信息添加成功');
 			$this->model('log')->add(P_Lang('添加地址信息'));
@@ -192,10 +194,12 @@ class address_control extends phpok_control
 			$rs = $this->model('user')->address_one($id);
 			$this->assign('rs',$rs);
 			$this->assign('id',$id);
+			$this->model('log')->add(P_Lang('编辑地址 #{0}',$id));
 		}else{
 			if(!$this->popedom['add']){
 				$this->error(P_Lang('您没有添加地址库权限'));
 			}
+			$this->model('log')->add(P_Lang('添加地址'));
 		}
 		$this->view("address_set");
 	}

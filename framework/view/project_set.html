@@ -252,18 +252,19 @@
 							</div>
 							<div class="layui-form-item">
 								<label class="layui-form-label">{lang关联根分类}</label>
-								<div class="layui-input-inline auto">
-									<select id="cate" name="cate" onchange="update_show_select(this.value)" lay-ignore>
-									<option value="0">{lang不关联分类}</option>
-									<!-- loop from=$catelist key=$key value=$value id=catelist_id -->
-									<option value="{$value.id}"{if $value.id == $rs.cate} selected{/if}>{$value.title}</option>
-									<!-- /loop -->
+								<div class="layui-input-inline">
+									<select id="cate" name="cate" lay-filter="cate-select">
+										<option value="0">{lang不关联分类}</option>
+										<!-- loop from=$catelist key=$key value=$value id=catelist_id -->
+										<option value="{$value.id}"{if $value.id == $rs.cate} selected{/if}>{$value.title}</option>
+										<!-- /loop -->
 									</select>
-									<input type="button" value="{lang添加根分类}" onclick="cate_add(this.value)" class="phpok-btn" />
+								</div>
+								<div class="layui-input-inline auto">
+									<input type="button" value="{lang添加根分类}" onclick="$.win('{lang添加根分类}','{url ctrl=cate func=set/}')" class="layui-btn" />
 								</div>
 								<div class="layui-form-mid">{lang启用此项后，添加内容时，需要选对相对应的分类，且不能为空}</div>
 							</div>
-
 							<div id="cate_multiple_set"{if !$rs.cate} class="hide"{/if}>
 								<div class="layui-form-item">
 									<label class="layui-form-label">{lang分类选项}</label>
