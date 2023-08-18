@@ -153,50 +153,6 @@
 					}).lock();
 				})
 			});
-		},
-
-		/**
-		 * 设置样式
-		 * @参数 id 要保存的文本框
-		 * @参数 vid 要马上看到效果的ID
-		**/
-		style_setting:function(id,vid)
-		{
-			if(!id || id == 'undefined'){
-				id = 'style';
-			}
-			if(!vid || vid == 'undefined'){
-				vid = 'title';
-			}
-			var url = get_url('open','style','id='+id+'&vid='+vid);
-			$.dialog.open(url,{
-				'title':p_lang('样式设置'),
-				'width':'550px',
-				'height':'270px',
-				'lock':true,
-				'button':[{
-					name: p_lang('保存样式'),
-					callback: function () {
-						var iframe = this.iframe.contentWindow;
-						if (!iframe.document.body) {
-							alert('iframe还没加载完毕呢');
-							return false;
-						};
-						iframe.save();
-						return false;
-					},
-					focus: true
-				},{
-					name: p_lang('清空样式'),
-					callback: function () {
-						$("#"+id).val('');
-						$("#"+vid).removeAttr("style");
-						return true;
-					},
-					focus: false
-				}],
-				'cancel':true
-			});
 		}
 	}
 

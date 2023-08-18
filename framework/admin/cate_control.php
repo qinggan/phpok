@@ -268,32 +268,6 @@ class cate_control extends phpok_control
 	}
 
 	/**
-	 * 快速添加分类操作
-	**/
-	public function qsave_f()
-	{
-		if(!$this->popedom['add']){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$title = $this->get("title");
-		if(!$title){
-			$this->error(P_Lang('分类名称不能为空'));
-		}
-		$array = array();
-		$array["site_id"] = $this->session->val('admin_site_id');
-		$array["parent_id"] = $this->get('root_id','int');
-		$array["title"] = $title;
-		$array["taxis"] = $this->model('cate')->cate_next_taxis(0);
-		$array["status"] = 1;
-		$array["identifier"] = uniqid('cate-');
-		$id = $this->model('cate')->save($array);
-		if(!$id){
-			$this->error(P_Lang('分类添加失败，请检查！'));
-		}
-		$this->success($id);
-	}
-
-	/**
 	 * 保存分类信息
 	**/
 	public function save_f()

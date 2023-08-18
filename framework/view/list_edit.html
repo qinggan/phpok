@@ -34,7 +34,7 @@
 						<div class="layui-input-block">
 							<input type="text" name="title" id="title" value="{$rs.title}" class="layui-input"{if $rs.style} style="{$rs.style}"{/if} placeholder="{lang不能超过80个汉字}{if $p_rs.alias_note}，{$p_rs.alias_note}{/if}" />
 							<div style="position: absolute;right:5px;top:4.5px;">
-								<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_list.style_setting('style','title')">
+								<button type="button" class="layui-btn layui-btn-sm" onclick="phpok_admin_style('style','title')">
 									<i class="layui-icon">&#xe64e;</i> {lang样式}
 								</button>
 							</div>

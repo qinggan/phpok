@@ -1,22 +1,23 @@
 <!-- include tpl=head_lay nopadding=true overflowy=true -->
 <input type="hidden" id="id" value="{$id}" />
 <input type="hidden" id="vid" value="{$vid}" />
+<style type="text/css">
+.layui-form-label{
+	width:90px;
+}
+.layui-input-block{
+	margin-left:100px;
+}
+</style>
 <div class="layui-card">
 	<input type="hidden" name="content" id="content" />
 	<div class="layui-card-body layui-form">
 		<div class="layui-form-item">
 			<label class="layui-form-label">
-				{lang加粗}
+				&nbsp;
 			</label>
 			<div class="layui-input-block">
 				<input type="checkbox" id="bold" title="{lang加粗}" />
-			</div>
-		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label">
-				{lang斜体}
-			</label>
-			<div class="layui-input-block">
 				<input type="checkbox" id="italic" title="{lang斜体}" />
 			</div>
 		</div>
@@ -25,7 +26,7 @@
 				{lang划线}
 			</label>
 			<div class="layui-input-block">
-				<input type="radio" name="text-decoration" id="text-decoration_default" checked title="{lang默认}" />
+				<input type="radio" name="text-decoration" id="text-decoration_default" checked title="{lang无}" />
 				<input type="radio" name="text-decoration" id="text-decoration_overline" value="overline" title="{lang上划线}" />
 				<input type="radio" name="text-decoration" id="text-decoration_through" value="line-through" title="{lang删除线}" />
 				<input type="radio" name="text-decoration" id="text-decoration_underline" value="underline" title="{lang下划线}" />
