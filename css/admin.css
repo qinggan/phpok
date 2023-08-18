@@ -10,8 +10,8 @@
 
 /* 后台全局样式 */
 html{font-size:12px;font-family:"verdana","arial","microsoft yahei","sans-serif","tahoma";margin:0;padding:0;}
-body{margin:3px;padding:0;overflow-y:scroll;_margin:0;_height:100%;}
-img{border:0 none;margin:0;padding:0;}
+body{margin:3px;padding:0;overflow-y:scroll;}
+img{border:0;margin:0;padding:0;}
 a{text-decoration:none;color:#000;outline:none;}
 a:hover{color:darkblue;}
 select{padding:3px;}

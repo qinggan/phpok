@@ -35,6 +35,10 @@ img{
 	max-width:100%;
 }
 
+.layui-bg-white{
+	background:#fff;
+}
+
 /* LayUI 后台框架样式改写-开始 */
 .layui-nav-tree .layui-nav-bar{
 	background-color:#E77717 !important;
@@ -64,9 +68,6 @@ img{
 }
 .layui-form-label{
 	overflow:hidden;
-	padding-top:0;
-	padding-left:0;
-	padding-right:0;
 	width:120px;
 }
 
@@ -76,7 +77,7 @@ img{
 }
 
 .layui-input-block{
-	margin-left:130px;
+	margin-left:160px;
 }
 
 .layui-card-header.layuiadmin-card-header-auto{
@@ -341,9 +342,6 @@ html .layui-laydate .layui-this {
 	background-color: #FBFBFB;
 }
 
-.layui-form-radio{
-	margin-top:0;
-}
 
 /* 通过 layui.newphper.com 在线生成的代码 */
 
