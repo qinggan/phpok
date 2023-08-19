@@ -63,6 +63,7 @@ class list_control extends phpok_control
 			}
 		}
 		$this->assign("rslist",$rslist);
+		$this->model('log')->add(P_Lang('访问【内容管理】页面'));
 		$this->view("list_index");
 	}
 
@@ -139,9 +140,11 @@ class list_control extends phpok_control
 		if($rs["module"]){
 			$m_rs = $this->model('module')->get_one($rs['module']);
 			if($m_rs['mtype']){
+				$this->model('log')->add(P_Lang('访问【{0}】，ID#{1}',array($rs['title'],$rs['id'])));
 				$this->standalone_app($rs,$m_rs);
 			}
 			$this->content_list($rs);
+			$this->model('log')->add(P_Lang('访问【{0}】，ID#{1}',array($rs['title'],$rs['id'])));
 			$this->view("list_content");
 		}
 		$show_edit = true;
@@ -160,44 +163,8 @@ class list_control extends phpok_control
 			}
 			$this->assign('extlist',$tmp);
 		}
+		$this->model('log')->add(P_Lang('访问【{0}】，ID#{1}',array($rs['title'],$rs['id'])));
 		$this->view("list_set2");
-	}
-
-	public function set_f()
-	{
-		$id = $this->get("id");
-		if(!$id){
-			$this->error(P_Lang('操作有错误'),$this->url("list"));
-		}
-		$this->popedom_auto($id);
-		if(!$this->popedom["set"]){
-			$this->error(P_Lang('您没有权限执行此操作'));
-		}
-		$rs = $this->model('project')->get_one($id);
-		if(!$rs){
-			$this->error(P_Lang('项目信息不存在'),$this->url("list"),"error");
-		}
-		$this->assign("rs",$rs);
-		$this->assign("id",$id);
-		$this->assign("pid",$id);
-		$extlist = $this->model('ext')->ext_all('project-'.$id);
-		if($extlist){
-			$tmp = array();
-			foreach($extlist as $key=>$value){
-				if($value["ext"]){
-					$ext = unserialize($value["ext"]);
-					foreach($ext as $k=>$v){
-						$value[$k] = $v;
-					}
-				}
-				$tmp[] = $this->lib('form')->format($value);
-				$this->lib('form')->cssjs($value);
-			}
-			$this->assign('extlist',$tmp);
-		}
-		$tag_config = $this->model('tag')->config();
-		$this->assign('tag_config',$tag_config);
-		$this->view("list_set");
 	}
 
 	/**
@@ -231,6 +198,7 @@ class list_control extends phpok_control
 		}
 		$this->model('project')->save($array,$id);
 		ext_save("project-".$id);
+		$this->model('log')->add(P_Lang('保存项目 #{0} #{1}',array($id,$title)));
 		$this->success();
 	}
 

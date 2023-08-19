@@ -132,26 +132,6 @@
 			}
 			$.win(title,get_url('list','edit2','id='+id+'&pid='+pid));
 		},
-		set:function(id)
-		{
-			var url = get_url('list','set','id='+id);
-			$.dialog.open(url,{
-				'title':p_lang('编辑项目') +" #"+id,
-				'lock':true,
-				'width':'780px',
-				'height':'60%',
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert('iframe还没加载完毕呢');
-						return false;
-					};
-					iframe.save();
-					return false;
-				},
-				'cancel':true
-			});
-		},
 		tag:function()
 		{
 			var url = get_url('tag','open');
