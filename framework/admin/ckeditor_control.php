@@ -80,6 +80,7 @@ class ckeditor_control extends phpok_control
 				$this->assign("pagelist",$pagelist);
 			}
 		}
+		$this->model('log')->add(P_Lang('弹窗访问【主题列表】页面'));
 		$this->view("ckeditor_title");
 	}
 
@@ -134,6 +135,7 @@ class ckeditor_control extends phpok_control
 		$button = form_edit('values','','upload',$ext);
 		$this->assign('button',$button);
 		$this->assign('cate',$cate);
+		$this->model('log')->add(P_Lang('弹窗访问【文件列表】页面'));
 		$this->view($this->dir_phpok.'open/ckeditor_filelist.html','abs-file');
 	}
 
@@ -224,6 +226,7 @@ class ckeditor_control extends phpok_control
 				$this->assign('cate',$cate);
 			}
 		}
+		$this->model('log')->add(P_Lang('弹窗访问【音频列表】页面'));
 		$this->view($this->dir_phpok.'open/ckeditor_audiolist.html','abs-file');
 	}
 
@@ -296,8 +299,7 @@ class ckeditor_control extends phpok_control
 				$this->assign('cate',$cate);
 			}
 		}
-		
-		
+		$this->model('log')->add(P_Lang('弹窗访问【视频列表】页面'));
 		$this->view($this->dir_phpok.'open/ckeditor_videolist.html','abs-file');
 	}
 
@@ -381,6 +383,7 @@ class ckeditor_control extends phpok_control
 				$this->assign('cate',$cate);
 			}
 		}
+		$this->model('log')->add(P_Lang('弹窗访问【图片单选列表】页面'));
 		$this->view($this->dir_phpok.'open/ckeditor_image.html','abs-file');
 	}
 
@@ -463,6 +466,7 @@ class ckeditor_control extends phpok_control
 				$this->assign('cate',$cate);
 			}
 		}
+		$this->model('log')->add(P_Lang('弹窗访问【图片多选列表】页面'));
 		$this->view($this->dir_phpok.'open/ckeditor_images.html','abs-file');
 	}
 
@@ -646,9 +650,8 @@ class ckeditor_control extends phpok_control
 		}else{
 			$filename = $rs['filename'];
 		}
+		$this->model('log')->add(P_Lang('远程图片本地化，图片ID#{0}',$id));
 		$this->success($filename);
-		//$rs = $this->model('res')->get_one($id);
-		//$this->json($rs,true);
 	}
 
 	/**
@@ -712,7 +715,7 @@ class ckeditor_control extends phpok_control
 		$button = form_edit('values','','upload',array('ext'=>$array,'manage_forbid'=>1,'is_multiple'=>1,'cate_id'=>$cate['id']));
 		$this->assign('button',$button);
 		$this->assign('cate',$cate);
+		$this->model('log')->add(P_Lang('访问【图片上传】页面'));
 		$this->view($this->dir_phpok.'open/ckeditor_upload.html','abs-file');
 	}
-
 }
