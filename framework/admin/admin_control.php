@@ -24,40 +24,6 @@ class admin_control extends phpok_control
 		$this->assign("popedom",$this->popedom);
 	}
 
-
-	/**
-	 * 检测账号是否存在
-	 * @参数 id 管理员ID，不为0且不为空时，表示要检查的管理员账号跳过id值
-	 * @参数 account 管理员账号
-	 * @返回 Json字串
-	**/
-	public function check_account_f()
-	{
-		$id = $this->get("id","int");
-		$account = $this->get("account");
-		$str = $this->check_account($account,$id);
-		if($str == "ok"){
-			$this->json("ok",true);
-		}
-		$this->json($str);
-	}
-
-	/**
-	 * 检查是否有系统管理员
-	 * @参数 id 管理员ID，即要跳过检查的管理员
-	 * @返回 Json字串
-	**/
-	public function check_if_system_f()
-	{
-		$id = $this->get("id","int");
-		$exit = $this->check_system($id);
-		if($exit == "ok"){
-			$this->json("ok",true);
-		}else{
-			$this->json($exit);
-		}
-	}
-
 	/**
 	 * 删除管理员，权限管理员要有删除权限（admin:delete），权限管理员不能删除系统管理员
 	 * @参数 id 要删除的管理员，不能删除自己，权限管理员

@@ -56,7 +56,12 @@ class address_control extends phpok_control
 				$keywords = array($type=>$keywords);
 			}
 		}
-		$this->_index($pageurl,$keywords);
+		$pageid = $this->get($this->config['pageid'],'int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$this->_index($pageurl, $pageid, $keywords);
+		$this->model('log')->add(P_Lang('访问用户地址库第 {0} 页',$pageid));
 		$this->view("address_list");
 	}
 
@@ -83,7 +88,11 @@ class address_control extends phpok_control
 			$type = $this->get('type');
 			$keywords = array($type=>$keywords);
 		}
-		$status = $this->_index($pageurl,$keywords);
+		$pageid = $this->get($this->config['pageid'],'int');
+		if(!$pageid){
+			$pageid = 1;
+		}
+		$status = $this->_index($pageurl, $pageid, $keywords);
 		if(!$status){
 			$this->tip(P_Lang('该用户还没有设置地址信息'));
 		}
@@ -92,7 +101,7 @@ class address_control extends phpok_control
 			$types = 'shipping';
 		}
 		$this->assign('types',$types);
-		$this->model('log')->add(P_Lang('弹窗查看用户的地址库信息'));
+		$this->model('log')->add(P_Lang('弹窗访问查看用户地址库第 {0} 页',$pageid));
 		$this->view($tpl);
 	}
 
@@ -204,7 +213,7 @@ class address_control extends phpok_control
 		$this->view("address_set");
 	}
 
-	private function _index($pageurl='',$keywords='')
+	private function _index($pageurl='',$pageid=1, $keywords='')
 	{
 		$condition = "1=1";
 		if($keywords && is_array($keywords)){
@@ -245,10 +254,6 @@ class address_control extends phpok_control
 		$total = $this->model('address')->count($condition);
 		if(!$total){
 			return false;
-		}
-		$pageid = $this->get($this->config['pageid'],'int');
-		if(!$pageid){
-			$pageid = 1;
 		}
 		$psize = $this->config['psize'] ? $this->config['psize'] : 30;
 		$offset = ($pageid-1) * $psize;
