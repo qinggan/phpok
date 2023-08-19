@@ -117,11 +117,11 @@ class search_control extends phpok_control
 							$my_mids[] = $module['id'];
 							$flist = $this->model('fields')->flist($module['id']);
 							if($flist){
-								foreach($flist as $k=>$v){
-									if($v['search'] == 1){
-										$kc_ext[$value][] = " ext.".$v['identifier']."='".$v."' ";
-									}elseif($v['search'] == 2){
-										$kc_ext[$value][] = " ext.".$v['identifier']." LIKE '%".$v."%' ";
+								foreach($flist as $kk=>$vv){
+									if($vv['search'] == 1){
+										$kc_ext[$value][] = " ext.".$vv['identifier']."='".$v."' ";
+									}elseif($vv['search'] == 2){
+										$kc_ext[$value][] = " ext.".$vv['identifier']." LIKE '%".$v."%' ";
 									}
 								}
 							}
@@ -131,6 +131,7 @@ class search_control extends phpok_control
 				unset($kwlist);
 			}
 		}
+		
 		$this->assign('searchurl',substr($pageurl,0,-1));
 		if($keywords){
 			$klist = explode(" ",$keywords);
