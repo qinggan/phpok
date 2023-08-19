@@ -87,7 +87,7 @@ class all_control extends phpok_control
 		$code_editor_info = form_edit('meta',$rs['meta'],'code_editor','width=650&height=200');
 		$this->assign('code_editor_info',$code_editor_info);
 		$this->assign("rs",$rs);
-		$this->model('log')->add(P_Lang('查阅【网站信息】'));
+		$this->model('log')->add(P_Lang('访问【网站信息】'));
 		$this->view("all_setting");
 	}
 
@@ -121,7 +121,7 @@ class all_control extends phpok_control
 		$this->assign('tpls',$tpls);
 		$this->assign('id',$id);
 		$this->assign('tplid',$tplid);
-		$this->model('log')->add(P_Lang('查阅【自定义模板】'));
+		$this->model('log')->add(P_Lang('访问【网站信息里的自定义模板】'));
 		$this->view('all_tpl');
 	}
 
@@ -249,7 +249,7 @@ class all_control extends phpok_control
 		$this->assign("rs",$rs);
 		$rslist = $this->model('site')->domain_list($_SESSION["admin_site_id"]);
 		$this->assign("rslist",$rslist);
-		$this->model('log')->add(P_Lang('查阅【网站域名】'));
+		$this->model('log')->add(P_Lang('访问【网站域名】'));
 		$this->view("all_domain");
 	}
 
@@ -301,7 +301,7 @@ class all_control extends phpok_control
 			}
 		}
 		$this->assign('vcodelist',$vcodelist);
-		$this->model('log')->add(P_Lang('查阅【验证码】'));
+		$this->model('log')->add(P_Lang('访问【验证码配置页】'));
 		$this->view('all_vcode');
 	}
 
@@ -330,7 +330,7 @@ class all_control extends phpok_control
 			}
 		}
 		$this->lib('xml')->save($tmp,$this->dir_data.'xml/vcode_'.$this->session->val('admin_site_id').'.xml');
-		$this->model('log')->add(P_Lang('保存【验证码】'));
+		$this->model('log')->add(P_Lang('保存【验证码配置】'));
 		$this->success();
 	}
 
@@ -582,7 +582,7 @@ class all_control extends phpok_control
 		$links = $rs['ok_links'] ? unserialize($rs['ok_links']) : array();
 		$this->assign('links',$links);
 		$this->assign('rs',$rs);
-		$this->model('log')->add(P_Lang('访问【系统参数】'));
+		$this->model('log')->add(P_Lang('访问【系统参数设置页】'));
 		$this->view("all_system");
 	}
 
