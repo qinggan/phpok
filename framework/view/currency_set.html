@@ -1,13 +1,13 @@
 <!-- include tpl=head_lay -->
+<form method="post" class="layui-form" action="{url ctrl=currency func=setok/}" onsubmit="return $.admin_currency.save(this)">
+<!-- if $id -->
+<input type="hidden" name="id" id="id" value="{$id}" />
+<!-- /if -->
 <div class="layui-card">
 	<div class="layui-card-header">
 		<!-- if $id -->{lang编辑货币信息}<!-- else -->{lang添加货币信息}<!-- /if -->
 	</div>
 	<div class="layui-card-body">
-		<form method="post" class="layui-form" action="{url ctrl=currency func=setok/}" onsubmit="return check_save()">
-		<!-- if $id -->
-		<input type="hidden" name="id" id="id" value="{$id}" />
-		<!-- /if -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang名称}
@@ -99,14 +99,16 @@
 				{lang设置排序，最大值不超过255，最小值为0，值越小越往前靠}
 			</div>
 		</div>
-		<div class="layui-form-item">
-			<label class="layui-form-label"></label>
-			<div class="layui-input-inline auto">
-				<button class="layui-btn" type="submit">立即提交</button>
-				<button type="button" class="layui-btn layui-btn-danger" onclick="$.phpok.go('{url ctrl=currency/}')">{lang返回}</button>
-			</div>
-		</div>
-		</form>
+
+		
 	</div>
 </div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
+	</div>
+</div>
+</form>
 <!-- include tpl=foot_lay -->

@@ -42,8 +42,12 @@
 			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 			<td>
 				<div class="layui-btn-group">
-					<!-- if $popedom.modify --><input type="button" value="{lang编辑}" onclick="$.phpok.go('{url ctrl=currency func=set id=$value.id/}')" class="layui-btn layui-btn-sm" /><!-- /if -->
-					<!-- if $popedom.delete --><input type="button" value="{lang删除}" onclick="currency_del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" /><!-- /if -->
+					<!-- if $popedom.modify -->
+					<input type="button" value="{lang编辑}" onclick="$.win('{lang编辑货币信息}_#{$value.id}','{url ctrl=currency func=set id=$value.id/}')" class="layui-btn layui-btn-sm" />
+					<!-- /if -->
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" onclick="$.admin_currency.del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+					<!-- /if -->
 				</div>
 			</td>
 		</tr>

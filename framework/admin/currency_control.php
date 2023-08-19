@@ -34,6 +34,7 @@ class currency_control extends phpok_control
 			}
 		}
 		$this->assign("rslist",$rslist);
+		$this->model('log')->add(P_Lang('访问【货币及汇率】页面'));
 		$this->view("currency_list");
 	}
 
@@ -49,6 +50,7 @@ class currency_control extends phpok_control
 			$this->assign("rs",$rs);
 			$this->assign("id",$id);
 		}
+		$this->model('log')->add(P_Lang('访问【添加或修改货币信息】页面'));
 		$this->view("currency_set");
 	}
 
@@ -70,43 +72,48 @@ class currency_control extends phpok_control
 		$array["status"] = $this->get("status","int");
 		$array["hidden"] = $this->get("hidden","int");
 		$array['dpl'] = $this->get('dpl','int');
-		$error_url = $this->url('currency','set');
-		if($id) $error_url = $this->url('currency','set','id='.$id);
 		if(!$array["title"]){
-			$this->error(P_Lang('名称不允许为空'),$error_url);
+			$this->error(P_Lang('名称不允许为空'));
 		}
 		if(!$array["code"]){
-			$this->error(P_Lang('编码不允许为空'),$error_url);
+			$this->error(P_Lang('编码不允许为空'));
 		}
 		$this->model('currency')->save($array,$id);
-		$this->success(P_Lang('货币设置操作成功'),$this->url("currency"));
+		if($id){
+			$this->model('log')->add(P_Lang('修改货币及汇率信息，ID#{0}',$id));
+		}else{
+			$this->model('log')->add(P_Lang('添加货币信息，货币名称：',$array['title']));
+		}
+		$this->success(P_Lang('货币设置操作成功'));
 	}
 
 	public function delete_f()
 	{
 		$id = $this->get("id",'int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		$this->model('currency')->del($id);
-		$this->json("ok",true);
+		$this->model('log')->add(P_Lang('删除货币信息 #{0}',$id));
+		$this->success();
 	}
 
 	public function sort_f()
 	{
 		$sort = $this->get('sort');
 		if(!$sort || !is_array($sort)){
-			$this->json(P_Lang('更新排序失败'));
+			$this->error(P_Lang('更新排序失败'));
 		}
-		foreach($sort AS $key=>$value){
+		foreach($sort as $key=>$value){
 			$key = intval($key);
 			$value = intval($value);
 			$this->model('currency')->update_sort($key,$value);
+			$this->model('log')->add(P_Lang('更新货币信息排序，ID#{0}',$key));
 		}
-		json_exit(P_Lang('更新排序成功'),true);
+		$this->success();
 	}
 
 	public function status_f()

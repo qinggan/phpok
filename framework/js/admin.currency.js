@@ -26,98 +26,63 @@
 				$.dialog.alert(rs.info);
 				return false;
 			});
+		},
+		save:function(obj)
+		{
+			var url = get_url('currency','setok');
+			var lock = $.dialog.tips('正在提交中，请稍候…',100).lock();
+			$.phpok.submit($(obj)[0],url,function(rs){
+				if(!rs.status){
+					lock.content(rs.info).time(2);
+					return false;
+				}
+				lock.setting('close',function(){
+					$.admin.close(get_url('currency'));
+				});
+				lock.content('数据保存成功').time(2);
+				return true;
+			});
+			return false;
+		},
+		del:function(id,title)
+		{
+			var tip = p_lang('确定要删除货币 {title}，请慎用','<span class="red">'+title+'</span>');
+			$.dialog.confirm(tip,function(){
+				var url = get_url('currency','delete','id='+id);
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						$.dialog.tips(rs.info);
+						return false;
+					}
+					$.dialog.tips(p_lang('删除成功，请稍候…'),function(){
+						$.phpok.reload();
+					}).lock();
+				});
+			});
+		},
+		sort:function(id,val)
+		{
+			var url = get_url("currency","sort","sort["+id+"]="+val);
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				$.dialog.tips('修改成功',function(){
+					$.phpok.reload();
+				}).lock();
+			});
 		}
 	}
 })(jQuery);
 
-function set_sort()
-{
-	var ids = $.checkbox.join();
-	if(!ids)
-	{
-		$.dialog.alert("未指定要排序的ID");
-		return false;
-	}
-	var url = get_url("currency","sort");
-	var list = ids.split(",");
-	for(var i in list)
-	{
-		var val = $("#taxis_"+list[i]).val();
-		url += "&sort["+list[i]+"]="+val;
-	}
-	var rs = json_ajax(url);
-	if(rs.status == "ok")
-	{
-		$.phpok.reload();
-	}
-	else
-	{
-		$.dialog.alert(rs.content);
-		return false;
-	}
-}
-
-function check_save()
-{
-	var title = $("#title").val();
-	if(!title)
-	{
-		$.dialog.alert("货币名称不能为空");
-		return false;
-	}
-	var code =$("#code").val();
-	if(!code)
-	{
-		$.dialog.alert("货币标识不能为空");
-		return false;
-	}
-	if(code.length != '3')
-	{
-		$.dialog.alert("标识只支持三位数");
-		return false;
-	}
-	return true;
-}
-
-function currency_del(id,title)
-{
-	$.dialog.confirm("确定要删除货币：<span class='red'>"+title+"</span>，删除操作可能会给现有产品信息货币计算带来错，请慎用！",function(){
-		var url = get_url('currency','delete','id='+id);
-		var rs = json_ajax(url);
-		if(rs.status == 'ok')
-		{
-			$.dialog.alert("货币：<span class='red'>"+title+"</span> 删除成功",function(){
-				$.phpok.reload();
-			});
-		}
-		else
-		{
-			if(!rs.content) rs.content = '删除失败';
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	});
-}
-
-function update_taxis(val,id)
-{
-	var url = get_url("currency","sort","sort["+id+"]="+val);
-	$.phpok.json(url,function(rs){
-		if(rs.status == 'ok'){
-			$.phpok.reload();
-		}else{
-			$.dialog.alert(rs.content);
-			return false;
-		}
-	});
-}
 $(document).ready(function(){
 	$("div[name=taxis]").click(function(){
 		var oldval = $(this).text();
 		var id = $(this).attr('data');
 		$.dialog.prompt(p_lang('请填写新的排序'),function(val){
 			if(val != oldval){
-				update_taxis(val,id);
+				$.admin_currency.sort(id,val);
 			}
 		},oldval);
 	});

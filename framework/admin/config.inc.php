@@ -8,5 +8,4 @@
 	Update  : 2013年6月3日
 ***********************************************************/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-$site_rs["title"] = "PHPOK官网";
-?>
+$site_rs["title"] = "站点名称";
