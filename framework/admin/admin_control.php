@@ -91,6 +91,7 @@ class admin_control extends phpok_control
 			$this->assign("pagelist",$pagelist);
 		}
 		$this->assign("rslist",$rslist);
+		$this->model('log')->add(P_Lang('访问管理员列表第 {0} 页',$pageid));
 		$this->view("admin_list");
 	}
 
@@ -188,7 +189,6 @@ class admin_control extends phpok_control
 			if($id == $this->session->val('admin_id')){
 				$this->error(P_Lang('您不能操作自己的信息'),$this->url("admin"));
 			}
-			$this->model('log')->add(P_Lang('查阅【修改管理员】'));
 			$this->assign("id",$id);
 			$rs = $this->model('admin')->get_one($id);
 			if($rs["if_system"] && !$this->session->val('admin_rs.if_system')){
@@ -198,11 +198,12 @@ class admin_control extends phpok_control
 			if(!$rs["if_system"]){
 				$plist = $this->model('admin')->get_popedom_list($id);
 			}
+			$this->model('log')->add(P_Lang('访问【编辑管理员】，管理员ID #{0}',$id));
 		}else{
 			if(!$this->popedom["add"]){
 				$this->error(P_Lang('您没有权限执行此操作'));
 			}
-			$this->model('log')->add(P_Lang('查阅【添加管理员】'));
+			$this->model('log')->add(P_Lang('访问【添加管理员】'));
 		}
 		$this->assign("plist",$plist);
 		//读取全部功能
@@ -286,26 +287,8 @@ class admin_control extends phpok_control
 			$this->error(P_Lang('二次验证不通过，请检查'));
 		}
 		$this->session->assign('admin2verify',true);
-		$this->model('log')->add(P_Lang('验证二次密码'));
+		$this->model('log')->add(P_Lang('管理员验证二次密码，管理员ID #{0}',$this->session->val('admin_id')));
 		$this->success();
-	}
-
-	/**
-	 * 检测账号是否存在，仅限内部使用
-	 * @参数 $account 管理员账号
-	 * @参数 $id 管理员ID，不为0且不为空时，表示要检查的管理员账号跳过id值
-	 * @返回 字符串，检测通过返回ok，不通过返回错误信息
-	**/
-	private function check_account($account,$id=0)
-	{
-		if(!$account){
-			return P_Lang('账号不能为空');
-		}
-		$rs = $this->model('admin')->check_account($account,$id);
-		if($rs){
-			return P_Lang('账号已经存在');
-		}
-		return "ok";
 	}
 
 
