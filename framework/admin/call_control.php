@@ -53,6 +53,7 @@ class call_control extends phpok_control
 		}
 		$attrlist = $this->model('list')->attr_list();
 		$this->assign("attrlist",$attrlist);
+		$this->model('log')->add(P_Lang('访问【数据调用】页面'));
 		$this->view("phpok_index");
 	}
 
@@ -232,7 +233,8 @@ class call_control extends phpok_control
 		if(!$action){
 			$this->error(P_Lang('操作失败，请检查SQL语句'));
 		}
-		$this->model('log')->add(P_Lang('修改数据调用状态#{0}_{1}',array($id,$status)));
+		$status_name = $status ? '正常' : '关闭';
+		$this->model('log')->add(P_Lang('修改数据调用ID #{0} 的状态为【{1}】',array($id,$status_name)));
 		$this->success($status);
 	}
 

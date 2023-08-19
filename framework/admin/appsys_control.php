@@ -542,7 +542,7 @@ class appsys_control extends phpok_control
 		$info .= ' * '.$title."\n";
 		$info .= ' * @作者 '.$author."\n";
 		$info .= ' * @主页 https://www.phpok.com'."\n";
-		$info .= ' * @版本 5.x'."\n";
+		$info .= ' * @版本 6.x'."\n";
 		$info .= ' * @授权 MIT License <https://www.phpok.com/mit.html>'."\n";
 		$info .= ' * @时间 '.date("Y年m月d日 H时i分",$this->time)."\n";
 		$info .= '**/'."\n";
