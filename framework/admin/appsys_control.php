@@ -35,6 +35,7 @@ class appsys_control extends phpok_control
 		}
 		$rslist = $this->model('appsys')->installed();
 		$this->assign('rslist',$rslist);
+		$this->model('log')->add(P_Lang('访问【已安装的应用管理器】'));
 		$this->view('appsys_index');
 	}
 
@@ -69,7 +70,7 @@ class appsys_control extends phpok_control
 			$this->assign("pagelist",$pagelist);
 			$this->assign("pageurl",$pageurl);
 		}
-		$this->model('log')->add(P_Lang('访问【安装应用】'));
+		$this->model('log')->add(P_Lang('访问【未安装的应用】'));
 		$this->view('appsys_list');
 	}
 
@@ -122,7 +123,7 @@ class appsys_control extends phpok_control
 		$this->assign('edit',$edit);
 		$this->assign('id',$id);
 		$this->assign('type',$type);
-		$this->model('log')->add(P_Lang('访问【编辑应用帮助手册】'));
+		$this->model('log')->add(P_Lang('访问【编辑应用帮助手册#{0}】',$id));
 		$this->view('appsys_help');
 	}
 
@@ -139,7 +140,7 @@ class appsys_control extends phpok_control
 		$file = $this->dir_app.$id.'/'.$type.'-help.md';
 		$content = $this->get('content','html_js');
 		$this->lib('file')->vim($content,$file);
-		$this->model('log')->add(P_Lang('保存【帮助手册信息】'));
+		$this->model('log')->add(P_Lang('保存【帮助手册信息#{0}】',$id));
 		$this->success();
 	}
 
@@ -154,6 +155,7 @@ class appsys_control extends phpok_control
 		}
 		$taxis = $this->get('taxis','int');
 		$this->model('appsys')->taxis($id,$taxis);
+		$this->model('log')->add(P_Lang('更新应用排序 #{0}',$id));
 		$this->success();
 	}
 
@@ -164,7 +166,7 @@ class appsys_control extends phpok_control
 		$this->lib('form')->cssjs($array);
 		$upload = $this->lib('form')->format($array);
 		$this->assign('upload_html',$upload);
-		$this->model('log')->add(P_Lang('访问【导入应用】'));
+		$this->model('log')->add(P_Lang('访问【导入应用弹窗页】'));
 		$this->view('appsys_upload');
 	}
 
@@ -377,6 +379,7 @@ class appsys_control extends phpok_control
 		if(!$this->popedom['setting']){
 			$this->error(P_Lang('您没有创建应用权限'));
 		}
+		$this->model('log')->add(P_Lang('访问【添加应用】'));
 		$this->view('appsys_add');
 	}
 
