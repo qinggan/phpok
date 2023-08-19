@@ -43,6 +43,7 @@ class cate_control extends phpok_control
 				}
 			}
 			$this->assign("rslist",$rslist);
+			$this->model('log')->add(P_Lang('访问【分类管理】页面'));
 			$this->view("cate_index");
 		}
 		$rs = $this->model('cate')->get_one($parent_id);
@@ -68,6 +69,8 @@ class cate_control extends phpok_control
 		}
 		krsort($navlist);
 		$this->assign('navlist',$navlist);
+
+		$this->model('log')->add(P_Lang('访问【分类ID #{0}，分类名称 #{1}】页面',array($id,$rs['title'])));
 		$this->view("cate_index");
 	}
 
@@ -415,6 +418,7 @@ class cate_control extends phpok_control
 				$next_taxis = $next_taxis + 10;
 			}
 		}
+		$this->model('log')->add(P_Lang('批量添加子分类，父级分类ID #{0}',$parent_id));
 		$this->success(P_Lang('分类信息配置成功'));
 	}
 
@@ -440,6 +444,7 @@ class cate_control extends phpok_control
 			$this->error(P_Lang('分类使用中，请先删除'));
 		}
 		$this->model('cate')->cate_delete($id);
+		$this->model('log')->add(P_Lang('删除除分类，ID#{0}',$id));
 		$this->success();
 	}
 
@@ -471,60 +476,8 @@ class cate_control extends phpok_control
 			}
 			$this->model('cate')->cate_delete($value);
 		}
+		$this->model('log')->add(P_Lang('批量删除分类，ID#{0}',$ids));
 		$this->success();
-	}
-
-	/**
-	 * 删除扩展字段
-	**/
-	public function ext_delete_f()
-	{
-		if(!$this->popedom['ext']){
-			$this->json(P_Lang('您没有权限执行此操作'));
-		}
-		$id = $this->get("id","int");
-		if(!$id){
-			$this->json(P_Lang('未指定要删除的ID'));
-		}
-		$cate_id = $this->get("cate_id","int");
-		if($cate_id){
-			$action = $this->model('cate')->cate_ext_delete($cate_id,$id);
-			$this->json(P_Lang('扩展字段删除成功'),true);
-		}
-		$idstring = $this->session->val('cate_ext_id');
-		if($idstring){
-			$list = explode(",",$idstring);
-			$tmp = array();
-			foreach($list AS $key=>$value){
-				if($value && $value != $id){
-					$tmp[] = $value;
-				}
-			}
-			$new_idstring = implode(",",$tmp);
-			$this->session->assign('cate_ext_id',$new_idstring);
-		}
-		$this->json(P_Lang('扩展字段删除成功'),true);
-	}
-
-	/**
-	 * 验证分类是否可用
-	**/
-	public function check_f()
-	{
-		$id = $this->get("id","int");
-		$sign = $this->get("sign");
-		if(!$sign){
-			$this->json(P_Lang('标识串不能为空'));
-		}
-		$sign = strtolower($sign);
-		if(!preg_match("/[a-z][a-z0-9\_\-]+/",$sign)){
-			$this->json(P_Lang('标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头'));
-		}
-		$check = $this->model('id')->check_id($sign,$this->session->val('admin_site_id'),$id);
-		if($check){
-			$this->json(P_Lang('标识已被使用'));
-		}
-		$this->json("标识正常，可以使用",true);
 	}
 
 	/**
@@ -532,30 +485,19 @@ class cate_control extends phpok_control
 	**/
 	public function taxis_f()
 	{
-		$taxis = $this->lib('trans')->safe("taxis");
-		if(!$taxis || !is_array($taxis)){
-			$this->json(P_Lang('没有指定要更新的排序'));
-		}
-		foreach($taxis as $key=>$value){
-			$this->model('cate')->update_taxis($key,$value);
-		}
-		$this->json(P_Lang('数据排序更新成功'),true);
-	}
-	
-	/**
-	 * 单个分类自定义排序
-	**/
-	public function ajax_taxis_f()
-	{
 		$id = $this->get('id','int');
 		$taxis = $this->get('taxis','int');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
-		$this->model('cate')->update_taxis($id,$taxis);
-		$this->json(true);
+		$rs = $this->model('cate')->get_one($id);
+		if($rs['taxis'] != $taxis){
+			$this->model('cate')->update_taxis($id,$taxis);
+			$this->model('log')->add(P_Lang('更新分类排序 #{0}',$id));
+		}
+		$this->success();
 	}
-
+	
 	private function son_cate_list(&$son_cate_list,$id)
 	{
 		$list = $this->model('cate')->get_son_id_list($id);

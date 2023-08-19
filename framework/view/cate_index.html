@@ -1,5 +1,4 @@
 <!-- include tpl=head_lay -->
-<script type="text/javascript" src="{echo add_js('cate.js')}"></script>
 <div class="layui-card">
 	<div class="layui-card-header ">
 		<!-- if $navlist -->
@@ -58,7 +57,7 @@
 				<td style="{$value.style}"><label for="c_{$value.id}">{$value.title}</label></td>
 				<td>{$value.identifier}</td>
 				<td id="total_{$value.id}"><!-- if $value.total -->{$value.total}<!-- else --><span class="red">0</span><!-- /if --></td>
-				<td><input type="text" id="taxis_{$value.id}" class="layui-input" value="{$value.taxis}" tabindex="{$tab_i}" onblur="update_taxis('{$value.id}')" /></td>
+				<td><input type="text" id="taxis_{$value.id}" class="layui-input" value="{$value.taxis}" tabindex="{$tab_i}" data-old="{$value.taxis}" onblur="$.admin_cate.taxis(this,'{$value.id}')" /></td>
 				<td>
 					<div class="layui-btn-group">
 						<!-- if $popedom.add -->

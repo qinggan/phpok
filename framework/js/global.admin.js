@@ -313,7 +313,7 @@ function ext_delete(id,module,title)
 				$.phpok.reload();
 				return true;
 			}
-			$.dialog.alert(rs.info);
+			$.dialog.tip(rs.info);
 			return false;
 		})
 	})

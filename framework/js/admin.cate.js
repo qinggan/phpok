@@ -153,6 +153,24 @@
 					}).lock();
 				})
 			});
+		},
+		taxis:function(obj,id)
+		{
+			var val = $(obj).val();
+			var old = $(obj).attr("data-old");
+			if(old == val){
+				return false;
+			}
+			$.phpok.json(get_url('cate','taxis'),function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				//更新成功后，将旧值写入到data-old属性中
+				$(obj).attr("data-old",val);
+				$.dialog.tips('排序更新成功');
+			},{'id':id,'taxis':val});
+			return false;
 		}
 	}
 

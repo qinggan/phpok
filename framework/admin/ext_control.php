@@ -220,6 +220,7 @@ class ext_control extends phpok_control
 			$this->success();
 		}
 		$this->model('ext')->delete($id,$module,'identifier');
+		$this->model('log')->add(P_Lang('删除扩展字段 ID#{0}，扩展模型#{1}',array($id,$module)));
 		$this->success();
 	}
 
