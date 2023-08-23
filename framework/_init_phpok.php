@@ -1582,26 +1582,6 @@ class _init_phpok
 	final public function view($file,$type="file",$path_format=true)
 	{
 		$this->_counter_node_plugin_code();
-		/*if($this->app_id == 'admin'){
-			$menu_rs = $this->model('sysmenu')->get_title($this->ctrl,$this->func);
-			if(!$menu_rs){
-				$note = P_Lang('访问文件 {0} 方法 {1}',array($this->ctrl,$this->func));
-			}else{
-				$note = P_Lang('访问【{0}】',$menu_rs['title']);
-			}
-			if($this->ctrl == 'list'){
-				$p_rs = $this->tpl->val('rs');
-				if($p_rs){
-					$note = P_Lang('访问【{0}】',array($p_rs['title']));
-					$this->model('log')->save($note);
-				}
-			}else{
-				//仅限首页及列表页~其他页面不登记
-				if($this->func == 'index' || $this->func == 'list'){
-					$this->model('log')->save($note);
-				}
-			}
-		}*/
 		$this->tpl->display($file,$type,$path_format);
 	}
 
@@ -1776,24 +1756,34 @@ class _init_phpok
 		if(!$func){
 			$func = 'index';
 		}
+		//针对乱七八糟网址进行清理
+		$query = $this->data('uri.query');
+		if($query && $this->config['safe_homepage'] && $this->config['get_params']){
+			$params = explode(",",$this->config['get_params']);
+			$params[] = $this->config['ctrl_id'];
+			$params[] = $this->config['func_id'];
+			$params = array_unique($params);
+			parse_str($query,$tmp);
+			if(!$tmp || !is_array($tmp)){
+				$this->error_404(P_Lang('参数信息不正确'));
+			}
+			$has_key = false;
+			foreach($tmp as $key=>$value){
+				if(in_array($key,$params)){
+					unset($tmp[$key]);
+					$has_key = true;
+					break;
+				}
+			}
+			if(!$has_key){
+				$this->error_404(P_Lang('您的请求信息不正确，请检查（无效参数）'));
+			}
+		}
 		//针对乱七八糟的网址，或是路径进行清理
 		if($ctrl == 'index' && $func == 'index'){
 			$uri = $this->data('uri.url');
 			if(substr($uri,-1) == '?'){
 				$uri = substr($uri,0,-1);
-			}
-			$query = $this->data('uri.query');
-			if($query && $this->config['safe_homepage'] && $this->config['get_params']){
-				$params = explode(",",$this->config['get_params']);
-				parse_str($query,$tmp);
-				foreach(($tmp ? $tmp : array())  as $key=>$value){
-					if(in_array($key,$params)){
-						unset($tmp[$key]);
-					}
-				}
-				if($tmp && is_array($tmp) && count($tmp)>0){
-					$this->error_404(P_Lang('您的请求信息不正确，请检查（无效参数）'));
-				}
 			}
 			$docu = $this->data('uri.folder');
 			$script_name = $this->data('uri.script');

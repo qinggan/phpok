@@ -25,6 +25,7 @@ class design_control extends phpok_control
 			$this->error('未指定ID');
 		}
 		$this->assign('id',$id);
+		$this->model('log')->add(P_Lang('访问【设计器模式配置】页面'));
 		$this->view('design_layer');
 	}
 
@@ -37,6 +38,7 @@ class design_control extends phpok_control
 		$this->assign('id',$id);
 		$content_html = form_edit('content','','code_editor','height=500&width=750');
 		$this->assign('content_html',$content_html);
+		$this->model('log')->add(P_Lang('访问【代码编辑器】页面'));
 		$this->view('design_code');
 	}
 
@@ -53,6 +55,7 @@ class design_control extends phpok_control
 		$this->assign('id',$id);
 		$rslist = $this->model('design')->get_all();
 		$this->assign('rslist',$rslist);
+		$this->model('log')->add(P_Lang('访问【组件选择器】页面'));
 		$this->view('design_component');
 	}
 
@@ -94,6 +97,7 @@ class design_control extends phpok_control
 				$this->assign('rslist',$rslist);
 			}
 		}
+		$this->model('log')->add(P_Lang('访问【设计器内容】页面，类型 #{0}',$type));
 		$this->view('design_content');
 	}
 
@@ -107,6 +111,7 @@ class design_control extends phpok_control
 			$this->error(P_Lang('未指定ID'));
 		}
 		$this->model('design')->delete($id);
+		$this->model('log')->add(P_Lang('删除设计器，ID#{0}',$id));
 		$this->success();
 	}
 
@@ -114,6 +119,7 @@ class design_control extends phpok_control
 	{
 		$rslist = $this->model('design')->get_all();
 		$this->assign('rslist',$rslist);
+		$this->model('log')->add(P_Lang('访问【设计器列表】页面'));
 		$this->view('design_list');
 	}
 
@@ -151,7 +157,7 @@ class design_control extends phpok_control
 		$res_id = ($rs && $rs['ext'] && $rs['ext']['res_id']) ? $rs['ext']['res_id'] : 0;
 		$content_html = form_edit('res_id',$res_id,'upload');
 		$this->assign('image_content_html',$content_html);
-
+		$this->model('log')->add(P_Lang('访问【设计器配置】页面'));
 		$this->view('design_set');
 	}
 
@@ -204,6 +210,7 @@ class design_control extends phpok_control
 		if(in_array($vtype,$is_content_list)){
 			$this->model('design')->content($code,$content);
 		}
+		$this->model('log')->add(P_Lang('保存设计器配置信息'));
 		$this->success($id);
 	}
 
@@ -219,6 +226,7 @@ class design_control extends phpok_control
 		$this->assign("inlist",$inlist);
 		$outlist = $this->_out_style();
 		$this->assign("outlist",$outlist);
+		$this->model('log')->add(P_Lang('访问【设计器单元格样式】#{0}',$id));
 		$this->view("design_style");
 	}
 
@@ -264,6 +272,7 @@ class design_control extends phpok_control
 		$this->assign('content_html',$content_html);
 		$this->assign('id',$id);
 		$this->assign('tplist',$glist);
+		$this->model('log')->add(P_Lang('访问【设计器模板内容】页面，ID#{0}',$id));
 		$this->view("design_tpl");
 	}
 
@@ -323,6 +332,7 @@ class design_control extends phpok_control
 		$this->lib('file')->vim($content,$file);
 		$phpfile = $this->dir_root.$id.'.php';
 		$this->lib('file')->vi($data,$phpfile,'config');
+		
 		$this->success();
 	}
 
