@@ -1,12 +1,13 @@
 <?php
-/*****************************************************************************************
-	文件： {phpok}/form/user_form.php
-	备注： 用户选项
-	版本： 4.x
-	网站： www.phpok.com
-	作者： qinggan <qinggan@188.com>
-	时间： 2015年03月13日 13时06分
-*****************************************************************************************/
+/**
+ * 用户选项
+ * @作者 qinggan <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
+ * @时间 2015年03月13日 13时06分
+ * @更新 2023年8月23日
+**/
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 class user_form extends _init_auto
 {
@@ -41,7 +42,35 @@ class user_form extends _init_auto
 
 	public function phpok_get($rs,$appid="admin")
 	{
-		return $this->get($rs['identifier']);
+		$user_id = $this->get($rs['identifier']);
+		if(!$user_id){
+			$username = $this->get('title_'.$rs['identifier']);
+			if(!$username){
+				return false;
+			}
+			if($rs['is_multiple']){
+				$list = explode(",",$username);
+				$list = array_unique($list);
+				$ulist = array();
+				foreach($list as $key=>$value){
+					$value = trim($value);
+					if(!$value){
+						continue;
+					}
+					$tmp = $this->model('user')->get_one($username,'user',false,false);
+					if($tmp){
+						$ulist[] = $tmp['id'];
+					}
+				}
+				$user_id = implode(",",$ulist);
+			}else{
+				$user = $this->model('user')->get_one($username,'user',false,false);
+				if($user){
+					$user_id = $user['id'];
+				}
+			}
+		}
+		return $user_id;
 	}
 
 	public function phpok_show($rs,$appid="admin")
