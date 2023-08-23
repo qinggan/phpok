@@ -76,6 +76,22 @@ class form_model_base extends phpok_model
 		return false;
 	}
 
+	/**
+	 * 获取自定义表单里的数据
+	 * @参数 $type 表单类型，如text，user，upload等
+	 * @参数 $field 要获取的数据
+	 * @返回 列表数组/数组，为空返回 false
+	**/
+	public function get($type='',$field='')
+	{
+		if(!$type || !$field){
+			return false;
+		}
+		$rs = array('form_type'=>$type);
+		$rs['identifier'] = $field;
+		return $this->lib('form')->get($rs);
+	}
+
 	//读取表单下的子项目信息
 	public function project_sublist($pid)
 	{
