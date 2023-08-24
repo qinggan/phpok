@@ -277,16 +277,14 @@ $(document).ready(function(){
 		<!-- /if -->
 		<!-- if $rs.params -->
 		<div role="tabpanel" class="tab-pane fade" id="product-params">
-			
 			<!-- loop from=$rs.params key=$key value=$value id=$tmpid -->
 			<h4 class="text-center p-3">{$value.name}</h4>
 			<hr />
 			<!-- if $value.info -->
 			<div class="container">
-				<!-- php:$tmplist = unserialize($value.info) -->
 				<div class="row">
-				<!-- loop from=$tmplist.content key=$k value=$v id=$idx -->
-					<!-- loop from=$tmplist.title key=$kk value=$vv id=$idxx -->
+				<!-- loop from=$value.info.content key=$k value=$v id=$idx -->
+					<!-- loop from=$value.info.title key=$kk value=$vv id=$idxx -->
 					<div class="col{if $kk==0}-3{elseif $kk == 1}-5{else}-4 text-muted{/if} mt-2">{if $kk == 2 && $v[$kk]}备注：{/if}{$v[$kk]}</div>
 					<!-- /loop -->
 				<!-- /loop -->
