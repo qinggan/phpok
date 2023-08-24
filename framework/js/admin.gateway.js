@@ -1,7 +1,6 @@
 /**
  * 用于后台的网关路由涉及到的JS
  * @作者 qinggan <admin@phpok.com>
- * @版权 2015-2016 深圳市锟铻科技有限公司
  * @网站 http://www.phpok.com
  * @版本 4.x
  * @授权 MIT License <https://www.phpok.com/mit.html>
@@ -13,16 +12,15 @@
 		{
 			var url = get_url('gateway','getlist','id='+id);
 			$.phpok.json(url,function(rs){
-				if(!rs.status || (rs.status && rs.status == 'error')){
-					var tip = rs.info ? rs.info : rs.content;
-					$.dialog.alert(tip);
+				if(!rs.status){
+					$.dialog.alert(rs.info);
 					return false;
 				}
 				var content = '<select id="code">';
-				for(var	i in rs.content){
-					content	+= '<option	value="'+rs.content[i].id+'" data-title="'+rs.content[i].title+'">'+rs.content[i].title;
-					if(rs.content[i].note){
-						content	+= ' / '+rs.content[i].note+'';
+				for(var	i in rs.info){
+					content	+= '<option	value="'+rs.info[i].id+'" data-title="'+rs.info[i].title+'">'+rs.info[i].title;
+					if(rs.info[i].note){
+						content	+= ' / '+rs.info[i].note+'';
 					}
 					content	+= '</option>';
 				}

@@ -54,13 +54,13 @@ class gateway_control extends phpok_control
 	{
 		$id = $this->get('id');
 		if(!$id){
-			$this->json(P_Lang('未指定ID'));
+			$this->error(P_Lang('未指定ID'));
 		}
 		$codelist = $this->model('gateway')->code_all($id);
 		if(!$codelist || count($codelist)<1){
-			$this->json(P_Lang('没有相关网关可用'));
+			$this->error(P_Lang('没有相关网关可用'));
 		}
-		$this->json($codelist,true);
+		$this->success($codelist);
 	}
 
 	public function set_f()

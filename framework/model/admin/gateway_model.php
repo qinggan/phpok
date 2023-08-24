@@ -55,27 +55,33 @@ class gateway_model extends gateway_model_base
 		if(!$type){
 			return false;
 		}
-		//读取目录下的
-		$handle = opendir($this->dir_gateway.$type);
-		$list = array();
-		while(false !== ($myfile = readdir($handle))){
-			if(substr($myfile,0,1) != '.' && is_dir($this->dir_gateway.$type.'/'.$myfile)){
-				$list[$myfile] = array('id'=>$myfile,'dir'=>$this->dir_gateway.$type.'/'.$myfile);
-				$tmpfile = $this->dir_gateway.$type.'/'.$myfile.'/config.xml';
-				if(file_exists($tmpfile)){
-					$tmp = $this->lib('xml')->read($tmpfile);
-				}else{
-					$tmp = array('title'=>$myfile,'code'=>'');
-				}
-				$list[$myfile]['title'] = $tmp['title'];
-				$list[$myfile]['code'] = $tmp['code'];
-				if($tmp['note']){
-					$list[$myfile]['note'] = $tmp['note'];
-				}
-			}
+		if(!file_exists($this->dir_gateway.$type)){
+			$this->lib('file')->make($this->dir_gateway.$type);
 		}
-		closedir($handle);
-		return $list;
+		//读取目录下的
+		$list = $this->lib('file')->ls($this->dir_gateway.$type);
+		if(!$list){
+			return false;
+		}
+		$rslist = array();
+		foreach($list as $key=>$value){
+			$tmp = array();
+			$tmp['id'] = basename($value);
+			$tmp['dir'] = $value;
+			$tmpfile = $value.'/config.xml';
+			if(file_exists($tmpfile)){
+				$t = $this->lib('xml')->read($tmpfile);
+				$tmp['title'] = $t['title'];
+				if($t['note']){
+					$tmp['note'] = $t['note'];
+				}
+				$tmp['code'] = $t['code'];
+			}else{
+				$tmp['title'] = $tmp['id'];
+			}
+			$rslist[$tmp['id']] = $tmp;
+		}
+		return $rslist;
 	}
 
 	public function next_taxis($type,$code)
