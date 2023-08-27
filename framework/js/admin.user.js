@@ -164,6 +164,19 @@
 			});
 			return false;
 		},
+		status:function(id,obj)
+		{
+			var url = get_url('user','status','id='+id);
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				var val = rs.info;
+				$(obj).removeClass();
+				$(obj).addClass("status"+val).attr("value",val);
+			});
+		},
 		vouch:function(id)
 		{
 			var url =get_url('user','vouch','id='+id);
