@@ -58,36 +58,6 @@ function del(id)
 	});
 }
 
-//更改权限状态
-function set_status(id)
-{
-	if(!id)
-	{
-		alert("操作非法");
-		return false;
-	}
-	var t = $("#status_"+id).attr("value");
-	if(t == 2)
-	{
-		$.dialog.alert("此用户已被锁定，请点编辑后进行解除锁定");
-		return false;
-	}
-	var url = get_url("user","ajax_status") + "&id="+id;
-	var msg = get_ajax(url);
-	if(msg == "ok")
-	{
-		var n_t = t == 1 ? 0 : 1;
-		$("#status_"+id).removeClass("status"+t).addClass("status"+n_t);
-		$("#status_"+id).attr("value",n_t);
-		return true;
-	}
-	else
-	{
-		if(!msg) msg = "error: 操作非法";
-		alert(msg);
-		return false;
-	}
-}
 function action_wealth_select(val)
 {
 	if(val == '1'){

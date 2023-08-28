@@ -414,6 +414,24 @@ class user_control extends phpok_control
 		$this->success($note,$this->url('user'));
 	}
 
+	public function status_f()
+	{
+		if(!$this->popedom["status"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get("id","int");
+		if(!$id){
+			$this->error(P_Lang('没有指定ID'));
+		}
+		$rs = $this->model('user')->get_one($id);
+		$status = intval($rs['status'])+1;
+		if($status>2){
+			$status = 0;
+		}
+		$this->model('user')->set_status($id,$status);
+		$this->success($status);
+	}
+
 	public function ajax_status_f()
 	{
 		if(!$this->popedom["status"]) exit(P_Lang('您没有权限执行此操作'));
