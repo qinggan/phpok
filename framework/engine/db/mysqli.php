@@ -45,11 +45,11 @@ class db_mysqli extends db
 		$this->_time();
 		$this->conn = mysqli_init();
 		if(!$this->conn){
-			$this->error(mysqli_connect_error($this->conn),mysqli_connect_errno($this->conn));
+			$this->error('连接数据库失败','OKError_MySQL_Connect');
 		}
-		@mysqli_real_connect($this->conn,$this->host,$this->user,$this->pass,$this->database,$this->port,$this->socket,MYSQLI_CLIENT_COMPRESS);
-		if(mysqli_error($this->conn)){
-			$this->error(mysqli_error($this->conn),mysqli_errno($this->conn));
+		mysqli_real_connect($this->conn,$this->host,$this->user,$this->pass,$this->database,$this->port,$this->socket,MYSQLI_CLIENT_COMPRESS);
+		if($this->conn->connect_errno){
+			$this->error($this->conn->connect_error,$this->conn->connect_errno);
 		}
 		mysqli_query($this->conn,"SET NAMES '".$this->charset."'");
 		mysqli_query($this->conn,"SET sql_mode=''");
