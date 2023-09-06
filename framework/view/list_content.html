@@ -166,10 +166,6 @@ function list_content_search(obj)
 <div class="layui-card" phpok-id="JS_LIST">
 	<div class="layui-card-header">
 		<div class="layui-btn-group" name="list-content-btns" id="btn_{$value.id}" data-id="{$value.id}">
-			<input type="button" value="{lang查看}" onclick="$.admin_list.preview(0,'{$rs.is_front}')" class="layui-btn layui-btn-sm layui-btn-normal" />
-			<!-- if $popedom.modify -->
-			<input type="button" value="{lang编辑}" onclick="$.phpok_list.edit(0,'{$pid}','{$rs.nick_title ? $rs.nick_title : $rs.title}','{$rs.admin-post-style}','{$rs.admin-post-width}','{$rs.admin-post-height}')" class="layui-btn layui-btn-sm" />
-			<!-- /if -->
 			<!-- if $popedom.comment && $rs.comment_status -->
 			<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_list.reply_it(0)">
 				{lang评论}
@@ -181,7 +177,7 @@ function list_content_search(obj)
 			</button>
 			<!-- /if -->
 			<!-- if $popedom.delete -->
-			<input type="button" value="{lang删除}" onclick="$.admin_list.content_del('{$value.id}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+			<input type="button" value="{lang删除}" onclick="$.admin_list.content_del(0)" class="layui-btn layui-btn-sm layui-btn-danger" />
 			<!-- /if -->
 		</div>
 		<span id="AP_ACTION_HTML"></span>
@@ -216,6 +212,7 @@ function list_content_search(obj)
 			<!-- loop from=$layout key=$key value=$value -->
 			<th lay-data="{field:'{$key}'{if $value.width},width:{$value.width}{/if}{if $popedom.modify},edit:{$value.edit}{/if},sort:{$value.sort},align:'{$value.align}',totalRow:{$value.stat}{if $value.stat_title},totalRowText:'{$value.stat_title}'{/if}}">{$value.title}</th>
 			<!-- /loop -->
+			<th lay-data="{field:'_action', width:150,align:'left',fixed:'right',unresize:true}">{lang操作}</th>
 		</tr>
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
@@ -284,6 +281,17 @@ function list_content_search(obj)
 					<!-- /if -->
 				<!-- /if -->
 			<!-- /loop -->
+			<td>
+				<div class="layui-btn-group" name="list-content-btns" id="btn_{$value.id}" data-id="{$value.id}">
+					<input type="button" value="{lang查看}" onclick="$.admin_list.preview('{$value.id}','{$rs.is_front}')" class="layui-btn layui-btn-xs layui-btn-normal" />
+					<!-- if $popedom.modify -->
+					<input type="button" value="{lang编辑}" onclick="$.phpok_list.edit('{$value.id}','{$pid}','{$rs.nick_title ? $rs.nick_title : $rs.title}','{$rs.admin-post-style}','{$rs.admin-post-width}','{$rs.admin-post-height}')" class="layui-btn layui-btn-xs" />
+					<!-- /if -->
+					<!-- if $popedom.delete -->
+					<input type="button" value="{lang删除}" onclick="$.admin_list.content_del('{$value.id}')" class="layui-btn layui-btn-xs layui-btn-danger" />
+					<!-- /if -->
+				</div>
+			</td>
 		</tr>
 		<!-- /loop -->
 		</table>
@@ -327,7 +335,9 @@ function list_content_search(obj)
 					<!-- /if -->
 					<!-- if $popedom.modify && $rs.subtopics -->
 					<option value="set_parent">{lang绑定父层}</option>
-					<option value="unset_parent">{lang取消父层}</option>
+						<!-- if $keywords && $keywords._id == 3 -->
+						<option value="unset_parent">{lang取消父层}</option>
+						<!-- /if -->
 					<!-- /if -->
 				</optgroup>
 				</select>

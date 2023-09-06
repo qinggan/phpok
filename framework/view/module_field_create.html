@@ -1,29 +1,4 @@
 <!-- include tpl=head_lay -->
-<script type="text/javascript">
-function field_form_opt(val,eid)
-{
-	if(!val || val == "undefined"){
-		$("#form_type_ext").html('').hide();
-		return false;
-	}
-	var url = get_url("form","config") + "&id="+$.str.encode(val);
-	if(eid && eid != "undefined"){
-		url += "&eid="+eid;
-	}
-	url += "&etype=fields";
-	var html = get_ajax(url);
-	if(html && html != 'exit'){
-		$("#form_type_ext").html(html).show();
-	}
-}
-function search_set(val){
-	if(val == 3){
-		$("#search_separator_html").show();
-	}else{
-		$("#search_separator_html").hide();
-	}
-}
-</script>
 <form method="post" class="layui-form" id="form_save" onsubmit="return $.admin_module.field_addok('{$mid}')">
 <div class="layui-card">
 	<div class="layui-card-body">
@@ -38,7 +13,7 @@ function search_set(val){
 					<div class="layui-container">
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang字段名称：}
+								{lang字段名称}
 							</label>
 							<div class="layui-input-inline default-auto">
 								<input type="text" id="title" name="title" class="layui-input" value="{$rs.title}" />
@@ -49,7 +24,7 @@ function search_set(val){
 						</div>
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang字段标识：}
+								{lang字段标识}
 							</label>
 							<div class="layui-input-inline auto">
 								<input type="text" id="identifier" name="identifier" class="layui-input" value="{$rs.identifier}" />
@@ -63,7 +38,7 @@ function search_set(val){
 						</div>
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang字段备注}：
+								{lang字段备注}
 							</label>
 							<div class="layui-input-inline default-auto">
 								<input type="text" id="note" name="note" class="layui-input" value="{$rs.note}" />
@@ -74,7 +49,7 @@ function search_set(val){
 						</div>
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang字段类型：}
+								{lang字段类型}
 							</label>
 							<div class="layui-input-inline default-auto">
 								<select name="field_type" id="field_type">
@@ -90,10 +65,10 @@ function search_set(val){
 						</div>
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang表单类型：}
+								{lang表单类型}
 							</label>
 							<div class="layui-input-inline default-auto">
-								<select id="form_type" name="form_type" lay-ignore onchange="$._configForm.option(this.value,'form_type_ext','{$id}','module')">
+								<select id="form_type" name="form_type" lay-filter="form_type">
 									<option value="">{lang请选择表单…}</option>
 									<!-- loop from=$form_list key=$key value=$value id=$tmpid -->
 									<option value="{$key}"{if $key == $rs.form_type} selected{/if}>{$value.title}<!-- if $value.note -->（{$value.note}）<!-- /if --></option>
@@ -107,7 +82,7 @@ function search_set(val){
 						<div id="form_type_ext" style="display:none;"></div>
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang样式：}
+								{lang样式}
 							</label>
 							<div class="layui-input-block gray">{lang不能超过250个字符，不熟悉CSS，请查相关手册，不支持引号}</div>
 							<div class="layui-input-block">
@@ -116,7 +91,7 @@ function search_set(val){
 						</div>
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang默认值：}
+								{lang默认值}
 							</label>
 							<div class="layui-input-block gray">{lang设置表单默认值，如果表单中有多个值，请用英文逗号隔开}</div>
 							<div class="layui-input-block">
@@ -125,7 +100,7 @@ function search_set(val){
 						</div>
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang格式化：}
+								{lang格式化}
 							</label>
 							<div class="layui-input-block">
 								<select name="format" id="format">
@@ -194,7 +169,7 @@ function search_set(val){
 					<div class="layui-container">
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang排序}：
+								{lang排序}
 							</label>
 							<div class="layui-input-inline short">
 								<input type="text" name="taxis" id="taxis" class="layui-input" value="{$rs.taxis ? $rs.taxis : 255}" />
@@ -205,7 +180,18 @@ function search_set(val){
 						</div>
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang显示组：}
+								{lang列宽}
+							</label>
+							<div class="layui-input-inline short">
+								<input type="text" value="0" name="admin-list-width" id="admin-list-width" class="layui-input" />
+							</div>
+							<div class="layui-form-mid">
+								用于后台列表中显示的宽度，仅限列表字段启用后有效，单位是 px（像素）
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang显示组}
 							</label>
 							<div class="layui-input-inline auto">
 								<!-- loop from=$groups key=$key value=$value id=$tmpid -->
@@ -218,7 +204,7 @@ function search_set(val){
 						</div>
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang唯一性：}
+								{lang唯一性}
 							</label>
 							<div class="layui-input-inline auto">
 								<input type="radio" name="onlyone" value="0"{if !$rs.onlyone} checked{/if} title="{lang禁用}" />
@@ -230,7 +216,7 @@ function search_set(val){
 						</div>
 						<div class="layui-form-item">
 							<label class="layui-form-label">
-								{lang前端处理}：
+								{lang前端处理}
 							</label>
 							<div class="layui-input-inline auto">
 								<input type="radio" name="is_front" value="0"{if !$rs.is_front} checked{/if} title="{lang禁用}" />
@@ -238,34 +224,6 @@ function search_set(val){
 							</div>
 							<div class="layui-form-mid">
 								{lang设置前端是否可用，如果需要前端加载相应属性请在这里操作}
-							</div>
-						</div>
-						<div class="layui-form-item">
-							<label class="layui-form-label">
-								{lang搜索}：
-							</label>
-							<div class="layui-input-block gray">{lang指定该字段的搜索类型，使用区间搜索需要设置分隔符}</div>
-							<div class="layui-input-block">
-								<ul class="layout">
-									<li><input type="radio" lay-filter="search" name="search" value="0"{if !$rs.search} checked{/if} title="{lang不支持搜索}" /></li>
-									<li><input type="radio" lay-filter="search" name="search" value="1"{if $rs.search == 1} checked{/if} title="{lang完全匹配搜索}" /></li>
-									<li><input type="radio" lay-filter="search" name="search" value="2"{if $rs.search == 2} checked{/if} title="{lang部分匹配搜索}" /></li>
-									<li><input type="radio" lay-filter="search" name="search" value="3"{if $rs.search == 3} checked{/if} title="{lang区间搜索}" /></li>
-									<li id="search_separator_html" {if !$rs.search || $rs.search != 3}style="display:none"{/if}>
-										<input type="text" name="search_separator" id="search_separator" value="{$rs.search_separator}" class="layui-input" placeholder="{lang分隔符}" />
-									</li>
-								</ul>
-							</div>
-						</div>
-						<div class="layui-form-item">
-							<label class="layui-form-label">
-								{lang列宽}
-							</label>
-							<div class="layui-input-inline short">
-								<input type="text" name="admin-list-width" id="admin-list-width" class="layui-input" />
-							</div>
-							<div class="layui-form-mid">
-								用于后台列表中显示的宽度，仅限列表字段启用后有效，单位是 px（像素）
 							</div>
 						</div>
 						<div class="layui-form-item">
@@ -290,6 +248,65 @@ function search_set(val){
 							</div>
 							<div class="layui-form-mid">
 								仅用于后台列表当前页面快速排序
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang后台统计}
+							</label>
+							<div class="layui-input-inline auto">
+								<input type="radio" name="admin-list-stat" value="0"{if !$rs.admin-list-stat} checked{/if} title="{lang禁用}" />
+								<input type="radio" name="admin-list-stat" value="1"{if $rs.admin-list-stat} checked{/if} title="{lang启用}" />
+							</div>
+							<div class="layui-form-mid">
+								{lang启用此项必须同时在项目里启用统计才有效}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								{lang历史日志}
+							</label>
+							<div class="layui-input-inline auto">
+								<input type="radio" name="admin-history" value="0"{if !$rs.admin-history} checked{/if} title="{lang禁用}" />
+								<input type="radio" name="admin-history" value="1"{if $rs.admin-history} checked{/if} title="{lang启用}" />
+							</div>
+							<div class="layui-form-mid">
+								{lang启用后会对比旧版数据}
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								<i class="layui-icon layui-tips" lay-tips="{lang用于显示备注的方式，文本框和文本区建议不显示，横排不支持右侧备注}">&#xe702;</i>
+								{lang备注方式}
+							</label>
+							<div class="layui-input-block">
+								<input type="radio" name="admin-note-show" value="0"{if !$rs.admin-note-show} checked{/if} title="{lang不提示}" />
+								<input type="radio" name="admin-note-show" value="1"{if $rs.admin-note-show == 1} checked{/if} title="{lang左侧图标提示}" />
+								<input type="radio" name="admin-note-show" value="2"{if $rs.admin-note-show == 2} checked{/if} title="{lang表单上文本提示}" />
+								<input type="radio" name="admin-note-show" value="3"{if $rs.admin-note-show == 3} checked{/if} title="{lang表单右文本提示}" />
+								<input type="radio" name="admin-note-show" value="4"{if $rs.admin-note-show == 4} checked{/if} title="{lang表单右图标提示}" />
+								<input type="radio" name="admin-note-show" value="5"{if $rs.admin-note-show == 5} checked{/if} title="{lang表单下文本提示}" />
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								<i class="layui-icon layui-tips" lay-tips="{lang指定该字段的搜索类型，使用区间模式需要设置分隔符}">&#xe702;</i>
+								{lang搜索}
+							</label>
+							<div class="layui-input-block">
+								<input type="radio" lay-filter="search" name="search" value="0"{if !$rs.search} checked{/if} title="{lang不支持}" />
+								<input type="radio" lay-filter="search" name="search" value="1"{if $rs.search == 1} checked{/if} title="{lang完全匹配}" />
+								<input type="radio" lay-filter="search" name="search" value="2"{if $rs.search == 2} checked{/if} title="{lang部分匹配}" />
+								<input type="radio" lay-filter="search" name="search" value="3"{if $rs.search == 3} checked{/if} title="{lang区间模式}" />
+							</div>
+						</div>
+						<div class="layui-form-item" id="search_separator_html" {if !$rs.search || $rs.search != 3}style="display:none"{/if}>
+							<label class="layui-form-label">{lang搜索分隔符}</label>
+							<div class="layui-input-inline short">
+								<input type="text" name="search_separator" id="search_separator" value="{$rs.search_separator}" class="layui-input" />
+							</div>
+							<div class="layui-form-mid">
+								{lang使用区间模式搜索需要设置好分隔符}
 							</div>
 						</div>
 					</div>

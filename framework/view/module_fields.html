@@ -39,11 +39,11 @@ $(document).ready(function(){
 			<input type="button" value="{lang添加字段}" onclick="$.admin_module.field_create('{$id}','{$rs.title}')" class="layui-btn layui-btn-sm" />
 		</div>
 	</div>
-	<div class="layui-card-body">
+	<div class="layui-card-body layui-form">
 		<table class="layui-table">
 		<thead>
 			<tr>
-				<th colspan="2" class="id">ID</th>
+				<th class="id">ID</th>
 				<th>{lang字段名}</th>
 				<th>{lang名称}/{lang备注}</th>
 				<th>{lang组}</th>
@@ -58,9 +58,8 @@ $(document).ready(function(){
 		<!-- loop from=$used_list key=$key value=$value id=$tmpid -->
 		<tr>
 			<td>
-				<input type="checkbox" value="{$value.id}" />
+				<input type="checkbox" class="ids" value="{$value.id}" title="{$value.id}" />
 			</td>
-			<td class="center">{$value.id}</td>
 			<td>{$value.identifier}</td>
 			<td>{$value.title}<!-- if $value.note --><div class="gray small">{$value.note}</div><!-- /if --></td>
 			<td>{$value.group_title}</td>

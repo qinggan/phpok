@@ -69,6 +69,7 @@ img{
 .layui-form-label{
 	overflow:hidden;
 	width:120px;
+	padding-top:0;
 }
 
 .layui-form-label + .layui-form-mid{

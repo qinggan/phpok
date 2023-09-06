@@ -348,6 +348,7 @@ class module_control extends phpok_control
 		$array['admin-list-sort'] = $this->get('admin-list-sort','int');
 		$array['admin-list-stat'] = $this->get('admin-list-stat','int');
 		$array['admin-history'] = $this->get('admin-history','int');
+		$array['admin-note-show'] = $this->get('admin-note-show','int');
 		$ext = $this->lib('form')->ext($array['form_type']);
 		if($ext && count($ext)>0){
 			foreach($ext as $key=>$value){
@@ -488,6 +489,7 @@ class module_control extends phpok_control
 		$array['admin-list-sort'] = $this->get('admin-list-sort','int');
 		$array['admin-list-stat'] = $this->get('admin-list-stat','int');
 		$array['admin-history'] = $this->get('admin-history','int');
+		$array['admin-note-show'] = $this->get('admin-note-show','int');
 		//读取扩展字段
 		$ext = $this->lib('form')->ext($array["form_type"]);
 		if($ext && count($ext)>0){

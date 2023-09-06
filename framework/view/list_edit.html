@@ -1,4 +1,9 @@
 <!-- include tpl=head_lay nopadding=$isopen -->
+<style type="text/css">
+.layui-form-label{
+	padding-top:0;
+}
+</style>
 <input type="hidden" id="_root_cate" value="{$p_rs.cate}" />
 <script type="text/javascript" src="{func include_js list.js}"></script>
 <form method="post" id="_listedit" class="layui-form"{if $isopen} onsubmit="return false"{else} onsubmit="return $.admin_list_edit.save2close()"{/if}>
@@ -91,36 +96,82 @@
 					<!-- /if -->
 					<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
 					<!-- if $value.sublist -->
-					<div class="layui-row layui-col-space10">
-						<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg3">
-					    	<label class="layui-form-label">
-						    	<!-- if $value.note --><i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i> <!-- /if -->{$value.title}
-								<small style="color:#ccc;display:block;">{$value.identifier}</small>
-							</label>
-							<div class="layui-input-block">
-								{$value.html}
+					<div class="layui-row">
+						<div class="layui-col-xs12 layui-col-sm6 {$value.css_cls}">
+							<div class="layui-form-item" data-id="{$value.identifier}">
+						    	<label class="layui-form-label">
+							    	<!-- if $value.note && ($value.admin-note-show == 1 || $value.admin-note-show == 3 || $value.admin-note-show == 4) -->
+							    	<i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i>
+							    	<!-- /if -->
+							    	{$value.title}
+									<small style="color:#ccc;display:block;">{$value.identifier}</small>
+								</label>
+								<!-- if $value.note && $value.admin-note-show == 2 -->
+								<div class="layui-input-block gray">{$value.note}</div>
+								<!-- /if -->
+								<div class="layui-input-block">
+									{$value.html}
+								</div>
+								<!-- if $value.note && $value.admin-note-show == 5 -->
+								<div class="layui-input-block gray">{$value.note}</div>
+								<!-- /if -->
 							</div>
 						</div>
 						<!-- loop from=$value.sublist key=$k value=$v id=$idxx -->
 						<div class="layui-col-xs12 layui-col-sm6 {$value.css_cls}">
-							<label class="layui-form-label">
-								<!-- if $v.note --><i class="layui-icon layui-tips" lay-tips="{$v.note}">&#xe702;</i> <!-- /if -->{$v.title}
-								<small style="color:#ccc;display:block;">{$v.identifier}</small>
-							</label>
-							<div class="layui-input-block" style="vertical-align: bottom;">
-								{$v.html}
+							<div class="layui-form-item" data-id="{$v.identifier}">
+								<label class="layui-form-label">
+									<!-- if $v.note && ($v.admin-note-show == 1 || $v.admin-note-show == 3 || $v.admin-note-show == 4) -->
+									<i class="layui-icon layui-tips" lay-tips="{$v.note}">&#xe702;</i>
+									<!-- /if -->
+									{$v.title}
+									<small style="color:#ccc;display:block;">{$v.identifier}</small>
+								</label>
+								<!-- if $v.note && $v.admin-note-show == 2 -->
+								<div class="layui-input-block gray">{$v.note}</div>
+								<!-- /if -->
+								<div class="layui-input-block">
+									{$v.html}
+								</div>
+								<!-- if $v.note && $v.admin-note-show == 2 -->
+								<div class="layui-input-block gray">{$v.note}</div>
+								<!-- /if -->
 							</div>
 						</div>
 						<!-- /loop -->
 					</div>
 					<!-- else -->
-	
 					<div class="layui-form-item" data-id="{$value.identifier}">
 						<label class="layui-form-label">
+							<!-- if $value.note && $value.admin-note-show == 1 -->
+							<i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i>
+							<!-- /if -->
 							{$value.title}
 							<small style="color:#ccc;display:block;">{$value.identifier}</small>
 						</label>
-						<!-- if $value.note && $value.form_type != 'text' --><div class="layui-input-block gray">{$value.note}</div><!-- /if -->
+						<!-- if $value.note && $value.admin-note-show == 2 -->
+						<div class="layui-input-block gray">{$value.note}</div>
+						<!-- /if -->
+						<!-- if $value.note && ($value.admin-note-show == 3 || $value.admin-note-show == 4) -->
+						<div class="layui-input-inline auto">
+							{$value.html}
+							<!-- if $popedom.ext && $value.is_edit && $session.adm_develop -->
+							<div class="layui-btn-group">
+								<!-- if $ext_module != 'add-list' -->
+								<input type="button" value="{lang编辑}" class="layui-btn layui-btn-xs" onclick="ext_edit('{$value.identifier}','{$ext_module}')" />
+								<!-- /if -->
+								<input type="button" value="{lang删除}" class="layui-btn layui-btn-xs layui-btn-danger" onclick="ext_delete('{$value.identifier}','{$ext_module}','{$value.title}')" />
+							</div>
+							<!-- /if -->
+						</div>
+						<div class="layui-form-mid">
+							<!-- if $value.admin-note-show == 4 -->
+							<i class="layui-icon layui-tips gray" lay-tips="{$value.note}">&#xe607;</i>
+							<!-- else -->
+							{$value.note}
+							<!-- /if -->
+						</div>
+						<!-- else -->
 						<div class="layui-input-block">
 							{$value.html}
 							<!-- if $popedom.ext && $value.is_edit && $session.adm_develop -->
@@ -132,6 +183,8 @@
 							</div>
 							<!-- /if -->
 						</div>
+						<!-- /if -->
+						<!-- if $value.note && $value.admin-note-show == 5 --><div class="layui-input-block gray">{$value.note}</div><!-- /if -->
 					</div>
 					<!-- /if -->
 					<!-- /loop -->

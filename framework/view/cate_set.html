@@ -1,4 +1,9 @@
 <!-- include tpl=head_lay -->
+<style type="text/css">
+.cate-ext .layui-form-label{
+	padding-top:0;
+}
+</style>
 <form method="post" id="post_save" class="layui-form" onsubmit="return $.admin_cate.save()">
 <!-- if $id --><input type="hidden" id="id" name="id" value="{$id}" /><!-- /if -->
 <div class="layui-fluid layui-bg-white">
@@ -179,13 +184,21 @@
 					</div>
 					<!-- /loop -->
 					<!-- loop from=$extlist key=$key value=$value id=$tmpid -->
-					<div class="layui-form-item">
+					<div class="layui-form-item cate-ext">
 						<label class="layui-form-label">
+							<!-- if $value.note && ($value.admin-note-show == 1 || $value.admin-note-show == 3 || $value.admin-note-show == 4) -->
+							<i class="layui-icon layui-tips" lay-tips="{$value.note}">&#xe702;</i>
+							<!-- /if -->
 							{$value.title}
-							<div class="darkblue"><small>[{$value.identifier}]</small></div>
+							<small style="color:#ccc;display:block;">{$value.identifier}</small>
 						</label>
-						<!-- if $value.note --><div class="layui-input-block gray">{$value.note}</div><!-- /if -->
+						<!-- if $value.note && $value.admin-note-show == 2 -->
+						<div class="layui-input-block gray">{$value.note}</div>
+						<!-- /if -->
 						<div class="layui-input-block">{$value.html}</div>
+						<!-- if $value.note && $value.admin-note-show == 5 -->
+						<div class="layui-input-block gray">{$value.note}</div>
+						<!-- /if -->
 						<!-- if $popedom.ext && $session.adm_develop -->
 						<div class="layui-input-block mtop">
 							<div class="layui-btn-group">
