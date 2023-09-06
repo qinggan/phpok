@@ -32,12 +32,6 @@
 		if(totalRow == 1){
 			opt['totalRow'] = true;
 		}
-		opt['setWidth'] = function(e){
-			
-		}
-		if(total>10){
-			opt['height'] = 'full-210';
-		}
 		layui.table.init("tablelist",opt);
 		//注：edit是固定事件名，tablelist是table原始容器的属性 lay-filter="对应的值"
 		layui.table.on('edit(tablelist)', function(obj){
@@ -77,6 +71,6 @@
 				$.dialog.tips(rs.info);
 				return false;
 			});
-		})
+		});
 	});
 })(jQuery);

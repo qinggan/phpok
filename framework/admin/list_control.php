@@ -439,7 +439,7 @@ class list_control extends phpok_control
 			$pageid = 1;
 		}
 		$offset = ($pageid-1) * $psize;
-		$condition = "l.site_id='".$site_id."' AND l.project_id='".$pid."' AND l.parent_id='0' ";
+		$condition = "l.site_id='".$site_id."' AND l.project_id='".$pid."' ";
 		$pageurl = $this->url("list","action","id=".$pid);
 		if($psize2){
 			$pageurl .= "&psize=".$psize2;
@@ -458,6 +458,9 @@ class list_control extends phpok_control
 		}
 		if($keywords){
 			$this->assign('keywords',$keywords);
+		}
+		if(!$keywords || ($keywords && $keywords['_id'] && $keywords['_id'] != 3)){
+			$condition .= "  AND l.parent_id='0' ";
 		}
 		if($keywords && $keywords['id'] && intval($keywords['id'])){
 			if($keywords['_id'] == 1){
@@ -726,18 +729,17 @@ class list_control extends phpok_control
 			if($rs[$value["identifier"]] != ''){
 				$value["content"] = $rs[$value["identifier"]];
 			}
+			$css_cls = "layui-col-md4 layui-col-lg3";
 			if($value['sublist']){
 				$count = count($value['sublist']);
-				$css_cls = "layui-col-md4 layui-col-lg3";
 				if($count == 2){
-					$css_cls = "layui-col-md4 layui-col-lg4";
+					$css_cls = "layui-col-md4";
 				}elseif($count == 1){
-					$css_cls = "layui-col-md8 layui-col-lg9";
+					$css_cls = "layui-col-md6";
 				}
-				$value['css_cls'] = $css_cls;
 			}
+			$value['css_cls'] = $css_cls;
 			if(!$value['group_id'] || $value['group_id'] == 'main'){
-
 				$extlist[] = $this->lib('form')->format($value);
 			}else{
 				$e_sublist[] =  $this->lib('form')->format($value);
@@ -847,16 +849,16 @@ class list_control extends phpok_control
 			if($rs[$value["identifier"]] != ''){
 				$value["content"] = $rs[$value["identifier"]];
 			}
+			$css_cls = "layui-col-md4 layui-col-lg3";
 			if($value['sublist']){
 				$count = count($value['sublist']);
-				$css_cls = "layui-col-md4 layui-col-lg3";
 				if($count == 2){
-					$css_cls = "layui-col-md4 layui-col-lg4";
+					$css_cls = "layui-col-md4";
 				}elseif($count == 1){
-					$css_cls = "layui-col-md8 layui-col-lg9";
+					$css_cls = "layui-col-md6";
 				}
-				$value['css_cls'] = $css_cls;
 			}
+			$value['css_cls'] = $css_cls;
 			if(!$value['group_id'] || $value['group_id'] == 'main'){
 				$extlist[] = $this->lib('form')->format($value);
 			}else{
@@ -1449,7 +1451,7 @@ class list_control extends phpok_control
 	{
 		$id = $this->get("id");
 		if(!$id){
-			$this->json(P_Lang('没有指定主题ID'));
+			$this->error(P_Lang('没有指定主题ID'));
 		}
 		$idlist = explode(",",$id);
 		$chk_id = intval($idlist[0]);
@@ -1457,13 +1459,16 @@ class list_control extends phpok_control
 		$pid = $rs["project_id"];
 		$this->popedom_auto($pid);
 		if(!$this->popedom['delete']){
-			$this->json(P_Lang('您没有权限执行此操作'));
+			$this->error(P_Lang('您没有权限执行此操作'));
 		}
 		foreach($idlist as $key=>$value){
 			$value = intval($value);
+			if(!$value){
+				continue;
+			}
 			$this->model('list')->delete($value);
 		}
-		$this->json(P_Lang('主题删除成功'),true);
+		$this->success();
 	}
 
 	/**

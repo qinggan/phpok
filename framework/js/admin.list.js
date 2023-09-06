@@ -417,15 +417,22 @@
 		},
 		content_del:function(id)
 		{
+			if(!id || id == 'undefined' || id == 0){
+				id = $.checkbox.join('.ids');
+				if(!id){
+					$.dialog.tips("未指定要删除的主题");
+					return false;
+				}
+			}
 			$.dialog.confirm("确定要删除主题ID：<span class='red'>"+id+"</span> 的信息吗？<br />删除后是不能恢复的？",function(){
 				var url = get_url("list","del","id="+id);
 				$.phpok.json(url,function(rs){
-					if(rs.status == 'ok'){
-						$.dialog.tips(p_lang('主题删除成功'));
-						$.phpok.reload();
-						return true;
+					if(!rs.status){
+						$.dialog.tips(rs.info);
+						return false;
 					}
-					$.dialog.alert(rs.content);
+					$.dialog.tips('删除成功');
+					$.phpok.reload();
 					return false;
 				});
 			});

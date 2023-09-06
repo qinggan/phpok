@@ -144,26 +144,7 @@ function set_sort()
 }
 
 //批量删除
-function set_delete()
-{
-	var ids = $.checkbox.join('.ids');
-	if(!ids){
-		$.dialog.tips("未指定要删除的主题");
-		return false;
-	}
-	$.dialog.confirm("确定要删除选定的主题吗？<br />删除后是不能恢复的？",function(){
-		var url = get_url("list","del") +"&id="+$.str.encode(ids);
-		var rs = json_ajax(url);
-		if(rs.status == "ok"){
-			$.dialog.tips(p_lang('主题删除成功'),function(){
-				$.phpok.reload();
-			}).lock();
-		}else{
-			$.dialog.tips(rs.content);
-			return false;
-		}
-	});
-}
+
 
 function show_order()
 {
@@ -353,7 +334,7 @@ function list_action_exec()
 		return false;
 	}
 	if(val == 'delete'){
-		set_delete();
+		$.admin_list.content_del();
 		return false;
 	}
 	if(val == 'sort'){
