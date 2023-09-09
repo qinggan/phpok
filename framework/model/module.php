@@ -103,24 +103,60 @@ class module_model_base extends phpok_model
 		return $rslist;
 	}
 
-	//检查表是否存在
-	public function chk_tbl_exists($id,$mtype=0,$tbl='')
+	public function check_table_exists($module)
 	{
-		if(!$id){
+		if(!$module){
 			return false;
+		}
+		if(is_numeric($module)){
+			$module = $this->get_one($module);
+			if(!$module){
+				return false;
+			}
 		}
 		$mlist = $this->db->list_tables();
 		if(!$mlist){
 			return false;
 		}
-		if(!$tbl){
-			$tbl = "list";
-		}
-		$tblname = $mtype ? $this->db->prefix.$id : $this->db->prefix.$tbl."_".$id;
+		$tblname = tablename($module);
 		if(in_array($tblname,$mlist)){
 			return true;
 		}
 		return false;
+	}
+
+	//检查表是否存在
+	public function chk_tbl_exists($module)
+	{
+		return $this->check_table_exists($module);
+	}
+
+	/**
+	 * 获取模块的表名
+	 * @参数 $module 模块名称，数组或数字
+	 * @参数 $is_prefix 是否包含前缀
+	 * @返回 表名称
+	**/
+	public function tablename($module,$is_prefix=true)
+	{
+		if(!$module){
+			return false;
+		}
+		if(is_numeric($module)){
+			$module = $this->get_one($module);
+			if(!$module){
+				return false;
+			}
+		}
+		if($module['mtype']){
+			$tblname = $module['tbname'] ? $module['tbname'] : $module['id'];
+		}else{
+			$tblname = $module['tbl'] ? $module['tbl']."_".$module['id'] : 'list_'.$module['id'];
+		}
+		if($is_prefix){
+			$tblname = $this->db()->prefix().$tblname;
+		}
+		return $tblname;
 	}
 
 	public function tbl_fields_list($tbl)

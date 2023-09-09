@@ -313,7 +313,7 @@ class post_control extends phpok_control
 		$data = array('site_id'=>$project['site_id']);
 		$tid = $this->get('tid','int');
 		if($tid){
-			$rs = $this->model('list')->single_one($tid,$project['module']);
+			$rs = $this->model('list')->single_one($tid,$module);
 			$data['id'] = $rs['id'];
 		}
 		$data['project_id'] = $project['id'];

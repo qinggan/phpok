@@ -76,13 +76,13 @@ class form_control extends phpok_control
 				$tmp_keywords = str_replace(' ','%',$keywords);
 				$condition .= " `".$field_val."` LIKE '%".$keywords."%'";
 			}
-			$total = $this->db->count("SELECT count(id) FROM ".$this->db->prefix.$module['id']." WHERE ".$condition);
+			$total = $this->db->count("SELECT count(id) FROM ".tablename($module)." WHERE ".$condition);
 			if(!$total){
 				$this->error('暂无数据');
 			}
 			$fields = $field_id.','.$field_val;
 			$orderby = $project['orderby'] ? $project['orderby'] : 'sort DESC,id DESC';
-			$sql = "SELECT ".$fields." FROM ".$this->db->prefix.$module['id']." WHERE ".$condition." ORDER BY ".$orderby." LIMIT ".$offset.",".$psize;
+			$sql = "SELECT ".$fields." FROM ".tablename($module)." WHERE ".$condition." ORDER BY ".$orderby." LIMIT ".$offset.",".$psize;
 			$rslist = $this->db->get_all($sql);
 			$data = array('pageSize'=>$psize,'pageNumber'=>$pageid,'totalRow'=>$total,'totalPage'=>ceil($total/$psize));
 			$data['list'] = $rslist;

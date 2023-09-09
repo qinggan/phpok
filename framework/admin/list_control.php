@@ -683,7 +683,7 @@ class list_control extends phpok_control
 		$module = $this->model('module')->get_one($project['module']);
 		$this->assign('m_rs',$module);
 		if($id){
-			$rs = $this->model('list')->single_one($id,$project['module']);
+			$rs = $this->model('list')->single_one($id,$module);
 			if(!$rs){
 				$this->error(P_Lang('主题信息不存在'));
 			}
@@ -1554,7 +1554,7 @@ class list_control extends phpok_control
 		if(!$popedom['status']){
 			$this->error(P_Lang('您没有权限'));
 		}
-		$rs = $this->model('list')->single_one($id,$project['module']);
+		$rs = $this->model('list')->single_one($id,$module);
 		$status = $rs["status"] ? 0 : 1;
 		$data = array();
 		$data['id'] = $id;
@@ -2053,7 +2053,7 @@ class list_control extends phpok_control
 		}
 		$module = $this->model('module')->get_one($project['module']);
 		if($module && $module['mtype']){
-			$rs = $this->model('list')->single_one($id,$project['module']);
+			$rs = $this->model('list')->single_one($id,$module);
 			if(!$rs){
 				$this->error(P_Lang('信息不存在'));
 			}

@@ -279,7 +279,6 @@ class form_model_base extends phpok_model
 			}
 			$flist = $this->model('module')->fields_all($mid,'identifier');
 			if($flist){
-				$tbl = $module['mtype'] ? $this->db->prefix.$mid : $this->db->prefix."list_".$mid;
 				foreach($flist as $key=>$value){
 					if(!$value['search'] || $value['search'] == 3){
 						continue;
@@ -296,7 +295,7 @@ class form_model_base extends phpok_model
 							$tmp_condition[] = $v['identifier']." LIKE '%".$v."%'";
 						}
 					}
-					$sql = "SELECT GROUP_CONCAT(id SEPARATOR '|') FROM ".$tbl." WHERE ".implode(" OR ",$tmp_condition);
+					$sql = "SELECT GROUP_CONCAT(id SEPARATOR '|') FROM ".tablename($module)." WHERE ".implode(" OR ",$tmp_condition);
 					if($condition){
 						$condition .= " OR ";
 						$condition .= "REPLACE(".$ext.$rs['identifier'].",',','|') REGEXP (".$sql.")";
@@ -601,7 +600,7 @@ class form_model_base extends phpok_model
 		}
 		$module = $this->model('module')->get_one($project['module']);
 		if($module['mtype']){
-			$tmp = $this->model('list')->single_one($info['val'],$project['module']);
+			$tmp = $this->model('list')->single_one($info['val'],$module);
 		}else{
 			$tmp = $this->model('list')->call_one($info['val']);
 		}
@@ -675,7 +674,7 @@ class form_model_base extends phpok_model
 	private function _optlist_title_single($group_id,$rs,$project,$module)
 	{
 		$orderby ='l.sort ASC,l.dateline DESC,l.id DESC';
-		$sql  = " SELECT l.*,c.title catename FROM ".$this->db->prefix.$project['module']." l ";
+		$sql  = " SELECT l.*,c.title catename FROM ".tablename($module)." l ";
 		$sql .= " LEFT JOIN ".$this->db->prefix."cate c ON(l.cate_id=c.id) ";
 		$sql .= " WHERE l.project_id='".$group_id."'";
 		$sql .= " AND l.status=1 AND l.hidden=0 ORDER BY l.sort ASC,l.id DESC";

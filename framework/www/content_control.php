@@ -44,7 +44,7 @@ class content_control extends phpok_control
 				}
 				$module = $this->model('module')->get_one($project['module']);
 				if($module && $module['mtype']){
-					$arc = $this->model('list')->single_one($id,$module['id']);
+					$arc = $this->model('list')->single_one($id,$module);
 					if(!$arc){
 						$this->error_404(P_Lang('没有找到内容'));
 					}

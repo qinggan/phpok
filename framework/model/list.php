@@ -377,11 +377,20 @@ class list_model_base extends phpok_model
 	/**
 	 * 获取独立表数据
 	 * @参数 $id 主题ID
-	 * @参数 $mid 模块ID
+	 * @参数 $module 模块，支持数组和数字
 	**/
-	public function single_one($id,$mid=0)
+	public function single_one($id,$module=0)
 	{
-		$sql = "SELECT * FROM ".$this->db->prefix.$mid." WHERE id='".$id."'";
+		if(!$mid || !$id){
+			return false;
+		}
+		if(is_numeric($module)){
+			$module = $this->model('module')->get_one($module);
+			if(!$module){
+				return false;
+			}
+		}
+		$sql = "SELECT * FROM ".tablename($module)." WHERE id='".$id."'";
 		return $this->db->get_one($sql);
 	}
 
@@ -389,33 +398,50 @@ class list_model_base extends phpok_model
 	/**
 	 * 独立表数据保存
 	 * @参数 $data 要保存的数据，如果存在 $data[id]，表示更新
-	 * @参数 $mid 模块ID
+	 * @参数 $module 模块ID或数组
 	**/
-	public function single_save($data,$mid=0)
+	public function single_save($data,$module=0,$id=0)
 	{
-		if(!$data || !$mid){
+		if(!$data || !$module){
 			return false;
 		}
-		if($data['id']){
-			$id = $data['id'];
-			unset($data['id']);
-			return $this->db->update_array($data,$mid,array('id'=>$id));
-		}else{
-			return $this->db->insert_array($data,$mid);
+		if(is_numeric($module)){
+			$module = $this->model('module')->get_one($module);
 		}
+		if(!$module){
+			return false;
+		}
+		$tblname = tablename($module,false);
+		if(!$id && $data['id']){
+			$id = $data['id'];
+		}
+		if($id){
+			unset($data['id']);
+			return $this->db->update_array($data,$tblname,array('id'=>$id));
+		}
+		return $this->db->insert_array($data,$tblname);
 	}
 
 	/**
 	 * 独立表列表数据
-	 * @参数 $mid 模块ID
+	 * @参数 $module 模块，支持数组或数字
 	 * @参数 $condition 查询条件
 	 * @参数 $offset 起始位置
 	 * @参数 $psize 查询数量
 	 * @参数 $orderby 排序
 	**/
-	public function single_list($mid,$condition='',$offset=0,$psize=30,$orderby='',$field='*')
+	public function single_list($module,$condition='',$offset=0,$psize=30,$orderby='',$field='*')
 	{
-		$sql = "SELECT ".$field." FROM ".$this->db->prefix.$mid." ";
+		if(!$module){
+			return false;
+		}
+		if(is_numeric($module)){
+			$module = $this->model('module')->get_one($module);
+			if(!$module){
+				return false;
+			}
+		}
+		$sql = "SELECT ".$field." FROM ".tablename($module)." ";
 		if($condition){
 			$sql .= " WHERE ".$condition." ";
 		}
@@ -431,12 +457,21 @@ class list_model_base extends phpok_model
 
 	/**
 	 * 查询独立表数量
-	 * @参数 $mid 模块ID
+	 * @参数 $module 模块，支持数组或数字
 	 * @参数 $condition 查询条件
 	**/
-	public function single_count($mid,$condition='')
+	public function single_count($module,$condition='')
 	{
-		$sql = "SELECT count(id) FROM ".$this->db->prefix.$mid." ";
+		if(!$module){
+			return false;
+		}
+		if(is_numeric($module)){
+			$module = $this->model('module')->get_one($module);
+			if(!$module){
+				return false;
+			}
+		}
+		$sql = "SELECT count(id) FROM ".tablename($module)." ";
 		if($condition){
 			$sql .= " WHERE ".$condition." ";
 		}
@@ -447,16 +482,21 @@ class list_model_base extends phpok_model
 	/**
 	 * 删除独立项目下的主题信息
 	 * @参数 $id 主题ID
-	 * @参数 $mid 模块ID
+	 * @参数 $module 模块，支持数组或数字
 	**/
-	public function single_delete($id,$mid=0)
+	public function single_delete($id,$module)
 	{
-		if(!$id || !$mid){
+		if(!$id || !$module){
 			return false;
 		}
-		$this->model('log')->content_delete($id,$mid);
-		//
-		$sql = "DELETE FROM ".$this->db->prefix.$mid." WHERE id='".$id."'";
+		if(is_numeric($module)){
+			$module = $this->model('module')->get_one($module);
+			if(!$module){
+				return false;
+			}
+		}
+		$this->model('log')->content_delete($id,$module['id']);
+		$sql = "DELETE FROM ".tablename($module)." WHERE id='".$id."'";
 		return $this->db->query($sql);
 	}
 
@@ -747,11 +787,7 @@ class list_model_base extends phpok_model
 		if(!in_array($field,$flist)){
 			return false;
 		}
-		if($mtype){
-			$sql = "SELECT id FROM ".$this->db->prefix.$mid." WHERE ".$field."='".$val."'";
-		}else{
-			$sql = "SELECT id FROM ".$this->db->prefix."list_".$mid." WHERE ".$field."='".$val."'";
-		}
+		$sql = "SELECT id FROM ".tablename($mid)." WHERE ".$field."='".$val."'";
 		$sql .= " AND site_id='".$this->site_id."'";
 		if($pid){
 			$sql .= " AND project_id='".$pid."'";
@@ -1392,8 +1428,7 @@ class list_model_base extends phpok_model
 		if(!$module){
 			return false;
 		}
-		$table = $module['mtype'] ? $mid : "list_".$mid;
-		$sql = "SELECT * FROM ".$this->db->prefix.$table." WHERE id='".$id."'";
+		$sql = "SELECT * FROM ".tablename($module)." WHERE id='".$id."'";
 		$rs = $this->db->get_one($sql);
 		if(!$rs){
 			return false;
@@ -1417,7 +1452,7 @@ class list_model_base extends phpok_model
 					}
 				}
 			}
-			$sql = "UPDATE ".$this->db->prefix.$table." SET ".$value['identifier']."='' WHERE id='".$id."'";
+			$sql = "UPDATE ".tablename($module)." SET ".$value['identifier']."='' WHERE id='".$id."'";
 			$this->db->query($sql);
 		}
 		return true;

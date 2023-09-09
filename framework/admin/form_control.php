@@ -200,7 +200,7 @@ class form_control extends phpok_control
 		$tid = $this->get('tid','int');
 		if($tid){
 			if($module['mtype']){
-				$rs = $this->model('list')->single_one($tid,$project['module']);
+				$rs = $this->model('list')->single_one($tid,$module);
 			}else{
 				$rs = $this->model('list')->get_one($tid,false);
 			}
@@ -247,7 +247,7 @@ class form_control extends phpok_control
 		//独立运行
 		if($module['mtype']){
 			if($id){
-				$rs = $this->model('list')->single_one($id,$project['module']);
+				$rs = $this->model('list')->single_one($id,$module);
 			}
 			$array = array();
 			$array["project_id"] = $project['id'];
@@ -259,13 +259,12 @@ class form_control extends phpok_control
 				$array[$value['identifier']] = $this->lib('form')->get($value);
 			}
 			if($id){
-				$array['id'] = $id;
-				$state = $this->model('list')->single_save($array,$project["module"]);
+				$state = $this->model('list')->single_save($array,$module,$id);
 				if(!$state){
 					$this->error(P_Lang('更新数据失败，请检查'));
 				}
 			}else{
-				$id = $this->model('list')->single_save($array,$project["module"]);
+				$id = $this->model('list')->single_save($array,$module);
 				if(!$id){
 					$this->error(P_Lang('保存数据失败，请检查'));
 				}
@@ -552,7 +551,7 @@ class form_control extends phpok_control
 			$this->error(P_Lang('模块信息不存在，请检查'));
 		}
 		if($module['mtype']){
-			$rs = $this->model('list')->single_one($id,$project['module']);
+			$rs = $this->model('list')->single_one($id,$module);
 			if(!$rs){
 				$this->error(P_Lang('数据不存在'));
 			}
@@ -591,7 +590,7 @@ class form_control extends phpok_control
 		$this->assign('p_rs',$project);
 		$this->assign('m_rs',$module);
 		if($module['mtype']){
-			$rs = $this->model('list')->single_one($id,$project['module']);
+			$rs = $this->model('list')->single_one($id,$module);
 		}else{
 			$rs = $this->model('list')->get_one($id,false);
 		}
@@ -662,13 +661,13 @@ class form_control extends phpok_control
 					$condition .= " AND `".$field_val."` LIKE '%".$keywords."%'";
 				}
 			}
-			$total = $this->db->count("SELECT count(id) FROM ".$this->db->prefix.$module['id']." WHERE ".$condition);
+			$total = $this->db->count("SELECT count(id) FROM ".tablename($module)." WHERE ".$condition);
 			if(!$total){
 				$this->error('暂无数据');
 			}
 			$fields = $field_id.','.$field_val;
 			$orderby = $project['orderby'] ? $project['orderby'] : 'sort DESC,id DESC';
-			$sql = "SELECT ".$fields." FROM ".$this->db->prefix.$module['id']." WHERE ".$condition." ORDER BY ".$orderby." LIMIT ".$offset.",".$psize;
+			$sql = "SELECT ".$fields." FROM ".tablename($module)." WHERE ".$condition." ORDER BY ".$orderby." LIMIT ".$offset.",".$psize;
 			$rslist = $this->db->get_all($sql);
 			$data = array('pageSize'=>$psize,'pageNumber'=>$pageid,'totalRow'=>$total,'totalPage'=>ceil($total/$psize));
 			$data['list'] = $rslist;

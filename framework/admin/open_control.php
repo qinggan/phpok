@@ -425,7 +425,7 @@ class open_control extends phpok_control
 			$this->error('模块信息不存在');
 		}
 		if($module['mtype']){
-			$info = $this->model('list')->single_one($id,$module['id']);
+			$info = $this->model('list')->single_one($id,$module);
 		}else{
 			$info = $this->model('list')->get_one($id,false);
 		}

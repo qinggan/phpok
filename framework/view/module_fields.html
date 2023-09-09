@@ -35,8 +35,11 @@ $(document).ready(function(){
 <div class="layui-card">
 	<div class="layui-card-header">
 		{lang列表}
-		<div class="fr">
+		<div class="layui-btn-group fr">
 			<input type="button" value="{lang添加字段}" onclick="$.admin_module.field_create('{$id}','{$rs.title}')" class="layui-btn layui-btn-sm" />
+			<!-- if $rs.mtype -->
+			<input type="button" value="{lang自动生成}" onclick="$.admin_module.field_auto('{$id}','{$rs.title}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+			<!-- /if -->
 		</div>
 	</div>
 	<div class="layui-card-body layui-form">
@@ -69,10 +72,13 @@ $(document).ready(function(){
 			<td><!-- if $value.parent_id -->横排 {$value.parent_id}<!-- else -->竖排<!-- /if --></td>
 			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 			<td>
+				<!-- if !$value.is_system -->
 				<div class="layui-btn-group">
 					<input type="button" value="{lang编辑}" onclick="$.admin_module.field_edit('{$value.id}')" class="layui-btn  layui-btn-xs" />
 					<input type="button" value="{lang删除}" onclick="$.admin_module.field_del('{$value.id}','{$value.title}')" class="layui-btn layui-btn-xs layui-btn-danger" />
+					
 				</div>
+				<!-- /if -->
 			</td>
 		</tr>
 		<!-- /loop -->

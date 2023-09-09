@@ -213,8 +213,7 @@ class inp_control extends phpok_control
 				$module = $this->model('module')->get_one($project['module']);
 				$flist = $this->model('fields')->flist($project['module'],'identifier');
 				if($flist){
-					$tbl = $module['mtype'] ? $this->db->prefix.$module['id'] : $this->db->prefix."list_".$module['id'];
-					$tmpsql = "SELECT id FROM ".$tbl." WHERE project_id='".$project['id']."' ";
+					$tmpsql = "SELECT id FROM ".tablename($module)." WHERE project_id='".$project['id']."' ";
 					$tmpsql_c = array();
 					foreach($flist as $k=>$v){
 						if($v['search'] == 1){

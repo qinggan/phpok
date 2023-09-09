@@ -732,9 +732,8 @@ class res_control extends phpok_control
 			$this->error(P_Lang('没有符合要求的扩展字段'));
 		}
 		foreach($flist as $key=>$value){
-			$tbl = $value['mtype'] ? $this->db->prefix.$value['ftype'] : $this->db->prefix.$value['tbl'].'_'.$value['ftype'];
 			foreach($o2n as $k=>$v){
-				$sql = "UPDATE ".$tbl." SET ".$value['identifier']."=replace(".$value['identifier'].",'".$v['old']."','".$v['new']."')";
+				$sql = "UPDATE ".tablename($value)." SET ".$value['identifier']."=replace(".$value['identifier'].",'".$v['old']."','".$v['new']."')";
 				$this->db->query($sql);
 			}
 		}

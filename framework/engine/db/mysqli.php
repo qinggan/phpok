@@ -500,7 +500,7 @@ class db_mysqli extends db
 		if(!$check){
 			return false;
 		}
-		if(!$oldid){
+		if(!$old){
 			$old = $data['id'];
 		}
 		if(!$data['type']){

@@ -450,11 +450,7 @@ class fields_model_base extends phpok_model
 		if(!$module){
 			return false;
 		}
-			//检查表
-		$table = $this->db->prefix.$module['tbl'].'_'.$module['id'];
-		if($module['mtype']){
-			$table = $this->db->prefix.$module['id'];
-		}
+		$table = tablename($module);
 		$tblist = $this->db->list_tables();
 		if(!in_array($table,$tblist)){
 			return false;

@@ -66,7 +66,7 @@ class module_control extends phpok_control
 			}
 		}
 		$this->model('module')->create_tbl($new_id);
-		$tbl_exists = $this->model('module')->chk_tbl_exists($new_id,$rs['mtype']);
+		$tbl_exists = $this->model('module')->chk_tbl_exists($new_id);
 		if(!$tbl_exists){
 			$this->error(P_Lang('模块创建表失败，请检查'));
 		}
@@ -255,10 +255,10 @@ class module_control extends phpok_control
 		}
 		$this->model('module')->fields_save($tmp_array);
 		if(is_numeric($id)){
-			$tbl_exists = $this->model('module')->chk_tbl_exists($id,$rs['mtype'],$rs['tbl']);
+			$tbl_exists = $this->model('module')->chk_tbl_exists($id);
 			if(!$tbl_exists){
 				$this->model('module')->create_tbl($id);
-				$tbl_exists2 = $this->model('module')->chk_tbl_exists($id,$rs['mtype'],$rs['tbl']);
+				$tbl_exists2 = $this->model('module')->chk_tbl_exists($id);
 				if(!$tbl_exists2){
 					$this->error(P_Lang('模块：[title]创建表失败',array('title'=>$rs['title'])));
 				}
@@ -357,10 +357,10 @@ class module_control extends phpok_control
 		}
 		$this->model('module')->fields_save($array);
 		if(is_numeric($mid)){
-			$tbl_exists = $this->model('module')->chk_tbl_exists($mid,$rs['mtype'],$rs['tbl']);
+			$tbl_exists = $this->model('module')->chk_tbl_exists($mid);
 			if(!$tbl_exists){
 				$this->model('module')->create_tbl($mid);
-				$tbl_exists2 = $this->model('module')->chk_tbl_exists($mid,$rs['mtype'],$rs['tbl']);
+				$tbl_exists2 = $this->model('module')->chk_tbl_exists($mid);
 				if(!$tbl_exists2){
 					$this->error(P_Lang('模块：[title]创建表失败',array('title'=>$rs['title'])));
 				}
@@ -374,6 +374,26 @@ class module_control extends phpok_control
 				}
 				$this->model('module')->create_fields($value['id']);
 			}
+		}
+		$this->success();
+	}
+
+	public function field_auto_f()
+	{
+		if(!$this->popedom["set"]){
+			$this->error(P_Lang('您没有权限执行此操作'));
+		}
+		$id = $this->get('id','int');
+		if(!$id){
+			$this->error(P_Lang('未指定模块ID'));
+		}
+		$info = $this->model('module')->fields_auto($id);
+		if(!$info){
+			$tip = $this->model('module')->errmsg();
+			if(!$tip){
+				$tip = P_Lang('创建失败，请检查');
+			}
+			$this->error($tip);
 		}
 		$this->success();
 	}
@@ -631,7 +651,7 @@ class module_control extends phpok_control
 			$this->error(P_Lang('模块导入失败，保存模块基本信息错误'));
 		}
 		$this->model('module')->create_tbl($insert_id);
-		$tbl_exists = $this->model('module')->chk_tbl_exists($insert_id,$tmp['mtype'],$tmp['tbl']);
+		$tbl_exists = $this->model('module')->chk_tbl_exists($insert_id);
 		if(!$tbl_exists){
 			$this->model('module')->delete($insert_id);
 			$this->error(P_Lang('创建模块表失败'));
@@ -708,12 +728,6 @@ class module_control extends phpok_control
 		$array = array("title"=>$title,"note"=>$note,"taxis"=>$taxis);
 		if($id){
 			$old = $this->model('module')->get_one($id);
-			$layout = $this->get("layout");
-			if($layout && is_array($layout)){
-				$array['layout'] = implode(",",$layout);
-			}else{
-				$array['layout'] = '';
-			}
 			$array["mtype"] = $this->get('mtype','int');
 			$array['tbl'] = $this->get('tbl');
 			if($array['mtype'] != $old['mtype'] || $array['tbl'] != $old['tbl']){
@@ -724,26 +738,39 @@ class module_control extends phpok_control
 				}
 			}
 			if($array['mtype']){
-				$array['tbl'] = 'list';
+				if($old['tbl'] != 'list'){
+					$array['tbl'] = 'list';
+				}
+				$tbname = $this->get('tbname');
+				if(!$tbname){
+					$tbname = $this->get('tbname_exit');
+				}
+				//检测独立表名
+				if($tbname && is_numeric($tbname)){
+					$this->error(P_Lang('独立表名不支持纯数字'));
+				}
+				$array['tbname'] = $tbname;
 			}
 			$this->model('module')->save($array,$id);
-			$oldtbl = $old['mtype'] ? $id : $old['tbl'].'_'.$id;
-			$mytbl = $oldtbl;
-			if($array["mtype"] != $old['mtype']){
-				$mytbl = $array["mtype"] ? $id : $array['tbl'].'_'.$id;
-			}else{
-				if(!$array['mtype']){
-					$mytbl = $array['tbl'].'_'.$id;
-				}
-			}
-			if($oldtbl != $newtbl){
-				$this->model('module')->rename_tbl($oldtbl,$mytbl);
+			//检测旧表，表不一致，直接进入修改
+			$old_table = tablename($old);
+			$new_table = tablename($array);
+			if($old_table != $new_table){
+				$this->model('module')->rename_tbl($oldtbl,$mytbl,true);
 			}
 		}else{
-			$array["layout"] = "hits,dateline,sort";
 			$array["mtype"] = $this->get("mtype",'int');
 			if(!$array['mtype']){
 				$array['tbl'] = $this->get('tbl');
+			}else{
+				$tbname = $this->get('tbname');
+				if(!$tbname){
+					$tbname = $this->get('tbname_exit');
+				}
+				//检测独立表名
+				if($tbname && is_numeric($tbname)){
+					$this->error(P_Lang('独立表名不支持纯数字'));
+				}
 			}
 			$id = $this->model('module')->save($array);
 		}
@@ -763,20 +790,6 @@ class module_control extends phpok_control
 		if($id){
 			$this->assign("id",$id);
 			$rs = $this->model('module')->get_one($id);
-			$layout = !$rs['mtype'] ? array("hits","dateline") : array();
-			if($rs["layout"]){
-				$layout = explode(",",$rs["layout"]);
-			}
-			$this->assign("layout",$layout);
-			$used_list = $this->model('module')->fields_all($id,"identifier");
-			if($used_list){
-				foreach($used_list as $key=>$value){
-					$value["field_type_name"] = $this->field_list[$value["field_type"]]['title'];
-					$value["form_type_name"] = $this->form_list[$value["form_type"]]['title'];
-					$used_list[$key] = $value;
-				}
-			}
-			$this->assign("used_list",$used_list);
 		}else{
 			$taxis = $this->model('module')->module_next_taxis();
 			$rs = array('taxis'=>$taxis);
@@ -789,6 +802,17 @@ class module_control extends phpok_control
 			$tblid = $rs['tbl'];
 		}
 		$this->assign('tblid',$tblid);
+		$elist = $this->model('module')->table_all(true,true);
+		if($elist){
+			$tlist = array();
+			foreach($elist as $key=>$value){
+				if(!isset($tlist[$value['vtype']])){
+					$tlist[$value['vtype']] = array();
+				}
+				$tlist[$value['vtype']][] = $value;
+			}
+			$this->assign('elist',$tlist);
+		}
 		$this->view("module_set");
 	}
 
@@ -834,8 +858,4 @@ class module_control extends phpok_control
 		$this->model('module')->update_taxis($id,$taxis);
 		$this->success();
 	}
-
-
-
-
 }

@@ -929,7 +929,7 @@ class project_control extends phpok_control
 				$this->error(P_Lang('项目导入失败：模块创建失败'));
 			}
 			$this->model('module')->create_tbl($mid);
-			$tbl_exists = $this->model('module')->chk_tbl_exists($mid,$tmp2['mtype'],$tmp2['tbl']);
+			$tbl_exists = $this->model('module')->chk_tbl_exists($mid);
 			if(!$tbl_exists){
 				$this->model('module')->delete($mid);
 				$this->model('project')->delete_project($insert_id);

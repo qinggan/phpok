@@ -341,7 +341,7 @@ class report_model_base extends phpok_model
 			$group_by = 'id';
 			$field[] = 'id as x';
 		}
-		$sql  = "SELECT ".implode(",",$field)." FROM ".$this->db->prefix.$project['module']." WHERE project_id='".$project['id']."' ";
+		$sql  = "SELECT ".implode(",",$field)." FROM ".tablename($project['module'])." WHERE project_id='".$project['id']."' ";
 		$sql .= " GROUP BY ".$group_by;
 		return $this->db->get_all($sql);
 	}

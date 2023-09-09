@@ -147,7 +147,7 @@ class phpok_call extends _init_auto
 		$tmps = array('list','user','cate','project','reply','tag');
 		$db_keys = array();
 		foreach($tmps as $key=>$value){
-			$db_keys[] = $this->db->prefix.$value;
+			$db_keys[] = tablename($value);
 		}
 		$this->cache->key_list($cache_id,$db_keys);
 		//指定数据库里的缓存
@@ -474,7 +474,7 @@ class phpok_call extends _init_auto
 		}
 		unset($rslist,$project);
 		if($cache_id){
-			$this->cache->key_list($cache_id,$this->db->prefix.$module['id']);
+			$this->cache->key_list($cache_id,tablename($module));
 			$this->cache->save($cache_id,$array);
 		}
 		return $array;
@@ -882,7 +882,7 @@ class phpok_call extends _init_auto
 			if($project && $project['module']){
 				$module = $this->model('module')->get_one($project['module']);
 				if($module && $module['mtype']){
-					$arc = $this->model('list')->single_one($tmpid,$module['id']);
+					$arc = $this->model('list')->single_one($tmpid,$module);
 					if(!$arc){
 						return false;
 					}

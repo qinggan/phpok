@@ -1,5 +1,5 @@
 <!-- include tpl=head_lay nopadding=true -->
-<form method="post" class="layui-form" id="module_submit_post" onsubmit="return false;">
+<form method="post" class="layui-form" id="module_submit_post" onsubmit="return $.admin_module.set_save(this);">
 <!-- if $id --><input type="hidden" id="id" name="id" value="{$id}" /><!-- /if -->
 <div class="layui-card">
 	<div class="layui-card-body">
@@ -25,46 +25,50 @@
 			<label class="layui-form-label">
 				{lang独立运行}
 			</label>
-			<div class="layui-input-block">
+			<div class="layui-input-inline auto">
 				<input type="radio" name="mtype" lay-filter="mtype" value="0"{if !$rs.mtype} checked{/if} title="{lang否}" />
 				<input type="radio" name="mtype" lay-filter="mtype" value="1"{if $rs.mtype} checked{/if} title="{lang是}" />
 			</div>
-			<div class="layui-input-block mtop gray">{lang启用独立运行后，需要设置相应的标识，且不支持项目关联，功能比较简单}</div>
+			<div class="layui-form-mid">{lang启用独立运行后，需要设置相应的标识}</div>
 		</div>
 		<div class="layui-form-item{if $rs && $rs.mtype} hide{/if}" id="tbl_html">
 			<label class="layui-form-label">
 				{lang关联主表}
 			</label>
-			<div class="layui-input-block">
+			<div class="layui-input-inline short">
 				<select id="tbl" name="tbl">
 				<!-- loop from=$tblist key=$key value=$value id=$tmpid -->
 				<option value="{$key}"{if $key == $tblid} selected{/if}>{$value}</option>
 				<!-- /loop -->
 				</select>
 			</div>
-			<div class="layui-input-block mtop gray">{lang请选择集成环境对应的主表，目前官网仅对分类及主题进行横向扩展}</div>
+			<div class="layui-form-mid">{lang请选择集成环境对应的主表，目前官网仅对分类及主题进行横向扩展}</div>
 		</div>
-		<!-- if $id && $rs -->
-		<div class="layui-form-item">
+		<div class="layui-form-item{if !$rs || !$rs.mtype} hide{/if}" id="tbl_single">
 			<label class="layui-form-label">
-				{lang后台字段布局}
+				{lang表别名}
 			</label>
-			<div class="layui-input-block">
-				<!-- if $tblid != 'cate' -->
-				<input type="checkbox" name="layout[]" value="hits"{if in_array("hits",$layout)} checked{/if} title="{lang查看次数}" />
-				<input type="checkbox" name="layout[]" value="dateline"{if in_array("dateline",$layout)} checked{/if} title="{lang发布时间}" />
-				<input type="checkbox" name="layout[]" value="sort"{if in_array("sort",$layout)} checked{/if} title="{lang排序}" />
-					<!-- if !$rs.mtype -->
-					<input type="checkbox" name="layout[]" value="user_id"{if in_array("user_id",$layout)} checked{/if} title="{lang用户账号}" />
-					<!-- /if -->
-				<!-- /if -->
-				<!-- loop from=$used_list key=$key value=$value -->
-				<input type="checkbox" name="layout[]" id="layout_{$value.identifier}" value="{$value.identifier}"{if in_array($value[identifier],$layout)} checked{/if} title="{$value.title}" />
-				<!-- /loop -->
+			<div class="layui-input-inline">
+				<input type="text" id="tbname" name="tbname" class="layui-input" value="{$rs.tbname}" />
 			</div>
-			<div class="layui-input-block mtop">{lang在这里设置后台要显示的字段}</div>
+			<!-- if $elist -->
+			<div class="layui-input-inline">
+				<select name="tbname_exit">
+					<option value="">已存在表…</option>
+					<!-- loop from=$elist key=$key value=$value id=$tmpid -->
+					<optgroup label="{if $key == 'system'}{lang系统表}{elseif $key == 'ext'}扩展表{else}其它表{/if}">
+						<!-- loop from=$value key=$k value=$v id=$idxx -->
+						<option value="{$v.id}"{if $v.id == $rs.id} selected{/if}>{$v.title}<!-- if $v.note -->_{$v.note}<!-- /if --></option>
+						<!-- /loop -->
+					</optgroup>
+					<!-- /loop -->
+				</select>
+			</div>
+			<!-- /if -->
+			<div class="layui-form-mid">
+				{lang设置表别名，留空使用数字，必须有字母，注意系统不做验证判断}
+			</div>
 		</div>
-		<!-- /if -->
 		<div class="layui-form-item">
 			<label class="layui-form-label">
 				{lang排序}
@@ -77,6 +81,13 @@
 			</div>
 		</div>
 		
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存数据}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
 	</div>
 </div>
 

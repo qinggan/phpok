@@ -10,14 +10,15 @@
 
 if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
 
-function phpok_cut($string,$length=255,$dot="")
-{
-	return $GLOBALS['app']->lib("string")->cut($string,$length,$dot);
-}
-
+/**
+ * 适用于在插件或模板中获取参数变量值
+ * @参数 $id 变量名
+ * @参数 $type 类型，默认是 safe，支持 html，safe，int，float
+**/
 function G($id,$type='safe')
 {
-	return $GLOBALS['app']->get($id,$type);
+	global $app;
+	return $app->get($id,$type);
 }
 
 //调用生成器
@@ -47,12 +48,34 @@ function Gen($string = '')
 	return $app->$list[0]($list[1])->$list[2]();
 }
 
-function str_rand($length=10)//随机字符，参数是长度
+
+/**
+ * 获取表名
+ * @参数 $name 表名称，仅数字表示模块ID，数组表示模块信息，非数字返回带上表前缀的表名称
+ * @返回 表名称
+**/
+function tablename($name='')
 {
-	if(!$length){
+	if(!$name){
 		return false;
 	}
-	return $GLOBALS['app']->lib('common')->str_rand($length);
+	global $app;
+	if(is_numeric($name) || is_array($name)){
+		return $app->model('module')->tablename($name);
+	}
+	return $app->db()->prefix().$name;
+}
+
+/**
+ * 字符串截取
+ * @参数 $string 要截取的字符串
+ * @参数 $length 长度
+ * @参数 $dot 尾部是否增加参数，如省略号等
+**/
+function phpok_cut($string,$length=255,$dot="")
+{
+	global $app;
+	return $app->lib("string")->cut($string,$length,$dot);
 }
 
 /**
@@ -92,6 +115,20 @@ function phpok_loadsql($db,$sql='',$isfile=false)
 		}
 	}
 	return true;
+}
+
+/**
+ * 获取随机数据
+ * @参数 $length 长度，默认10
+ * @参数 $type，类型，支持 all，number，letter，默认是all
+**/
+function str_rand($length=10,$type='all')//随机字符，参数是长度
+{
+	if(!$length){
+		$length = 10;
+	}
+	global $app;
+	return $app->lib('common')->str_rand($length,$type);
 }
 
 //创建API_url
@@ -1262,7 +1299,7 @@ function phpok_post_save($data,$pid=0)
 		$array = array('site_id'=>$project_rs['site_id']);
 		$tid = $data['id'];
 		if($tid){
-			$rs = $app->model('list')->single_one($tid,$project_rs['module']);
+			$rs = $app->model('list')->single_one($tid,$module);
 			$array['id'] = $rs['id'];
 		}
 		$array['project_id'] = $project_rs['id'];

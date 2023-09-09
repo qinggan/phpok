@@ -11,6 +11,27 @@
 	$.admin_module = {
 
 		/**
+		 * 字段生成表单
+		**/
+		field_auto:function(id)
+		{
+			$.dialog.confirm(p_lang('系统将根据数据表自动生成相应的文本表单信息，内置的系统字段也将生成'),function(){
+				var url = get_url('module','field_auto','id='+id);
+				var lock = $.dialog.tips(p_lang('正在执行中，请稍候…'),100).lock();
+				$.phpok.json(url,function(rs){
+					if(!rs.status){
+						lock.content(rs.info).time(2);
+						return false;
+					}
+					lock.setting('close',function(){
+						$.phpok.reload();
+					});
+					lock.content(p_lang('执行成功，请稍候…')).time(2);
+				});
+			});
+		},
+
+		/**
 		 * 字段删除
 		**/
 		field_del:function(id,title)
@@ -89,10 +110,9 @@
 		/**
 		 * 保存创建的模块
 		**/
-		set_save:function()
+		set_save:function(obj)
 		{
-			var obj = art.dialog.opener;
-			$("#module_submit_post").ajaxSubmit({
+			$(obj).ajaxSubmit({
 				'url':get_url('module','save'),
 				'type':'post',
 				'dataType':'json',
@@ -101,7 +121,7 @@
 						var id = $("#id").val();
 						var tip = !id ? p_lang('模块添加成功') : p_lang('模块编辑成功');
 						$.dialog.tips(tip,function(){
-							obj.$.phpok.reload();
+							$.admin.close(get_url('module'));
 						}).lock();
 						return false;
 					}
@@ -117,25 +137,7 @@
 		**/
 		create:function()
 		{
-			$.dialog.open(get_url('module','set'),{
-				'title':p_lang('模块添加'),
-				'lock':true,
-				'width':'650px',
-				'height':'368px',
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert(p_lang('iframe还没加载完毕呢'));
-						return false;
-					};
-					iframe.$.admin_module.set_save();
-					return false;
-				},
-				'okVal':p_lang('保存'),
-				'cancelVal':p_lang('取消'),
-				'cancel':true,
-				'resize':true
-			});
+			$.win(p_lang('模块添加'),get_url('module','set'));
 		},
 
 		/**
@@ -168,25 +170,7 @@
 		**/
 		edit:function(id)
 		{
-			$.dialog.open(get_url('module','set','id='+id),{
-				'title':p_lang('模块修改 #{id}',id),
-				'lock':true,
-				'width':'650px',
-				'height':'400px',
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert(p_lang('iframe还没加载完毕呢'));
-						return false;
-					};
-					iframe.$.admin_module.set_save();
-					//iframe.save();
-					return false;
-				},
-				'okVal':p_lang('保存'),
-				'cancelVal':p_lang('取消'),
-				'cancel':true
-			});
+			$.win(p_lang('模块修改_#{id}',id),get_url('module','set','id='+id));
 		},
 
 		/**
@@ -214,55 +198,6 @@
 		{
 			var url = get_url('module','export','id='+id);
 			$.phpok.go(url);
-		},
-
-		/**
-		 * 自定义模块要显示的字段
-		**/
-		layout:function(id,title)
-		{
-			$.dialog.open(get_url("module","layout","id="+id),{
-				"title":p_lang('模型：{title} 后台列表布局','<span class="red">'+title+'</span>'),
-				"width":"700px",
-				"height":"400px",
-				"win_min":false,
-				"win_max":false,
-				"resize": false,
-				"lock": true,
-				'ok':function(){
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert(p_lang('iframe还没加载完毕呢'));
-						return false;
-					};
-					iframe.$.admin_module.layout_save();
-					//iframe.save();
-					return false;
-				},
-				'okVal':p_lang('保存'),
-				'cancelVal':p_lang('取消'),
-				'cancel':true
-			});
-		},
-
-		layout_save:function()
-		{
-			var obj = art.dialog.opener;
-			$("#module_layout_save").ajaxSubmit({
-				'url':get_url('module','layout_save'),
-				'type':'post',
-				'dataType':'json',
-				'success':function(rs){
-					if(rs.status){
-						$.dialog.close();
-						$.dialog.tips('配置成功');
-						return false;
-					}
-					$.dialog.tips(rs.info);
-					return false;
-				}
-			});
-			return false;
 		},
 
 		/**

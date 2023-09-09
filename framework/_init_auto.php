@@ -305,6 +305,11 @@ class phpok_model extends _init_auto
 	public $site_id = 0;
 
 	/**
+	 * 错误信息，适应用于返回False后单独提示的
+	**/
+	protected $_errinfo = '';
+
+	/**
 	 * 缓冲区，用于即时缓存信息，同一条SQL多次请求时直接从缓冲区获取，注意需要手动更新数据
 	**/
 	protected $_buffer = array();
@@ -336,6 +341,22 @@ class phpok_model extends _init_auto
 	public function site_id($site_id=0)
 	{
 		$this->site_id = $site_id;
+	}
+
+	public function errmsg($info='',$err_id=0)
+	{
+		if($info || $err_id){
+			if(!$info){
+				$info = P_Lang('Model错误');
+			}
+			if($err_id){
+				$info = $info.', '.P_Lang('错误ID_#{id}',$err_id);
+			}
+			$this->_errinfo = $info;
+			//涉及到错误的，写入日志
+			phpok_log($info);
+		}
+		return $this->_errinfo;
 	}
 
 	/**

@@ -14,8 +14,10 @@ $(document).ready(function(){
 		form.on('radio(mtype)',function(data){
 			if(data.value == 1){
 				$("#tbl_html").hide();
+				$("#tbl_single").show();
 			}else{
 				$("#tbl_html").show();
+				$("#tbl_single").hide();
 			}
 		});
 	})

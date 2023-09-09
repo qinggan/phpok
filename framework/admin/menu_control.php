@@ -144,7 +144,7 @@ class menu_control extends phpok_control
 					$module = $this->model('module')->get_one($project['module']);
 					if($module){
 						if($module['mtype']){
-							$list = $this->model('list')->single_one($rs['list_id'],$module['id']);
+							$list = $this->model('list')->single_one($rs['list_id'],$module);
 						}else{
 							if($module['tbl'] == 'list'){
 								$list = $this->model('list')->simple_one($rs['list_id']);

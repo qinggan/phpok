@@ -211,15 +211,24 @@ class list_model extends list_model_base
 
 	/**
 	 * 独立表列表数据
-	 * @参数 $mid 模块ID
+	 * @参数 $module 模块，支持数组或数字
 	 * @参数 $condition 查询条件
 	 * @参数 $offset 起始位置
 	 * @参数 $psize 查询数量
 	 * @参数 $orderby 排序
 	**/
-	public function single_list($mid,$condition='',$offset=0,$psize=30,$orderby='',$field='*')
+	public function single_list($module,$condition='',$offset=0,$psize=30,$orderby='',$field='*')
 	{
-		$sql = "SELECT ".$field." FROM ".$this->db->prefix.$mid." ";
+		if(!$module){
+			return false;
+		}
+		if(is_numeric($module)){
+			$module = $this->model('module')->get_one($module);
+			if(!$module){
+				return false;
+			}
+		}
+		$sql = "SELECT ".$field." FROM ".tablename($module)." ";
 		if($condition){
 			$sql .= " WHERE ".$condition." ";
 		}

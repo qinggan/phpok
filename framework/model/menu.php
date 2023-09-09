@@ -417,7 +417,7 @@ class menu_model_base extends phpok_model
 		if($module['mtype']){
 			$condition .= "site_id='".$project['site_id']."' AND project_id='".$project['id']."'";
 			$orderby = $project['orderby'] ? $project['orderby'] : 'id DESC';
-			$sql = "SELECT * FROM ".$this->db->prefix.$module['id']." WHERE ".$condition." ORDER BY ".$orderby;
+			$sql = "SELECT * FROM ".tablename($module)." WHERE ".$condition." ORDER BY ".$orderby;
 			return $this->db->get_all($sql);
 		}
 		$condition  = " l.site_id='".$project['site_id']."' ";

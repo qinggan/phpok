@@ -41,8 +41,7 @@ class res_model extends res_model_base
 					if(!$module){
 						continue;
 					}
-					$tbl = $module['mtype'] ? $this->db->prefix.$value['ftype'] : $this->db->prefix."list_".$value['ftype'];
-					$sql = "SELECT ".$value['identifier']." FROM ".$tbl." WHERE ".$value['identifier']." LIKE '%".$rs['id']."%'";
+					$sql = "SELECT ".$value['identifier']." FROM ".tablename($module)." WHERE ".$value['identifier']." LIKE '%".$rs['id']."%'";
 					$tmp = $this->db->get_one($sql);
 					if($tmp){
 						$is_used = true;
@@ -80,8 +79,7 @@ class res_model extends res_model_base
 					if(!$module){
 						continue;
 					}
-					$tbl = $module['mtype'] ? $this->db->prefix.$value['ftype'] : $this->db->prefix."list_".$value['ftype'];
-					$sql = "SELECT ".$value['identifier']." FROM ".$tbl." WHERE ".$value['identifier']."='".$rs['filename']."'";
+					$sql = "SELECT ".$value['identifier']." FROM ".tablename($module)." WHERE ".$value['identifier']."='".$rs['filename']."'";
 					$tmp = $this->db->get_one($sql);
 					if($tmp){
 						$is_used = true;
@@ -119,12 +117,11 @@ class res_model extends res_model_base
 					if(!$module){
 						continue;
 					}
-					$tbl = $module['mtype'] ? $this->db->prefix.$value['ftype'] : $this->db->prefix."list_".$value['ftype'];
-					$sql  = "SELECT ".$value['identifier']." FROM ".$tbl." WHERE ".$value['identifier']." LIKE '%".$rs['filename']."%'";
+					$sql  = "SELECT ".$value['identifier']." FROM ".tablename($module)." WHERE ".$value['identifier']." LIKE '%".$rs['filename']."%'";
 					if($rs['gd']){
 						foreach($rs['gd'] as $k=>$v){
 							$sql .= " UNION ";
-							$sql .= "SELECT ".$value['identifier']." FROM ".$tbl." WHERE ".$value['identifier']." LIKE '%".$v."%'";
+							$sql .= "SELECT ".$value['identifier']." FROM ".tablename($module)." WHERE ".$value['identifier']." LIKE '%".$v."%'";
 						}
 					}
 					$tmp = $this->db->get_all($sql);

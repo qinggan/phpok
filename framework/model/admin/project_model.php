@@ -108,13 +108,11 @@ class project_model extends project_model_base
 			return false;
 		}
 		if($module['mtype']){
-			$tmp = $this->db->prefix.$rs['module'];
-			$sql = "DELETE FROM ".$tmp." WHERE project_id='".$id."'";
+			$sql = "DELETE FROM ".tablename($module)." WHERE project_id='".$id."'";
 			$this->db->query($sql);
 			return true;
 		}
-		$tmp = $this->db->prefix."list_".$rs['module'];
-		$sql = "DELETE FROM ".$tmp." WHERE project_id=".$id;
+		$sql = "DELETE FROM ".tablename($module)." WHERE project_id=".$id;
 		$this->db->query($sql);
 		$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
 		$this->db->query($sql);
@@ -139,22 +137,14 @@ class project_model extends project_model_base
 		if(!$rs){
 			return false;
 		}
-		
 		if($rs['module']){
 			$table_list = $this->db->list_tables();
 			$module = $this->model('module')->get_one($rs['module']);
-			if($module['mtype']){
-				$tmp = $this->db->prefix.$rs['module'];
-				if(in_array($tmp,$table_list)){
-					$sql = "DELETE FROM ".$tmp." WHERE project_id='".$id."'";
-					$this->db->query($sql);
-				}
-			}else{
-				$tmp = $this->db->prefix."list_".$rs['module'];
-				if(in_array($tmp,$table_list)){
-					$sql = "DELETE FROM ".$tmp." WHERE project_id=".$id;
-					$this->db->query($sql);
-				}
+			if($module){
+				$sql = "DELETE FROM ".tablename($module)." WHERE project_id='".$id."'";
+				$this->db->query($sql);
+			}
+			if($module && !$module['mtype']){
 				$sql = "DELETE FROM ".$this->db->prefix."list_cate WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
 				$this->db->query($sql);
 				$sql = "DELETE FROM ".$this->db->prefix."list_biz WHERE id IN(SELECT id FROM ".$this->db->prefix."list WHERE project_id='".$id."')";
@@ -165,7 +155,7 @@ class project_model extends project_model_base
 				$this->db->query($sql);
 			}
 		}
-
+		
 		//删除项目扩展
 		$sql = "SELECT id FROM ".$this->db->prefix."fields WHERE ftype='project-".$id."'";
 		$extlist = $this->db->get_all($sql);
@@ -175,6 +165,7 @@ class project_model extends project_model_base
 			}
 			$this->db->query("DELETE FROM ".$this->db->prefix."fields WHERE ftype='project-".$id."'");
 		}
+		//删除项目自身
 		$sql = "DELETE FROM ".$this->db->prefix."project WHERE id='".$id."'";
 		$this->db->query($sql);
 		//删除后台权限配置

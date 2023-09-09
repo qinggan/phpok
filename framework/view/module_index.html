@@ -40,7 +40,7 @@
 				<td><label for="tid_{$value.id}">{$value.title}<!-- if $value.note --><div class="gray small">{$value.note}</div><!-- /if --></label></td>
 				<td>
 					<!-- if $value.mtype -->
-					{lang独立}
+					{lang独立}<!-- if $value.tbname --> / 表名：{$value.tbname}<!-- /if -->
 					<!-- else -->
 					{lang集成} - <span class="gray"><!-- if $value.tbl == 'list' -->{lang主题}<!-- else -->{lang分类}<!-- /if --></span>
 					<!-- /if -->
