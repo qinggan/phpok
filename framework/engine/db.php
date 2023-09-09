@@ -196,6 +196,18 @@ class db
 	}
 
 	/**
+	 * 表前缀
+	 * @参数 $val 设置表前缀
+	**/
+	public function prefix($val='')
+	{
+		if($val){
+			$this->prefix = $val;
+		}
+		return $this->prefix;
+	}
+
+	/**
 	 * 判断是否有连接到数据库
 	**/
 	public function status()

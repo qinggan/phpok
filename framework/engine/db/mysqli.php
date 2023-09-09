@@ -329,6 +329,22 @@ class db_mysqli extends db
 		return $rslist;
 	}
 
+	public function list_tables_more($field='*')
+	{
+		if(!$field){
+			$field = '*';
+		}
+		$sql = "SELECT ".$field." FROM information_schema.`TABLES` WHERE TABLE_SCHEMA='".$this->database."'";
+		$list = $this->get_all($sql,false);
+		if(!$list){
+			return false;
+		}
+		foreach($list as $key=>$value){
+			$list[$key] = array_change_key_case($value,CASE_LOWER);
+		}
+		return $list;
+	}
+
 	/**
 	 * 返回被筛选出来的字段数目
 	 * @参数 $sql 要执行的SQL语句
