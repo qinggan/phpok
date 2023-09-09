@@ -588,3 +588,9 @@ ALTER TABLE `qinggan_fields_ext`
 
 ALTER TABLE `qinggan_fields_ext`
   MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID';
+
+
+-- 2023年9月9日
+ALTER TABLE `qinggan_module` ADD `tbname` VARCHAR( 50 ) NOT NULL COMMENT '表别名，仅限英文字母数字';
+ALTER TABLE `qinggan_fields` ADD `hidden` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0显示1隐藏';
+ALTER TABLE `qinggan_fields` ADD `is_system` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0常规1系统'
