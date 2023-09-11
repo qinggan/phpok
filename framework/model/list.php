@@ -381,7 +381,7 @@ class list_model_base extends phpok_model
 	**/
 	public function single_one($id,$module=0)
 	{
-		if(!$mid || !$id){
+		if(!$module || !$id){
 			return false;
 		}
 		if(is_numeric($module)){

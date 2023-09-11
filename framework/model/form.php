@@ -704,31 +704,42 @@ class form_model_base extends phpok_model
 		if(!$rs['field_value']){
 			$rs['field_value'] = 'id';
 		}
-		$fields = $this->db->list_fields('list');
-		$is_ext = true;
-		if(in_array($rs['field_show'],$fields) && in_array($rs['field_value'],$fields)){
-			$is_ext = false;
+		$project = $this->model('project')->get_one($group_id,false);
+		if(!$project || !$project['status'] || !$project['module']){
+			return false;
 		}
-		if($is_ext){
-			$orderby = $project['orderby'] ? $project['orderby'] : 'l.sort ASC,l.dateline DESC,l.id DESC';
-			$k = 'l.cate_id,c.title catename';
+		$module = $this->model('module')->get_one($project['module']);
+		$orderby = $project['orderby'] ? $project['orderby'] : 'l.sort ASC,l.dateline DESC,l.id DESC';
+		if($module['mtype']){
+			$field = "l.cate_id,c.title catename,l.".$rs['field_value']." id, l.".$rs['field_show']." title";
+			$sql  = " SELECT ".$field." FROM ".tablename($module)." l ";
+			$sql .= " LEFT JOIN ".$this->db->prefix."cate c ON(l.cate_id=c.id) ";
+			$sql .= " WHERE l.project_id='".$group_id."' AND l.status=1 AND l.hidden=0 ";
+			$sql .= " ORDER BY ".$orderby;
+		}else{
+			$fields = $this->db->list_fields('list');
+			$is_ext = true;
+			if(in_array($rs['field_show'],$fields) && in_array($rs['field_value'],$fields)){
+				$is_ext = false;
+			}
+			$field = 'l.cate_id,c.title catename';
 			if(in_array($rs['field_value'],$fields)){
-				$k .= ",l.".$rs['field_value']." id";
+				$field .= ",l.".$rs['field_value']." id";
 			}else{
-				$k .= ",ext.".$rs['field_value']." id";
+				$field .= ",ext.".$rs['field_value']." id";
 			}
 			if(in_array($rs['field_show'],$fields)){
-				$k .= ",l.".$rs['field_show']." title";
+				$field .= ",l.".$rs['field_show']." title";
 			}else{
-				$k .= ",ext.".$rs['field_show']." title";
+				$field .= ",ext.".$rs['field_show']." title";
 			}
-			$sql  = "SELECT ".$k." FROM ".$this->db->prefix."list l LEFT JOIN ".$this->db->prefix."cate c ON(l.cate_id=c.id) ";
-			$sql .= " LEFT JOIN ".$this->db->prefix."list_".$project['module']." ext ON(l.id=ext.id) WHERE l.project_id='".$group_id."'";
-			$sql .= " AND l.status=1 AND l.hidden=0 ORDER BY ".$orderby;
-			$tmplist = $this->db->get_all($sql);
-		}else{
-			$tmplist = $this->model("list")->title_list($group_id);
+			$sql  = " SELECT ".$k." FROM ".$this->db->prefix."list l ";
+			$sql .= " LEFT JOIN ".$this->db->prefix."cate c ON(l.cate_id=c.id) ";
+			$sql .= " LEFT JOIN ".tablename($module)." ext ON(l.id=ext.id) ";
+			$sql .= " WHERE l.project_id='".$group_id."' AND l.status=1 AND l.hidden=0 ";
+			$sql .= " ORDER BY ".$orderby;
 		}
+		$tmplist = $this->db->get_all($sql);
 		if(!$tmplist){
 			return false;
 		}
