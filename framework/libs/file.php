@@ -425,7 +425,7 @@ class file_lib
 			$handle = opendir($file);
 			$array = array();
 			while(false !== ($myfile = readdir($handle))){
-				if($myfile != "." && $myfile != ".." && $myfile != ".svn") $array[] = $file."/".$myfile;
+				if($myfile != "." && $myfile != ".." && $myfile != ".svn" && $myfile != ".git") $array[] = $file."/".$myfile;
 			}
 			closedir($handle);
 			return $array;
