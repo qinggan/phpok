@@ -733,7 +733,7 @@ class res_control extends phpok_control
 		}
 		foreach($flist as $key=>$value){
 			foreach($o2n as $k=>$v){
-				$sql = "UPDATE ".tablename($value)." SET ".$value['identifier']."=replace(".$value['identifier'].",'".$v['old']."','".$v['new']."')";
+				$sql = "UPDATE ".tablename($value['ftype'])." SET ".$value['identifier']."=replace(".$value['identifier'].",'".$v['old']."','".$v['new']."')";
 				$this->db->query($sql);
 			}
 		}
