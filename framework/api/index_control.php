@@ -215,16 +215,16 @@ class index_control extends phpok_control
 		}
 		$token = $this->get("token");
 		if(!$token){
-			$this->json(P_Lang("接口数据异常"));
+			$this->error(P_Lang("接口数据异常"));
 		}
 		$this->lib('token')->keyid($api_code);
 		$info = $this->lib('token')->decode($token);
 		if(!$info){
-			$this->json(P_Lang('信息为空'));
+			$this->error(P_Lang('信息为空'));
 		}
 		$id = $info['id'];
 		if(!$id){
-			$this->json(P_Lang('未指定数据调用中心ID'));
+			$this->error(P_Lang('未指定数据调用中心ID'));
 		}
 		$param = $info['param'];
 		if($param){
@@ -251,15 +251,15 @@ class index_control extends phpok_control
 		}
 		$list = $this->call->phpok($id,$param);
 		if(!$list){
-			$this->json(P_Lang("没有获取到数据"));
+			$this->error(P_Lang("没有获取到数据"));
 		}
 		$tpl = $this->get("tpl");
 		if($tpl && $this->tpl->check_exists($tpl)){
 			$this->assign("rslist",$list);
 			$info = $this->fetch($tpl);
-			$this->json($info,true);
+			$this->success($info);
 		}
-		$this->json($list,true);
+		$this->success($list);
 	}
 
 	public function qrcode_f()
