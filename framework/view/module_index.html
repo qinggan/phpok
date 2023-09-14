@@ -34,7 +34,7 @@
 				</td>
 			</tr>
 			<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
-			<tr>
+			<tr{if $highlight && $value.id == $highlight} class="layui-bg-orange"{/if}>
 				<td>{$value.id}</td>
 				<td class="center"><span class="status{$value.status}" id="status_{$value.id}" {if $popedom.set}onclick="$.admin_module.status({$value.id})"{else} style="cursor:default"{/if} value="{$value.status}"></span></td>
 				<td><label for="tid_{$value.id}">{$value.title}<!-- if $value.note --><div class="gray small">{$value.note}</div><!-- /if --></label></td>

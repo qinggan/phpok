@@ -707,6 +707,8 @@ class module_control extends phpok_control
 			}
 		}
 		$this->assign("rslist",$rslist);
+		$highlight = $this->get('highlight','int');
+		$this->assign('highlight',$highlight);
 		$this->view("module_index");
 	}
 

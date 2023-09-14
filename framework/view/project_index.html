@@ -48,7 +48,13 @@
 			<td>{$value.identifier}</td>
 			<td><!-- if $value.is_api -->{lang启用}<!-- else --><span class="gray">{lang禁用}</span><!-- /if --></td>
 			<td><!-- if $value.is_front -->{lang启用}<!-- else --><span class="gray">{lang禁用}</span><!-- /if --></td>
-			<td>{$value.project_module_title ? $value.project_module_title : '-'}</td>
+			<td>
+				<!-- if $value.project_module_title -->
+				<a href="javascript:$.win('{lang模块管理}','{url ctrl=module highlight=$value.module/}');void(0)" class="gray">{$value.project_module_title}</a>
+				<!-- else -->
+				-
+				<!-- /if -->
+			</td>
 			<td><div class="gray i hand center" title="{lang点击调整排序}" name="taxis" data="{$value.id}">{$value.taxis}</div></td>
 			<!-- if $popedom.set -->
 			<td>
