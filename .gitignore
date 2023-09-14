@@ -7,3 +7,6 @@
 /_data/wxappconfig.php
 /_data/wxconfig.php
 /res/_cache
+/.svn
+/plugins/demo
+/_app/qghost
