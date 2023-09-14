@@ -165,7 +165,7 @@ function list_content_search(obj)
 <!-- /if -->
 <div class="layui-card" phpok-id="JS_LIST">
 	<div class="layui-card-header">
-		<div class="layui-btn-group" name="list-content-btns" id="btn_{$value.id}" data-id="{$value.id}">
+		<div class="layui-btn-group">
 			<!-- if $popedom.comment && $rs.comment_status -->
 			<button type="button" class="layui-btn layui-btn-sm" onclick="$.admin_list.reply_it(0)">
 				{lang评论}
@@ -175,9 +175,6 @@ function list_content_search(obj)
 			<button type="button" onclick="$.win('{lang加子主题}_{$rs.nick_title ? $rs.nick_title : $rs.title}','{url ctrl=list func=edit pid=$rs.id/}')" title="{lang加子主题}" class="layui-btn layui-btn-sm">
 				加子主题
 			</button>
-			<!-- /if -->
-			<!-- if $popedom.delete -->
-			<input type="button" value="{lang删除}" onclick="$.admin_list.content_del(0)" class="layui-btn layui-btn-sm layui-btn-danger" />
 			<!-- /if -->
 		</div>
 		<span id="AP_ACTION_HTML"></span>
