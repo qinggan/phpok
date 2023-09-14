@@ -63,3 +63,24 @@ if($rs){
 	$sql = "DELETE FROM ".$this->db->prefix."sysmenu WHERE id='".$rs['id']."'";
 	$this->db->query($sql);
 }
+
+/**
+ * 增加一些字段用于完善模块
+ * 2023年9月14日
+**/
+$fields = $this->db->list_fields('module');
+if(!in_array('tbname',$fields)){
+	$sql = "ALTER TABLE ".$this->db->prefix."module ADD tbname varchar(50) NOT NULL COMMENT '表别名，仅限英文字母数字'";
+	$this->db->query($sql);
+}
+$fields = $this->db->list_fields('fields');
+if(!in_array('tbname',$fields)){
+	$sql = "ALTER TABLE ".$this->db->prefix."fields ADD hidden TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0显示1隐藏'";
+	$this->db->query($sql);
+	$sql = "ALTER TABLE ".$this->db->prefix."fields ADD is_system TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0常规1系统'";
+	$this->db->query($sql);
+}
+
+/**
+ * 2023年9月14日 更新结束
+**/
