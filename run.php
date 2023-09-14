@@ -74,13 +74,14 @@ if(!in_array('tbname',$fields)){
 	$this->db->query($sql);
 }
 $fields = $this->db->list_fields('fields');
-if(!in_array('tbname',$fields)){
+if(!in_array('hidden',$fields)){
 	$sql = "ALTER TABLE ".$this->db->prefix."fields ADD hidden TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0显示1隐藏'";
 	$this->db->query($sql);
+}
+if(!in_array('is_system',$fields)){
 	$sql = "ALTER TABLE ".$this->db->prefix."fields ADD is_system TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0常规1系统'";
 	$this->db->query($sql);
 }
-
 /**
  * 2023年9月14日 更新结束
 **/
