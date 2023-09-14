@@ -138,6 +138,42 @@ class search_control extends phpok_control
 		$this->success();
 	}
 
+	public function sign_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$list = explode(",",$id);
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				continue;
+			}
+			$data = array('sign'=>1);
+			$this->model('search')->update($data,$value);
+			$this->success();
+		}
+	}
+
+	public function unsign_f()
+	{
+		$id = $this->get('id');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$list = explode(",",$id);
+		foreach($list as $key=>$value){
+			$value = intval($value);
+			if(!$value){
+				continue;
+			}
+			$data = array('sign'=>0);
+			$this->model('search')->update($data,$value);
+			$this->success();
+		}
+	}
+
 	private function _orderby($type='')
 	{
 		$orderby = '';

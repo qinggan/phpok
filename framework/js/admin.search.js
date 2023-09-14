@@ -85,6 +85,44 @@
 					return false;
 				}
 			});
+		},
+		sign:function(id)
+		{
+			if(!id || id == 'undefined'){
+				id = $.checkbox.join();
+			}
+			if(!id || id == 'undefined'){
+				$.dialog.tips(p_lang('请选择要标记的关键字'));
+				return false;
+			}
+			var url = get_url('search','sign','id='+id);
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				$.dialog.tips(p_lang('标记成功')).lock();
+				$.phpok.reload();
+			});
+		},
+		unsign:function(id)
+		{
+			if(!id || id == 'undefined'){
+				id = $.checkbox.join();
+			}
+			if(!id || id == 'undefined'){
+				$.dialog.tips(p_lang('请选择要取消标记的关键字'));
+				return false;
+			}
+			var url = get_url('search','unsign','id='+id);
+			$.phpok.json(url,function(rs){
+				if(!rs.status){
+					$.dialog.tips(rs.info);
+					return false;
+				}
+				$.dialog.tips(p_lang('标记成功')).lock();
+				$.phpok.reload();
+			});
 		}
 	}
 })(jQuery);

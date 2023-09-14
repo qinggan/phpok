@@ -6,7 +6,7 @@
 		</div>
 		<form method="post" class="layui-form" id="post_save" action="{url ctrl=search/}" onsubmit="return $.admin_search.topcheck()">
 		<ul class="layout">
-			<li style="width:80px">
+			<li style="width:120px">
 				<select name="psize">
 					<option value="">{lang默认页码}</option>
 					<option value="50"{if $psize == 50} selected{/if}>50</option>
@@ -41,10 +41,10 @@
 		</form>
 	</div>
 	<div class="layui-card-body">
-		<table class="layui-table">
+		<table class="layui-table layui-form">
 		<thead>
 		<tr>
-			<th></th>
+			<th>ID</th>
 			<th>{lang关键字}</th>
 			<th>{lang搜索时间}</th>
 			<th>{lang搜索次数}</th>
@@ -54,7 +54,7 @@
 		</thead>
 		<!-- loop from=$rslist key=$key value=$value id=$tmpid -->
 		<tr>
-			<td><input type="checkbox" name="ids[]" id="ids_{$value.id}" value="{$value.id}" /> {$value.id}</td>
+			<td><input type="checkbox" name="ids[]" id="ids_{$value.id}" value="{$value.id}" title="{$value.id}" /></td>
 			<td>{$value.title}</td>
 			<td>{func date 'Y-m-d H:i:s' $value.dateline}</td>
 			<td>{$value.hits}</td>
@@ -74,6 +74,12 @@
 					<input type="button" value="{lang全选}" onclick="$.checkbox.all()" class="layui-btn layui-btn-sm" />
 					<input type="button" value="{lang全不选}" onclick="$.checkbox.none()" class="layui-btn layui-btn-sm" />
 					<input type="button" value="{lang反选}" onclick="$.checkbox.anti()" class="layui-btn layui-btn-sm" />
+				</div>
+			</li>
+			<li>
+				<div class="layui-btn-group">
+					<input type="button" value="{lang标记}" onclick="$.admin_search.sign()" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang取消标记}" onclick="$.admin_search.unsign()" class="layui-btn layui-btn-sm layui-btn-warm" />
 				</div>
 			</li>
 			<li><input type="button" value="{lang删除}" onclick="$.admin_search.del()" class="layui-btn layui-btn-sm layui-btn-danger" /></li>
