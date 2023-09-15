@@ -172,7 +172,8 @@ class menu_control extends phpok_control
 			$rs = array('taxis'=>$taxis,'status'=>1);
 			$this->assign('rs',$rs);
 		}
-		$plist = $this->model('project')->project_all($this->session->val('admin_site_id'));
+		$plist = $this->model('project')->get_all_project($this->session->val('admin_site_id'));
+		//$plist = $this->model('project')->project_all($this->session->val('admin_site_id'));
 		$this->assign('plist',$plist);
 		$this->view('menu_set');
 	}
