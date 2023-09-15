@@ -864,6 +864,33 @@ class project_control extends phpok_control
 		}
 		$tmpdata = array("title"=>$title,"highlight"=>$highlight,'identifier'=>'cate',"join"=>false,"user"=>false,"url"=>$this->_array2url($rootData),"list"=>$tmplist);
 		$filter['catelist'] = $tmpdata;
+		if($data['cate_parent_rs']){
+			$subcatelist = phpok("_subcate","cateid=".$data['cate_parent_rs']['id']);
+			if(!$subcatelist){
+				return false;
+			}
+			$highlight = true;
+			$title = $data['cate_parent_rs']['title'];
+			$tmplist = array();
+			foreach($subcatelist as $key=>$value){
+				$urldata = $urlist;
+				$tmp = array();
+				$tmp['title'] = $value['title'];
+				$urldata['cate'] = $value['identifier'];
+				$tmp['url'] = $this->_array2url($urldata);
+				$tmp['identifier'] = 'cate';
+				$tmp['val'] = $value['identifier'];
+				$tmp['urlext'] = "cate=".$value['identifier'];
+				$tmp['highlight'] = false;
+				if($data['cate_rs'] && $data['cate_rs']['id'] == $value['id']){
+					$tmp['highlight'] = true;
+					$highlight = false;
+				}
+				$tmplist[] = $tmp;
+			}
+			$tmpdata = array("title"=>$title,"highlight"=>$highlight,'identifier'=>'cate',"join"=>false,"user"=>false,"url"=>$data['cate_parent_rs']['url'],"list"=>$tmplist);
+			$filter['subcatelist'] = $tmpdata;
+		}
 		if($data['cate_rs']){
 			$subcatelist = phpok("_subcate","cateid=".$data['cate_rs']['id']);
 			if(!$subcatelist){
