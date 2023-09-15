@@ -239,5 +239,15 @@ class project_control extends phpok_control
 		$this->rlist['pageurl'] = $pageurl;
 		$this->rlist['total'] = $info['total'];
 		$this->rlist['rslist'] = $info['rslist'];
+		//加载筛选器
+		if($rs['filter_status']){
+			$tmpdata = array('page_rs'=>$rs,'cate_rs'=>$cate_rs,'parent_rs'=>$parent_rs,'cate_parent_rs'=>$cate_parent_rs,'rslist'=>$info['rslist'],'total'=>$info['total'],'url'=>$pageurl,'dt'=>$dt,'ext'=>$ext);
+			$tmpdata['cate_root'] = $cate_root_rs;
+			$tmpdata['module'] = $m_rs;
+			$tmpdata['price'] = $price;
+			$tmpdata['mlist'] = $this->model('module')->fields_all($rs['module']);
+			$filter = $this->model('filter')->start($tmpdata);
+			$this->rlist['filter'] = $filter;
+		}
 	}
 }
