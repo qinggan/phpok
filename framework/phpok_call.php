@@ -52,6 +52,7 @@ class phpok_call extends _init_auto
 		$array[] = 'fields';
 		$array[] = 'keywords';
 		$array[] = 'menu';
+		$array[] = 'module'; //模块基本信息
 		$array[] = 'options';
 		$array[] = 'parent';
 		$array[] = 'project';
@@ -61,11 +62,11 @@ class phpok_call extends _init_auto
 		$array[] = 'subcate';
 		$array[] = 'sublist';
 		$array[] = 'subtitle';
+		$array[] = 'table';
 		$array[] = 'taglist';
 		$array[] = 'total';
 		$array[] = 'user';
 		$array[] = 'userlist';
-		$array[] = 'module'; //模块基本信息
 		return array_unique($array);
 	}
 
@@ -155,43 +156,159 @@ class phpok_call extends _init_auto
 		return $this->$func($call_rs,$cache_id);
 	}
 
-	//生成查询条件
-	private function _condition($rs)
+	//读取单篇文章
+	private function _arc($param,$cache_id='')
 	{
-		if($rs['project'] && is_array($rs['project'])){
-			$project = $rs['project'];
-			unset($rs['project']);
-		}else{
-			$projecg = $this->phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
-			if(!$project || !$project['status'] || !$project['module']){
-				return false;
+		$tmpid = isset($param['phpok']) ? $param['phpok'] : (isset($param['title_id']) ? $param['title_id'] : $param['id']);
+		if(!$tmpid){
+			return false;
+		}
+		if(isset($param['pid']) && isset($param['is_single']) && ($param['is_single'] == 1 || $param['is_single'] == 'true' || $param['is_single'] == true)){
+			$project = $this->model('project')->get_one($param['pid'],false);
+			if($project && $project['module']){
+				$module = $this->model('module')->get_one($project['module']);
+				if($module && $module['mtype']){
+					$arc = $this->model('list')->single_one($tmpid,$module);
+					if(!$arc){
+						return false;
+					}
+					$flist = $this->model('module')->fields_all($module['id']);
+					if($flist){
+						foreach($flist as $key=>$value){
+							$arc[$value['identifier']] = $this->lib('form')->show($value,$arc[$value['identifier']]);
+						}
+					}
+					$this->data('arc',$arc);
+					$this->node('PHPOK_arc');
+					$arc = $this->data('arc');
+					return $arc;
+				}
 			}
 		}
+		$need_status = isset($param['not_status']) ? false : true;
+		$arc = $this->model('content')->get_one($tmpid,$need_status,$param['site']);
+		if(!$arc){
+			return false;
+		}
+		if($arc['user_id']){
+			$arc['user'] = $this->model('user')->get_one($arc['user_id']);
+		}
+		$project = $this->model('project')->project_one($arc['site_id'],$arc['project_id']);
 		if(!$project){
 			return false;
 		}
-		if($rs['module_fields'] && is_array($rs['module_fields'])){
-			$flist = $rs['module_fields'];
-			unset($rs['module_fields']);
-		}else{
-			$flist = $this->model('module')->fields_all($project['module']);
+		if(!$arc['module_id']){
+			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
+			$arc['url'] = $this->url($url_id,'','project='.$project['identifier'],'www');
+			$this->data('arc',$arc);
+			$this->node('PHPOK_arc');
+			$arc = $this->data('arc');
+			return $arc;
 		}
-		return $this->_arc_condition($rs,$flist,$project);
+		$cate = array();
+		if($arc['cate_id']){
+			$cate = $this->call->phpok('_cate',array('pid'=>$arc['project_id'],'cateid'=>$arc['cate_id']));
+		}
+		//针对点击事件的
+		if($project['quick-comment-status']){
+			$clicklist = $this->model('click')->get_all($arc['id'],'list',$this->session->val('user_id'));
+			if($clicklist && !isset($clicklist[$arc['id']])){
+				$arc['click_list'] = $clicklist[$arc['id']];
+			}
+		}
+		//读取这个主题可能涉及到的Tag
+		$arc['tag'] = $this->model('tag')->tag_list($arc['id'],'list');
+		$flist = $this->model('module')->fields_all($arc['module_id']);
+		if(!$flist){
+			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
+			$arc['url'] = $this->url($url_id,'','project='.$project['identifier'],'www');
+			$this->data('arc',$arc);
+			$this->node('PHPOK_arc');
+			$arc = $this->data('arc');
+			return $arc;
+		}
+		$taglist = array('tag'=>$arc['tag'],'list'=>array('title'=>$arc['title']));
+		//格式化扩展内容
+		foreach($flist as $key=>$value){
+			//指定分类
+			if($value['form_type'] == 'editor'){
+				$value['pageid'] = isset($param['pageid']) ? intval($param['pageid']) : 0;
+			}
+			$arc[$value['identifier']] = $this->lib('form')->show($value,$arc[$value['identifier']]);
+			if($value['form_type'] == 'url' && $arc[$value['identifier']] && $value['identifier'] != 'url'){
+				if(!$arc['url']){
+					$arc['url'] = $arc[$value['identifier']];
+				}
+			}
+			//针对编辑器内容的格式化
+			if($value['form_type'] == 'editor'){
+				if(is_array($arc[$value['identifier']])){
+					$arc[$value['identifier'].'_pagelist'] = $arc[$value['identifier']]['pagelist'];
+					$arc['_'.$value['identifier']] = $arc[$value['identifier']]['list'];
+					$arc[$value['identifier']] = $arc[$value['identifier']]['content'];
+				}
+				if($value['ext']){
+					$ext = unserialize($value['ext']);
+					if($ext['inc_tag'] && $arc['tag']){
+						$taglist['list'][$value['identifier']] = $arc[$value['identifier']];
+						$arc[$value['identifier']] = $this->model('tag')->tag_format($arc['tag'],$arc[$value['identifier']]);
+					}
+				}
+			}
+		}
+		//如果未绑定网址
+		if(!isset($arc['url'])){
+			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
+			$tmpext = '';
+			if($cate){
+				$tmpext = "cate=".$cate['identifier']."&cateid=".$cate['id'];
+			}
+			$arc['url'] = $this->url($url_id,'',$tmpext,'www');
+		}
+		//读取分类树
+		$arc['_catelist'] = $this->model('cate')->ext_catelist($arc['id']);
+		if(!$arc['_catelist']){
+			$this->data('arc',$arc);
+			$this->node('PHPOK_arc');
+			$arc = $this->data('arc');
+			return $arc;
+		}
+		$cate['url'] = $this->url($project['identifier'],$cate['identifier'],'','www');
+		$arc['cate'] = $cate;
+		$tmplist = array();
+		foreach($arc['_catelist'] as $key=>$value){
+			$tmplist[] = 'cate-'.$value['id'];
+		}
+		$tmplist = array_unique($tmplist);
+		$tmplist = $this->model('ext')->get_all($tmplist,true);
+		if(!$tmplist){
+			foreach($arc['_catelist'] as $key=>$value){
+				$arc['_catelist'][$key]['url'] = $this->url($project['identifier'],$value['identifier'],'','www');
+			}
+			$this->data('arc',$arc);
+			$this->node('PHPOK_arc');
+			$arc = $this->data('arc');
+			return $arc;
+		}
+		//执行
+		foreach($arc['_catelist'] as $k=>$v){
+			$cate_tmp = isset($tmplist['cate-'.$v['id']]) ? $tmplist['cate-'.$v['id']] : false;
+			if(!$cate_tmp){
+				$arc['_catelist'][$k]['url'] = $this->url($project['identifier'],$v['identifier'],'','www');
+				continue;
+			}
+			$tmp = array_merge($cate_tmp,$v);
+			if(!$tmp['url']){
+				$tmp['url'] = $this->url($project['identifier'],$value['identifier'],'','www');
+			}
+			$arc['_catelist'][$k] = $tmp;
+		}
+		$this->data('arc',$arc);
+		$this->node('PHPOK_arc');
+		$arc = $this->data('arc');
+		return $arc;
 	}
-	//自定义SQL
-	private function _sql($rs,$cache_id='')
-	{
-		$rs['sqlinfo'] = str_replace(array('&#39;','&quot;','&apos;','&#34;'),array("'",'"',"'",'"'),$rs['sqlinfo']);
-		if($rs['is_list'] && $rs['is_list'] != 'false'){
-			$rslist = $this->db->get_all($rs['sqlinfo']);
-		}else{
-			$rslist = $this->db->get_one($rs['sqlinfo']);
-		}
-		if($cache_id && $rslist){
-			$this->cache->save($cache_id,$rslist);
-		}
-		return $rslist;
-	}
+
 
 	//读取文章列表
 	private function _arclist($rs,$cache_id='')
@@ -731,8 +848,12 @@ class phpok_call extends _init_auto
 		}
 		if($rs['ext'] && is_array($rs['ext'])){
 			foreach($rs['ext'] as $key=>$value){
-				$key = stripslashes($key);
 				$key = str_replace(array("'",'"'),'',$key);
+				$key = $this->format($key,'id');
+				$value = $this->format($value,'id');
+				if(is_bool($key) || is_bool($value)){
+					continue;
+				}
 				$condition .= " AND ext.".$key."='".$value."' ";
 			}
 		}
@@ -777,78 +898,47 @@ class phpok_call extends _init_auto
 		return $condition;
 	}
 
-	//格式化扩展数据
-	private function _format_ext_all($rslist)
+
+
+
+
+
+
+
+
+
+
+	//读取当前分类信息
+	private function _cate($rs,$cache_id='')
 	{
-		$res = '';
-		foreach($rslist as $key=>$value){
-			if($value['form_type'] == 'url' && $value['content']){
-				$value['content'] = unserialize($value['content']);
-				$url = $this->site['url_type'] == 'rewrite' ? $value['content']['rewrite'] : $value['content']['default'];
-				if(!$url) $url = $value['content']['default'];
-				$value['content'] = $url;
-				//绑定扩展自定义url
-				if(!$rslist['url']) $rslist['url'] = array('form_type'=>'text','content'=>$url);
-			}elseif($value['form_type'] == 'upload' && $value['content']){
-				$tmp = explode(',',$value['content']);
-				foreach($tmp as $k=>$v){
-					$v = intval($v);
-					if($v) $res[] = $v;
-				}
-			}elseif($value['form_type'] == 'editor' && $value['content']){
-				if($value['ext']){
-					$value['ext'] = unserialize($value['ext']);
-				}
-				$value['content'] = str_replace('[:page:]','',$value['content']);
-				$value['content'] = $this->lib('ubb')->to_html($value['content'],false);
+		if(!$rs['cateid'] && !$rs['phpok'] && !$rs['cate']){
+			return false;
+		}
+		if(!$rs['cateid']){
+			$identifier = $rs['cate'] ? $rs['cate'] : $rs['phpok'];
+			$tmp = $this->model('id')->id($identifier,$rs['site'],true);
+			if(!$tmp || $tmp['type'] != 'cate'){
+				unset($tmp,$rs);
+				return false;
 			}
-			$rslist[$key] = $value;
+			$rs['cateid'] = $tmp['id'];
+			unset($tmp,$identifier);
 		}
-		//格式化内容数据，并合并附件数据
-		$flist = "";
-		foreach($rslist as $key=>$value){
-			$flist[$key] = $value;
-			$rslist[$key] = $value['content'];
-		}
-		if($res && is_array($res)){
-			$res = $this->_res_info2($res);
-		}
-		$rslist = $this->_format($rslist,$flist,$res);
-		unset($flist,$res);
-		return $rslist;
-	}
-
-
-	private function _subtitle($rs)
-	{
-		if(!$rs['tid'] && !$rs['phpok']){
+		$cate = $this->model('cate')->get_one($rs['cateid']);
+		if(!$cate){
 			unset($rs);
 			return false;
 		}
-		if(!$rs['tid']){
-			$rs['tid'] = $rs['phpok'];
+		if($cate['tag']){
+			$cate['tag'] = $this->model('tag')->tag_html($cate['tag']);
 		}
-		$idlist = $this->model('list')->subtitle_ids($rs['tid']);
-		if(!$idlist){
-			return false;
+		if($cate['url']){
+			if($cache_id){
+				$this->cache->save($cache_id,$cate);
+			}
+			return $cate;
 		}
-		$rslist = array();
-		foreach($idlist as $key=>$value){
-			$tmp = $rs;
-			unset($tmp['phpok'],$tmp['id']);
-			$tmp['title_id'] = $value;
-			$rslist[$key] = $this->_arc($tmp);
-		}
-		return $rslist;
-	}
-
-	private function _total($rs)
-	{
-		if(!$rs['pid'] && !$rs['phpok']){
-			unset($rs);
-			return false;
-		}
-		if(!$rs['pid']){
+		if(!$rs['pid'] && $rs['phpok']){
 			$tmp = $this->model('id')->id($rs['phpok'],$rs['site'],true);
 			if(!$tmp || $tmp['type'] != 'project'){
 				unset($tmp,$rs);
@@ -858,259 +948,15 @@ class phpok_call extends _init_auto
 			unset($tmp);
 		}
 		if(!$rs['pid']){
-			unset($rs);
-			return false;
+			return $cate;
 		}
-		$project = $this->phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
-		if(!$project || !$project['status'] || !$project['module']){
-			return false;
-		}
-		$flist = $this->model('module')->fields_all($project['module']);
-		$condition = $this->_arc_condition($rs,$flist,$project);
-		return $this->model('list')->arc_count($project['module'],$condition);
-	}
-
-	//读取单篇文章
-	private function _arc($param,$cache_id='')
-	{
-		$tmpid = isset($param['phpok']) ? $param['phpok'] : (isset($param['title_id']) ? $param['title_id'] : $param['id']);
-		if(!$tmpid){
-			return false;
-		}
-		if(isset($param['pid']) && isset($param['is_single']) && ($param['is_single'] == 1 || $param['is_single'] == 'true' || $param['is_single'] == true)){
-			$project = $this->model('project')->get_one($param['pid'],false);
-			if($project && $project['module']){
-				$module = $this->model('module')->get_one($project['module']);
-				if($module && $module['mtype']){
-					$arc = $this->model('list')->single_one($tmpid,$module);
-					if(!$arc){
-						return false;
-					}
-					$flist = $this->model('module')->fields_all($module['id']);
-					if($flist){
-						foreach($flist as $key=>$value){
-							$arc[$value['identifier']] = $this->lib('form')->show($value,$arc[$value['identifier']]);
-						}
-					}
-					$this->data('arc',$arc);
-					$this->node('PHPOK_arc');
-					$arc = $this->data('arc');
-					return $arc;
-				}
-			}
-		}
-		$need_status = isset($param['not_status']) ? false : true;
-		$arc = $this->model('content')->get_one($tmpid,$need_status,$param['site']);
-		if(!$arc){
-			return false;
-		}
-		if($arc['user_id']){
-			$arc['user'] = $this->model('user')->get_one($arc['user_id']);
-		}
-		$project = $this->model('project')->project_one($arc['site_id'],$arc['project_id']);
-		if(!$project){
-			return false;
-		}
-		if(!$arc['module_id']){
-			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
-			$arc['url'] = $this->url($url_id,'','project='.$project['identifier'],'www');
-			$this->data('arc',$arc);
-			$this->node('PHPOK_arc');
-			$arc = $this->data('arc');
-			return $arc;
-		}
-		$cate = array();
-		if($arc['cate_id']){
-			$cate = $this->call->phpok('_cate',array('pid'=>$arc['project_id'],'cateid'=>$arc['cate_id']));
-		}
-		//针对点击事件的
-		if($project['quick-comment-status']){
-			$clicklist = $this->model('click')->get_all($arc['id'],'list',$this->session->val('user_id'));
-			if($clicklist && !isset($clicklist[$arc['id']])){
-				$arc['click_list'] = $clicklist[$arc['id']];
-			}
-		}
-		//读取这个主题可能涉及到的Tag
-		$arc['tag'] = $this->model('tag')->tag_list($arc['id'],'list');
-		$flist = $this->model('module')->fields_all($arc['module_id']);
-		if(!$flist){
-			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
-			$arc['url'] = $this->url($url_id,'','project='.$project['identifier'],'www');
-			$this->data('arc',$arc);
-			$this->node('PHPOK_arc');
-			$arc = $this->data('arc');
-			return $arc;
-		}
-		$taglist = array('tag'=>$arc['tag'],'list'=>array('title'=>$arc['title']));
-		//格式化扩展内容
-		foreach($flist as $key=>$value){
-			//指定分类
-			if($value['form_type'] == 'editor'){
-				$value['pageid'] = isset($param['pageid']) ? intval($param['pageid']) : 0;
-			}
-			$arc[$value['identifier']] = $this->lib('form')->show($value,$arc[$value['identifier']]);
-			if($value['form_type'] == 'url' && $arc[$value['identifier']] && $value['identifier'] != 'url'){
-				if(!$arc['url']){
-					$arc['url'] = $arc[$value['identifier']];
-				}
-			}
-			//针对编辑器内容的格式化
-			if($value['form_type'] == 'editor'){
-				if(is_array($arc[$value['identifier']])){
-					$arc[$value['identifier'].'_pagelist'] = $arc[$value['identifier']]['pagelist'];
-					$arc['_'.$value['identifier']] = $arc[$value['identifier']]['list'];
-					$arc[$value['identifier']] = $arc[$value['identifier']]['content'];
-				}
-				if($value['ext']){
-					$ext = unserialize($value['ext']);
-					if($ext['inc_tag'] && $arc['tag']){
-						$taglist['list'][$value['identifier']] = $arc[$value['identifier']];
-						$arc[$value['identifier']] = $this->model('tag')->tag_format($arc['tag'],$arc[$value['identifier']]);
-					}
-				}
-			}
-		}
-		//如果未绑定网址
-		if(!isset($arc['url'])){
-			$url_id = $arc['identifier'] ? $arc['identifier'] : $arc['id'];
-			$tmpext = '';
-			if($cate){
-				$tmpext = "cate=".$cate['identifier']."&cateid=".$cate['id'];
-			}
-			$arc['url'] = $this->url($url_id,'',$tmpext,'www');
-		}
-		//读取分类树
-		$arc['_catelist'] = $this->model('cate')->ext_catelist($arc['id']);
-		if(!$arc['_catelist']){
-			$this->data('arc',$arc);
-			$this->node('PHPOK_arc');
-			$arc = $this->data('arc');
-			return $arc;
-		}
+		$project = $this->model('project')->project_one($rs['site'],$rs['pid']);
 		$cate['url'] = $this->url($project['identifier'],$cate['identifier'],'','www');
-		$arc['cate'] = $cate;
-		$tmplist = array();
-		foreach($arc['_catelist'] as $key=>$value){
-			$tmplist[] = 'cate-'.$value['id'];
-		}
-		$tmplist = array_unique($tmplist);
-		$tmplist = $this->model('ext')->get_all($tmplist,true);
-		if(!$tmplist){
-			foreach($arc['_catelist'] as $key=>$value){
-				$arc['_catelist'][$key]['url'] = $this->url($project['identifier'],$value['identifier'],'','www');
-			}
-			$this->data('arc',$arc);
-			$this->node('PHPOK_arc');
-			$arc = $this->data('arc');
-			return $arc;
-		}
-		//执行
-		foreach($arc['_catelist'] as $k=>$v){
-			$cate_tmp = isset($tmplist['cate-'.$v['id']]) ? $tmplist['cate-'.$v['id']] : false;
-			if(!$cate_tmp){
-				$arc['_catelist'][$k]['url'] = $this->url($project['identifier'],$v['identifier'],'','www');
-				continue;
-			}
-			$tmp = array_merge($cate_tmp,$v);
-			if(!$tmp['url']){
-				$tmp['url'] = $this->url($project['identifier'],$value['identifier'],'','www');
-			}
-			$arc['_catelist'][$k] = $tmp;
-		}
-		$this->data('arc',$arc);
-		$this->node('PHPOK_arc');
-		$arc = $this->data('arc');
-		return $arc;
-	}
-
-	//取得项目信息
-	private function _project($rs,$cache_id='')
-	{
-		if(!$rs['pid'] && !$rs['phpok']){
-			return false;
-		}
-		if(!$rs['pid']){
-			$tmp = $this->model('id')->id($rs['phpok'],$rs['site'],true);
-			if(!$tmp || $tmp['type'] != 'project'){
-				unset($tmp,$rs);
-				return false;
-			}
-			$rs['pid'] = $tmp['id'];
-			unset($tmp);
-		}
-		if(!$rs['pid']){
-			return false;
-		}
-		$project = $this->model('project')->get_one($rs['pid'],false);
-		if(!$project || !$project['status']){
-			unset($rs);
-			return false;
-		}
-		$project_tmp = $this->model('ext')->ext_all('project-'.$rs['pid'],true);
-		$project['tag'] = $this->model('tag')->tag_list($project['id'],'project',$project['site_id']);
-		$taglist = array('tag'=>$project['tag'],'list'=>array('title'=>$project['title']));
-		//格式化扩展内容
-		if($project_tmp){
-			foreach($project_tmp as $key=>$value){
-				$project_ext[$value['identifier']] = $this->lib('form')->show($value);
-				if($value['form_type'] == 'url' && !$project['url'] && $value['content']){
-					$project['url'] = $project_ext[$value['identifier']];
-				}
-				//针对编辑器内容的格式化
-				if($value['form_type'] == 'editor'){
-					if(is_array($project_ext[$value['identifier']])){
-						$project_ext[$value['identifier'].'_pagelist'] = $project_ext[$value['identifier']]['pagelist'];
-						$project_ext['_'.$value['identifier']] = $project_ext[$value['identifier']]['list'];
-						$project_ext[$value['identifier']] = $project_ext[$value['identifier']]['content'];
-					}
-					if($value['ext']){
-						$ext = unserialize($value['ext']);
-						if($ext['inc_tag'] && $project['tag']){
-							$taglist['list'][$value['identifier']] = $project_ext[$value['identifier']];
-							$project_ext[$value['identifier']] = $this->model('tag')->tag_format($project['tag'],$project_ext[$value['identifier']]);
-						}
-					}
-				}
-			}
-			$project = array_merge($project_ext,$project);
-			unset($project_ext,$project_tmp);
-		}
-		unset($rs);
-		if(!isset($project['url'])){
-			$project['url'] = $this->url($project['identifier'],'','','www');
-		}
-		if($project['tag']){
-			$project['tag'] = $this->model('tag')->tag_filter($taglist,$project['id'],'project');
-		}
-		//针对项目标题，生成一个带HTML格式的样式
-		if(!isset($project['title_format'])){
-			$html = '<a href="'.$project['url'].'" title="'.$project['title'].'"';
-			if($project['style']){
-				$html .= ' style="'.$project['style'].'"';
-			}
-			if(isset($project['target'])){
-				$html .= ' target="'.$project['target'].'"';
-			}
-			$html .= '>'.$project['title'].'</a>';
-			$project['title_format'] = $html;
-		}
 		if($cache_id){
-			$this->cache->key_list($cache_id,$this->db->prefix.'project');
-			$this->cache->save($cache_id,$project);
+			$this->cache->key_list($cache_id,$this->db->prefix.'cate');
+			$this->cache->save($cache_id,$cate);
 		}
-		return $project;
-	}
-
-	private function _cate_total(&$count,$rslist=array(),$totals=array(),$parent_id=0)
-	{
-		if($rslist && is_array($rslist)){
-			foreach($rslist as $key=>$value){
-				if($value['parent_id'] == $parent_id && $totals[$value['id']]){
-					$count += $totals[$value['id']];
-					$this->_cate_total($count,$rslist,$totals,$value['id']);
-				}
-			}
-		}
+		return $cate;
 	}
 
 	//读取分类树
@@ -1216,465 +1062,21 @@ class phpok_call extends _init_auto
 		return $array;
 	}
 
-	//读取当前分类信息
-	private function _cate($rs,$cache_id='')
-	{
-		if(!$rs['cateid'] && !$rs['phpok'] && !$rs['cate']){
-			return false;
-		}
-		if(!$rs['cateid']){
-			$identifier = $rs['cate'] ? $rs['cate'] : $rs['phpok'];
-			$tmp = $this->model('id')->id($identifier,$rs['site'],true);
-			if(!$tmp || $tmp['type'] != 'cate'){
-				unset($tmp,$rs);
-				return false;
-			}
-			$rs['cateid'] = $tmp['id'];
-			unset($tmp,$identifier);
-		}
-		$cate = $this->model('cate')->get_one($rs['cateid']);
-		if(!$cate){
-			unset($rs);
-			return false;
-		}
-		if($cate['tag']){
-			$cate['tag'] = $this->model('tag')->tag_html($cate['tag']);
-		}
-		if($cate['url']){
-			if($cache_id){
-				$this->cache->save($cache_id,$cate);
-			}
-			return $cate;
-		}
-		if(!$rs['pid'] && $rs['phpok']){
-			$tmp = $this->model('id')->id($rs['phpok'],$rs['site'],true);
-			if(!$tmp || $tmp['type'] != 'project'){
-				unset($tmp,$rs);
-				return false;
-			}
-			$rs['pid'] = $tmp['id'];
-			unset($tmp);
-		}
-		if(!$rs['pid']){
-			return $cate;
-		}
-		$project = $this->model('project')->project_one($rs['site'],$rs['pid']);
-		$cate['url'] = $this->url($project['identifier'],$cate['identifier'],'','www');
-		if($cache_id){
-			$this->cache->key_list($cache_id,$this->db->prefix.'cate');
-			$this->cache->save($cache_id,$cate);
-		}
-		return $cate;
-	}
-
 	private function _cate_id($rs)
 	{
 		return $this->_cate($rs);
 	}
 
-	//取得项目扩展字段
-	private function _fields($rs)
+	private function _cate_total(&$count,$rslist=array(),$totals=array(),$parent_id=0)
 	{
-		if(!$rs['pid'] && !$rs['phpok']){
-			return false;
-		}
-		if(!$rs['pid']){
-			$tmp = $this->model('id')->id($rs['phpok'],$rs['site'],true);
-			if(!$tmp || $tmp['type'] != 'project'){
-				return false;
-			}
-			$rs['pid'] = $tmp['id'];
-		}
-		if(!$rs['pid']){
-			return false;
-		}
-		$project_rs = $this->model('project')->project_one($rs['site'],$rs['pid']);
-		if(!$project_rs || !$project_rs['module'] || !$project_rs['status']){
-			return false;
-		}
-		$array = array();
-		if($rs['in_title']){
-			$tmp_id = $rs['prefix'].'title';
-			$tmp_title = $project_rs['alias_title'] ? $project_rs['alias_title'] : '主题';
-			$array['title'] = array('id'=>0,"module_id"=>$project_rs['module'],'title'=>$tmp_title,'identifier'=>$tmp_id,'field_type'=>'varchar','form_type'=>'text','format'=>'safe','taxis'=>1,'width'=>'300','content'=>$rs['info']['title']);
-		}
-		$flist = $this->model('module')->fields_all($project_rs['module']);
-		if($flist){
-			foreach($flist as $key=>$value){
-				if($value['ext']){
-					$value['ext'] = unserialize($value['ext']);
-				}
-				if(!$value['is_front']){
-					continue;
-				}
-				//禁止游客上传时
-				if($value['form_type'] == 'upload' && !$this->site['upload_guest'] && !$_SESSION['user_id']){
-					continue;
-				}
-				//禁止用户上传时
-				if($value['form_type'] == 'upload' && !$this->site['upload_user'] && $_SESSION['user_id']){
-					continue;
-				}
-				if($rs['prefix']){
-					$value["identifier"] = $rs['prefix'].$value['identifier'];
-				}
-				if($rs['info'][$value['identifier']]){
-					$value['content'] = $rs['info'][$value['identifier']];
-				}
-				$array[$key] = $value;
-			}
-		}
-		if(!$array){
-			return false;
-		}
-		//判断是否格式化
-		if($rs['fields_format']){
-			foreach($array as $key=>$value){
-				if($value['ext']){
-					$ext = is_string($value['ext']) ? unserialize($value['ext']) : $value['ext'];
-					$value = array_merge($ext,$value);
-				}
-				$array[$key] = $this->lib('form')->format($value);
-			}
-		}
-		return $array;
-	}
-
-	/**
-	 * 获取模块信息，仅限内部使用
-	**/
-	private function _module($rs,$cache_id='')
-	{
-		if(!$rs['id']){
-			return false;
-		}
-		$module = $this->model('module')->get_one($rs['id']);
-		if(!$module){
-			return false;
-		}
-		if($cache_id){
-	 		$this->cache->key_list($cache_id,$this->db->prefix.'module');
-			$this->cache->save($cache_id,$module);
-		}
- 		return $module;
-	}
-
-	//取得上一级项目
-	private function _parent($rs)
-	{
-		if(!$rs['pid'] && !$rs['phpok']){
-			return false;
-		}
-		if(!$rs['pid']){
-			$tmp = $this->model('id')->id($rs['phpok'],$rs['site'],true);
-			if(!$tmp || $tmp['type'] != 'project'){
-				return false;
-			}
-			$rs['pid'] = $tmp['id'];
-		}
-		if(!$rs['pid']){
-			return false;
-		}
-		$project = $this->phpok('_project',$rs);
-		if(!$project || !$project['status']){
-			return false;
-		}
-		if(!$project['parent_id']){
-			return $project;
-		}
-		return $this->_parent(array('pid'=>$project['parent_id']));
-	}
-
-	//读取当前项目下的子项目，支持多级
-	private function _sublist($rs,$cache_id='')
-	{
-		if(!$rs['pid'] && !$rs['phpok']){
-			return false;
-		}
-		if(!$rs['pid']){
-			$tmp = $this->model('id')->id($rs['phpok'],$rs['site'],true);
-			if(!$tmp || $tmp['type'] != 'project'){
-				return false;
-			}
-			$rs['pid'] = $tmp['id'];
-		}
-		if(!$rs['pid']){
-			return false;
-		}
-		$rslist = $this->model('project')->get_all($rs['site'],$rs['pid'],'p.status=1 AND p.hidden=0','id');
-		if(!$rslist){
-			return false;
-		}
-		$list = array();
-		foreach($rslist as $key=>$value){
-			$ext_rs = $this->model('ext')->ext_all('project-'.$value['id'],true);
-			if($ext_rs){
-				$project_ext = array();
-				foreach($ext_rs as $k=>$v){
-					$project_ext[$v['identifier']] = $this->lib('form')->show($v);
-					if($v['form_type'] == 'url' && $v['content']){
-						$v['content'] = unserialize($v['content']);
-						$value['url'] = $v['content']['default'];
-						if($this->site['url_type'] == 'rewrite' && $v['content']['rewrite']){
-							$value['url'] = $v['content']['rewrite'];
-						}
-					}
-				}
-				if($project_ext){
-					$value = array_merge($project_ext,$value);
-				}
-			}
-			$list[$value['id']] = $value;
-		}
-		unset($rslist);
-		foreach($list as $key=>$value){
-			if(!$value['url']){
-				$value['url'] = $this->url($value['identifier'],'','','www');
-			}
-			$list[$key] = $value;
- 		}
- 		if($cache_id){
-	 		$this->cache->key_list($cache_id,$this->db->prefix.'project');
-			$this->cache->save($cache_id,$list);
-		}
- 		return $list;
-	}
-
-	//读取当前分类下的子分类
-	private function _subcate($rs,$cache_id='')
-	{
-		if(!$rs['cateid'] && !$rs['phpok'] && !$rs['cate'] && !$rs['pid']){
-			return false;
-		}
-		$project = array();
-		if($rs['pid']){
-			$project_rs = $this->phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
-			if($project_rs && $project_rs['status'] && $project_rs['cate']){
-				$project = $project_rs;
-				if(!$rs['cateid'] && !$rs['cate'] && !$rs['phpok']){
-					$rs['cateid'] = $project['cate'];
+		if($rslist && is_array($rslist)){
+			foreach($rslist as $key=>$value){
+				if($value['parent_id'] == $parent_id && $totals[$value['id']]){
+					$count += $totals[$value['id']];
+					$this->_cate_total($count,$rslist,$totals,$value['id']);
 				}
 			}
 		}
-		if(!$rs['cateid'] && !$rs['phpok'] && !$rs['cate']){
-			return false;
-		}
-		if(!$rs['cateid']){
-			$identifier = $rs['cate'] ? $rs['cate'] : $rs['phpok'];
-			$tmp = $this->model('id')->id($identifier,$rs['site'],true);
-			if(!$tmp || $tmp['type'] != 'cate'){
-				return false;
-			}
-			$rs['cateid'] = $tmp['id'];
-			unset($tmp,$identifier);
-		}
-		$orderby = '';
-		if($rs['orderby']){
-			$orderby = $rs['orderby'];
-		}
-		$offset = $rs['offset'] ? intval($rs['offset']) : 0;
-		$psize = $rs['psize'] ? intval($rs['psize']) : 0;
-		$condition = "site_id='".$rs['site']."' AND status=1 AND parent_id='".$rs['cateid']."'";
-		$cate_all = $this->model('cate')->cate_list($condition,$offset,$psize,$orderby);
-		if(!$cate_all){
-			return false;
-		}
-		$list = array();
-		foreach($cate_all as $k=>$v){
-			if(!$v['url'] && $project){
-				$v['url'] = $this->url($project['identifier'],$v['identifier']);
-			}
-			$list[$k] = $v;
-		}
-		if($cache_id){
-			$this->cache->key_list($cache_id,$this->db->prefix.'cate');
-			$this->cache->save($cache_id,$list);
-		}
-		return $list;
-	}
-
-	//读取附件信息
-	private function _res($rs)
-	{
-		if(!$rs['fileid'] && !$rs['phpok']){
-			return false;
-		}
-		if(!$rs['fileid']) $rs['fileid'] = $rs['phpok'];
-		return $this->model('res')->get_one(intval($rs['fileid']),true);
-	}
-
-	//读取附件列表
-	private function _reslist($rs)
-	{
-		if(!$rs['fileids'] && !$rs['phpok']){
-			return false;
-		}
-		if(!$rs['fileids']) $rs['fileids'] = $rs['phpok'];
-		if(is_array($rs['fileids'])){
-			$rs['fileids'] = implode(",",$rs['fileids']);
-		}
-		$list = explode(",",$rs['fileids']);
-		$ids = array();
-		foreach($list as $key=>$value){
-			if($value && intval($value)){
-				$ids[] = intval($value);
-			}
-		}
-		$condition = " id IN(".implode(",",$ids).") ";
-		return $this->model('res')->get_list($condition,0,999,true);
-	}
-
-	/**
-	 * 获取用户数据
-	 * @参数 $rs 数组，数组参数分别是：
-	 *       phpok：用户 field 对应的字段值，默认为用户ID
-	 *       user_id：等同于 phpok
-	 *       field：要查询的字段ID，默认是id，支持mobile,email
-	 *       ext：是否显示扩展，默认为true，当参数字符为false时，不查询扩展数据
-	 *       weight：是否显示财富，默认为true，当参数字符为false时，不查询财富信息
-	 * @返回 false 或 数组
-	**/
-	private function _user($rs)
-	{
-		if(!$rs['phpok'] && !$rs['user_id']){
-			return false;
-		}
-		$user_id = $rs['user_id'] ? $rs['user_id'] : $rs['phpok'];
-		$field = $rs['field'] ? $rs['field'] : 'id';
-		$showext = true;
-		if(isset($rs['ext']) && (!$rs['ext'] || ($rs['ext'] && $rs['ext'] == 'false'))){
-			$showext = false;
-		}
-		$wealth = true;
-		if(isset($rs['wealth']) && (!$rs['wealth'] || ($rs['wealth'] && $rs['wealth'] == 'false'))){
-			$wealth = false;
-		}
-		return $this->model('user')->get_one($user_id,$field,$showext,$wealth);
-	}
-
-	/**
-	 * 用户列表
-	 * @参数 $rs 数组，数组参数分别是：
-	 *       phpok：用户 field 对应的字段值，默认为用户ID
-	 *       status：未设置时，默认为true，已设置参数，为false时表示未审核用户数据也读取
-	 *       group_id：用户组ID
-	 *       sqlext：SQL扩展查询，用户主表使用字段u，扩展表用ext
-	 * @返回 多维数组
-	**/
-	private function _userlist($rs,$cache_id='')
-	{
-		$condition = 'u.status=1';
-		if(isset($rs['status']) && (!$rs['status'] || ($rs['status'] && $rs['status'] == 'false'))){
-			$condition = '1=1';
-		}
-		if(isset($rs['is_avatar'])){
-			if(!$rs['is_avatar'] || ($rs['is_avatar'] && $rs['is_avatar'] == 'false')){
-				$condition .= " AND u.avatar=''";
-			}else{
-				$condition .= " AND u.avatar !='' ";
-			}
-		}
-		if($rs['group_id']){
-			$condition .= " AND u.group_id='".$rs['group_id']."'";
-		}
-		if($rs['sqlext']){
-			$condition .= " AND ".$rs['sqlext'];
-		}
-		$psize = ($rs['psize'] && intval($rs['psize'])) ? $rs['psize'] : 20;
-		$offset = $rs['pageid'] ? (($rs['pageid'] - 1)* $psize) : 0;
-		$data = array('total'=>0);
-		$data['total'] = $this->model('user')->get_count($condition);
-		if($data['total']>0){
-			$data['rslist'] = $this->model('user')->get_list($condition,$offset,$psize);
-		}
-		if($cache_id){
-			$this->cache->key_list($cache_id,$this->db->prefix.'user');
-			$this->cache->save($cache_id,$data);
-		}
-		return $data;
-	}
-
-	private function _taglist($rs)
-	{
-		$orderby = 'id DESC';
-		if($rs['orderby'] == 'hot'){
-			$orderby = 'hits DESC,id DESC';
-		}
-		if($rs['orderby'] == 'cold'){
-			$orderby = 'hits ASC,id DESC';
-		}
-		$site_id = $rs['site'] ? $rs['site'] : $this->site['id'];
-		$condition = array();
-		$condition[] = "site_id='".$site_id."'";
-		if($rs['target']){
-			$condition[] = $rs['target'] == 1 ? 'target=1' : 'target=0';
-		}
-		if($rs['alt']){
-			$tmp = explode(",",$rs['alt']);
-			$tmplist = array();
-			foreach($tmp as $key=>$value){
-				if(!$value || !trim($value)){
-					continue;
-				}
-				$tmplist[] = " alt LIKE '%".trim($value)."%'";
-			}
-			if(count($tmplist)>1){
-				$condition[] = '('.implode(' OR ',$tmplist).')';
-			}else{
-				reset($tmplist);
-				$condition[] = current($tmplist);
-			}
-		}
-		if($rs['is_alt']){
-			$condition[] = "alt != ''";
-		}
-		if($rs['is_global']){
-			$condition[] = $rs['is_global'] ? "is_global=1" : "is_global=0";
-		}
-		if($rs['title'] || $rs['phpok'] || $rs['tag']){
-			$title = $rs['phpok'] ? $rs['phpok'] : '';
-			if($rs['title']){
-				$title = $title ? $title.','.$rs['title'] : $rs['title'];
-			}
-			if($rs['tag']){
-				$title = $title ? $title.','.$rs['tag'] : $rs['tag'];
-			}
-			$tmp = explode(",",$title);
-			$tmplist = array();
-			foreach($tmp as $key=>$value){
-				if(!$value || !trim($value)){
-					continue;
-				}
-				if(strpos($value,'%') !== false){
-					$tmplist[] = " title LIKE '".trim($value)."'";
-				}else{
-					$tmplist[] = " title='".trim($value)."'";
-				}
-			}
-			if(count($tmplist)>1){
-				$condition[] = '('.implode(' OR ',$tmplist).')';
-			}else{
-				reset($tmplist);
-				$condition[] = current($tmplist);
-			}
-		}
-		if($rs['url']){
-			$condition[] = "url LIKE '".$rs['url']."%'";
-		}
-		if($rs['is_url']){
-			$condition[] = "url!=''";
-		}
-		$sqlcondition = implode(" AND ",$condition);
-		$offset = $rs['offset'] ? intval($rs['offset']) : 0;
-		$psize = $rs['psize'] ? intval($rs['psize']) : 30;
-		if(!$psize){
-			$psize = 30;
-		}
-		$taglist = $this->model('tag')->get_all($sqlcondition,$offset,$psize,$orderby);
-		if(!$taglist){
-			return false;
-		}
-		return $this->model('tag')->tag_array_html($taglist);
 	}
 
 	private function _comment($rs)
@@ -1788,24 +1190,139 @@ class phpok_call extends _init_auto
 		return $data;
 	}
 
-	private function _menu($rs)
+	//生成查询条件
+	private function _condition($rs)
 	{
-		if(!$rs['phpok'] && !$rs['id'] && !$rs['menu']){
+		if($rs['project'] && is_array($rs['project'])){
+			$project = $rs['project'];
+			unset($rs['project']);
+		}else{
+			$projecg = $this->phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
+			if(!$project || !$project['status'] || !$project['module']){
+				return false;
+			}
+		}
+		if(!$project){
 			return false;
 		}
-		$groupId = $rs['phpok'] ? $rs['phpok'] : $rs['id'];
-		if($rs['menu']){
-			$groupId = $rs['menu'];
+		if($rs['module_fields'] && is_array($rs['module_fields'])){
+			$flist = $rs['module_fields'];
+			unset($rs['module_fields']);
+		}else{
+			$flist = $this->model('module')->fields_all($project['module']);
 		}
-		$is_userid = $this->session->val('user_id') ? true : false;
-		if(!$is_userid && isset($rs['is_userid'])){
-			$is_userid = true;
-		}
-		$this->model('menu')->site_id($rs['site']);
-		$rslist = $this->model('menu')->treelist($groupId,$is_userid);
-		return $rslist;
+		return $this->_arc_condition($rs,$flist,$project);
 	}
 
+	//取得项目扩展字段
+	private function _fields($rs)
+	{
+		if(!$rs['pid'] && !$rs['phpok']){
+			return false;
+		}
+		if(!$rs['pid']){
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site'],true);
+			if(!$tmp || $tmp['type'] != 'project'){
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+		}
+		if(!$rs['pid']){
+			return false;
+		}
+		$project_rs = $this->model('project')->project_one($rs['site'],$rs['pid']);
+		if(!$project_rs || !$project_rs['module'] || !$project_rs['status']){
+			return false;
+		}
+		$array = array();
+		if($rs['in_title']){
+			$tmp_id = $rs['prefix'].'title';
+			$tmp_title = $project_rs['alias_title'] ? $project_rs['alias_title'] : '主题';
+			$array['title'] = array('id'=>0,"module_id"=>$project_rs['module'],'title'=>$tmp_title,'identifier'=>$tmp_id,'field_type'=>'varchar','form_type'=>'text','format'=>'safe','taxis'=>1,'width'=>'300','content'=>$rs['info']['title']);
+		}
+		$flist = $this->model('module')->fields_all($project_rs['module']);
+		if($flist){
+			foreach($flist as $key=>$value){
+				if($value['ext']){
+					$value['ext'] = unserialize($value['ext']);
+				}
+				if(!$value['is_front']){
+					continue;
+				}
+				//禁止游客上传时
+				if($value['form_type'] == 'upload' && !$this->site['upload_guest'] && !$_SESSION['user_id']){
+					continue;
+				}
+				//禁止用户上传时
+				if($value['form_type'] == 'upload' && !$this->site['upload_user'] && $_SESSION['user_id']){
+					continue;
+				}
+				if($rs['prefix']){
+					$value["identifier"] = $rs['prefix'].$value['identifier'];
+				}
+				if($rs['info'][$value['identifier']]){
+					$value['content'] = $rs['info'][$value['identifier']];
+				}
+				$array[$key] = $value;
+			}
+		}
+		if(!$array){
+			return false;
+		}
+		//判断是否格式化
+		if($rs['fields_format']){
+			foreach($array as $key=>$value){
+				if($value['ext']){
+					$ext = is_string($value['ext']) ? unserialize($value['ext']) : $value['ext'];
+					$value = array_merge($ext,$value);
+				}
+				$array[$key] = $this->lib('form')->format($value);
+			}
+		}
+		return $array;
+	}
+
+	//格式化扩展数据
+	private function _format_ext_all($rslist)
+	{
+		$res = '';
+		foreach($rslist as $key=>$value){
+			if($value['form_type'] == 'url' && $value['content']){
+				$value['content'] = unserialize($value['content']);
+				$url = $this->site['url_type'] == 'rewrite' ? $value['content']['rewrite'] : $value['content']['default'];
+				if(!$url) $url = $value['content']['default'];
+				$value['content'] = $url;
+				//绑定扩展自定义url
+				if(!$rslist['url']) $rslist['url'] = array('form_type'=>'text','content'=>$url);
+			}elseif($value['form_type'] == 'upload' && $value['content']){
+				$tmp = explode(',',$value['content']);
+				foreach($tmp as $k=>$v){
+					$v = intval($v);
+					if($v) $res[] = $v;
+				}
+			}elseif($value['form_type'] == 'editor' && $value['content']){
+				if($value['ext']){
+					$value['ext'] = unserialize($value['ext']);
+				}
+				$value['content'] = str_replace('[:page:]','',$value['content']);
+				$value['content'] = $this->lib('ubb')->to_html($value['content'],false);
+			}
+			$rslist[$key] = $value;
+		}
+		//格式化内容数据，并合并附件数据
+		$flist = "";
+		foreach($rslist as $key=>$value){
+			$flist[$key] = $value;
+			$rslist[$key] = $value['content'];
+		}
+		if($res && is_array($res)){
+			$res = $this->_res_info2($res);
+		}
+		$rslist = $this->_format($rslist,$flist,$res);
+		unset($flist,$res);
+		return $rslist;
+	}
+	
 	private function _keywords($rs)
 	{
 		$site_id = $rs['site'] ? $rs['site'] : $this->site_id;
@@ -1861,8 +1378,45 @@ class phpok_call extends _init_auto
 		}
 		return $list;
 	}
+	
+	private function _menu($rs)
+	{
+		if(!$rs['phpok'] && !$rs['id'] && !$rs['menu']){
+			return false;
+		}
+		$groupId = $rs['phpok'] ? $rs['phpok'] : $rs['id'];
+		if($rs['menu']){
+			$groupId = $rs['menu'];
+		}
+		$is_userid = $this->session->val('user_id') ? true : false;
+		if(!$is_userid && isset($rs['is_userid'])){
+			$is_userid = true;
+		}
+		$this->model('menu')->site_id($rs['site']);
+		$rslist = $this->model('menu')->treelist($groupId,$is_userid);
+		return $rslist;
+	}
 
-	public function _options($rs)
+	/**
+	 * 获取模块信息，仅限内部使用
+	**/
+	private function _module($rs,$cache_id='')
+	{
+		if(!$rs['id']){
+			return false;
+		}
+		$module = $this->model('module')->get_one($rs['id']);
+		if(!$module){
+			return false;
+		}
+		if($cache_id){
+	 		$this->cache->key_list($cache_id,$this->db->prefix.'module');
+			$this->cache->save($cache_id,$module);
+		}
+ 		return $module;
+	}
+
+	private function _options($rs)
 	{
 		if(!$rs['phpok'] && !$rs['id'] && !$rs['option_id']){
 			return false;
@@ -1885,5 +1439,540 @@ class phpok_call extends _init_auto
 			return false;
 		}
 		return $rslist;
+	}
+
+	//取得上一级项目
+	private function _parent($rs)
+	{
+		if(!$rs['pid'] && !$rs['phpok']){
+			return false;
+		}
+		if(!$rs['pid']){
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site'],true);
+			if(!$tmp || $tmp['type'] != 'project'){
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+		}
+		if(!$rs['pid']){
+			return false;
+		}
+		$project = $this->phpok('_project',$rs);
+		if(!$project || !$project['status']){
+			return false;
+		}
+		if(!$project['parent_id']){
+			return $project;
+		}
+		return $this->_parent(array('pid'=>$project['parent_id']));
+	}
+
+	//取得项目信息
+	private function _project($rs,$cache_id='')
+	{
+		if(!$rs['pid'] && !$rs['phpok']){
+			return false;
+		}
+		if(!$rs['pid']){
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site'],true);
+			if(!$tmp || $tmp['type'] != 'project'){
+				unset($tmp,$rs);
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+			unset($tmp);
+		}
+		if(!$rs['pid']){
+			return false;
+		}
+		$project = $this->model('project')->get_one($rs['pid'],false);
+		if(!$project || !$project['status']){
+			unset($rs);
+			return false;
+		}
+		$project_tmp = $this->model('ext')->ext_all('project-'.$rs['pid'],true);
+		$project['tag'] = $this->model('tag')->tag_list($project['id'],'project',$project['site_id']);
+		$taglist = array('tag'=>$project['tag'],'list'=>array('title'=>$project['title']));
+		//格式化扩展内容
+		if($project_tmp){
+			foreach($project_tmp as $key=>$value){
+				$project_ext[$value['identifier']] = $this->lib('form')->show($value);
+				if($value['form_type'] == 'url' && !$project['url'] && $value['content']){
+					$project['url'] = $project_ext[$value['identifier']];
+				}
+				//针对编辑器内容的格式化
+				if($value['form_type'] == 'editor'){
+					if(is_array($project_ext[$value['identifier']])){
+						$project_ext[$value['identifier'].'_pagelist'] = $project_ext[$value['identifier']]['pagelist'];
+						$project_ext['_'.$value['identifier']] = $project_ext[$value['identifier']]['list'];
+						$project_ext[$value['identifier']] = $project_ext[$value['identifier']]['content'];
+					}
+					if($value['ext']){
+						$ext = unserialize($value['ext']);
+						if($ext['inc_tag'] && $project['tag']){
+							$taglist['list'][$value['identifier']] = $project_ext[$value['identifier']];
+							$project_ext[$value['identifier']] = $this->model('tag')->tag_format($project['tag'],$project_ext[$value['identifier']]);
+						}
+					}
+				}
+			}
+			$project = array_merge($project_ext,$project);
+			unset($project_ext,$project_tmp);
+		}
+		unset($rs);
+		if(!isset($project['url'])){
+			$project['url'] = $this->url($project['identifier'],'','','www');
+		}
+		if($project['tag']){
+			$project['tag'] = $this->model('tag')->tag_filter($taglist,$project['id'],'project');
+		}
+		//针对项目标题，生成一个带HTML格式的样式
+		if(!isset($project['title_format'])){
+			$html = '<a href="'.$project['url'].'" title="'.$project['title'].'"';
+			if($project['style']){
+				$html .= ' style="'.$project['style'].'"';
+			}
+			if(isset($project['target'])){
+				$html .= ' target="'.$project['target'].'"';
+			}
+			$html .= '>'.$project['title'].'</a>';
+			$project['title_format'] = $html;
+		}
+		if($cache_id){
+			$this->cache->key_list($cache_id,$this->db->prefix.'project');
+			$this->cache->save($cache_id,$project);
+		}
+		return $project;
+	}
+	
+	//读取附件信息
+	private function _res($rs)
+	{
+		if(!$rs['fileid'] && !$rs['phpok']){
+			return false;
+		}
+		if(!$rs['fileid']) $rs['fileid'] = $rs['phpok'];
+		return $this->model('res')->get_one(intval($rs['fileid']),true);
+	}
+
+	//读取附件列表
+	private function _reslist($rs)
+	{
+		if(!$rs['fileids'] && !$rs['phpok']){
+			return false;
+		}
+		if(!$rs['fileids']) $rs['fileids'] = $rs['phpok'];
+		if(is_array($rs['fileids'])){
+			$rs['fileids'] = implode(",",$rs['fileids']);
+		}
+		$list = explode(",",$rs['fileids']);
+		$ids = array();
+		foreach($list as $key=>$value){
+			if($value && intval($value)){
+				$ids[] = intval($value);
+			}
+		}
+		$condition = " id IN(".implode(",",$ids).") ";
+		return $this->model('res')->get_list($condition,0,999,true);
+	}
+
+	//自定义SQL
+	private function _sql($rs,$cache_id='')
+	{
+		$rs['sqlinfo'] = str_replace(array('&#39;','&quot;','&apos;','&#34;'),array("'",'"',"'",'"'),$rs['sqlinfo']);
+		if($rs['is_list'] && $rs['is_list'] != 'false'){
+			$rslist = $this->db->get_all($rs['sqlinfo']);
+		}else{
+			$rslist = $this->db->get_one($rs['sqlinfo']);
+		}
+		if($cache_id && $rslist){
+			$this->cache->save($cache_id,$rslist);
+		}
+		return $rslist;
+	}
+	
+	//读取当前分类下的子分类
+	private function _subcate($rs,$cache_id='')
+	{
+		if(!$rs['cateid'] && !$rs['phpok'] && !$rs['cate'] && !$rs['pid']){
+			return false;
+		}
+		$project = array();
+		if($rs['pid']){
+			$project_rs = $this->phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
+			if($project_rs && $project_rs['status'] && $project_rs['cate']){
+				$project = $project_rs;
+				if(!$rs['cateid'] && !$rs['cate'] && !$rs['phpok']){
+					$rs['cateid'] = $project['cate'];
+				}
+			}
+		}
+		if(!$rs['cateid'] && !$rs['phpok'] && !$rs['cate']){
+			return false;
+		}
+		if(!$rs['cateid']){
+			$identifier = $rs['cate'] ? $rs['cate'] : $rs['phpok'];
+			$tmp = $this->model('id')->id($identifier,$rs['site'],true);
+			if(!$tmp || $tmp['type'] != 'cate'){
+				return false;
+			}
+			$rs['cateid'] = $tmp['id'];
+			unset($tmp,$identifier);
+		}
+		$orderby = '';
+		if($rs['orderby']){
+			$orderby = $rs['orderby'];
+		}
+		$offset = $rs['offset'] ? intval($rs['offset']) : 0;
+		$psize = $rs['psize'] ? intval($rs['psize']) : 0;
+		$condition = "site_id='".$rs['site']."' AND status=1 AND parent_id='".$rs['cateid']."'";
+		$cate_all = $this->model('cate')->cate_list($condition,$offset,$psize,$orderby);
+		if(!$cate_all){
+			return false;
+		}
+		$list = array();
+		foreach($cate_all as $k=>$v){
+			if(!$v['url'] && $project){
+				$v['url'] = $this->url($project['identifier'],$v['identifier']);
+			}
+			$list[$k] = $v;
+		}
+		if($cache_id){
+			$this->cache->key_list($cache_id,$this->db->prefix.'cate');
+			$this->cache->save($cache_id,$list);
+		}
+		return $list;
+	}
+
+	//读取当前项目下的子项目，支持多级
+	private function _sublist($rs,$cache_id='')
+	{
+		if(!$rs['pid'] && !$rs['phpok']){
+			return false;
+		}
+		if(!$rs['pid']){
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site'],true);
+			if(!$tmp || $tmp['type'] != 'project'){
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+		}
+		if(!$rs['pid']){
+			return false;
+		}
+		$rslist = $this->model('project')->get_all($rs['site'],$rs['pid'],'p.status=1 AND p.hidden=0','id');
+		if(!$rslist){
+			return false;
+		}
+		$list = array();
+		foreach($rslist as $key=>$value){
+			$ext_rs = $this->model('ext')->ext_all('project-'.$value['id'],true);
+			if($ext_rs){
+				$project_ext = array();
+				foreach($ext_rs as $k=>$v){
+					$project_ext[$v['identifier']] = $this->lib('form')->show($v);
+					if($v['form_type'] == 'url' && $v['content']){
+						$v['content'] = unserialize($v['content']);
+						$value['url'] = $v['content']['default'];
+						if($this->site['url_type'] == 'rewrite' && $v['content']['rewrite']){
+							$value['url'] = $v['content']['rewrite'];
+						}
+					}
+				}
+				if($project_ext){
+					$value = array_merge($project_ext,$value);
+				}
+			}
+			$list[$value['id']] = $value;
+		}
+		unset($rslist);
+		foreach($list as $key=>$value){
+			if(!$value['url']){
+				$value['url'] = $this->url($value['identifier'],'','','www');
+			}
+			$list[$key] = $value;
+ 		}
+ 		if($cache_id){
+	 		$this->cache->key_list($cache_id,$this->db->prefix.'project');
+			$this->cache->save($cache_id,$list);
+		}
+ 		return $list;
+	}
+
+	private function _subtitle($rs)
+	{
+		if(!$rs['tid'] && !$rs['phpok']){
+			unset($rs);
+			return false;
+		}
+		if(!$rs['tid']){
+			$rs['tid'] = $rs['phpok'];
+		}
+		$idlist = $this->model('list')->subtitle_ids($rs['tid']);
+		if(!$idlist){
+			return false;
+		}
+		$rslist = array();
+		foreach($idlist as $key=>$value){
+			$tmp = $rs;
+			unset($tmp['phpok'],$tmp['id']);
+			$tmp['title_id'] = $value;
+			$rslist[$key] = $this->_arc($tmp);
+		}
+		return $rslist;
+	}
+
+	private function _table($rs,$cache_id='')
+	{
+		$table = isset($rs['phpok']) ? $rs['phpok'] : (isset($rs['table']) ? $rs['table'] : '');
+		if(!$table){
+			return false;
+		}
+		$prefix = true;
+		if(isset($rs['prefix']) && ($rs['prefix'] == 'false' && !$rs['prefix'])){
+			$prefix = false;
+		}
+		if($prefix){
+			$table = tablename($table);
+		}
+		
+		$sql = "SELECT * FROM ".$table." WHERE 1=1 ";
+		if(isset($rs['condition']) && is_array($rs['condition'])){
+			foreach($rs['condition'] as $key=>$value){
+				$key = str_replace(array("'",'"'),'',$key);
+				$key = $this->format($key,'id');
+				$value = $this->format($value,'id');
+				if(is_bool($key) || is_bool($value)){
+					continue;
+				}
+				$sql .= " AND ".$key."='".$value."' ";
+			}
+		}
+		if(isset($rs['sqlext'])){
+			$sql .= " AND ".$rs['sqlext']." ";
+		}
+		if(isset($rs['orderby']) && is_array($rs['orderby'])){
+			$orderby = array();
+			foreach($rs['orderby'] as $key=>$value){
+				$key = str_replace(array("'",'"'),'',$key);
+				$key = $this->format($key,'id');
+				$value = $this->format($value,'id');
+				if(is_bool($key) || is_bool($value)){
+					continue;
+				}
+				if($value != ''){
+					$orderby[] = $key." ".$value;
+				}else{
+					$orderby[] = $key." ASC";
+				}
+			}
+			if($orderby && count($orderby)>0){
+				$sql .= " ORDER BY ".implode(",",$orderby);
+			}
+		}
+		if(isset($rs['orderby']) && is_string($rs['orderby'])){
+			$sql .= " ORDER BY ".$rs['orderby'];
+		}
+		$offset = isset($rs['offset']) ? intval($rs['offset']) : 0;
+		$psize = (isset($rs['psize']) && intval($rs['psize'])>0) ? intval($rs['psize']) : 30;
+		$sql .= " LIMIT ".$offset.",".$psize;
+		$primary = isset($rs['primary']) ? $rs['primary'] : '';
+		$is_list = true;
+		if(isset($rs['is_list']) && ($rs['is_list'] == 'false' || !$rs['is_list'])){
+			$is_list = false;
+		}
+		if($is_list){
+			$list = $this->db()->get_all($sql,$primary);
+		}else{
+			$list = $this->db()->get_one($sql);
+		}
+		if($cache_id && $list){
+	 		$this->cache->key_list($cache_id,$this->db->prefix.'project');
+			$this->cache->save($cache_id,$list);
+		}
+ 		return $list;
+	}
+
+
+	private function _taglist($rs)
+	{
+		$orderby = 'id DESC';
+		if($rs['orderby'] == 'hot'){
+			$orderby = 'hits DESC,id DESC';
+		}
+		if($rs['orderby'] == 'cold'){
+			$orderby = 'hits ASC,id DESC';
+		}
+		$site_id = $rs['site'] ? $rs['site'] : $this->site['id'];
+		$condition = array();
+		$condition[] = "site_id='".$site_id."'";
+		if($rs['target']){
+			$condition[] = $rs['target'] == 1 ? 'target=1' : 'target=0';
+		}
+		if($rs['alt']){
+			$tmp = explode(",",$rs['alt']);
+			$tmplist = array();
+			foreach($tmp as $key=>$value){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				$tmplist[] = " alt LIKE '%".trim($value)."%'";
+			}
+			if(count($tmplist)>1){
+				$condition[] = '('.implode(' OR ',$tmplist).')';
+			}else{
+				reset($tmplist);
+				$condition[] = current($tmplist);
+			}
+		}
+		if($rs['is_alt']){
+			$condition[] = "alt != ''";
+		}
+		if($rs['is_global']){
+			$condition[] = $rs['is_global'] ? "is_global=1" : "is_global=0";
+		}
+		if($rs['title'] || $rs['phpok'] || $rs['tag']){
+			$title = $rs['phpok'] ? $rs['phpok'] : '';
+			if($rs['title']){
+				$title = $title ? $title.','.$rs['title'] : $rs['title'];
+			}
+			if($rs['tag']){
+				$title = $title ? $title.','.$rs['tag'] : $rs['tag'];
+			}
+			$tmp = explode(",",$title);
+			$tmplist = array();
+			foreach($tmp as $key=>$value){
+				if(!$value || !trim($value)){
+					continue;
+				}
+				if(strpos($value,'%') !== false){
+					$tmplist[] = " title LIKE '".trim($value)."'";
+				}else{
+					$tmplist[] = " title='".trim($value)."'";
+				}
+			}
+			if(count($tmplist)>1){
+				$condition[] = '('.implode(' OR ',$tmplist).')';
+			}else{
+				reset($tmplist);
+				$condition[] = current($tmplist);
+			}
+		}
+		if($rs['url']){
+			$condition[] = "url LIKE '".$rs['url']."%'";
+		}
+		if($rs['is_url']){
+			$condition[] = "url!=''";
+		}
+		$sqlcondition = implode(" AND ",$condition);
+		$offset = $rs['offset'] ? intval($rs['offset']) : 0;
+		$psize = $rs['psize'] ? intval($rs['psize']) : 30;
+		if(!$psize){
+			$psize = 30;
+		}
+		$taglist = $this->model('tag')->get_all($sqlcondition,$offset,$psize,$orderby);
+		if(!$taglist){
+			return false;
+		}
+		return $this->model('tag')->tag_array_html($taglist);
+	}
+
+	private function _total($rs)
+	{
+		if(!$rs['pid'] && !$rs['phpok']){
+			unset($rs);
+			return false;
+		}
+		if(!$rs['pid']){
+			$tmp = $this->model('id')->id($rs['phpok'],$rs['site'],true);
+			if(!$tmp || $tmp['type'] != 'project'){
+				unset($tmp,$rs);
+				return false;
+			}
+			$rs['pid'] = $tmp['id'];
+			unset($tmp);
+		}
+		if(!$rs['pid']){
+			unset($rs);
+			return false;
+		}
+		$project = $this->phpok('_project',array('pid'=>$rs['pid'],'site'=>$rs['site']));
+		if(!$project || !$project['status'] || !$project['module']){
+			return false;
+		}
+		$flist = $this->model('module')->fields_all($project['module']);
+		$condition = $this->_arc_condition($rs,$flist,$project);
+		return $this->model('list')->arc_count($project['module'],$condition);
+	}
+
+	
+	/**
+	 * 获取用户数据
+	 * @参数 $rs 数组，数组参数分别是：
+	 *       phpok：用户 field 对应的字段值，默认为用户ID
+	 *       user_id：等同于 phpok
+	 *       field：要查询的字段ID，默认是id，支持mobile,email
+	 *       ext：是否显示扩展，默认为true，当参数字符为false时，不查询扩展数据
+	 *       weight：是否显示财富，默认为true，当参数字符为false时，不查询财富信息
+	 * @返回 false 或 数组
+	**/
+	private function _user($rs)
+	{
+		if(!$rs['phpok'] && !$rs['user_id']){
+			return false;
+		}
+		$user_id = $rs['user_id'] ? $rs['user_id'] : $rs['phpok'];
+		$field = $rs['field'] ? $rs['field'] : 'id';
+		$showext = true;
+		if(isset($rs['ext']) && (!$rs['ext'] || ($rs['ext'] && $rs['ext'] == 'false'))){
+			$showext = false;
+		}
+		$wealth = true;
+		if(isset($rs['wealth']) && (!$rs['wealth'] || ($rs['wealth'] && $rs['wealth'] == 'false'))){
+			$wealth = false;
+		}
+		return $this->model('user')->get_one($user_id,$field,$showext,$wealth);
+	}
+
+	/**
+	 * 用户列表
+	 * @参数 $rs 数组，数组参数分别是：
+	 *       phpok：用户 field 对应的字段值，默认为用户ID
+	 *       status：未设置时，默认为true，已设置参数，为false时表示未审核用户数据也读取
+	 *       group_id：用户组ID
+	 *       sqlext：SQL扩展查询，用户主表使用字段u，扩展表用ext
+	 * @返回 多维数组
+	**/
+	private function _userlist($rs,$cache_id='')
+	{
+		$condition = 'u.status=1';
+		if(isset($rs['status']) && (!$rs['status'] || ($rs['status'] && $rs['status'] == 'false'))){
+			$condition = '1=1';
+		}
+		if(isset($rs['is_avatar'])){
+			if(!$rs['is_avatar'] || ($rs['is_avatar'] && $rs['is_avatar'] == 'false')){
+				$condition .= " AND u.avatar=''";
+			}else{
+				$condition .= " AND u.avatar !='' ";
+			}
+		}
+		if($rs['group_id']){
+			$condition .= " AND u.group_id='".$rs['group_id']."'";
+		}
+		if($rs['sqlext']){
+			$condition .= " AND ".$rs['sqlext'];
+		}
+		$psize = ($rs['psize'] && intval($rs['psize'])) ? $rs['psize'] : 20;
+		$offset = $rs['pageid'] ? (($rs['pageid'] - 1)* $psize) : 0;
+		$data = array('total'=>0);
+		$data['total'] = $this->model('user')->get_count($condition);
+		if($data['total']>0){
+			$data['rslist'] = $this->model('user')->get_list($condition,$offset,$psize);
+		}
+		if($cache_id){
+			$this->cache->key_list($cache_id,$this->db->prefix.'user');
+			$this->cache->save($cache_id,$data);
+		}
+		return $data;
 	}
 }
