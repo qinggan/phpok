@@ -15,7 +15,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class string_lib
+class string_lib extends _init_lib
 {
 	private $cut_type = false;
 	public function __construct()

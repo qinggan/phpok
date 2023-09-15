@@ -15,7 +15,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class json_lib
+class json_lib extends _init_lib
 {
 	/**
 	 * 将数组转成JSON数据

@@ -15,7 +15,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class phpzip_lib
+class phpzip_lib extends _init_lib
 {
 	private $ctrl_dir = array();
 	private $datasec = array();

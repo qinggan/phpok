@@ -16,7 +16,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class trans_lib
+class trans_lib extends _init_lib
 {
 	var $script = false;
 	var $iframe = false;

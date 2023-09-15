@@ -11,7 +11,7 @@
 if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
-class async_lib
+class async_lib extends _init_lib
 {
 	private $funcname = false;
 	private $ip = '127.0.0.1';

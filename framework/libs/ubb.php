@@ -16,7 +16,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class ubb_lib
+class ubb_lib extends _init_lib
 {
 	public function __construct()
 	{

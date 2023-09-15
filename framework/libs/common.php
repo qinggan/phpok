@@ -8,8 +8,11 @@
  * @时间 2016年07月26日
 **/
 
-if(!defined("PHPOK_SET")){exit("<h1>Access Denied</h1>");}
-class common_lib
+if(!defined("PHPOK_SET")){
+	exit("<h1>Access Denied</h1>");
+}
+
+class common_lib extends _init_lib
 {
 	/**
 	 * 构造函数

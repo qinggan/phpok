@@ -32,6 +32,7 @@ if(!defined("PHPOK_SET")){
  *     12. $this->control(控制器,AppID)，控制器别名
  *     13. $this->time，当前时间
 **/
+#[\AllowDynamicProperties]
 class _init_lib
 {
 	protected $dir_root;

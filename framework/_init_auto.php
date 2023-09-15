@@ -18,6 +18,7 @@ if(!defined("PHPOK_SET")){
 /**
  * 核心魔术方法，此项可实现类，方法的自动加载，PHPOK里的Control，Model及Plugin都继承了这个类
 **/
+#[\AllowDynamicProperties]
 class _init_auto
 {
 	/**

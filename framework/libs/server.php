@@ -12,7 +12,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class server_lib
+class server_lib extends _init_lib
 {
 	public function __construct()
 	{

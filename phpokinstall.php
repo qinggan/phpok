@@ -835,7 +835,22 @@ if(file_exists(DIR_DATA.'install.lock')){
 	error('已安装过，不能重复安装');
 }
 
+#[\AllowDynamicProperties]
+class _init_auto
+{
+	public function __construct()
+	{
+		//
+	}
+
+	public function __destruct()
+	{
+		//
+	}
+}
+
 include(ROOT.'framework/engine/db.php');
+
 $install = new install();
 $step = $install->get('step',true);
 if(!$step){

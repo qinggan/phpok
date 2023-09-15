@@ -12,7 +12,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class debug_lib
+class debug_lib extends _init_lib
 {
 	private $time_point = 0;
 	private $memory_point = 0;

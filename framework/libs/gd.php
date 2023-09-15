@@ -15,8 +15,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-#[\AllowDynamicProperties]
-class gd_lib
+class gd_lib extends _init_lib
 {
 	/**
 	 * 要处理的图片地址，支持网站根目录相对地址和绝对地址

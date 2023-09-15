@@ -19,7 +19,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception; 
 
 //引入phpmail控件发送邮件
-class email_lib
+class email_lib extends _init_lib
 {
 	private $app;
 	public $tpl;

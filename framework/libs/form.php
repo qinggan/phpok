@@ -15,7 +15,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class form_lib
+class form_lib extends _init_lib
 {
 	//表单对象
 	public $cls;

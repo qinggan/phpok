@@ -16,7 +16,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class similar_lib
+class similar_lib extends _init_lib
 {
 	var $str1;
 	var $str2;

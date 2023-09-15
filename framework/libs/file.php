@@ -15,7 +15,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class file_lib
+class file_lib extends _init_lib
 {
 	public $read_count;
 	private $safecode = "<?php die('forbidden'); ?>\n";

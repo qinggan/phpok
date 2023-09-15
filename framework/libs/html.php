@@ -15,7 +15,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class html_lib
+class html_lib extends _init_lib
 {
 	private $app;
 	private $purl;

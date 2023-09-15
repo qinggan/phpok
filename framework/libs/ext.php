@@ -16,7 +16,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class ext_lib
+class ext_lib extends _init_lib
 {
 	var $app;
 	//连接数据库类

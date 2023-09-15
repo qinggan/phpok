@@ -15,7 +15,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class curl_lib
+class curl_lib extends _init_lib
 {
 	private $is_gzip = true; // 是否启用 GZIP 压缩传输
 	private $is_post = false; // 是否启用 POST，默认为 GET

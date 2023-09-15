@@ -14,7 +14,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class csv_lib
+class csv_lib extends _init_lib
 {
 	private $dir_root = '';
 	public function __construct()

@@ -15,7 +15,7 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class video_url_lib
+class video_url_lib extends _init_lib
 {
 	private $show_type = 'html';
 	public function __construct()
