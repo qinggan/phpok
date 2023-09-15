@@ -14,13 +14,15 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class csv_lib extends _init_lib
+#[\AllowDynamicProperties]
+class csv_lib
 {
 	private $dir_root = '';
 	public function __construct()
 	{
-		$this->dir_root = $GLOBALS['app']->dir_root;
-		$this->dir_cache = $GLOBALS['app']->dir_cache;
+		global $app;
+		$this->dir_root = $app->dir_root;
+		$this->dir_cache = $app->dir_cache;
 	}
 
 	public function read($file='')
