@@ -17,7 +17,8 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class upload_lib extends _init_lib
+#[\AllowDynamicProperties]
+class upload_lib
 {
 	private $folder = 'res/';
 	private $dir_root = '/';
