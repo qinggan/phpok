@@ -16,7 +16,8 @@ if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
 
-class token_lib extends _init_lib
+#[\AllowDynamicProperties]
+class token_lib
 {
 	private $keyid = '';
 	private $keyc_length = 6;

@@ -197,7 +197,6 @@ class post_control extends phpok_control
 		$array["module_id"] = $project_rs["module"];
 		$array["project_id"] = $project_rs["id"];
 		$array["site_id"] = $project_rs["site_id"];
-		
 		$array['user_id'] = 0;
 		if($this->session->val('user_id')){
 			$array['user_id'] = $this->session->val('user_id');
