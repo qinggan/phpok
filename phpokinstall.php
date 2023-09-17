@@ -849,6 +849,20 @@ class _init_auto
 	}
 }
 
+#[\AllowDynamicProperties]
+class _init_lib
+{
+	public function __construct()
+	{
+		//
+	}
+
+	public function __destruct()
+	{
+		//
+	}
+}
+
 include(ROOT.'framework/engine/db.php');
 
 $install = new install();
