@@ -1,14 +1,18 @@
 <?php
 /**
  * 通过Api获取文章列表，返回数组结果信
- * @file framework/api/project_control.php
- * @author phpok.com <admin@phpok.com>
- * @version 4.5.0
- * @date 2016年01月27日
- */
+ * @作者 qinggan <admin@phpok.com>
+ * @主页 https://www.phpok.com
+ * @版本 6.x
+ * @授权 MIT License <https://www.phpok.com/mit.html>
+ * @时间 2016年01月27日
+ * @更新 2023年9月18日
+**/
+
 if(!defined("PHPOK_SET")){
 	exit("<h1>Access Denied</h1>");
 }
+
 class project_control extends phpok_control
 {
 	private $user_groupid;
@@ -50,7 +54,7 @@ class project_control extends phpok_control
 		if(!$project || !$project['status']){
 			$this->error(P_Lang('项目不存在或未启用'));
 		}
-		if($project["module"] && !$project['is_api']){
+		if(!$project['is_api']){
 			$this->error(P_Lang('此项目接口不可用'));
 		}
 		$this->rlist['page_rs'] = $project;
@@ -58,6 +62,9 @@ class project_control extends phpok_control
 			$parent_rs = $this->call->phpok('_project',array('pid'=>$project['parent_id']));
 			if(!$parent_rs || !$parent_rs['status']){
 				$this->error(P_Lang('父级项目不存在或未启用'));
+			}
+			if(!$parent_rs['is_api']){
+				$this->error(P_Lang('父级项目接口不可用'));
 			}
 			$this->rlist['parent_rs'] = $parent_rs;
 		}

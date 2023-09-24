@@ -76,19 +76,27 @@
 			</td>
 			<!-- /if -->
 			<!-- loop from=$layout key=$k value=$v -->
-				<!-- if is_array($value[$k])  -->
-					<!-- php:$c_list = $value[$k]['_admin'] -->
-					<!-- if $c_list.type == 'pic' -->
-					<td><img src="{$c_list.info}" width="28px" height="28px" border="0" class="hand" onclick="preview_attr('{$c_list.id}')" style="border:1px solid #dedede;padding:1px;" /></td>
-					<!-- else -->
-						<!-- if is_array($c_list.info) -->
-						<td>{echo implode(' / ',$c_list.info)}</td>
-						<!-- else -->
-						<td>{$c_list.info ? $c_list.info : '-'}</td>
-						<!-- /if -->
-					<!-- /if -->
+				<!-- if $k == "dateline" -->
+				<td class="center">{func date "Y-m-d H:i" $value.dateline}</td>
+				<!-- elseif $k == "hits" -->
+				<td class="center">{$value.hits}</td>
+				<!-- elseif $k == 'sort' -->
+				<td class="center">{$value.sort}</td>
 				<!-- else -->
-				<td>{$value[$k]}</td>
+					<!-- if is_array($value[$k])  -->
+						<!-- php:$c_list = $value[$k]['_admin'] -->
+						<!-- if $c_list.type == 'pic' -->
+						<td><img src="{$c_list.info}" width="28px" height="28px" border="0" class="hand" onclick="preview_attr('{$c_list.id}')" style="border:1px solid #dedede;padding:1px;" /></td>
+						<!-- else -->
+							<!-- if is_array($c_list.info) -->
+							<td>{echo implode(' / ',$c_list.info)}</td>
+							<!-- else -->
+							<td>{$c_list.info ? $c_list.info : '-'}</td>
+							<!-- /if -->
+						<!-- /if -->
+					<!-- else -->
+					<td>{$value[$k]}</td>
+					<!-- /if -->
 				<!-- /if -->
 			<!-- /loop -->
 			<td>

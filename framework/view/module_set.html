@@ -1,4 +1,4 @@
-<!-- include tpl=head_lay nopadding=true -->
+<!-- include tpl=head_lay -->
 <form method="post" class="layui-form" id="module_submit_post" onsubmit="return $.admin_module.set_save(this);">
 <!-- if $id --><input type="hidden" id="id" name="id" value="{$id}" /><!-- /if -->
 <div class="layui-card">
@@ -51,7 +51,6 @@
 			<div class="layui-input-inline">
 				<input type="text" id="tbname" name="tbname" class="layui-input" value="{$rs.tbname}" />
 			</div>
-			<!-- if $elist -->
 			<div class="layui-input-inline">
 				<select name="tbname_exit">
 					<option value="">已存在表…</option>
@@ -64,7 +63,6 @@
 					<!-- /loop -->
 				</select>
 			</div>
-			<!-- /if -->
 			<div class="layui-form-mid">
 				{lang设置表别名，留空使用数字，必须有字母，注意系统不做验证判断}
 			</div>
@@ -92,4 +90,4 @@
 </div>
 
 </form>
-<!-- include tpl=foot_lay is_open=true -->
+<!-- include tpl=foot_lay -->

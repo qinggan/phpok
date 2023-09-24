@@ -733,7 +733,7 @@ class form_model_base extends phpok_model
 			}else{
 				$field .= ",ext.".$rs['field_show']." title";
 			}
-			$sql  = " SELECT ".$k." FROM ".$this->db->prefix."list l ";
+			$sql  = " SELECT ".$field." FROM ".$this->db->prefix."list l ";
 			$sql .= " LEFT JOIN ".$this->db->prefix."cate c ON(l.cate_id=c.id) ";
 			$sql .= " LEFT JOIN ".tablename($module)." ext ON(l.id=ext.id) ";
 			$sql .= " WHERE l.project_id='".$group_id."' AND l.status=1 AND l.hidden=0 ";

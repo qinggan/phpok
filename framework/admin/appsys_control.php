@@ -804,9 +804,9 @@ class appsys_control extends phpok_control
 	private function _get_applist()
 	{
 		$list = array();
-		$this->_system_applist('admin',$list);
-		$this->_system_applist('www',$list);
-		$this->_system_applist('api',$list);
+		$this->_system_applist($list,'admin');
+		$this->_system_applist($list,'www');
+		$this->_system_applist($list,'api');
 		$tmplist = $this->lib('file')->ls($this->dir_app);
 		if($tmplist){
 			foreach($tmplist as $key=>$value){
@@ -822,7 +822,7 @@ class appsys_control extends phpok_control
 		return false;
 	}
 
-	private function _system_applist($folder='admin',$list)
+	private function _system_applist(&$list,$folder='admin')
 	{
 		$tmplist = $this->lib('file')->ls($this->dir_phpok.$folder);
 		if($tmplist){

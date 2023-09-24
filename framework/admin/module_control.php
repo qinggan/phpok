@@ -762,9 +762,7 @@ class module_control extends phpok_control
 			}
 		}else{
 			$array["mtype"] = $this->get("mtype",'int');
-			if(!$array['mtype']){
-				$array['tbl'] = $this->get('tbl');
-			}else{
+			if($array["mtype"]){
 				$tbname = $this->get('tbname');
 				if(!$tbname){
 					$tbname = $this->get('tbname_exit');
@@ -773,6 +771,11 @@ class module_control extends phpok_control
 				if($tbname && is_numeric($tbname)){
 					$this->error(P_Lang('独立表名不支持纯数字'));
 				}
+				if($tbname){
+					$array['tbname'] = $tbname;
+				}
+			}else{
+				$array['tbl'] = $this->get('tbl');
 			}
 			$id = $this->model('module')->save($array);
 		}

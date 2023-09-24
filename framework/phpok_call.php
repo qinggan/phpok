@@ -898,16 +898,6 @@ class phpok_call extends _init_auto
 		return $condition;
 	}
 
-
-
-
-
-
-
-
-
-
-
 	//读取当前分类信息
 	private function _cate($rs,$cache_id='')
 	{

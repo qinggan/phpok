@@ -576,7 +576,7 @@ class db_mysqli extends db
 		if($type == 'server'){
 			return mysqli_get_server_info($this->conn);
 		}else{
-			return mysqli_get_client_info($this->conn);
+			return mysqli_get_client_info();
 		}
 	}
 
