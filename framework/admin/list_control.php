@@ -209,7 +209,7 @@ class list_control extends phpok_control
 		}
 		$sign = strtolower($sign);
 		//字符串是否符合条件
-		if(!preg_match("/[a-z][a-z0-9\_\-\.]+/",$sign)){
+		if(!preg_match("/[a-z0-9\_\-\.]+/",$sign)){
 			return P_Lang('标识不符合系统要求，限字母、数字及下划线（中划线）且必须是字母开头');
 		}
 		if(!$site_id){
