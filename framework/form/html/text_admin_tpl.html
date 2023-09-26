@@ -21,27 +21,35 @@
 	</li>
 </ul>
 <!-- elseif $_rs.form_btn == "image" -->
-<ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
-	<li style="margin-top:3px;">
-		<div class="layui-btn-group">
-			<input type="button" value="{lang选择图片}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_select('{$_rs.identifier}')" />
-			<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_preview('{$_rs.identifier}')" />
-			<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+<div class="layui-row">
+	<div class="layui-col-md8">
+    	<input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} />
+	</div>
+	<div class="layui-col-md4">
+		<div class="layui-margin-1">
+			<div class="layui-btn-group">
+				<input type="button" value="{lang选择图片}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_select('{$_rs.identifier}')" />
+				<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_image_preview('{$_rs.identifier}')" />
+				<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+			</div>
 		</div>
-	</li>
-</ul>
+	</div>
+</div>
 <!-- elseif $_rs.form_btn == "video" -->
-<ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
-	<li style="margin-top:3px;">
-		<div class="layui-btn-group">
-			<input type="button" value="{lang选择视频}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_video_select('{$_rs.identifier}')" />
-			<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_video_preview('{$_rs.identifier}')" />
-			<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+<div class="layui-row">
+	<div class="layui-col-md8">
+    	<input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} />
+	</div>
+	<div class="layui-col-md4">
+		<div class="layui-margin-1">
+			<div class="layui-btn-group">
+				<input type="button" value="{lang选择视频}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_video_select('{$_rs.identifier}')" />
+				<input type="button" value="{lang预览}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_video_preview('{$_rs.identifier}')" />
+				<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+			</div>
 		</div>
-	</li>
-</ul>
+	</div>
+</div>
 <!-- elseif $_rs.form_btn == "url" -->
 <ul class="layout">
 	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
