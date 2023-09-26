@@ -195,6 +195,12 @@ img{
 	background:none;
 }
 
+.layui-row::after, .layui-row::before{
+	height:0;
+	overflow:hidden;
+	display:inline-block;
+}
+
 /* 通过 layui.newphper.com 在线生成的代码 */
 
 .layui-layout-admin .layui-logo {
