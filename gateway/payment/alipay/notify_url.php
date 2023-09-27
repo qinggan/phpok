@@ -53,4 +53,3 @@ foreach($_POST AS $key=>$value){
 }
 $cls = new html_lib();
 echo $cls->get_content($url);
-?>
