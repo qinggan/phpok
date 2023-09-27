@@ -29,22 +29,20 @@ class wxpay_query
 		global $app;
 		$rs = $app->model('payment')->log_one($this->order['id']);
 		if(!$rs){
-			$this->json('订单信息不存在');
+			$app->error('订单信息不存在');
 		}
 		if($rs['status']){
-			$this->json(true);
+			$app->success();
 		}
 		$data = $this->obj->query($this->order['sn'].'-'.$this->order['id']);
 		if(!$data){
-			$this->json('查询失败');
+			$app->error('查询失败');
 		}
 		if($data['trade_state'] == 'SUCCESS'){
 			$ext = $this->order['ext'] ? unserialize($this->order['ext']) : array();
 			$ext['openid'] = $data['openid'];
 			$ext['trade_type'] = $data['trade_type'];
 			$ext['bank_type'] = $data['bank_type'];
-			$ext['total_fee'] = $data['total_fee'];
-			//$ext = array('openid'=>$data['openid'],'trade_type'=>$data['trade_type'],'bank_type'=>$data['bank_type']);
 			$ext['total_fee'] = $data['total_fee'];
 			if($data['fee_type']){
 				$ext['fee_type'] = $data['fee_type'];
@@ -99,9 +97,9 @@ class wxpay_query
 			}
 			$GLOBALS['app']->plugin('payment-notice',$this->order['id']);
 			$array = array('status'=>$data['trade_state']);
-			$app->json($array,true);
+			$app->success($array);
 		}
 		$array = array('status'=>$data['trade_state'],'content'=>$data['trade_state_desc']);
-		$app->json($array);
+		$app->error($array);
 	}
 }
