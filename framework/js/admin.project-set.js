@@ -90,6 +90,44 @@ function update_show_select(val)
 	}
 }
 
+function set_icon(input)
+{
+	var url = get_url('system','icon_text','input='+input);
+	var icon = $("#menu_ico").val();
+	if(icon && icon != 'undefined'){
+		url += "&icon="+icon;
+	}
+	$.dialog.open(url,{
+		'title':p_lang('设置图标'),
+		'width':'70%',
+		'height':'70%',
+		'lock':true,
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal':p_lang('提交保存'),
+		'cancel':true
+	});
+}
+
+function icon_preview(info)
+{
+	$("#menu_ico").val(info);
+	$("#menu_ico_preview").removeClass().addClass('icon-'+info).show();
+}
+
+function icon_clear()
+{
+	$("#menu_ico").val('');
+	$("#menu_ico_preview").removeClass();
+}
+
 $(document).ready(function(){
 	$.admin_project.module_change($("#module")[0]);
 	layui.use('form',function(){

@@ -332,6 +332,7 @@ class project_control extends phpok_control
 		$array["tpl_list"] = $tpl_list;
 		$array["tpl_content"] = $tpl_content;
 		$array["ico"] = $this->get("ico");
+		$array['icon'] = $this->get('menu_ico');
 		$array["status"] = $this->get("lock","checkbox") ? 0 : 1;
 		$array["hidden"] = $this->get("hidden","checkbox");
 		$array["identifier"] = $identifier;

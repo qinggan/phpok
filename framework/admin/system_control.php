@@ -113,6 +113,23 @@ class system_control extends phpok_control
 		$this->json(true);
 	}
 
+	public function icon_text_f()
+	{
+		$icon = $this->get('icon');
+		$input = $this->get('input');
+		if(!$input){
+			$input = 'icon';
+		}
+		$css = $this->lib("file")->cat($this->dir_root.'css/icomoon.css');
+		preg_match_all("/\.icon-([a-z\-0-9]*):before\s*(\{|,)/isU",$css,$iconlist);
+		$iconlist = $iconlist[1];
+		sort($iconlist);
+		$this->assign('iconlist',$iconlist);
+		$this->assign("icon",$icon);
+		$this->assign("input",$input);
+		$this->view("sysmenu_icon_text");
+	}
+
 	# 存储项目
 	// 没试
 	public function save_f()

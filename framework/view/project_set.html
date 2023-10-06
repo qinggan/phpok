@@ -435,6 +435,22 @@
 								</div>
 							</div>
 						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">
+								<i class="layui-icon layui-tips" lay-tips="{lang侧边图标，用于独立显示在侧边栏使用}">&#xe702;</i> {lang侧栏图标}
+							</label>
+							
+							<div class="layui-input-inline auto">
+								<div class="layui-btn-group">
+									<input type="button" value="{lang选择图标}" onclick="set_icon('menu_ico')" class="layui-btn layui-btn-sm" />
+									<input type="button" value="{lang清空}" onclick="icon_clear()" class="layui-btn layui-btn-sm layui-btn-warm" />
+								</div>
+							</div>
+							<div class="layui-input-inline short">
+								<input type="hidden" name="menu_ico" id="menu_ico" value="{$rs.icon}" />
+								<i id="menu_ico_preview" class="icon-{$rs.icon}" style="font-size:24px;"></i>
+							</div>
+						</div>
 
 						<div class="layui-form-item">
 							<label class="layui-form-label layui-tips" lay-tips="{lang将显示在内容管理布局区那里，用于提示编辑人员注意事项}">{lang后台备注}</label>

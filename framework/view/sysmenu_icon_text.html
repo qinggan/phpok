@@ -1,0 +1,29 @@
+<!-- include tpl=head_lay nopadding=true -->
+<script type="text/javascript">
+function save()
+{
+	var obj = $.dialog.opener;
+	var icon = $("input[name=icon]:checked").val();
+	obj.icon_preview(icon);
+	$.dialog.close();
+	return true;
+}
+</script>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<ul class="layout layui-form">
+			<li style="width:200px;">
+				<input type="radio" name="icon" value=""{if !$icon} checked{/if} title="{lang空/隐藏/不使用}"/>
+			</li>
+			<!-- loop from=$iconlist key=$key value=$value -->
+			<li style="width:200px;white-space: nowrap;">
+				<i class='icon-{$value}' style='font-size:16px;'></i>
+				<input type="radio" name="icon" value="{$value}"{if $icon == $value} checked{/if} title="{$value}"/>
+			</li>
+			<!-- /loop -->
+			<div class="clear"></div>
+		</ul>
+	</div>
+</div>
+
+<!-- include tpl=foot_lay -->
