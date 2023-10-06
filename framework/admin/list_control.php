@@ -276,7 +276,8 @@ class list_control extends phpok_control
 		$search_list = array();
 		foreach($m_list as $key=>$value){
 			if($value['search'] && ($value['search'] == 1 || $value['search'] == 2)){
-				$search_list[] = $value;
+				$tmp = $this->lib('form')->format($value);
+				$search_list[] = $tmp;
 			}
 		}
 		$this->assign('search_list',$search_list);
@@ -418,6 +419,14 @@ class list_control extends phpok_control
 				$layout_list[$value] = $layout_tmparray;
 			}
 		}
+		$search_list = array();
+		foreach($m_list as $key=>$value){
+			if($value['search'] && ($value['search'] == 1 || $value['search'] == 2)){
+				$tmp = $this->lib('form')->format($value);
+				$search_list[] = $tmp;
+			}
+		}
+		$this->assign("search_list",$search_list);
 		$this->assign("ext_list",$m_list);
 		$this->assign("layout",$layout_list);
 		unset($layout_list);

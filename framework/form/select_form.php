@@ -155,7 +155,10 @@ class select_form extends _init_auto
 		$this->assign("_rslist",$rslist);
 		
 		$file = $appid == 'admin' ? $this->dir_phpok.'form/html/select_admin_tpl.html' : $this->dir_phpok.'form/html/select_www_tpl.html';
-		return $this->fetch($file,'abs-file');
+		$data = array();
+		$data['html'] = $this->fetch($file,'abs-file');
+		$data['rslist'] = $rslist;
+		return $data;
 	}
 
 	public function phpok_get($rs,$appid='admin'){

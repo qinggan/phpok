@@ -551,6 +551,7 @@ class phpok_call extends _init_auto
 				$nlist[$value['identifier']] = $value;
 			}
 		}
+		if($rs['cateid'] && $project['cate'])
 		$condition = $this->_arc_condition_single($rs,$flist);
 		$array['total'] = $this->model('list')->single_count($project['module'],$condition);
 		if(!$array['total']){
@@ -607,7 +608,15 @@ class phpok_call extends _init_auto
 			$condition .= " AND hidden=0 ";
 		}
 		if($rs['cateid']){
-			$condition .= " AND cate_id='".$rs['cateid']."' ";
+			if(strpos($rs['cateid'],',') !== false){
+				$condition .= " AND cate_id IN(".$rs['cateid'].") ";
+			}else{
+				$cate_all = $this->model('cate')->cate_all($rs['site']);
+				$array = array($rs['cateid']);
+				$this->model('cate')->cate_ids($array,$rs['cateid'],$cate_all);
+				$condition .= " AND cate_id IN(".implode(",",$array).") ";
+				unset($cate_all,$array);
+			}
 		}
 		if(!isset($rs['not_status']) || $rs['not_status'] != 2){
 			$condition .= " AND status=1 ";

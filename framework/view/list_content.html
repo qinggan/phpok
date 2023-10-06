@@ -100,12 +100,19 @@ function list_content_search(obj)
 			<div class="layui-col-xs12 layui-col-sm4 layui-col-md2">
 				<input type="text" name="keywords[dateline_stop]" class="layui-input" id="dateline_stop" placeholder="{lang结束时间}"{if $keywords} value="{$keywords.dateline_stop}"{/if} />
 			</div>
-			<!-- loop from=$ext_list key=$key value=$value id=$tmpid -->
-			<!-- if $value.search == 1 || $value.search == 2 -->
+			<!-- loop from=$search_list key=$key value=$value id=$tmpid -->
 			<div class="layui-col-xs12 layui-col-sm4 layui-col-md2">
-				<input type="text" id="keywords_{$key}" name="keywords[{$key}]" placeholder="{$value.title}" class="layui-input" value="{$keywords[$key]}" />
+				<!-- if $value.rslist -->
+				<select name="keywords[{$value.identifier}]">
+					<option value="">请选择…</option>
+					<!-- loop from=$value.rslist key=$k value=$v id=$idxx -->
+					<option value="{$v.val}"{if $v.val == $keywords[$value.identifier]} selected{/if}>{$v.title}</option>
+					<!-- /loop -->
+				</select>
+				<!-- else -->
+				<input type="text" name="keywords[{$value.identifier}]" class="layui-input"{if $keywords} value="{$keywords[$value.identifier]}"{/if} placeholder="{$value.title}，{if $value.search == 1}{lang仅支持精确搜索}{else}{lang支持模糊搜索}{/if}" />
+				<!-- /if -->
 			</div>
-			<!-- /if -->
 			<!-- /loop -->
 			<div class="layui-col-xs12 layui-col-sm4 layui-col-md2">
 				<select id="key_type" name="key_type">

@@ -90,10 +90,12 @@ class radio_form extends _init_auto
 		$this->assign('_rs',$rs);
 		$this->assign('_rslist',$rslist);
 		if($appid == 'admin'){
-			return $this->fetch($this->dir_phpok.'form/html/radio_admin_tpl.html','abs-file');
-		}else{
-			return $this->fetch($this->dir_phpok.'form/html/radio_www_tpl.html','abs-file');
+			$data = array();
+			$data['html'] = $this->fetch($this->dir_phpok.'form/html/radio_admin_tpl.html','abs-file');
+			$data['rslist'] = $rslist;
+			return $data;
 		}
+		return $this->fetch($this->dir_phpok.'form/html/radio_www_tpl.html','abs-file');
 	}
 
 	public function phpok_get($rs,$appid="admin")

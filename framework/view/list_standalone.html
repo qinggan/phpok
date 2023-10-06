@@ -8,7 +8,16 @@
 		<div class="layui-row layui-col-space5">
 			<!-- loop from=$search_list key=$key value=$value id=$tmpid -->
 			<div class="layui-col-xs12 layui-col-sm4 layui-col-md2">
+				<!-- if $value.rslist -->
+				<select name="keywords[{$value.identifier}]">
+					<option value="">请选择…</option>
+					<!-- loop from=$value.rslist key=$k value=$v id=$idxx -->
+					<option value="{$v.val}"{if $v.val == $keywords[$value.identifier]} selected{/if}>{$v.title}</option>
+					<!-- /loop -->
+				</select>
+				<!-- else -->
 				<input type="text" name="keywords[{$value.identifier}]" class="layui-input"{if $keywords} value="{$keywords[$value.identifier]}"{/if} placeholder="{$value.title}，{if $value.search == 1}{lang仅支持精确搜索}{else}{lang支持模糊搜索}{/if}" />
+				<!-- /if -->
 			</div>
 			<!-- /loop -->
 			<div class="layui-col-xs12 layui-col-sm4 layui-col-md2">

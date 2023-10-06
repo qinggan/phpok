@@ -135,12 +135,25 @@ class form_lib extends _init_lib
 		$mlist = get_class_methods($obj);
 		if(in_array('phpok_format',$mlist)){
 			$info = $obj->phpok_format($rs,$this->appid);
+			if(is_array($info)){
+				foreach($info as $key=>$value){
+					$rs[$key] = $value;
+				}
+			}else{
+				$rs['html'] = $info;
+			}
 			$rs['html'] = $info;
 			return $rs;
 		}
 		if(in_array('format',$mlist)){
 			$info = $obj->format($rs);
-			$rs['html'] = $info;
+			if(is_array($info)){
+				foreach($info as $key=>$value){
+					$rs[$key] = $value;
+				}
+			}else{
+				$rs['html'] = $info;
+			}
 			return $rs;
 		}
 		return $rs;
