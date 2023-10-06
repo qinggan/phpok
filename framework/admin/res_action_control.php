@@ -39,8 +39,13 @@ class res_action_control extends phpok_control
 			if(!file_exists($file)){
 				$this->error(P_Lang('附件不存在'));
 			}
+			$this->lib('file')->download($file,$title);
+			exit;
 		}
-		$this->lib('file')->download($file,$title);
+		$file_name = basename($file);
+		header('Content-Type: application/octet-stream');
+		header('Content-Disposition: attachment; filename='.$file_name);
+		readfile($file);
 	}
 
 	public function view_f()

@@ -243,16 +243,17 @@ class list_model extends list_model_base
 		if(!$rslist){
 			return false;
 		}
-		$m_rs = $this->lib('ext')->module_fields($mid);
-		if($m_rs){
-			foreach($rslist as $key=>$value){
-				foreach($value as $k=>$v){
-					if($m_rs[$k]){
-						$value[$k] = $this->lib('ext')->content_format($m_rs[$k],$v);
-					}
+		$m_rs = $this->lib('ext')->module_fields($module['id']);
+		if(!$m_rs){
+			return $rslist;
+		}
+		foreach($rslist as $key=>$value){
+			foreach($value as $k=>$v){
+				if($m_rs[$k]){
+					$value[$k] = $this->lib('ext')->content_format($m_rs[$k],$v);
 				}
-				$rslist[$key] = $value;
 			}
+			$rslist[$key] = $value;
 		}
 		return $rslist;
 	}

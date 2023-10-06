@@ -278,23 +278,29 @@ class open_control extends phpok_control
 	**/
 	public function title_f()
 	{
-		$id = $this->get('id','int');
+		$id = $this->get('id');
 		if(!$id){
 			$this->error('未指定ID');
 		}
-		$rs = $this->model('fields')->one($id);
-		if(!$rs){
-			$this->error(P_Lang('字段不存在'));
+		if(is_numeric($id)){
+			$rs = $this->model('fields')->one($id);
+			if(!$rs){
+				$this->error(P_Lang('字段不存在'));
+			}
+			if(!$rs['form_btn']){
+				$this->error(P_Lang('无扩展按钮'));
+			}
+			$tmp = explode(":",$rs['form_btn']);
+			$formurl = $url = $this->url('open','title','id='.$id);
+		}else{
+			$btn = $this->get('btn');
+			$tmp = explode(":",$btn);
+			$formurl = $url = $this->url('open','title','id='.$id.'&btn='.rawurlencode($btn));
 		}
-		if(!$rs['form_btn']){
-			$this->error(P_Lang('无扩展按钮'));
-		}
-		$tmp = explode(":",$rs['form_btn']);
 		if($tmp[0] != 'title' || !$tmp[1]){
 			$this->error(P_Lang('未指定项目'));
 		}
 		$pid = intval($tmp[1]);
-		$formurl = $url = $this->url('open','title','id='.$id);
 		$project = $this->model('project')->get_one($pid);
 		if(!$project){
 			$this->error('项目不存在');
@@ -338,11 +344,7 @@ class open_control extends phpok_control
 			}
 			$total = $this->model('list')->single_count($module['id'],$condition);
 			if($total>0){
-				$tmp = array($field);
-				$tmp2 = explode(",",$showid);
-				$tmp = array_merge($tmp,$tmp2);
-				$tmp = array_unique($tmp);
-				$rslist = $this->model('list')->single_list($module['id'],$condition,$offset,$psize,$project['orderby'],'id,'.implode(",",$tmp));
+				$rslist = $this->model('list')->single_list($module['id'],$condition,$offset,$psize,$project['orderby']);
 				if($rslist){
 					$this->assign('rslist',$rslist);
 				}
@@ -357,7 +359,6 @@ class open_control extends phpok_control
 					}else{
 						$tmp_c[] = 'ext.'.$key." LIKE '%".$keywords."%'";
 					}
-					
 				}
 				$condition .= " AND (".implode(" OR ",$tmp_c).")";
 			}
@@ -379,7 +380,7 @@ class open_control extends phpok_control
 		$this->assign('field',$rs['ext_field']);
 		$this->assign('pid',$pid);
 		$this->assign('id',$id);
-		$showlist = $rs['ext_layout'];
+		$showlist = $rs['ext_layout'] ? $rs['ext_layout'] : ($project['layout'] ? explode(",",$project['layout']) : array());
 		$showlist = array_unique($showlist);
 		$tmplist = array();
 		foreach($showlist as $key=>$value){

@@ -747,9 +747,12 @@ function go_to_page_action()
 		/**
 		 * 主题选择器
 		**/
-		text_button_title:function(id)
+		text_button_title:function(id,btn)
 		{
 			var url = get_url('open','title','id='+id);
+			if(btn && btn != 'undefined'){
+				url += '&btn='+$.str.encode(btn);
+			}
 			$.dialog.open(url,{
 				title: p_lang('选择器'),
 				lock : true,

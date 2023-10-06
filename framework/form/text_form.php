@@ -121,11 +121,9 @@ class text_form extends _init_auto
 		if(strpos($rs['content'],'[') !== false && strpos($rs['content'],']') !== false){
 			$rs['content'] = $this->lib('ubb')->to_html($rs['content'],false);
 		}
-		if($appid == 'admin'){
-			if($rs['format'] == 'time'){
-				$format = $rs['form_btn'] == 'date' ? 'Y-m-d' : 'Y-m-d H:i:s';
-				return date($format,$rs['content']);
-			}
+		if($appid == 'admin' && $rs['format'] == 'time'){
+			$format = $rs['form_btn'] == 'date' ? 'Y-m-d' : 'Y-m-d H:i:s';
+			return date($format,$rs['content']);
 		}
 		return $rs['content'];
 	}

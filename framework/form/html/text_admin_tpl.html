@@ -1,6 +1,8 @@
 <!-- if $_laydate -->
 <ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" onchange="$.phpokform.laydate_format('{$_rs.identifier}','{$_rs.form_btn}')" lay-key="laydate_{$_rs.identifier}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
+	<li>
+		<input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" onchange="$.phpokform.laydate_format('{$_rs.identifier}','{$_rs.form_btn}')" lay-key="laydate_{$_rs.identifier}" {if $_rs.note} placeholder="{$_rs.note}"{/if} />
+	</li>
 	<li style="margin-top:3px;">
 		<div class="layui-btn-group">
 			<input type="button" value="{$_laydate_button}" class="layui-btn layui-btn-sm" id="btn_{$_rs.identifier}_{$_rs.form_btn}" onclick="$.phpokform.laydate_button('{$_rs.identifier}','{$_rs.form_btn}')" />
@@ -10,16 +12,20 @@
 </ul>
 <!-- /if -->
 <!-- if $_rs.form_btn == "file" -->
-<ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
-	<li style="margin-top:3px;">
-		<div class="layui-btn-group">
-			<input type="button" value="{lang选择文件}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_file_select('{$_rs.identifier}')" />
-			<input type="button" value="{lang下载}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_file_download('{$_rs.identifier}')" />
-			<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+<div class="layui-row">
+	<div class="layui-col-md8">
+    	<input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} />
+	</div>
+	<div class="layui-col-md4">
+		<div class="layui-margin-1">
+			<div class="layui-btn-group">
+				<input type="button" value="{lang选择文件}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_file_select('{$_rs.identifier}')" />
+				<input type="button" value="{lang下载}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_file_download('{$_rs.identifier}')" />
+				<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+			</div>
 		</div>
-	</li>
-</ul>
+	</div>
+</div>
 <!-- elseif $_rs.form_btn == "image" -->
 <div class="layui-row">
 	<div class="layui-col-md8">
@@ -51,17 +57,21 @@
 	</div>
 </div>
 <!-- elseif $_rs.form_btn == "url" -->
-<ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
-	<li style="margin-top:3px;">
-		<div class="layui-btn-group">
-			<input type="button" value="{lang首页}" class="layui-btn layui-btn-sm" onclick="$('#{$_rs.identifier}').val('index.php')" />
-			<input type="button" value="{lang网址库}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_url_select('{$_rs.identifier}')" />
-			<input type="button" value="{lang访问}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_url_open('{$_rs.identifier}')" />
-			<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+<div class="layui-row">
+	<div class="layui-col-md7">
+    	<input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} />
+	</div>
+	<div class="layui-col-md5">
+		<div class="layui-margin-1">
+			<div class="layui-btn-group">
+				<input type="button" value="{lang首页}" class="layui-btn layui-btn-sm" onclick="$('#{$_rs.identifier}').val('index.php')" />
+				<input type="button" value="{lang网址库}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_url_select('{$_rs.identifier}')" />
+				<input type="button" value="{lang访问}" class="layui-btn layui-btn-sm" onclick="$.phpokform.text_button_url_open('{$_rs.identifier}')" />
+				<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+			</div>
 		</div>
-	</li>
-</ul>
+	</div>
+</div>
 <!-- elseif $_rs.form_btn == "user" -->
 <ul class="layout">
 	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
@@ -84,19 +94,23 @@
 	</li>
 </ul>
 <!-- elseif $_rs.form_btn == 'rand16' || $_rs.form_btn == 'rand32' -->
-<ul class="layout">
-	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>
-	<li style="margin-top:3px;">
-		<div class="layui-btn-group">
-			<!-- if $_rs.form_btn == 'rand16' -->
-			<input type="button" value="{lang随机数}" class="layui-btn layui-btn-sm" onclick="$('input[name={$_rs.identifier}]').val($.phpok.rand(16,'fixed'))" />
-			<!-- else -->
-			<input type="button" value="{lang随机数}" class="layui-btn layui-btn-sm" onclick="$('input[name={$_rs.identifier}]').val($.phpok.rand(32,'fixed'))" />
-			<!-- /if -->
-			<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+<div class="layui-row">
+	<div class="layui-col-md8">
+    	<input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} />
+	</div>
+	<div class="layui-col-md4">
+		<div class="layui-margin-1">
+			<div class="layui-btn-group">
+				<!-- if $_rs.form_btn == 'rand16' -->
+				<input type="button" value="{lang随机数}" class="layui-btn layui-btn-sm" onclick="$('input[name={$_rs.identifier}]').val($.phpok.rand(16,'fixed'))" />
+				<!-- else -->
+				<input type="button" value="{lang随机数}" class="layui-btn layui-btn-sm" onclick="$('input[name={$_rs.identifier}]').val($.phpok.rand(32,'fixed'))" />
+				<!-- /if -->
+				<input type="button" value="{lang清除}" class="layui-btn layui-btn-sm layui-btn-warm" onclick="$.phpokform.clear('{$_rs.identifier}');" />
+			</div>
 		</div>
-	</li>
-</ul>
+	</div>
+</div>
 <!-- elseif $_rs.form_btn && strpos($_rs.form_btn,'title:') !== false -->
 <ul class="layout">
 	<li><input type="text" id="{$_rs.identifier}" class="layui-input inp inp_{$_rs.identifier}" name="{$_rs.identifier}"{if $_rs.form_style} style="{$_rs.form_style}"{/if} value="{$_rs.content}" {if $_rs.note} placeholder="{$_rs.note}"{/if} /></li>

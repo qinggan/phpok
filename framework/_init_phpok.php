@@ -1540,6 +1540,15 @@ class _init_phpok
 				$tmp = $this->site['tpl_id']['dir_tpl'].$this->ctrl.'/'.$file.'.html';
 				$tlist[] = $tmp;
 			}
+			$tmp = $this->site['tpl_id']['dir_tpl'].$file;
+			if(!$ext){
+				$tmp .= ".".$this->site['tpl_id']["tpl_ext"];
+			}
+			$tlist[] = $tmp;
+			if(!$ext && $this->site['tpl_id']["tpl_ext"] != 'html'){
+				$tmp = $this->site['tpl_id']['dir_tpl'].$file.'.html';
+				$tlist[] = $tmp;
+			}
 		}
 		$tmp = $this->dir_app.$this->ctrl.'/tpl/'.$file;
 		if(!$ext){

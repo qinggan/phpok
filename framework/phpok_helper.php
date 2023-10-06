@@ -921,21 +921,31 @@ function tpl_head($array=array())
 **/
 function form_edit($id,$content="",$type="text",$attr="",$return='echo')
 {
+	global $app;
 	if(!$id){
 		return false;
 	}
-	$array = array("id"=>$id,"identifier"=>$id,"form_type"=>$type,"content"=>$content);
-	if($attr && is_string($attr)){
-		parse_str($attr,$list);
-		if($list){
-			$attr = $list;
+	if(is_numeric($id)){
+		$array = $app->model('fields')->one($id);
+		if($content != ''){
+			$array['content'] = $content;
+		}
+	}else{
+		$array = array("id"=>$id,"identifier"=>$id,"form_type"=>$type,"content"=>$content);
+		if($attr && is_string($attr)){
+			parse_str($attr,$list);
+			if($list){
+				$attr = $list;
+			}
+		}
+		if($attr && is_array($attr)){
+			$array = array_merge($attr,$array);
 		}
 	}
-	if($attr && is_array($attr)){
-		$array = array_merge($attr,$array);
+	$rs = $app->lib('form')->format($array);
+	if($return == 'array'){
+		return $rs;
 	}
-	$rs = $GLOBALS['app']->lib('form')->format($array);
-	if($return == 'array') return $rs;
 	return $rs['html'];
 }
 

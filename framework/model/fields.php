@@ -262,6 +262,11 @@ class fields_model_base extends phpok_model
 		return $rslist;
 	}
 
+	public function get_one($id)
+	{
+		return $this->one($id);
+	}
+
 	public function groups()
 	{
 		if(file_exists($this->dir_data.'xml/fields-group.xml')){

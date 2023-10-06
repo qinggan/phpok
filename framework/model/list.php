@@ -452,7 +452,11 @@ class list_model_base extends phpok_model
 		if($psize && intval($psize)>0){
 			$sql .= " LIMIT ".intval($offset).",".intval($psize);
 		}
-		return $this->db->get_all($sql);
+		$rslist = $this->db->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		return $rslist;
 	}
 
 	/**
