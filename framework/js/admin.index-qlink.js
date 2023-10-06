@@ -52,21 +52,58 @@ function ctrl_func_create()
 	$("#link").val(url);
 }
 
-function save()
+function set_icon(input)
 {
-	var opener = $.dialog.opener;
-	$("#post_save").ajaxSubmit({
+	var url = get_url('system','icon_text','input='+input);
+	var icon = $("#menu_ico").val();
+	if(icon && icon != 'undefined'){
+		url += "&icon="+icon;
+	}
+	$.dialog.open(url,{
+		'title':p_lang('设置图标'),
+		'width':'70%',
+		'height':'70%',
+		'lock':true,
+		'ok':function(){
+			var iframe = this.iframe.contentWindow;
+			if (!iframe.document.body) {
+				alert('iframe还没加载完毕呢');
+				return false;
+			};
+			iframe.save();
+			return false;
+		},
+		'okVal':p_lang('提交保存'),
+		'cancel':true
+	});
+}
+
+function icon_preview(info)
+{
+	$("#menu_ico").val(info);
+	$("#menu_ico_preview").removeClass().addClass('icon-'+info).show();
+}
+
+function icon_clear()
+{
+	$("#menu_ico").val('');
+	$("#menu_ico_preview").removeClass();
+}
+
+function save(obj)
+{
+	$(obj).ajaxSubmit({
 		'url':get_url('index','qlink_save'),
 		'type':'post',
 		'dataType':'json',
 		'success':function(rs){
 			if(rs.status){
-				$.dialog.alert('操作成功',function(){
-					opener.$.phpok.reload();
-				},'succeed');
+				$.dialog.tips('操作成功，请关闭页面',function(){
+					$.admin.close();
+				});
 				return true;
 			}
-			$.dialog.alert(rs.info);
+			$.dialog.tips(rs.info);
 			return false;
 		}
 	});

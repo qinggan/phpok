@@ -19,6 +19,8 @@ class index_control extends phpok_control
 	public function index_f()
 	{
 		$this->_index();
+		$qlink = $this->model('qlink')->get_all();
+		$this->assign('qlink',$qlink);
 		//检测是否需要打开自动更新附件功能
 		if(file_exists($this->dir_data.'first.lock')){
 			$this->assign('first_login',true);
@@ -954,15 +956,20 @@ class index_control extends phpok_control
 		$this->view('index_server_info');
 	}
 
-
 	public function qlink_f()
 	{
 		$id = $this->get('id');
 		if($id){
-			$rs = $this->model('qlink')->get_one($id);
-			$this->assign('rs',$rs);
+			$rs = $this->model('qlink')->get_one($id);		
 			$this->assign('id',$id);
+		}else{
+			$type = $this->get('type');
+			if(!$type){
+				$type = 'menu';
+			}
+			$rs = array('type'=>$type);
 		}
+		$this->assign('rs',$rs);
 		$dirlist = array();
 		$list = $this->lib('file')->ls($this->dir_app);
 		if($list){
@@ -1024,8 +1031,10 @@ class index_control extends phpok_control
 		$data['title'] = $this->get('title');
 		$data['link'] = $this->get('link');
 		$data['ico'] = $this->get('ico');
+		$data['menu_ico'] = $this->get('menu_ico');
 		$data['islink'] = $this->get('islink');
 		$data['intitle'] = $this->get('intitle');
+		$data['type'] = $this->get('type');
 		$this->model('qlink')->save($data);
 		$this->success();
 	}

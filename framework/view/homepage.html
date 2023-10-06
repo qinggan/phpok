@@ -61,6 +61,16 @@
 					</li>
 					<!-- /loop -->
 					<!-- /if -->
+					<!-- loop from=$qlink key=$key value=$value id=$tmpid -->
+					<!-- if $value.type == 'all' -->
+					<li pid="{$value.id}"{if $session.admin_rs.if_system} menu-right="true" menu-right-1="管理" menu-right-1-exec="$.admin_index.quick_link('{$value.id}')" menu-right-2="删除" menu-right-2-exec="$.admin_index.quick_link_delete('{$value.id}')"{/if}>
+						<a title="{$value.title}" href="{if $value.islink}{$value.link}{else}javascript:$.win('{$value.intitle ? $value.intitle : $value.title}','{$value.link}');void(0);{/if}"{if $value.islink} target="_blank"{/if}>
+							<div class="top_img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
+							<div class="name">{$value.title}</div>
+						</a>
+					</li>
+					<!-- /if -->
+					<!-- /loop -->
 				</ul>
 			</div>
 		</div>
@@ -110,14 +120,15 @@
 						<!-- /if -->
 					<!-- /loop -->
 					<!-- loop from=$qlink key=$key value=$value id=$tmpid -->
+					<!-- if $value.type == 'content' || !$value.type -->
 					<li pid="{$value.id}"{if $session.admin_rs.if_system} menu-right="true" menu-right-1="管理" menu-right-1-exec="$.admin_index.quick_link('{$value.id}')" menu-right-2="删除" menu-right-2-exec="$.admin_index.quick_link_delete('{$value.id}')"{/if}>
 						<a title="{$value.title}" href="{if $value.islink}{$value.link}{else}javascript:$.win('{$value.intitle ? $value.intitle : $value.title}','{$value.link}');void(0);{/if}"{if $value.islink} target="_blank"{/if}>
 							<div class="top_img"><img src="{$value.ico ? $value.ico : 'images/ico/default.png'}" class="ie6png" alt="{$value.title}" width="48" height="48" /></div>
 							<div class="name">{$value.title}</div>
 						</a>
 					</li>
+					<!-- /if -->
 					<!-- /loop -->
-					
 				</ul>
 			</div>
 		</div>

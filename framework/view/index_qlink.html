@@ -1,13 +1,14 @@
-<!-- include tpl=head_lay nopadding=true overflowy=true -->
+<!-- include tpl=head_lay -->
+<form method="post" class="layui-form" id="post_save" onsubmit="return save(this)">
+<!-- if $id -->
+<input type="hidden" name="id" value="{$id}" />
+<!-- /if -->
 <div class="layui-card">
 	<div class="layui-card-header">
 		{lang注意：不清楚内部链接控制器及方法的使用，请参考帮助手册}
 	</div>
 	<div class="layui-card-body">
-		<form method="post" class="layui-form" id="post_save" onsubmit="return false">
-		<!-- if $id -->
-		<input type="hidden" name="id" value="{$id}" />
-		<!-- /if -->
+		
 		
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -70,6 +71,17 @@
 		</div>
 		<div class="layui-form-item">
 			<label class="layui-form-label">
+				{lang位置}
+			</label>
+			<div class="layui-input-block">
+				<input type="radio" name="type" value="menu"{if $rs.type == 'menu'} checked{/if} title="侧边栏" />
+				<input type="radio" name="type" value="all"{if $rs.type == 'all'} checked{/if} title="全局区" />
+				<input type="radio" name="type" value="content"{if $rs.type == 'content'} checked{/if} title="内容区" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="{lang图标，标准格式是48x48，用于显示在内容区或全局区使用}">&#xe702;</i>
 				{lang图标}
 			</label>
 			<div class="layui-input-inline default-auto">
@@ -83,8 +95,31 @@
 				</div>
 			</div>
 		</div>
-		</form>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				<i class="layui-icon layui-tips" lay-tips="{lang侧边图标，用于独立显示在侧边栏使用}">&#xe702;</i> {lang侧栏图标}
+			</label>
+			
+			<div class="layui-input-inline auto">
+				<div class="layui-btn-group">
+					<input type="button" value="{lang选择图标}" onclick="set_icon('menu_ico')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="{lang清空}" onclick="icon_clear()" class="layui-btn layui-btn-sm layui-btn-warm" />
+				</div>
+			</div>
+			<div class="layui-input-inline short">
+				<input type="hidden" name="menu_ico" id="menu_ico" value="{$rs.menu_ico}" />
+				<i id="menu_ico_preview" class="icon-{$rs.menu_ico}" style="font-size:24px;"></i>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="submit-info-clear"></div>
+<div class="submit-info">
+	<div class="layui-container center">
+		<input type="submit" value="{lang保存提交}" class="layui-btn layui-btn-danger" id="save_button" />
+		<input type="button" value="{lang取消关闭}" class="layui-btn layui-btn-primary" onclick="$.admin.close()" />
 	</div>
 </div>
 
-<!-- include tpl=foot_lay is_open=1 -->
+</form>
+<!-- include tpl=foot_lay -->

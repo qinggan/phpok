@@ -121,7 +121,14 @@
 			              </a>
 			              <dl class="layui-nav-child">
 								<!-- loop from=$list_rslist key=$key value=$value id=$idx -->
-								<dd pid="{$value.id}" data-name="project_{$value.id}"> <a lay-href="{$value.url}" lay-text="{$value.nick_title ? $value.nick_title : $value.title}">{$value.nick_title ? $value.nick_title : $value.title}</a></dd>
+								<dd pid="{$value.id}" data-name="project_{$value.id}">
+									<a lay-href="{$value.url}" lay-text="{$value.nick_title ? $value.nick_title : $value.title}">
+										<!-- if $value.icon -->
+										<i class="icon-{$value.icon}" style="padding-right:6px;"></i>
+										<!-- /if -->
+										{$value.nick_title ? $value.nick_title : $value.title}
+									</a>
+								</dd>
 								<!-- /loop -->
 						  </dl>
 			            </li>
@@ -158,10 +165,10 @@
 			            <!-- /if -->
 			            <!-- loop from=$iconlist key=$key value=$value id=$tmpid -->
 			            <li data-name="{$value.appfile}" class="layui-nav-item">
-			              <a href="javascript:;" lay-href="{$value.url}" lay-text="{func P_Lang $value.title}">
-			                <i class="icon-{$value.icon}" style="margin-left:-24px;padding-right:6px;"></i>
-			                <cite>{func P_Lang $value.title}</cite>
-			              </a>
+							<a lay-href="{$value.url}" lay-text="{func P_Lang $value.title}">
+								<i class="icon-{$value.icon}" style="margin-left:-24px;padding-right:6px;"></i>
+								<cite>{func P_Lang $value.title}</cite>
+							</a>
 			            </li>
 			            <!-- /loop -->
 			            <!-- if $session.adm_develop && $session.admin_rs.if_system -->
@@ -176,6 +183,26 @@
 							</dl>
 						</li>
 						<!-- /loop -->
+						<!-- /if -->
+						<!-- loop from=$qlink key=$key value=$value id=$tmpid -->
+						<!-- if $value.type == 'menu' -->
+						<li data-name="qlink-{$value.id}" class="layui-nav-item" pid="{$value.id}"{if $session.adm_develop && $session.admin_rs.if_system} menu-right="true" menu-right-1="管理" menu-right-1-exec="$.admin_index.quick_link('{$value.id}')" menu-right-2="删除" menu-right-2-exec="$.admin_index.quick_link_delete('{$value.id}')"{/if}>
+							<a title="{$value.title}" href="{if $value.islink}{$value.link}{else}javascript:void();{/if}"{if $value.islink} target="_blank"{else} lay-href="{$value.link}" lay-text="{$value.intitle ? $value.intitle : $value.title}"{/if}>
+								<!-- if $value.menu_ico -->
+								<i class="icon-{$value.menu_ico}" style="margin-left:-24px;padding-right:6px;"></i>
+								<!-- /if -->
+								<cite>{$value.title}</cite>
+							</a>
+						</li>
+						<!-- /if -->
+						<!-- /loop -->
+						<!-- if $session.adm_develop && $session.admin_rs.if_system -->
+						<li data-name="qlink-add" class="layui-nav-item">
+							<a lay-href="{url ctrl=index func=qlink type=menu/}" lay-text="{lang添加快捷栏}">
+								<i class="icon-plus" style="margin-left:-24px;padding-right:6px;"></i>
+								<cite>{lang添加快捷栏}</cite>
+							</a>
+						</li>
 						<!-- /if -->
 					</ul>
 				</div>

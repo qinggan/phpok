@@ -193,24 +193,7 @@
 				url += "&id="+id;
 				tit = p_lang('编辑链接');
 			}
-			$.dialog.open(url, {
-				'title': tit,
-				'lock': true,
-				'width': '750px',
-				'height': '370px',
-				'ok': function () {
-					var iframe = this.iframe.contentWindow;
-					if (!iframe.document.body) {
-						alert('iframe还没加载完毕呢');
-						return false;
-					};
-					iframe.save();
-					return false;
-				},
-				'okVal':p_lang('保存'),
-				'cancel':true,
-				'cancelVal':p_lang('取消')
-			});
+			$.win(tit,url);
 		},
 		quick_link_delete:function(id)
 		{
