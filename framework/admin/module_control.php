@@ -321,7 +321,7 @@ class module_control extends phpok_control
 					$this->error(P_Lang('字符已经存在'));
 				}
 			}
-			$tblname = $rs['mtype'] ? $mid : $rs['tbl'].'_'.$mid;
+			$tblname = tablename($rs,false);
 		}
 		$flist = $this->model('fields')->tbl_fields($tblname);
 		if($flist && in_array($identifier,$flist)){

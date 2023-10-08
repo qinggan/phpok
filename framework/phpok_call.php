@@ -551,7 +551,6 @@ class phpok_call extends _init_auto
 				$nlist[$value['identifier']] = $value;
 			}
 		}
-		if($rs['cateid'] && $project['cate'])
 		$condition = $this->_arc_condition_single($rs,$flist);
 		$array['total'] = $this->model('list')->single_count($project['module'],$condition);
 		if(!$array['total']){

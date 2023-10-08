@@ -142,7 +142,6 @@ class form_lib extends _init_lib
 			}else{
 				$rs['html'] = $info;
 			}
-			$rs['html'] = $info;
 			return $rs;
 		}
 		if(in_array('format',$mlist)){

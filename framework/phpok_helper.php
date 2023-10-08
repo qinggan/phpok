@@ -54,16 +54,19 @@ function Gen($string = '')
  * @参数 $name 表名称，仅数字表示模块ID，数组表示模块信息，非数字返回带上表前缀的表名称
  * @返回 表名称
 **/
-function tablename($name='')
+function tablename($name='',$prefix=true)
 {
 	if(!$name){
 		return false;
 	}
 	global $app;
 	if(is_numeric($name) || is_array($name)){
-		return $app->model('module')->tablename($name);
+		return $app->model('module')->tablename($name,$prefix);
 	}
-	return $app->db()->prefix().$name;
+	if($prefix){
+		return $app->db()->prefix().$name;
+	}
+	return $name;
 }
 
 /**
