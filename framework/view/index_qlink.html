@@ -7,8 +7,8 @@
 	<div class="layui-card-header">
 		{lang注意：不清楚内部链接控制器及方法的使用，请参考帮助手册}
 	</div>
-	<div class="layui-card-body">
-		
+	<div class="layui-card-body layui-container">
+			
 		
 		<div class="layui-form-item">
 			<label class="layui-form-label">
@@ -109,6 +109,17 @@
 			<div class="layui-input-inline short">
 				<input type="hidden" name="menu_ico" id="menu_ico" value="{$rs.menu_ico}" />
 				<i id="menu_ico_preview" class="icon-{$rs.menu_ico}" style="font-size:24px;"></i>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">
+				{lang排序}
+			</label>
+			<div class="layui-input-inline short">
+				<input type="text" name="taxis" id="taxis" value="{$rs.taxis ? $rs.taxis : 255}" class="layui-input" />
+			</div>
+			<div class="layui-form-mid">
+				{lang值越小越往前靠，建议不超过255}
 			</div>
 		</div>
 	</div>

@@ -36,8 +36,12 @@ class qlink_model_base extends phpok_model
 
 	public function get_all()
 	{
-		return $this->_xml();
+		$rslist = $this->_xml();
+		usort($rslist,array($this,'_sort'));
+		return $rslist;
 	}
+
+	
 
 	public function save($data)
 	{
@@ -115,6 +119,23 @@ class qlink_model_base extends phpok_model
 			}
 		}
 		return $list;
+	}
+
+	/**
+	 * 排序
+	**/
+	private function _sort($a,$b)
+	{
+		if(!isset($a['taxis']) || !$a['taxis']){
+			$a['taxis'] = 255;
+		}
+		if(!isset($b['taxis']) || !$b['taxis']){
+			$b['taxis'] = 255;
+		}
+		if($a['taxis'] == $b['taxis']){
+			return 0;
+		}
+		return ($a['taxis'] < $b['taxis']) ? -1 : 1;
 	}
 
 	/**

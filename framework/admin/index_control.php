@@ -991,6 +991,43 @@ class index_control extends phpok_control
 		$this->view('index_qlink');
 	}
 
+
+	public function qlink_save_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有配置权限'));
+		}
+		$id = $this->get('id','system');
+		if(!$id){
+			$rand_string = $this->lib('common')->str_rand(10);
+			$id = 'qlink-'.$this->time.'-'.$rand_string;
+		}
+		$data = array('id'=>$id);
+		$data['title'] = $this->get('title');
+		$data['link'] = $this->get('link');
+		$data['ico'] = $this->get('ico');
+		$data['menu_ico'] = $this->get('menu_ico');
+		$data['islink'] = $this->get('islink');
+		$data['intitle'] = $this->get('intitle');
+		$data['type'] = $this->get('type');
+		$data['taxis'] = $this->get('taxis');
+		$this->model('qlink')->save($data);
+		$this->success();
+	}
+
+	public function qlink_delete_f()
+	{
+		if(!$this->session->val('admin_rs.if_system')){
+			$this->error(P_Lang('您没有删除权限'));
+		}
+		$id = $this->get('id','system');
+		if(!$id){
+			$this->error(P_Lang('未指定ID'));
+		}
+		$this->model('qlink')->delete($id);
+		$this->success();
+	}
+
 	public function funclist_f()
 	{
 		if(!$this->session->val('admin_rs.if_system')){
@@ -1014,41 +1051,6 @@ class index_control extends phpok_control
 		if($list){
 			$this->success($list);
 		}
-		$this->success();
-	}
-
-	public function qlink_save_f()
-	{
-		if(!$this->session->val('admin_rs.if_system')){
-			$this->error(P_Lang('您没有配置权限'));
-		}
-		$id = $this->get('id','system');
-		if(!$id){
-			$rand_string = $this->lib('common')->str_rand(10);
-			$id = 'qlink-'.$this->time.'-'.$rand_string;
-		}
-		$data = array('id'=>$id);
-		$data['title'] = $this->get('title');
-		$data['link'] = $this->get('link');
-		$data['ico'] = $this->get('ico');
-		$data['menu_ico'] = $this->get('menu_ico');
-		$data['islink'] = $this->get('islink');
-		$data['intitle'] = $this->get('intitle');
-		$data['type'] = $this->get('type');
-		$this->model('qlink')->save($data);
-		$this->success();
-	}
-
-	public function qlink_delete_f()
-	{
-		if(!$this->session->val('admin_rs.if_system')){
-			$this->error(P_Lang('您没有删除权限'));
-		}
-		$id = $this->get('id','system');
-		if(!$id){
-			$this->error(P_Lang('未指定ID'));
-		}
-		$this->model('qlink')->delete($id);
 		$this->success();
 	}
 
