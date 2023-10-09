@@ -118,7 +118,7 @@ class module_model_base extends phpok_model
 		if(!$mlist){
 			return false;
 		}
-		$tblname = tablename($module);
+		$tblname = $this->tablename($module);
 		if(in_array($tblname,$mlist)){
 			return true;
 		}
