@@ -82,6 +82,23 @@ if(!in_array('is_system',$fields)){
 	$sql = "ALTER TABLE ".$this->db->prefix."fields ADD is_system TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0常规1系统'";
 	$this->db->query($sql);
 }
+
+
 /**
  * 2023年9月14日 更新结束
+**/
+
+/**
+ * 项目增加图标字段
+ * 2023年10月6日 
+**/
+
+$fields = $this->db->list_fields('project');
+if(!in_array('icon',$fields)){
+	$sql = "ALTER TABLE ".$this->db->prefix."project ADD icon varchar(255) NOT NULL COMMENT '侧边栏文本图标'";
+	$this->db->query($sql);
+}
+
+/**
+ * 2023年10月10日 更新结束
 **/
