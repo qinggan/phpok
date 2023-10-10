@@ -291,6 +291,21 @@ class db
 			}
 			return true;
 		}
+		$html  = '<table class="table table-bordered">';
+		$html .= '<tr>';
+		$html .= '<th>Count</th>';
+		$html .= '<th>Time</th>';
+		$html .= '<th>SQL</th>';
+		$html .= '</tr>';
+		foreach($this->_sqlist as $key=>$value){
+			$html .= '<tr>';
+			$html .= '<td>'.$value['count'].'</td>';
+			$html .= '<td>'.$value['time'].'</td>';
+			$html .= '<td class="text-start">'.$value['sql'].'</td>';
+			$html .= '</tr>';
+		}
+		$html.= '</table>';
+		return $html;
 	}
 
 

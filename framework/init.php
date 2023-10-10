@@ -100,14 +100,12 @@ function debug_time()
 	$sql_db_time = $app->db()->sql_time();
 	$cache_count = $app->cache()->count();
 	$cache_time = $app->cache()->time();
-	$string = '运行 {total} 秒，内存使用 {mem_total}，数据库执行 {sql_count} 次，';
-	$string.= '用时 {sql_time} 秒，缓存执行 {cache_count} 次，用时 {cache_time} 秒';
 	$array = array('total'=>$time,'mem_total'=>$memory);
 	$array['sql_count']= $app->db()->sql_count();
 	$array['sql_time'] = $app->db()->sql_time();
 	$array['cache_count'] = $app->cache()->count();
 	$array['cache_time'] = $app->cache()->time();
-	$string = P_Lang($string,$array);
+	$string = P_Lang('运行 {total} 秒，内存使用 {mem_total}，数据库执行 {sql_count} 次，用时 {sql_time} 秒，缓存执行 {cache_count} 次，用时 {cache_time} 秒',$array);
 	return $string;
 }
 

@@ -142,10 +142,18 @@ class cache_redis extends cache
 		if($this->conn){
 			$this->conn->delete($id);
 		}
-		if($this->key_list && $this->key_list){
-			unset($this->key_list[$id]);
+		if(!$this->md5list || !$this->md5list[$id]){
+			return true;
 		}
-		
+		foreach($this->md5list[$id] as $key=>$value){
+			if($this->keylist && $this->keylist[$key][$id]){
+				unset($this->keylist[$key][$id]);
+			}
+		}
+		unset($this->md5list[$id]);
+		if($this->timelist && $this->timelist[$id]){
+			unset($this->timelist[$id]);
+		}
 		return true;
 	}
 
@@ -163,6 +171,46 @@ class cache_redis extends cache
 
 	public function expired()
 	{
+		return true;
+	}
+
+	protected function keylist_load()
+	{
+		if(!$this->status){
+			return false;
+		}
+		$this->keyfile = $this->prefix."keylist";
+		$rslist = $this->get($this->keyfile);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			if(!isset($this->keylist[$value['tbl']])){
+				$this->keylist[$value['tbl']] = array();
+			}
+			if(!isset($this->md5list[$value['code']])){
+				$this->md5list[$value['code']] = array();
+			}
+			$this->keylist[$value['tbl']][$value['code']] = true;
+			$this->md5list[$value['code']][$value['tbl']] = true;
+			$this->timelist[$value['code']] = $value['dateline'];
+		}
+		return true;
+	}
+
+	protected function keylist_save()
+	{
+		if(!$this->status || !$this->keylist){
+			return false;
+		}
+		$list = array();
+		foreach($this->keylist as $key=>$value){
+			foreach($value as $k=>$v){
+				$time = $this->timelist[$k] ? $this->timelist[$k] : $this->time;
+				$list[] = array('code'=>$k,'dateline'=>$time,'tbl'=>$key);
+			}
+		}
+		$this->save($this->keyfile,$list);
 		return true;
 	}
 }

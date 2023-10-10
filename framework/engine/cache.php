@@ -26,8 +26,7 @@ class cache
 	private $time_use = 0;
 	private $time_tmp = 0;
 	private $count = 0;
-	private $safecode = "<?php die('forbidden'); ?>\n";
-	private $db;
+	private $safecode = "<?php die('forbidden'); ?>";
 	
 	public function __construct($config)
 	{
@@ -227,8 +226,6 @@ class cache
 			}
 		}
 		closedir($handle);
-		$sql = "TRUNCATE ".tablename('cache');
-		$GLOBALS['app']->db()->query($sql);
 		return true;
 	}
 
@@ -243,8 +240,6 @@ class cache
 				$this->delete($key);
 			}
 		}
-		$sql = "DELETE FROM ".tablename('cache')." WHERE dateline<".$expire_time;
-		$GLOBALS['app']->db()->query($sql);
 		return true;
 	}
 
@@ -299,12 +294,12 @@ class cache
 		if(!$this->status){
 			return false;
 		}
-		$expire_time = $this->time - $this->timeout;
-		$sql = "SELECT * FROM ".tablename("cache")." WHERE dateline>".$expire_time;
-		$rslist = $GLOBALS['app']->db()->get_all($sql);
-		if(!$rslist){
+		$this->keyfile = $this->prefix."keylist.php";
+		$file = $this->folder.$this->keyfile;
+		if(!file_exists($file)){
 			return false;
 		}
+		$rslist = $this->keylist_data($file);
 		foreach($rslist as $key=>$value){
 			if(!isset($this->keylist[$value['tbl']])){
 				$this->keylist[$value['tbl']] = array();
@@ -324,17 +319,38 @@ class cache
 		if(!$this->status){
 			return false;
 		}
-		$sql = "REPLACE INTO ".tablename('cache')."(tbl,code,dateline) VALUES";
+		$list = array();
 		foreach($this->keylist as $key=>$value){
 			foreach($value as $k=>$v){
 				$time = $this->timelist[$k] ? $this->timelist[$k] : $this->time;
-				$mylist[] = "('".$key."','".$k."','".$time."')";
+				$list[] = $k.'[|]'.$time.'[|]'.$key;
 			}
 		}
-		if($mylist){
-			$sql .= implode(",",$mylist);
-			$GLOBALS['app']->db()->query($sql);
-		}
+		$content = implode("\n",$list);
+		$file = $this->folder.$this->keyfile;
+		file_put_contents($file,$this->safecode."\n".$content);
 		return true;
+	}
+
+	protected function keylist_data($file)
+	{
+		$list = file($file,FILE_SKIP_EMPTY_LINES);
+		if(!$list){
+			return false;
+		}
+		unset($list[0]);
+		if(!$list){
+			return false;
+		}
+		$rslist = array();
+		foreach($list as $key=>$value){
+			$value = trim($value);
+			$tmp = explode("[|]",$value);
+			if(!$tmp[0] || !$tmp[1] || !$tmp[2]){
+				continue;
+			}
+			$rslist[] = array('code'=>$tmp[0],'dateline'=>$tmp[1],'tbl'=>$tmp[2]);
+		}
+		return $rslist;
 	}
 }
