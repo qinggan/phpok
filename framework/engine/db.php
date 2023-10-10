@@ -348,10 +348,6 @@ class db
 			return false;
 		}
 		foreach($tbl as $key=>$value){
-			//针对缓存页，执行忽略
-			if($value == $this->prefix."cache"){
-				continue;
-			}
 			$GLOBALS['app']->cache()->delete_index($value);
 		}
 		return true;
