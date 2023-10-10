@@ -606,4 +606,4 @@ CREATE TABLE IF NOT EXISTS `qinggan_cache` (
   PRIMARY KEY (`tbl`,`code`) USING HASH,
   KEY `code` (`code`),
   KEY `tbl` (`tbl`)
-) ENGINE=MEMORY DEFAULT CHARSET=utf8 COMMENT='关键值缓存表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关键值缓存表';
