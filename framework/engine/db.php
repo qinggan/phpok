@@ -262,32 +262,6 @@ class db
 		}
 	}
 
-	private function _log($info='')
-	{
-		global $app;
-		if(!$info){
-			$info = '没有提示内容';
-		}
-		if(is_array($info) || is_object($info)){
-			$info = print_r($info,true);
-		}
-		$info = trim($info);
-		$date = date("Ymd",$app->time);
-		if(!file_exists($app->dir_data.'log/log'.$date.'.php')){
-			file_put_contents($app->dir_data.'log/log'.$date.'.php',"<?php exit();?>\n");
-		}
-		$handle = fopen($app->dir_data.'log/log'.$date.'.php','ab');
-		$info2 = '---start---Time:'.date("H:i:s",$app->time).'---------------------'."\n";
-		$info2.= 'APP_ID: '.$app->app_id."\n";
-		$info2.= 'CTRL_ID: '.$app->ctrl."\n";
-		$info2.= 'FUNC_ID: '.$app->func."\n";
-		$info2.= 'INFO:'."\n";
-		$info2.= $info."\n";
-		$info2.= '---end---'."\n";
-		fwrite($handle,$info2);
-		fclose($handle);
-		return true;
-	}
 
 	/**
 	 * 调试，2018年11月24日后不再支持即时输出，改为写日志
@@ -319,15 +293,6 @@ class db
 		}
 	}
 
-	private function _slow($sql,$time)
-	{
-		if($time < $this->slow_time){
-			return true;
-		}
-		$sql = trim($sql);
-		$this->_slowlist[] = array('sql'=>$sql,'dateline'=>time(),'time'=>$time);
-		return true;
-	}
 
 	public function slowlist()
 	{
@@ -342,120 +307,25 @@ class db
 		return $this->conn;
 	}
 
-	//缓存运行计时器
-	protected function _time()
-	{
-		$time = microtime(true);
-		if($this->time_tmp){
-			$tmptime = round(($time - $this->time_tmp),5);
-			$this->time = round(($this->time + $tmptime),5);
-			$this->time_tmp = 0;
-			return $tmptime;
-		}else{
-			$this->time_tmp = $time;
-		}
-	}
-
-	//计数器
-	protected function _count($val=1)
-	{
-		$this->count += $val;
-	}
-
-	public function cache_conn($obj)
-	{
-		$this->cache = $obj;
-		return true;
-	}
-
-	public function cache_delete($sql){
-		return $this->cache_update($sql);
-	}
-
-	public function cache_false($sql)
-	{
-		$obj = array();
-		$obj['_phpok_query_false'] = 1;
-		return $this->cache_save($sql,$obj);
-	}
-
-	public function cache_get($sql)
-	{
-		if(!$this->cache){
-			return false;
-		}
-		$id = $this->cache_sqlid($sql);
-		if(!$id){
-			return false;
-		}
-		if($this->cache_status){
-			$info = $this->cache->get($id);
-			if($info){
-				return $info;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * 需要即时缓存的数据
-	 * @参数 $sql SQL语句
-	 * @参数 $data 返回的结果集
-	**/
-	public function cache_save($sql,$data)
-	{
-		if(!$this->cache){
-			return true;
-		}
-		$id = $this->cache_sqlid($sql);
-		if(!$id){
-			return true;
-		}
-		if($this->cache_status){
-			$this->cache->save($id,$data);
-		}
-		return true;
-	}
-
-	//重置表名称收集
 	public function cache_set($id='')
 	{
-		if(!$id || !$this->cache){
-			return false;
+		if($id){
+			$this->cache_id = $id;
 		}
-		$this->cache_id = $id;
+		return $this->cache_id;
 	}
 
-	public function cache_sqlid($sql)
-	{
-		if(!$this->cache){
-			return false;
-		}
-		$id = 'sql_'.md5($sql);
-		preg_match_all('/(FROM|JOIN|UPDATE|INTO|TRUNCATE|DROP)\s+([a-zA-Z0-9\_\.\-]+)(\s|\()+/isU',$sql,$list);
-		$tbl = $list[2] ? $list[2] : false;
-		if(!$tbl){
-			return false;
-		}
-		if($this->cache_status){
-			$this->cache->key_list($id,$tbl);
-		}
-		if($this->cache_id){
-			$this->cache->key_list($this->cache_id,$tbl,true);
-		}
-		return $id;
-	}
-
-	/**
-	 * 删除缓存
-	**/
-	public function cache_update($sql)
-	{
-		if(!$this->cache){
-			return false;
-		}
+	public function cache_update($sql){
 		if(!preg_match($this->preg_sql,$sql)){
-			return false;
+			preg_match_all('/(FROM|JOIN)\s+([a-zA-Z0-9\_\.\-]+)(\s|\()+/isU',$sql,$list);
+			$tbl = $list[2] ? $list[2] : false;
+			if(!$tbl){
+				return false;
+			}
+			if($this->cache_id && $tbl){
+				$GLOBALS['app']->cache()->key_list($this->cache_id,$tbl);
+			}
+			return true;
 		}
 		preg_match_all('/(FROM|JOIN|UPDATE|INTO|TRUNCATE|DROP)\s+([a-zA-Z0-9\_\.\-]+)(\s|\()+/isU',$sql,$list);
 		$tbl = $list[2] ? $list[2] : false;
@@ -463,29 +333,17 @@ class db
 			return false;
 		}
 		foreach($tbl as $key=>$value){
-			$this->cache->delete_index($value);
+			//针对缓存页，执行忽略
+			if($value == $this->prefix."cache"){
+				continue;
+			}
+			$GLOBALS['app']->cache()->delete_index($value);
 		}
 		return true;
 	}
 
-	/**
-	 * 格式化数组成SQL
-	 * @参数 $data 数组
-	 * @参数 $table 表名
-	 * @参数 $type 类型，仅支持 insert，replace 三种
-	**/
-	protected function _insert_array($data,$table,$type='insert')
-	{
-		$sql = (strtolower($type) == 'insert' ? "INSERT" : "REPLACE")." INTO ".$table." ";
-		$sql_fields = array();
-		$sql_val = array();
-		foreach($data as $key=>$value){
-			$sql_fields[] = $this->kec_left.$key.$this->kec_right;
-			$sql_val[] = "'".$value."'";
-		}
-		$sql.= "(".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
-		return $sql;
-	}
+	
+
 
 	/**
 	 * 写入操作
@@ -620,53 +478,82 @@ class db
 		return $this->query($sql);
 	}
 
-	private function stripSafeChar($sql) {
-		$len = strlen($sql);
-		$mark = $clean = '';
-		for ($i = 0; $i < $len; ++$i) {
-			$str = $sql[$i];
-			switch ($str) {
-				case '\'':
-					if (!$mark) {
-						$mark = '\'';
-						$clean .= $str;
-					} elseif ('\'' == $mark) {
-						$mark = '';
-					}
-					break;
-				case '/':
-					if (empty($mark) && '*' == $sql[$i + 1]) {
-						$mark = '/*';
-						$clean .= $mark;
-						++$i;
-					} elseif ('/*' == $mark && '*' == $sql[$i - 1]) {
-						$mark = '';
-						$clean .= '*';
-					}
-					break;
-				case '#':
-					if (empty($mark)) {
-						$mark = $str;
-						$clean .= $str;
-					}
-					break;
-				case "\n":
-					if ('#' == $mark || '--' == $mark) {
-						$mark = '';
-					}
-					break;
-				case '-':
-					if (empty($mark) && '-- ' == substr($sql, $i, 3)) {
-						$mark = '-- ';
-						$clean .= $mark;
-					}
-					break;
-				default:
-					break;
-			}
-			$clean .= $mark ? '' : $str;
-		}
-
-		return $clean;
+	//计数器
+	protected function _count($val=1)
+	{
+		$this->count += $val;
 	}
+	
+	/**
+	 * 格式化数组成SQL
+	 * @参数 $data 数组
+	 * @参数 $table 表名
+	 * @参数 $type 类型，仅支持 insert，replace 三种
+	**/
+	protected function _insert_array($data,$table,$type='insert')
+	{
+		$sql = (strtolower($type) == 'insert' ? "INSERT" : "REPLACE")." INTO ".$table." ";
+		$sql_fields = array();
+		$sql_val = array();
+		foreach($data as $key=>$value){
+			$sql_fields[] = $this->kec_left.$key.$this->kec_right;
+			$sql_val[] = "'".$value."'";
+		}
+		$sql.= "(".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
+		return $sql;
+	}
+	
+	//缓存运行计时器
+	protected function _time()
+	{
+		$time = microtime(true);
+		if($this->time_tmp){
+			$tmptime = round(($time - $this->time_tmp),5);
+			$this->time = round(($this->time + $tmptime),5);
+			$this->time_tmp = 0;
+			return $tmptime;
+		}else{
+			$this->time_tmp = $time;
+		}
+	}
+
+
+
+	private function _log($info='')
+	{
+		global $app;
+		if(!$info){
+			$info = '没有提示内容';
+		}
+		if(is_array($info) || is_object($info)){
+			$info = print_r($info,true);
+		}
+		$info = trim($info);
+		$date = date("Ymd",$app->time);
+		if(!file_exists($app->dir_data.'log/log'.$date.'.php')){
+			file_put_contents($app->dir_data.'log/log'.$date.'.php',"<?php exit();?>\n");
+		}
+		$handle = fopen($app->dir_data.'log/log'.$date.'.php','ab');
+		$info2 = '---start---Time:'.date("H:i:s",$app->time).'---------------------'."\n";
+		$info2.= 'APP_ID: '.$app->app_id."\n";
+		$info2.= 'CTRL_ID: '.$app->ctrl."\n";
+		$info2.= 'FUNC_ID: '.$app->func."\n";
+		$info2.= 'INFO:'."\n";
+		$info2.= $info."\n";
+		$info2.= '---end---'."\n";
+		fwrite($handle,$info2);
+		fclose($handle);
+		return true;
+	}
+	
+	private function _slow($sql,$time)
+	{
+		if($time < $this->slow_time){
+			return true;
+		}
+		$sql = trim($sql);
+		$this->_slowlist[] = array('sql'=>$sql,'dateline'=>time(),'time'=>$time);
+		return true;
+	}
+
 }

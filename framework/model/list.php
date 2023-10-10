@@ -1405,7 +1405,7 @@ class list_model_base extends phpok_model
 			$sql = "DELETE FROM ".$this->db->prefix."fields WHERE ftype='list-".$id."'";
 			$this->db->query($sql);
 		}
-		$this->model('log')->content_delete($id,'list');		
+		$this->model('log')->content_delete($id,'list');
 		$this->node("system_admin_title_delete",$id);
 		return true;
 	}

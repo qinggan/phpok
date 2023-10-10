@@ -20,9 +20,14 @@ class cache
 	protected $debug = false;
 	protected $time;
 	//
+	private $keylist = array();
+	private $timelist = array();
+	private $md5list = array();
 	private $time_use = 0;
 	private $time_tmp = 0;
 	private $count = 0;
+	private $safecode = "<?php die('forbidden'); ?>\n";
+	private $db;
 	
 	public function __construct($config)
 	{
@@ -31,43 +36,41 @@ class cache
 		$this->timeout = $config['timeout'] ? $config['timeout'] : 1800;
 		$this->prefix = $config["prefix"] ? $config["prefix"] : "qinggan_";
 		$this->folder = $config['folder'] ? $config['folder'] : '../_cache/';
-		ksort($config);
-		$this->key_id = md5($this->prefix."_".serialize($config));
-		$this->key_list = array();
-		if($this->status){
-			$this->key_list = $this->get($this->key_id);
-			if(!$this->key_list){
-				$this->key_list = array();
-			}
-		}
 		$this->time = time();
+		$this->keylist_load();
 	}
 
 	public function __destruct()
 	{
-		$this->save($this->key_id,$this->key_list);
 		$this->expired();
+		$this->keylist_save();
 	}
 
-	public function key_list($id,$value='',$is_add=false)
+	public function key_list($id,$tbl='')
 	{
-		if(!$value && isset($this->key_list[$id])){
-			unset($this->key_list[$id]);
-			return true;
+		if(!$id || !$tbl){
+			return false;
 		}
-		$tmp = isset($this->key_list[$id]) ? $this->key_list[$id] : array();
-		if(!is_array($value)){
-			$value = array($value);
+		$list = array();
+		if(is_string($tbl)){
+			$tbl = trim($tbl);
+			if(!$tbl){
+				return false;
+			}
+			$list = explode(",",$tbl);
 		}
-		$tmp = array_merge($tmp,$value);
-		$tmp = array_unique($tmp);
-		$this->key_list[$id] = $tmp;
+		if(is_array($tbl)){
+			$list = $tbl;
+		}
+		if(!$list || count($list)<1){
+			return false;
+		}
+		foreach($list as $key=>$value){
+			$this->keylist[$value][$id] = true;
+			$this->md5list[$id][$value] = true;
+		}
+		$this->timelist[$id] = $this->time;
 		return true;
-	}
-
-	public function key_all()
-	{
-		return $this->key_list;
 	}
 
 	public function status($status='')
@@ -129,7 +132,7 @@ class cache
 		$this->_time();
 		$ftime = filemtime($this->folder.$id.'.php');
 		if(($ftime + $this->timeout) < $this->time){
-			$this->delete($id);
+			$this->delete($id,false);
 			return false;
 		}
 		$this->_count();
@@ -165,6 +168,7 @@ class cache
 			}
 		}
 		if(is_array($var) || is_object($var)){
+			sort($var);
 			$var = serialize($var);
 		}
 		return md5($this->prefix."_".$var);
@@ -173,8 +177,17 @@ class cache
 	public function delete($id)
 	{
 		@unlink($this->folder.$id.'.php');
-		if($this->key_list && $this->key_list[$id]){
-			unset($this->key_list[$id]);
+		if(!$this->md5list || !$this->md5list[$id]){
+			return true;
+		}
+		foreach($this->md5list[$id] as $key=>$value){
+			if($this->keylist && $this->keylist[$key][$id]){
+				unset($this->keylist[$key][$id]);
+			}
+		}
+		unset($this->md5list[$id]);
+		if($this->timelist && $this->timelist[$id]){
+			unset($this->timelist[$id]);
 		}
 		return true;
 	}
@@ -192,14 +205,15 @@ class cache
 	//根据索引删除
 	public function delete_index($id)
 	{
-		foreach($this->key_list as $key=>$value){
-			if(!$value || !is_array($value)){
-				continue;
-			}
-			if(in_array($id,$value)){
+		if(!$this->keylist || !$this->keylist[$id]){
+			return true;
+		}
+		foreach($this->keylist[$id] as $key=>$value){
+			if($this->md5list && $this->md5list[$key][$id]){
 				$this->delete($key);
 			}
 		}
+		return true;
 	}
 
 	public function clear()
@@ -213,21 +227,24 @@ class cache
 			}
 		}
 		closedir($handle);
+		$sql = "TRUNCATE ".tablename('cache');
+		$GLOBALS['app']->db()->query($sql);
 		return true;
 	}
 
 	public function expired()
 	{
-		$handle = opendir($this->folder);
-		$array = array();
+		if(!$this->timelist){
+			return true;
+		}
 		$expire_time = $this->time - $this->timeout;
-		while(false !== ($myfile = readdir($handle))){
-			if(is_file($this->folder.$myfile) && filemtime($this->folder.$myfile) < $expire_time){
-				$id = substr($myfile,0,-4);
-				$this->delete($id);
+		foreach($this->timelist as $key=>$value){
+			if($value < $expire_time){
+				$this->delete($key);
 			}
 		}
-		closedir($handle);
+		$sql = "DELETE FROM ".tablename('cache')." WHERE dateline<".$expire_time;
+		$GLOBALS['app']->db()->query($sql);
 		return true;
 	}
 
@@ -277,6 +294,47 @@ class cache
 		$this->count += $val;
 	}
 
+	protected function keylist_load()
+	{
+		if(!$this->status){
+			return false;
+		}
+		$expire_time = $this->time - $this->timeout;
+		$sql = "SELECT * FROM ".tablename("cache")." WHERE dateline>".$expire_time;
+		$rslist = $GLOBALS['app']->db()->get_all($sql);
+		if(!$rslist){
+			return false;
+		}
+		foreach($rslist as $key=>$value){
+			if(!isset($this->keylist[$value['tbl']])){
+				$this->keylist[$value['tbl']] = array();
+			}
+			if(!isset($this->md5list[$value['code']])){
+				$this->md5list[$value['code']] = array();
+			}
+			$this->keylist[$value['tbl']][$value['code']] = true;
+			$this->md5list[$value['code']][$value['tbl']] = true;
+			$this->timelist[$value['code']] = $value['dateline'];
+		}
+		return true;
+	}
 
+	protected function keylist_save()
+	{
+		if(!$this->status){
+			return false;
+		}
+		$sql = "REPLACE INTO ".tablename('cache')."(tbl,code,dateline) VALUES";
+		foreach($this->keylist as $key=>$value){
+			foreach($value as $k=>$v){
+				$time = $this->timelist[$k] ? $this->timelist[$k] : $this->time;
+				$mylist[] = "('".$key."','".$k."','".$time."')";
+			}
+		}
+		if($mylist){
+			$sql .= implode(",",$mylist);
+			$GLOBALS['app']->db()->query($sql);
+		}
+		return true;
+	}
 }
-?>

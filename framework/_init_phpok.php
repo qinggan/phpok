@@ -551,11 +551,7 @@ class _init_phpok
 	{
 		$ini = $name ? 'cache-'.$name : 'cache';
 		$config = $this->load_config($ini);
-		$obj = $this->engine('cache',$config);
-		if($obj){
-			$this->db()->cache_conn($obj);
-		}
-		return $obj;
+		return $this->engine('cache',$config);
 	}
 
 	/**

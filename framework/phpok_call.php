@@ -151,7 +151,6 @@ class phpok_call extends _init_auto
 			$db_keys[] = tablename($value);
 		}
 		$this->cache->key_list($cache_id,$db_keys);
-		//指定数据库里的缓存
 		$this->db->cache_set($cache_id); //初始化缓存ID
 		return $this->$func($call_rs,$cache_id);
 	}
