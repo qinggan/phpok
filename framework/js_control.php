@@ -245,8 +245,7 @@ class js_control extends phpok_control
 	**/
 	private function load_language_js()
 	{
-		$multiple_language = isset($GLOBALS['app']->config['multiple_language']) ? $GLOBALS['app']->config['multiple_language'] : false;
-		if(!$multiple_language){
+		if($this->langid == 'cn'){
 			return false;
 		}
 		$js_default_file = $this->dir_root.'langs/'.$this->app_id.'.xml';
@@ -255,14 +254,12 @@ class js_control extends phpok_control
 			$default_list = array();
 		}
 		$langs = array();
-		if($this->langid != 'default' && $this->langid != 'cn'){
-			$langfile = $this->dir_root."langs/".$this->langid."/LC_MESSAGES/".$this->app_id.".xml";
-			$langlist = $this->lib('xml')->read($langfile);
-			if($langlist){
-				foreach($langlist as $key=>$value){
-					if($default_list[$key]){
-						$langs[$default_list[$key]] = $value;
-					}
+		$langfile = $this->dir_root."langs/".$this->langid."/LC_MESSAGES/".$this->app_id.".xml";
+		$langlist = $this->lib('xml')->read($langfile);
+		if($langlist){
+			foreach($langlist as $key=>$value){
+				if($default_list[$key]){
+					$langs[$default_list[$key]] = $value;
 				}
 			}
 		}

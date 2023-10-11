@@ -307,18 +307,16 @@ class _init_phpok
 	**/
 	public function language($langid='cn')
 	{
-		$multiple_language = isset($this->config['multiple_language']) ? $this->config['multiple_language'] : false;
-		if($multiple_language){
-			include_once($this->dir_phpok.'language.php');
-			$this->language = new phpok_language($langid);
-			$this->language->status($multiple_language);
-			$this->language->folder($this->dir_root.'langs');
-			$this->language->id($this->app_id);
-			$this->language->pomo($this->dir_extension);
-			unset($multiple_language);
+		if($langid == 'cn'){
 			return true;
 		}
-		return false;
+		include_once($this->dir_phpok.'language.php');
+		$this->language = new phpok_language($langid);
+		$this->language->status($multiple_language);
+		$this->language->folder($this->dir_root.'langs');
+		$this->language->id($this->app_id);
+		$this->language->pomo($this->dir_extension);
+		return true;
 	}
 
 	/**
@@ -330,13 +328,13 @@ class _init_phpok
 	**/
 	final public function lang_format($info,$var='')
 	{
+		if($this->langid == 'cn'){
+			return $this->_lang_format($info,$var);
+		}
 		if(!$this->language){
 			$this->language($this->langid);
 		}
-		if($this->language){
-			return $this->language->format($info,$var);
-		}
-		return $this->_lang_format($info,$var);
+		return $this->language->format($info,$var);
 	}
 
 	private function _lang_format($info,$var='')
@@ -402,21 +400,27 @@ class _init_phpok
 		$this->assign("config",$this->site);
 		$langid = $this->get("_langid");
 		if($this->app_id == 'admin'){
-			if(!$langid){
+			if(!$langid && $this->session()->val('admin_lang_id')){
 				$langid = $this->session()->val('admin_lang_id');
+			}
+			if(!$langid || $langid == 'default'){
+				$langid = $this->config['langid'] ? $this->config['langid'] : 'cn';
+			}
+			$this->session()->assign('admin_lang_id',$langid);
+		}else{
+			if(!$langid && $this->config['multiple_language'] && isset($this->site['lang'])){
+				$langid = $this->site['lang'];
+			}
+			if(!$langid && isset($this->config['langid'])){
+				$langid = $this->config['langid'];
 			}
 			if(!$langid || $langid == 'default'){
 				$langid = 'cn';
 			}
-			$this->session()->assign('admin_lang_id',$langid);
-		}else{
-			if(!$langid){
-				$langid = isset($this->site['lang']) ? $this->site['lang'] : 'cn';
-			}
+			$this->session()->assign($this->app_id.'_lang_id',$langid);
 		}
 		$this->langid = $langid;
-
-		if(isset($this->config['multiple_language']) && $this->config['multiple_language']){
+		if($this->langid != 'cn'){
 			$this->language($this->langid);
 		}
 	}
