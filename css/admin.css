@@ -500,3 +500,10 @@ ul.fields_quick_add li:hover{background:#f1f1f1;}
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.debug{
+	font-size:10px;
+}
+.debug b{
+	font-weight:normal;
+}

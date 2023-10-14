@@ -423,6 +423,7 @@ class _init_phpok
 		if($this->langid != 'cn'){
 			$this->language($this->langid);
 		}
+		$this->assign('langid',$this->langid);
 	}
 
 	public function load_config($name='')
@@ -559,7 +560,7 @@ class _init_phpok
 	}
 
 	/**
-	 * 连接缓存服务器
+	 * 连Key-Value存服务器
 	 * @参数 $name 参数文件，如果是 redis，配置文件为 kv-redis.ini.php，为空则读 kv.ini.php
 	**/
 	public function kv($name='')
@@ -709,15 +710,6 @@ class _init_phpok
 		$this->data('site_rs',$site_rs);
 		$this->node('system_init_site');
 		$site_rs = $this->data('site_rs');
-		//语言ID
-		$langid = $this->get("_langid");
-		if(!$langid){
-			$langid = $this->session()->val($this->app_id.'_lang_id') ? $this->session()->val($this->app_id.'_lang_id') : $site_rs['lang'];
-			if(!$langid){
-				$lagnid = 'cn';
-			}
-		}
-		$this->session()->assign($this->app_id.'_lang_id',$langid);
 		//自定义模板
 		$tpl_id = $this->get("_tpl","int");
 		if(!$tpl_id){
@@ -752,7 +744,7 @@ class _init_phpok
 				}
 				$tpl_rs["dir_tpl"] = "tpl/".$tplfolder."/";
 			}
-			$tpl_rs['langid'] = $langid;
+			$tpl_rs['langid'] = $this->langid;
 			$site_rs["tpl_id"] = $tpl_rs;
 		}
 		//货币检测

@@ -292,3 +292,13 @@ em.toptip{position:absolute;display:block;min-width:16px;height:16px;border-radi
 .smart_menu_triangle{width:0; height:0; border:5px dashed transparent; border-left:5px solid #666; overflow:hidden; position:absolute; top:7px; right:5px;}
 .smart_menu_a:hover .smart_menu_triangle, .smart_menu_a_hover .smart_menu_triangle{border-left-color:#fff;}
 .smart_menu_li_hover .smart_menu_box{top:-1px; left:130px;}
+
+
+
+
+.debug{
+	font-size:10px;
+}
+.debug b{
+	font-weight:normal;
+}

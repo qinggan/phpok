@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<cn>简体中文</cn>
-	<en_US>English</en_US>
+	<cn><![CDATA[简体中文]]></cn>
+	<en_US><![CDATA[English]]></en_US>
+	<zh_big5><![CDATA[繁體中文]]></zh_big5>
 </root>

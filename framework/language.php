@@ -106,18 +106,15 @@ class phpok_language
 
 	/**
 	 * 设置语言ID
-	 * @参数 $langid 默认是 default，支持其他语言
+	 * @参数 $langid 默认是 cn，支持其他语言
 	**/
-	public function lang_id($langid='default')
+	public function lang_id($langid='cn')
 	{
 		if(!$this->_status){
 			return true;
 		}
 		if($langid){
-			if($langid == 'default' || $langid == 'cn'){
-				$langid = 'zh_CN';
-			}
-			$this->_lang_id = $langid;
+			$this->_lang_id = $langid == 'cn' ? 'zh_CN' : $langid;
 		}
 		return $this->_lang_id;
 	}
@@ -126,6 +123,10 @@ class phpok_language
 	{
 		if(!$info){
 			return false;
+		}
+		//针对中文，直接跳过
+		if($this->_lang_id == 'zh_CN'){
+			return $this->_format($info,$var);
 		}
 		if($this->_status && $this->_method == 'user'){
 			if(!$this->pomo){
@@ -150,7 +151,7 @@ class phpok_language
 			}
 			return $this->_format($info2,$var);
 		}
-		return $this->_format($info,$var);		
+		return $this->_format($info,$var);
 	}
 
 	private function _format($info,$var='')

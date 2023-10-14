@@ -26,6 +26,63 @@ list[1] = [{
 	'url':'background/technology/4.jpg'
 }];
 
+var mlist = {};
+mlist['en_US'] = [];
+mlist['en_US'][0] = [{
+	'info':'Spring came, the earth covered with green.',
+	'url':'background/seasons/1.jpg'
+},{
+	'info':'Seasons rotate, Clouds roll, Clouds relax',
+	'url':'background/seasons/2.jpg'
+},{
+	'info':'The Great Beauty of China, Your Merit',
+	'url':'background/seasons/3.jpg'
+},{
+	'info':'Meet a better version of yourself this winter.',
+	'url':'background/seasons/4.jpg'
+}];
+mlist['en_US'][1] = [{
+	'info':'China, Technology and Art',
+	'url':'background/technology/1.jpg'
+},{
+	'info':'Future, starting from here',
+	'url':'background/technology/2.jpg'
+},{
+	'info':'Intelligent AI, leading 5G',
+	'url':'background/technology/3.jpg'
+},{
+	'info':'Interconnection, unlimited network',
+	'url':'background/technology/4.jpg'
+}];
+
+mlist['zh_Big5'] = [];
+mlist['zh_Big5'][0] = [{
+	'info':'如切如磋，如琢如磨',
+	'url':'background/seasons/1.jpg'
+},{
+	'info':'四季輪轉，雲捲雲舒',
+	'url':'background/seasons/2.jpg'
+},{
+	'info':'大美中華，君之功也',
+	'url':'background/seasons/3.jpg'
+},{
+	'info':'他山之石，可以攻玉',
+	'url':'background/seasons/4.jpg'
+}];
+mlist['zh_Big5'][1] = [{
+	'info':'中國，科技攜手文藝',
+	'url':'background/technology/1.jpg'
+},{
+	'info':'未來，從這裡開始',
+	'url':'background/technology/2.jpg'
+},{
+	'info':'智慧 AI，引領 5G',
+	'url':'background/technology/3.jpg'
+},{
+	'info':'他山之石，可以攻玉',
+	'url':'background/technology/4.jpg'
+}];
+
 var _args,_path = (function( script, i, me )
 {
     var l = script.length;
@@ -42,7 +99,13 @@ var _args,_path = (function( script, i, me )
 if(!_args){
 	_args = "host=//cdn.phpok.com/";
 }
-var host = decodeURIComponent((_args.split("="))[1]);
+var tmp_args = decodeURIComponent(_args);
+var tmp_list = tmp_args.split("&");
+var host = (tmp_list[0].split("="))[1];
+var langid = (tmp_list[1].split("="))[1];
+if(mlist[langid] && mlist[langid] != 'undefined'){
+	list = mlist[langid];
+}
 
 //生成从minNum到maxNum的随机数
 function phpok_randomNum(minNum,maxNum){ 
@@ -92,4 +155,7 @@ $(document).ready(function(){
 	window.setTimeout(function(){
 		$(".phpok-login-bg").show().slick(opt);
 	}, 1000);
+	if(langid == 'en_US'){
+		$("#c-content .c-wrap").css("left","60%");
+	}
 });

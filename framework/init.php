@@ -181,8 +181,8 @@ function phpok_head_css()
 function P_Lang($info,$replace='')
 {
 	global $app;
-	$status = isset($app->config['multiple_language']) ? $app->config['multiple_language'] : false;
-	if($status){
+	$langid = $app->langid;
+	if($langid != 'cn'){
 		return $app->lang_format($info,$replace);
 	}
 	if($replace && (is_string($replace) || is_int($replace) || is_float($replace))){

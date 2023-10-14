@@ -83,7 +83,7 @@
 		},
 		del:function(id)
 		{
-			var tip = p_lang('确定要ID为 <span class="red">{id}</span> 的数据吗？<br>删除后地址库信息是不能恢复的',"#"+id);
+			var tip = p_lang('确定要ID为{id}的数据吗？<br>删除后地址库信息是不能恢复的'," <span class='red'>#"+id+'</span> ');
 			layer.confirm(tip,function(index){
 				var url = get_url('address','delete','id='+id);
 				$.phpok.json(url,function(data){

@@ -58,7 +58,7 @@ table.aui_border, table.aui_dialog {
 	display:block;
 	width:100%;
 	margin:0;
-	padding:0!important;
+	padding:0 !important;
 	height:100%;
 }
 .aui_loading {

@@ -78,6 +78,40 @@ class ulang_control extends phpok_control
 		$this->success('语言包文件更新成功');
 	}
 
+	public function loadjs_f()
+	{
+		$list = $this->js2content();
+		$fopen = fopen($this->dir_root.'langs/js.xml','wb');
+		fwrite($fopen,'<?xml version="1.0" encoding="utf-8"?>'."\n");
+		fwrite($fopen,'<root>'."\n");
+		$tmplist = array();
+		foreach($list as $k=>$v){
+			preg_match_all("/p_lang\([\"']{1}(.+)[\"']/isU",$v,$matches);
+			if(!$matches || !$matches[1]){
+				continue;
+			}
+			foreach($matches[1] as $kk=>$vv){
+				$code = 'a'.md5($vv);
+				$tmplist[$code] = $vv;
+			}
+		}
+		foreach($tmplist as $key=>$value){
+			fwrite($fopen,"\t".'<'.$key.'><![CDATA['.$value.']]></'.$key.'>'."\n");
+		}
+		fwrite($fopen,'</root>');
+		fclose($fopen);
+		$this->success('语言包文件更新成功');
+	}
+
+	private function js2content()
+	{
+		$list = $this->lib('file')->ls($this->dir_phpok.'js/');
+		foreach($list as $key=>$value){
+			$tmp = $this->lib('file')->cat($value);
+			yield $tmp;
+		}
+	}
+
 	private function file2content($type="admin")
 	{
 		if($type == 'admin'){
@@ -100,7 +134,7 @@ class ulang_control extends phpok_control
 	public function tophp_f()
 	{
 		$list = $this->lib('file')->ls($this->dir_phpok.'view/');
-		$fopen = fopen($this->dir_root.'langs/lang2.php','wb');
+		$fopen = fopen($this->dir_root.'langs/admin-view.php','wb');
 		fwrite($fopen,'<?php'."\n");
 		foreach($list as $key=>$value){
 			$handle = fopen($value,'rb');

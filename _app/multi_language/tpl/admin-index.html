@@ -1,0 +1,57 @@
+<!-- include tpl=head_lay -->
+<div class="layui-card">
+	<div class="layui-card-header">
+		{lang语言包列表}
+		<div class="fr">
+			<div class="layui-btn-group">
+				<input type="button" value="{lang添加新语言}" onclick="$.admin_multi_language.add()" class="layui-btn layui-btn-sm" />
+				<input type="button" value="{lang更新基础中文包}" onclick="$.admin_multi_language.refresh()" class="layui-btn layui-btn-sm layui-btn-danger" />
+			</div>
+		</div>
+	</div>
+	<div class="layui-card-body">
+		<table class="layui-table">
+		<thead>
+		<tr>
+			<th>{lang语言包}</th>
+			<th>{lang标识}</th>
+			<th>{lang操作}</th>
+		</tr>
+		</thead>
+		<!-- loop from=$langlist key=$key value=$value id=$tmpid -->
+		<tr>
+			<td>{$value}</td>
+			<td>{$key}</td>
+			<td>
+				<!-- if $key != 'cn' -->
+				<div class="layui-btn-group">
+					<input type="button" value="编辑" onclick="$.admin_multi_language.edit('{$key}','{$value}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="管理语言包" onclick="$.win('{lang语言包}_{$key}','{url ctrl=multi_language func=langs id=$key/}')" class="layui-btn layui-btn-sm" />
+					<input type="button" value="删除" onclick="$.admin_multi_language.del('{$key}','{$value}')" class="layui-btn layui-btn-sm layui-btn-danger" />
+				</div>
+				<!-- /if -->
+			</td>
+		</tr>
+		<!-- /loop -->
+		</table>
+	</div>
+</div>
+<div id="add" class='hide'>
+<form method="post" class="layui-form" id="post_save" onsubmit="return false">
+<div class="layui-card" style="box-shadow:none;">
+	<div class="layui-card-body">
+		<div class="layui-form-item">
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="id" id="id" placeholder="{lang标识，仅限英文字母，数字及下划线}" class="layui-input" />
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-inline default-auto">
+				<input type="text" name="title" id="title" placeholder="{lang名称}" value="{$rs.title}" class="layui-input" />
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+</div>
+<!-- include tpl=foot_lay -->

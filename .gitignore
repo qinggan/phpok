@@ -11,3 +11,6 @@
 /plugins/demo
 /_app/qghost
 /_data/yunmarket_config.php
+/_app/weixin
+/_app/social
+/extension/freessl

@@ -598,12 +598,3 @@ ALTER TABLE `qinggan_fields` ADD `is_system` TINYINT( 1 ) UNSIGNED NOT NULL DEFA
 -- 2023年10月6日
 ALTER TABLE `qinggan_project` ADD `icon` VARCHAR( 255 ) NOT NULL COMMENT '侧边栏文本图标';
 
--- 2023年10月10日
-CREATE TABLE IF NOT EXISTS `qinggan_cache` (
-  `tbl` varchar(32) NOT NULL COMMENT '表名称',
-  `code` varchar(32) NOT NULL COMMENT '文件码',
-  `dateline` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '时间',
-  PRIMARY KEY (`tbl`,`code`) USING HASH,
-  KEY `code` (`code`),
-  KEY `tbl` (`tbl`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关键值缓存表';

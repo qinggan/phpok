@@ -254,7 +254,7 @@ class js_control extends phpok_control
 			$default_list = array();
 		}
 		$langs = array();
-		$langfile = $this->dir_root."langs/".$this->langid."/LC_MESSAGES/".$this->app_id.".xml";
+		$langfile = $this->dir_root."langs/".$this->langid."/LC_MESSAGES/js.xml";
 		$langlist = $this->lib('xml')->read($langfile);
 		if($langlist){
 			foreach($langlist as $key=>$value){

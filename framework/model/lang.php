@@ -24,4 +24,35 @@ class lang_model_base extends phpok_model
 		}
 		return $langlist;
 	}
+
+	public function get_one($id)
+	{
+		$list = $this->get_list();
+		if(!$list){
+			return false;
+		}
+		if($list[$id]){
+			$name = $list[$id];
+			return array('id'=>$id,'title'=>$name);
+		}
+		return false;
+	}
+
+	public function save($data)
+	{
+		$list = $this->get_list();
+		$list[$data['id']] = $data['title'];
+		$this->lib('xml')->save($list,$this->dir_data.'xml/langs.xml');
+		return true;
+	}
+
+	public function delete($id='')
+	{
+		$list = $this->get_list();
+		if($id && $list[$id]){
+			unset($list[$id]);
+		}
+		$this->lib('xml')->save($list,$this->dir_data.'xml/langs.xml');
+		return true;
+	}
 }

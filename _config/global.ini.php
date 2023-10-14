@@ -67,7 +67,7 @@ get_domain_method = HTTP_HOST
 multiple_language = false
 
 ;默认语言ID，支持 cn，en_US 等
-langid = en_US
+langid = cn
 
 ;是否启用 opcache，仅限 debug 为 false 时有效
 opcache = true
